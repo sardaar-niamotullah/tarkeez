@@ -1,0 +1,20 @@
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/icon/tarkeez.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "#27D366"
+  adaptive_icon_foreground: "assets/icon/tarkeez_transparent.png"
+  web:
+    generate: true
+    image_path: "assets/icon/tarkeez.png"
+    background_color: "#27D366"
+    theme_color: "#111111"
+  windows:
+    generate: true
+    image_path: "assets/icon/tarkeez.png"
+    icon_size: 48
+  macos:
+    generate: true
+    image_path: "assets/icon/tarkeez.png"

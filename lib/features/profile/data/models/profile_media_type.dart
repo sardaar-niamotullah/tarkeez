@@ -1,0 +1,1 @@
+enum ProfileMediaType { avatar, cover }
