@@ -46,9 +46,8 @@ class StreakCard extends StatelessWidget {
                   children: [
                     Text(
                       streak.toString(),
-                      style: TextUtils.title3(
-                        context,
-                      ).copyWith(fontWeight: .bold),
+                      style: TextUtils.title3(context)
+                          .copyWith(fontWeight: .bold),
                     ),
                     Text(
                       'day',
@@ -56,26 +55,6 @@ class StreakCard extends StatelessWidget {
                         context,
                         color: scheme.onTertiary.withValues(alpha: 0.6),
                       ).copyWith(fontSize: 10),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisSize: .min,
-                  textBaseline: .alphabetic,
-                  crossAxisAlignment: .baseline,
-                  children: [
-                    Text(
-                      '1,987,128',
-                      style: TextUtils.paragraphBold(
-                        context,
-                      ).copyWith(fontSize: 10),
-                    ),
-                    Text(
-                      'th',
-                      style: TextUtils.paragraphBold(context).copyWith(
-                        fontSize: 6,
-                        color: scheme.onTertiary.withValues(alpha: 0.6),
-                      ),
                     ),
                   ],
                 ),

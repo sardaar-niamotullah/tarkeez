@@ -3,7 +3,9 @@ import 'package:tarkeez/core/shared_files/widgets/section_overlay_lock_message_b
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 
 class SectionLockOverlay extends StatelessWidget {
-  const SectionLockOverlay({super.key});
+  const SectionLockOverlay({super.key, required this.lockedTopicName});
+
+  final String lockedTopicName;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,7 @@ class SectionLockOverlay extends StatelessWidget {
           ),
           child: Align(
             alignment: .centerEnd,
-            child: const SectionOverlayLockMessageBox(),
+            child: SectionOverlayLockMessageBox(title: lockedTopicName),
           ),
         ),
       ),

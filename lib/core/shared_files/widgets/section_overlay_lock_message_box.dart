@@ -6,15 +6,16 @@ import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class SectionOverlayLockMessageBox extends StatelessWidget {
-  const SectionOverlayLockMessageBox({super.key});
+  const SectionOverlayLockMessageBox({super.key, required this.title});
+
+  final String title;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Container(
       height: 56,
-      width: 248,
-      padding: .only(left: ContainerDesignUtils.padding),
+      width: 212,
       decoration: BoxDecoration(
         color: scheme.onSurface.withValues(alpha: .3),
         borderRadius: ContainerDesignUtils.allRadius,
@@ -27,15 +28,14 @@ class SectionOverlayLockMessageBox extends StatelessWidget {
             text: TextSpan(
               style: TextUtils.paragraphSmallBold(context),
               children: [
-                const TextSpan(text: 'Become a '),
                 TextSpan(
-                  text: 'premium member',
+                  text: 'Go premium ',
                   style: TextUtils.paragraphSmallBold(
                     context,
                     color: AppTheme.fireTone,
                   ),
                 ),
-                const TextSpan(text: ' \nto unlock this insight.'),
+                TextSpan(text: 'to unlock \n$title insight'),
               ],
             ),
           ),

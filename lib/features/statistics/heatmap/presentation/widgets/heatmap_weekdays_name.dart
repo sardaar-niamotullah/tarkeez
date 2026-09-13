@@ -7,16 +7,16 @@ class HeatmapWeekdaysName extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 20,
+      width: 24,
       child: Column(
         crossAxisAlignment: .start,
         children: [
           buildWeekdaysNname(context, ''),
-          buildWeekdaysNname(context, 'Sun'),
+          buildWeekdaysNname(context, 'Mon'),
           buildWeekdaysNname(context, ''),
-          buildWeekdaysNname(context, 'Tue'),
+          buildWeekdaysNname(context, 'Wed'),
           buildWeekdaysNname(context, ''),
-          buildWeekdaysNname(context, 'Thu'),
+          buildWeekdaysNname(context, 'Fri'),
           buildWeekdaysNname(context, ''),
         ],
       ),

@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/features/home/presentation/home_tab.dart';
 import 'package:tarkeez/features/home/presentation/sections/app_drawer.dart';
-import 'package:tarkeez/features/projects/presentation/projects_page.dart';
+import 'package:tarkeez/features/profile/presentation/profile_tab.dart';
+import 'package:tarkeez/features/projects/presentation/projects_tab.dart';
 import 'package:tarkeez/features/report/presentation/report_tab.dart';
 
 class MainScaffold extends StatefulWidget {
@@ -25,7 +26,12 @@ class _MainScaffoldState extends State<MainScaffold> {
   @override
   void initState() {
     super.initState();
-    _tabs = [HomeTab(onMenuTap: _openDrawer), ProjectsTab(), ReportTab()];
+    _tabs = [
+      HomeTab(onMenuTap: _openDrawer),
+      ReportTab(),
+      ProjectsTab(),
+      ProfileTab(),
+    ];
   }
 
   @override

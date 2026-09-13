@@ -109,7 +109,7 @@ class SubscriptionCard extends StatelessWidget {
                         colorFilter: .mode(AppTheme.white, .srcIn),
                       ),
                       title: Text(
-                        texts.buyPremium,
+                        texts.goPremium,
                         style: TextUtils.paragraphBold(
                           context,
                           color: AppTheme.white,

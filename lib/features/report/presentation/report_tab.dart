@@ -1,7 +1,6 @@
 import 'package:tarkeez/core/shared_files/buttons/custom_dropdown_button.dart';
 import 'package:tarkeez/core/utils/primary_page_margin.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
-import 'package:tarkeez/features/report/presentation/sections/invested_times_section.dart';
 import 'package:tarkeez/features/report/presentation/sections/projects_pie_chart_section.dart';
 import 'package:tarkeez/features/report/presentation/sections/report_bar_chart.dart';
 import 'package:tarkeez/features/report/presentation/sections/report_filter_tile.dart';
@@ -41,7 +40,7 @@ class _ReportTabState extends State<ReportTab> {
               // App bar
               // ──────────────────────────────────────────────────────────
               CustomAppBar(
-                title: texts.report,
+                title: texts.reports,
                 isBackButtonEnabled: false,
                 actions: [ActionPageIcon(iconPath: SvgPaths.pieChart)],
               ),
@@ -94,26 +93,6 @@ class _ReportTabState extends State<ReportTab> {
                                     ? const ReportBarChart()
                                     : const ReportLineChart(),
                                 const SizedBox(height: 16),
-
-                                //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-                                // Invested time section
-                                //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-                                InvestedTimesSection(
-                                  isLocked: false,
-                                  today: 14565,
-                                  yesterday: 13230,
-                                  thisWeek: 11260,
-                                  lastWeek: 11224,
-                                  thisMonth: 11201,
-                                  lastMonth: 13152,
-                                  thisYear: 423459,
-                                  lastYear: 123456,
-                                  lastSevenDays: 1234,
-                                  lastThirtyDays: 12321,
-                                  last365Days: 12321,
-                                ),
-                                const SizedBox(height: 16),
-
                                 //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
                                 // Pie chart part
                                 //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
@@ -131,7 +110,7 @@ class _ReportTabState extends State<ReportTab> {
                         padding: .symmetric(
                           horizontal: ContainerDesignUtils.padding,
                         ),
-                        sliver: const TimeLogSessionsSection(isLocked: false),
+                        sliver: const TimeLogSessionsSection(isLocked: true),
                       ),
                     ],
                   ),

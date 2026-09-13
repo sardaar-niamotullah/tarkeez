@@ -38,6 +38,7 @@ class TimeLogSessionsSection extends StatelessWidget {
                           ? ImgPaths.timeLogsLockBackdropsDark
                           : ImgPaths.timeLogsLockBrackdropsLight,
                       height: 124,
+                      lockedTopicName: 'sessions',
                     ),
                   );
                 },

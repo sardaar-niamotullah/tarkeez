@@ -51,7 +51,9 @@ class InvestedTimeLockOverlay extends StatelessWidget {
         //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
         // Frosted lock banner
         //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-        const Positioned.fill(child: SectionLockOverlay()),
+        Positioned.fill(
+          child: SectionLockOverlay(lockedTopicName: 'invested times'),
+        ),
       ],
     );
   }

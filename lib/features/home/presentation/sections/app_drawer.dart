@@ -59,14 +59,11 @@ class AppDrawer extends StatelessWidget {
                       ),
                     ],
                   ),
-
                   const ThemeSwitchButton(),
                 ],
               ),
               // const LanguageSwitchButton(),
-              const SizedBox(height: 24),
-              const SubscriptionCard(),
-              const SizedBox(height: 64),
+              const SizedBox(height: 164),
 
               // ──────────────────────────────────────────────
               // Drawer items
@@ -76,19 +73,18 @@ class AppDrawer extends StatelessWidget {
                   child: Column(
                     children: [
                       AppDrawerItem(
-                        title: texts.userManual,
-                        iconPath: SvgPaths.book,
-                        onTap: () => context.push(RouteNames.userManualPage),
-                      ),
-                      AppDrawerItem(
                         title: texts.settings,
                         iconPath: SvgPaths.gear,
                         onTap: () => showModalBottomSheet(
                           context: context,
-                          builder: (BuildContext context) {
-                            return const SettingsBottomSheet();
-                          },
+                          builder: (BuildContext context) =>
+                              const SettingsBottomSheet(),
                         ),
+                      ),
+                      AppDrawerItem(
+                        title: texts.userManual,
+                        iconPath: SvgPaths.book,
+                        onTap: () => context.push(RouteNames.userManualPage),
                       ),
                       AppDrawerItem(
                         title: texts.termsAndConditions,
@@ -101,12 +97,22 @@ class AppDrawer extends StatelessWidget {
                         iconPath: SvgPaths.headset,
                         onTap: () => context.push(RouteNames.customerCarePage),
                       ),
+                      AppDrawerItem(
+                        title: 'Make app',
+                        iconPath: SvgPaths.code,
+                        onTap: () => context.push(RouteNames.hireUsPage),
+                      ),
+                      AppDrawerItem(
+                        title: 'Buy codebase',
+                        iconPath: SvgPaths.appStore,
+                        onTap: () => context.push(RouteNames.buyCodebasePage),
+                      ),
                     ],
                   ),
                 ),
               ),
-
-              const SizedBox(height: 24),
+              const SubscriptionCard(),
+              const SizedBox(height: 48),
               Align(
                 alignment: .center,
                 child: Text(

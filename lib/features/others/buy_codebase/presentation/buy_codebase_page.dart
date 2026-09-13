@@ -9,8 +9,8 @@ import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/others/hire_us/presentation/widgets/hiring_term_tile.dart';
 import 'package:tarkeez/features/others/hire_us/presentation/widgets/tech_platfrom_card.dart';
 
-class HireUsPage extends StatelessWidget {
-  const HireUsPage({super.key});
+class BuyCodebasePage extends StatelessWidget {
+  const BuyCodebasePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +18,8 @@ class HireUsPage extends StatelessWidget {
     final texts = AppTexts.of(context);
 
     return StandAlonePageOuterStructure(
-      title: 'Make app',
-      actions: [ActionPageIcon(iconPath: SvgPaths.code)],
+      title: 'Buy codebase',
+      actions: [ActionPageIcon(iconPath: SvgPaths.appStore)],
       // ──────────────────────────────────────────────────────────
       // Body content.
       // ──────────────────────────────────────────────────────────

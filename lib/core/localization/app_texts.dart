@@ -183,7 +183,7 @@ class AppTexts {
   // ──────────────────────────────────────────────
   // Report
   // ──────────────────────────────────────────────
-  String get report => _r(ReportStrings.report);
+  String get reports => _r(ReportStrings.reports);
 
   // ──────────────────────────────────────────────
   // Settings

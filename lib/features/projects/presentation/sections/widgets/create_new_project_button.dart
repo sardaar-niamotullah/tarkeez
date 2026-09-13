@@ -21,10 +21,8 @@ class CreateNewProjectButton extends StatelessWidget {
         ),
         borderRadius: ContainerDesignUtils.allRadius,
         child: Ink(
-          padding: .symmetric(
-            horizontal: ContainerDesignUtils.padding,
-            vertical: ContainerDesignUtils.halfPadding,
-          ),
+          height: 40,
+          width: 140.5,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: .topLeft,
@@ -36,6 +34,7 @@ class CreateNewProjectButton extends StatelessWidget {
           child: Row(
             mainAxisSize: .min,
             crossAxisAlignment: .center,
+            mainAxisAlignment: .center,
             children: [
               Text(
                 'Add project',

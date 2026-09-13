@@ -13,7 +13,6 @@ class HomeLastThreeDaysBarChart extends StatelessWidget {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        const SizedBox(height: 16),
         Text('Last 3 days', style: TextUtils.title2(context)),
         Row(
           children: [

@@ -29,6 +29,7 @@ class SvgPaths {
   static const String camera = 'assets/svgs/camera.svg';
   static const String circle = 'assets/svgs/circle.svg';
   static const String colorPalette = 'assets/svgs/color_palette.svg';
+  static const String code = 'assets/svgs/code.svg';
   static const String close = 'assets/svgs/close.svg';
   static const String closeLarge = 'assets/svgs/close_large.svg';
   static const String chart = 'assets/svgs/chart.svg';

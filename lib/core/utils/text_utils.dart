@@ -117,6 +117,17 @@ class TextUtils {
     );
   }
 
+  static TextStyle paragraphXsBold(BuildContext context, {Color? color}) {
+    return AppFonts.font(
+      size: 10,
+      weight: .bold,
+      height: 1.2,
+      color:
+          color ??
+          Theme.of(context).colorScheme.onTertiary.withValues(alpha: .9),
+    );
+  }
+
   static TextStyle paragraphSmallBold(BuildContext context, {Color? color}) {
     return AppFonts.font(
       size: 12,

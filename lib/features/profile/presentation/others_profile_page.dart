@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/features/connections/enums/connection_type.dart';
 import 'package:tarkeez/features/profile/presentation/sections/personal_bests_section.dart';
-import 'package:tarkeez/features/profile/presentation/sections/profile_rank_section.dart';
+import 'package:tarkeez/features/profile/presentation/sections/streaks.dart';
 import 'package:tarkeez/features/statistics/heatmap/presentation/heatmap.dart';
 
 class OthersProfilePage extends StatelessWidget {
@@ -54,7 +54,7 @@ class OthersProfilePage extends StatelessWidget {
                   children: [
                     const Heatmap(),
                     const SizedBox(height: 16),
-                    const ProfileRankSection(),
+                    const Streaks(),
                     const SizedBox(height: 16),
                     const PersonalBestsSection(isLocked: false),
                     const SizedBox(height: 16),

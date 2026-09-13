@@ -27,9 +27,11 @@ class MainBottomNavBar extends StatelessWidget {
         // Navigation logic
         // ────────────────────────────────────────────────────────────
         currentIndex: currentIndex,
-        onTap: (index) => context.read<NavigationCubit>().navigateTo(
-          NavigationTab.values[index],
-        ),
+        onTap: (index) {
+          context.read<NavigationCubit>().navigateTo(
+            NavigationTab.values[index],
+          );
+        },
         type: .fixed,
         selectedItemColor: scheme.primary,
         unselectedItemColor: scheme.onTertiary,
@@ -47,10 +49,20 @@ class MainBottomNavBar extends StatelessWidget {
           // ────────────────────────────────────────────────────────────
           BottomNavigationBarItem(
             icon: BottomNavBarIcon(
-              iconPath: SvgPaths.stopwatch,
+              iconPath: SvgPaths.home,
               isActive: currentIndex == 0,
             ),
-            label: 'Tracker',
+            label: texts.home,
+          ),
+          // ────────────────────────────────────────────────────────────
+          // Customers tab
+          // ────────────────────────────────────────────────────────────
+          BottomNavigationBarItem(
+            icon: BottomNavBarIcon(
+              iconPath: SvgPaths.pieChart,
+              isActive: currentIndex == 1,
+            ),
+            label: texts.reports,
           ),
 
           // ────────────────────────────────────────────────────────────
@@ -59,32 +71,28 @@ class MainBottomNavBar extends StatelessWidget {
           BottomNavigationBarItem(
             icon: BottomNavBarIcon(
               iconPath: SvgPaths.projects,
-              isActive: currentIndex == 1,
+              isActive: currentIndex == 2,
             ),
-            label: texts.report,
+            label: texts.projects,
           ),
 
           // ────────────────────────────────────────────────────────────
-          // Customers tab
+          // Profile tab
           // ────────────────────────────────────────────────────────────
           BottomNavigationBarItem(
             icon: BottomNavBarIcon(
-              iconPath: SvgPaths.pieChart,
-              isActive: currentIndex == 2,
+              iconPath: SvgPaths.user,
+              isActive: currentIndex == 3,
             ),
-            label: texts.report,
+            label: texts.profile,
           ),
-
-          // ────────────────────────────────────────────────────────────
-          // Customers tab
-          // ────────────────────────────────────────────────────────────
-          BottomNavigationBarItem(
-            icon: BottomNavBarIcon(
-              iconPath: SvgPaths.gear,
-              isActive: currentIndex == 2,
-            ),
-            label: texts.settings,
-          ),
+          // BottomNavigationBarItem(
+          //   icon: BottomNavBarIcon(
+          //     iconPath: SvgPaths.gear,
+          //     isActive: currentIndex == 3,
+          //   ),
+          //   label: texts.settings,
+          // ),
         ],
       ),
     );

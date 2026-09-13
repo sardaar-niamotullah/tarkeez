@@ -26,6 +26,7 @@ class PersonalBestsSection extends StatelessWidget {
                     ? ImgPaths.personalBestLockBackdropsDark
                     : ImgPaths.personalBestLockBackdropsLight,
                 height: 116,
+                lockedTopicName: 'personal bests',
               );
             },
           ),

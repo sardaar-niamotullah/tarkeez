@@ -160,9 +160,8 @@ class Heatmap extends StatelessWidget {
                                 maxLines: 1,
                                 softWrap: false,
                                 overflow: .visible,
-                                style: TextUtils.paragraphSmall(
-                                  context,
-                                ).copyWith(fontSize: 10),
+                                style: TextUtils.paragraphSmall(context)
+                                    .copyWith(fontSize: 10),
                               ),
                             ),
                           );

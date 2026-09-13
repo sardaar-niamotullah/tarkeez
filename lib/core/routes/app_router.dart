@@ -4,6 +4,7 @@ import 'package:tarkeez/core/shared_files/notifiers/app_boot_notifier.dart';
 import 'package:tarkeez/features/connections/enums/connection_type.dart';
 import 'package:tarkeez/features/connections/presentation/connections_page.dart';
 import 'package:tarkeez/features/connections/presentation/others_connections_page.dart';
+import 'package:tarkeez/features/others/buy_codebase/presentation/buy_codebase_page.dart';
 import 'package:tarkeez/features/others/customer_care/bloc/customer_report_bloc.dart';
 import 'package:tarkeez/features/others/customer_care/cubit/customer_report_form_cubit.dart';
 import 'package:tarkeez/features/profile/presentation/others_profile_page.dart';
@@ -115,6 +116,10 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: RouteNames.hireUsPage,
       builder: (context, state) => const HireUsPage(),
+    ),
+    GoRoute(
+      path: RouteNames.buyCodebasePage,
+      builder: (context, state) => const BuyCodebasePage(),
     ),
   ],
 );
