@@ -7,7 +7,6 @@ class RouteNames {
   static const String othersProfilePage = '/profiles';
   static const String connectionsPage = '/connections';
   static const String othersConnectionsPage = '/others_connections';
-  static const String projectsPage = '/projects';
 
   // Others
   static const String customerCarePage = '/customer_care';

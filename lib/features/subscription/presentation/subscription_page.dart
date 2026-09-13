@@ -20,7 +20,7 @@ class SubscriptionPage extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
 
     return StandAlonePageOuterStructure(
-      title: texts.buyPremium,
+      title: texts.goPremium,
       actions: [ActionPageIcon(iconPath: SvgPaths.medal)],
 
       // ──────────────────────────────────────────────────────────
@@ -137,18 +137,6 @@ class SubscriptionPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                PerkTile(
-                  title: 'Add profile and cover image',
-                  subTitle: texts.tagadaMessageDetails,
-                  iconPath: SvgPaths.picture,
-                  iconColor: scheme.primary,
-                ),
-                PerkTile(
-                  title: 'Add short bio',
-                  subTitle: texts.tagadaMessageDetails,
-                  iconPath: SvgPaths.penLine,
-                  iconColor: scheme.primary,
-                ),
                 PerkTile(
                   title: 'Change app theme color',
                   subTitle: texts.unlimitedCustomersDetails,

@@ -76,16 +76,6 @@ class AppDrawer extends StatelessWidget {
                   child: Column(
                     children: [
                       AppDrawerItem(
-                        title: texts.projects,
-                        iconPath: SvgPaths.projects,
-                        onTap: () => context.push(RouteNames.projectsPage),
-                      ),
-                      AppDrawerItem(
-                        title: texts.connections,
-                        iconPath: SvgPaths.users,
-                        onTap: () => context.push(RouteNames.connectionsPage),
-                      ),
-                      AppDrawerItem(
                         title: texts.userManual,
                         iconPath: SvgPaths.book,
                         onTap: () => context.push(RouteNames.userManualPage),

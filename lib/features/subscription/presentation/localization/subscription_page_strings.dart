@@ -9,6 +9,10 @@ class SubscriptionPageStrings {
     en: 'Become a premium member',
     bn: 'প্রিমিয়াম মেম্বার হোন',
   );
+  static const goPremium = AppStringModel(
+    en: 'Go premium',
+    bn: 'প্রিমিয়াম মেম্বার হোন',
+  );
   static const premiumPackageSelectionIntro = AppStringModel(
     en: 'Choose your premium membership duration',
     bn: 'আপনার প্রিমিয়াম মেম্বারশিপের সময়কাল বেছে নিন',

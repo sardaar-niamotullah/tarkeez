@@ -47,44 +47,43 @@ class MainBottomNavBar extends StatelessWidget {
           // ────────────────────────────────────────────────────────────
           BottomNavigationBarItem(
             icon: BottomNavBarIcon(
-              iconPath: SvgPaths.home,
+              iconPath: SvgPaths.stopwatch,
               isActive: currentIndex == 0,
             ),
-            label: texts.home,
+            label: 'Tracker',
           ),
-    
+
+          // ────────────────────────────────────────────────────────────
+          // Projects tab
+          // ────────────────────────────────────────────────────────────
+          BottomNavigationBarItem(
+            icon: BottomNavBarIcon(
+              iconPath: SvgPaths.projects,
+              isActive: currentIndex == 1,
+            ),
+            label: texts.report,
+          ),
+
           // ────────────────────────────────────────────────────────────
           // Customers tab
           // ────────────────────────────────────────────────────────────
           BottomNavigationBarItem(
             icon: BottomNavBarIcon(
               iconPath: SvgPaths.pieChart,
-              isActive: currentIndex == 1,
+              isActive: currentIndex == 2,
             ),
             label: texts.report,
           ),
-    
+
           // ────────────────────────────────────────────────────────────
-          // Stock tab
+          // Customers tab
           // ────────────────────────────────────────────────────────────
           BottomNavigationBarItem(
             icon: BottomNavBarIcon(
-              iconPath: SvgPaths.rank,
+              iconPath: SvgPaths.gear,
               isActive: currentIndex == 2,
             ),
-            label: texts.leaderboard,
-          ),
-    
-          // ────────────────────────────────────────────────────────────
-          // Open drawer menu button
-          // ────────────────────────────────────────────────────────────
-          BottomNavigationBarItem(
-            icon: BottomNavBarIcon(
-              iconPath: SvgPaths.user,
-              isActive: currentIndex == 3,
-              size: 26,
-            ),
-            label: texts.profile,
+            label: texts.settings,
           ),
         ],
       ),

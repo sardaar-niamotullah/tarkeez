@@ -7,7 +7,6 @@ import 'package:tarkeez/features/connections/presentation/others_connections_pag
 import 'package:tarkeez/features/others/customer_care/bloc/customer_report_bloc.dart';
 import 'package:tarkeez/features/others/customer_care/cubit/customer_report_form_cubit.dart';
 import 'package:tarkeez/features/profile/presentation/others_profile_page.dart';
-import 'package:tarkeez/features/projects/presentation/projects_page.dart';
 import 'package:tarkeez/features/splash_screen.dart';
 import 'package:tarkeez/features/main_scaffold.dart';
 import 'package:tarkeez/core/routes/route_names.dart';
@@ -90,10 +89,6 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: RouteNames.othersConnectionsPage,
       builder: (context, state) => const OthersConnectionsPage(),
-    ),
-    GoRoute(
-      path: RouteNames.projectsPage,
-      builder: (context, state) => const ProjectsPage(),
     ),
 
     // ──────────────────────────────────────────────────────────────────────────

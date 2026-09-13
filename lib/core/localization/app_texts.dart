@@ -150,6 +150,7 @@ class AppTexts {
   // Subscription
   // ──────────────────────────────────────────────
   String get buyPremium => _r(SubscriptionPageStrings.buyPremium);
+  String get goPremium => _r(SubscriptionPageStrings.goPremium);
   String get subscription => _r(SubscriptionPageStrings.subscription);
   String get month => _r(SubscriptionPageStrings.month);
   String get months => _r(SubscriptionPageStrings.months);

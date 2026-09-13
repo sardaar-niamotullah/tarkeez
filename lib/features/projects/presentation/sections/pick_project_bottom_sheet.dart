@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
-import 'package:tarkeez/core/routes/route_names.dart';
 import 'package:tarkeez/core/shared_files/bottom_sheet/bottom_sheet_wrapper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
@@ -92,7 +91,7 @@ class _PickProjectBottomSheetState extends State<PickProjectBottomSheet> {
                     iconPath: SvgPaths.editPen,
                     onPressed: () {
                       context.pop();
-                      context.push(RouteNames.projectsPage);
+                      // context.push(RouteNames.projectsPage);
                     },
                   ),
                 ),

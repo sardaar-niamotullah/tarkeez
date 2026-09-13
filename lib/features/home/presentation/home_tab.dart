@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:tarkeez/core/shared_files/buttons/app_drawer_button.dart';
 import 'package:tarkeez/core/shared_files/buttons/go_premium_button.dart';
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';
@@ -7,7 +8,6 @@ import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/utils/date_formatter.dart';
 import 'package:tarkeez/core/utils/primary_page_margin.dart';
-import 'package:tarkeez/features/home/presentation/sections/home_app_bar.dart';
 import 'package:tarkeez/features/home/presentation/sections/home_last_three_days_bar_chart.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/time_log_index_tile.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/time_log_tile.dart';
@@ -31,7 +31,16 @@ class HomeTab extends StatelessWidget {
             // ──────────────────────────────────────────────
             // Home App Bar
             // ──────────────────────────────────────────────
-            HomeAppBar(onAppMenuTap: onMenuTap),
+            SafeArea(
+              child: Container(
+                height: 48,
+                padding: const .only(right: 16, left: 12),
+                child: Row(
+                  mainAxisAlignment: .spaceBetween,
+                  children: [AppDrawerButton(onTap: onMenuTap)],
+                ),
+              ),
+            ),
             // ──────────────────────────────────────────────
             // Homepage content
             // ──────────────────────────────────────────────
