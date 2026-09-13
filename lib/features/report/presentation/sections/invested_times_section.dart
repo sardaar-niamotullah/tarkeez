@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tarkeez/core/constants/img_paths.dart';
+import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
+import 'package:tarkeez/core/shared_files/widgets/section_image_lock_overlay.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
-import 'package:tarkeez/features/report/presentation/sections/widgets/invested_time_lock_overlay.dart';
 import 'package:tarkeez/features/report/presentation/sections/widgets/invested_time_stat_group.dart';
 
 class InvestedTimesSection extends StatelessWidget {
@@ -42,7 +45,18 @@ class InvestedTimesSection extends StatelessWidget {
       children: [
         Text('Invested times', style: TextUtils.title2(context)),
         const SizedBox(height: 8),
-        if (isLocked) const InvestedTimeLockOverlay(),
+        if (isLocked)
+          BlocBuilder<ThemeCubit, ThemeState>(
+            builder: (context, state) {
+              return SectionImageLockOverlay(
+                imgLocation: state.isDark
+                    ? ImgPaths.investedTimesLockBackdropsDark
+                    : ImgPaths.investedTimesLockBackdropsLight,
+                height: 116,
+                lockedTopicName: 'invested times',
+              );
+            },
+          ),
         if (!isLocked)
           SingleChildScrollView(
             scrollDirection: .horizontal,

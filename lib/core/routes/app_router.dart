@@ -1,13 +1,11 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/shared_files/notifiers/app_boot_notifier.dart';
-import 'package:tarkeez/features/connections/enums/connection_type.dart';
 import 'package:tarkeez/features/connections/presentation/connections_page.dart';
 import 'package:tarkeez/features/connections/presentation/others_connections_page.dart';
 import 'package:tarkeez/features/others/buy_codebase/presentation/buy_codebase_page.dart';
 import 'package:tarkeez/features/others/customer_care/bloc/customer_report_bloc.dart';
 import 'package:tarkeez/features/others/customer_care/cubit/customer_report_form_cubit.dart';
-import 'package:tarkeez/features/profile/presentation/others_profile_page.dart';
 import 'package:tarkeez/features/splash_screen.dart';
 import 'package:tarkeez/features/main_scaffold.dart';
 import 'package:tarkeez/core/routes/route_names.dart';
@@ -75,13 +73,6 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: RouteNames.userManualPage,
       builder: (context, state) => const UserManualPage(),
-    ),
-    GoRoute(
-      path: RouteNames.othersProfilePage,
-      builder: (context, state) {
-        final connectionType = state.extra as ConnectionType;
-        return OthersProfilePage(connectionType: connectionType);
-      },
     ),
     GoRoute(
       path: RouteNames.connectionsPage,

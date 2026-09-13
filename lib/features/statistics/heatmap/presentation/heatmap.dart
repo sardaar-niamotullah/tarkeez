@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tarkeez/core/constants/img_paths.dart';
+import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
+import 'package:tarkeez/core/shared_files/widgets/section_image_lock_overlay.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/statistics/heatmap/presentation/widgets/heatmap_point.dart';
@@ -6,7 +10,9 @@ import 'package:tarkeez/features/statistics/heatmap/presentation/widgets/heatmap
 import 'package:tarkeez/features/statistics/heatmap/presentation/widgets/heatmap_weekdays_name.dart';
 
 class Heatmap extends StatelessWidget {
-  const Heatmap({super.key});
+  const Heatmap({super.key, required this.isLocked});
+
+  final bool isLocked;
 
   static const int _weeksToShow = 53;
   static const int _daysPerWeek = 7;
@@ -98,82 +104,95 @@ class Heatmap extends StatelessWidget {
         const HeatmapTitleAndGuideTile(),
         const SizedBox(height: 8),
 
-        Container(
-          width: .infinity,
-          padding: const .only(top: 8, bottom: 4, left: 8, right: 12),
-          decoration: BoxDecoration(
-            color: scheme.onSurface,
-            borderRadius: ContainerDesignUtils.allRadius,
+        if (isLocked)
+          BlocBuilder<ThemeCubit, ThemeState>(
+            builder: (context, state) {
+              return SectionImageLockOverlay(
+                imgLocation: state.isDark
+                    ? ImgPaths.heatmapLockedBackdropsDark
+                    : ImgPaths.heatmapLockedBackdropsLight,
+                height: 110,
+                lockedTopicName: 'heatmap',
+              );
+            },
           ),
-          child: Row(
-            crossAxisAlignment: .start,
-            children: [
-              const HeatmapWeekdaysName(),
-              Expanded(
-                child: SingleChildScrollView(
-                  reverse: true,
-                  scrollDirection: .horizontal,
-                  child: Column(
-                    crossAxisAlignment: .start,
-                    children: [
-                      Column(
-                        children: List.generate(
-                          _daysPerWeek,
-                          (rowIndex) => SizedBox(
-                            height: 12,
-                            child: Row(
-                              children: List.generate(_weeksToShow, (
-                                columnIndex,
-                              ) {
-                                final date =
-                                    visibleDates[columnIndex * _daysPerWeek +
-                                        rowIndex];
-                                final minute = _minuteForDate(
-                                  date: date,
-                                  today: today,
-                                  heatMapValues: heatMapValues,
-                                );
-                                return HeatmapPoint(
-                                  minute: minute,
-                                  date: date.isAfter(today) ? null : date,
-                                  paintHeatmap: !date.isAfter(today),
-                                );
-                              }),
+        if (!isLocked)
+          Container(
+            width: .infinity,
+            padding: const .only(top: 8, bottom: 4, left: 8, right: 12),
+            decoration: BoxDecoration(
+              color: scheme.onSurface,
+              borderRadius: ContainerDesignUtils.allRadius,
+            ),
+            child: Row(
+              crossAxisAlignment: .start,
+              children: [
+                const HeatmapWeekdaysName(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    reverse: true,
+                    scrollDirection: .horizontal,
+                    child: Column(
+                      crossAxisAlignment: .start,
+                      children: [
+                        Column(
+                          children: List.generate(
+                            _daysPerWeek,
+                            (rowIndex) => SizedBox(
+                              height: 12,
+                              child: Row(
+                                children: List.generate(_weeksToShow, (
+                                  columnIndex,
+                                ) {
+                                  final date =
+                                      visibleDates[columnIndex * _daysPerWeek +
+                                          rowIndex];
+                                  final minute = _minuteForDate(
+                                    date: date,
+                                    today: today,
+                                    heatMapValues: heatMapValues,
+                                  );
+                                  return HeatmapPoint(
+                                    minute: minute,
+                                    date: date.isAfter(today) ? null : date,
+                                    paintHeatmap: !date.isAfter(today),
+                                  );
+                                }),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 2),
-                      Row(
-                        children: List.generate(_weeksToShow, (columnIndex) {
-                          final columnStart =
-                              visibleDates[columnIndex * _daysPerWeek];
-                          final label = _monthLabelForColumn(
-                            columnStart,
-                            visibleDates.first,
-                          );
-                          return SizedBox(
-                            width: 12,
-                            child: Center(
-                              child: Text(
-                                label ?? '',
-                                maxLines: 1,
-                                softWrap: false,
-                                overflow: .visible,
-                                style: TextUtils.paragraphSmall(context)
-                                    .copyWith(fontSize: 10),
+                        const SizedBox(height: 2),
+                        Row(
+                          children: List.generate(_weeksToShow, (columnIndex) {
+                            final columnStart =
+                                visibleDates[columnIndex * _daysPerWeek];
+                            final label = _monthLabelForColumn(
+                              columnStart,
+                              visibleDates.first,
+                            );
+                            return SizedBox(
+                              width: 12,
+                              child: Center(
+                                child: Text(
+                                  label ?? '',
+                                  maxLines: 1,
+                                  softWrap: false,
+                                  overflow: .visible,
+                                  style: TextUtils.paragraphSmall(context)
+                                      .copyWith(fontSize: 10),
+                                ),
                               ),
-                            ),
-                          );
-                        }),
-                      ),
-                    ],
+                            );
+                          }),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
       ],
     );
   }

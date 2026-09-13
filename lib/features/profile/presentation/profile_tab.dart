@@ -57,12 +57,12 @@ class ProfileTab extends StatelessWidget {
                                     children: [
                                       Streaks(),
                                       SizedBox(height: 16),
-                                      Heatmap(),
+                                      Heatmap(isLocked: false),
                                       SizedBox(height: 16),
-                                      PersonalBestsSection(isLocked: true),
+                                      PersonalBestsSection(isLocked: false),
                                       SizedBox(height: 16),
                                       InvestedTimesSection(
-                                        isLocked: true,
+                                        isLocked: false,
                                         today: 14565,
                                         yesterday: 13230,
                                         thisWeek: 11260,
