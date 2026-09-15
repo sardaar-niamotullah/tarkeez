@@ -7,10 +7,10 @@ import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
 import 'package:tarkeez/core/shared_files/widgets/custom_app_bar.dart';
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
+import 'package:tarkeez/features/profile/presentation/sections/heatmap.dart';
 import 'package:tarkeez/features/profile/presentation/sections/personal_bests_section.dart';
 import 'package:tarkeez/features/profile/presentation/sections/streaks.dart';
 import 'package:tarkeez/features/report/presentation/sections/invested_times_section.dart';
-import 'package:tarkeez/features/statistics/heatmap/presentation/heatmap.dart';
 
 class ProfileTab extends StatelessWidget {
   const ProfileTab({super.key});

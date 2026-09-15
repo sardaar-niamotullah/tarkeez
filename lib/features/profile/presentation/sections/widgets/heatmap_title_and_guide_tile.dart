@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
-import 'package:tarkeez/features/statistics/heatmap/presentation/widgets/heatmap_point.dart';
+import 'package:tarkeez/features/profile/presentation/sections/widgets/heatmap_point.dart';
 
 class HeatmapTitleAndGuideTile extends StatelessWidget {
   const HeatmapTitleAndGuideTile({super.key});

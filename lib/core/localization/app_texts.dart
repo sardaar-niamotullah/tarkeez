@@ -2,14 +2,12 @@ import 'package:tarkeez/core/localization/form_strings.dart';
 import 'package:tarkeez/core/localization/others_strings.dart';
 import 'package:tarkeez/core/shared_files/cubits/language_cubit.dart';
 import 'package:tarkeez/core/shared_files/models/app_string_model.dart';
-import 'package:tarkeez/features/connections/presentation/localization/connections_strings.dart';
 import 'package:tarkeez/features/leaderboard/presentation/localization/leaderboard_strings.dart';
 import 'package:tarkeez/features/profile/presentation/localization/profile_page_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/localization/common_strings.dart';
 import 'package:tarkeez/features/home/presentation/localization/home_page_strings.dart';
-import 'package:tarkeez/features/notifications/presentation/localization/notifications_page_string.dart';
 import 'package:tarkeez/features/others/customer_care/presentation/localization/customer_care_page_strings.dart';
 import 'package:tarkeez/features/others/terms_and_conditions/presentation/localization/terms_and_conditions_page_strings.dart';
 import 'package:tarkeez/features/others/user_manual/presentation/localization/user_manual_page_strings.dart';
@@ -130,15 +128,6 @@ class AppTexts {
   String get noCustomerFoundOnSearch =>
       _r(HomePageStrings.noCustomerFoundOnSearch);
 
-  // ──────────────────────────────────────────────
-  // Notifications
-  // ──────────────────────────────────────────────
-  String get notifications => _r(NotificationsPageString.notifications);
-
-  // ──────────────────────────────────────────────
-  // Connections
-  // ──────────────────────────────────────────────
-  String get connections => _r(ConnectionsStrings.connections);
 
   // ──────────────────────────────────────────────
   // User Manual

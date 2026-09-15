@@ -1,8 +1,5 @@
-import 'package:tarkeez/core/utils/primary_page_margin.dart';
 import 'package:tarkeez/features/leaderboard/presentation/sections/widgets/leaderboard_filter_title.dart';
 import 'package:tarkeez/features/leaderboard/presentation/sections/widgets/own_rank_status.dart';
-import 'package:tarkeez/features/leaderboard/presentation/sections/widgets/user_rank_list_tile.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tarkeez/core/localization/app_texts.dart';
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';
 import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
@@ -50,15 +47,7 @@ class LeaderboardTab extends StatelessWidget {
                       //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
                       // Users ranking list
                       //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-                      Skeletonizer.sliver(
-                        enabled: false,
-                        child: SliverList.builder(
-                          itemCount: 100,
-                          itemBuilder: (context, index) => PrimaryPageMargin(
-                            child: UserRankListTile(rank: index + 1),
-                          ),
-                        ),
-                      ),
+                      
                     ],
                   ),
                 ),

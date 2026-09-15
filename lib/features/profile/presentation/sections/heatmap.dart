@@ -5,9 +5,9 @@ import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
 import 'package:tarkeez/core/shared_files/widgets/section_image_lock_overlay.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
-import 'package:tarkeez/features/statistics/heatmap/presentation/widgets/heatmap_point.dart';
-import 'package:tarkeez/features/statistics/heatmap/presentation/widgets/heatmap_title_and_guide_tile.dart';
-import 'package:tarkeez/features/statistics/heatmap/presentation/widgets/heatmap_weekdays_name.dart';
+import 'package:tarkeez/features/profile/presentation/sections/widgets/heatmap_point.dart';
+import 'package:tarkeez/features/profile/presentation/sections/widgets/heatmap_title_and_guide_tile.dart';
+import 'package:tarkeez/features/profile/presentation/sections/widgets/heatmap_weekdays_name.dart';
 
 class Heatmap extends StatelessWidget {
   const Heatmap({super.key, required this.isLocked});
