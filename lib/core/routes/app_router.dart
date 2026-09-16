@@ -1,6 +1,5 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tarkeez/core/shared_files/notifiers/app_boot_notifier.dart';
 import 'package:tarkeez/features/others/buy_codebase/presentation/buy_codebase_page.dart';
 import 'package:tarkeez/features/others/customer_care/bloc/customer_report_bloc.dart';
 import 'package:tarkeez/features/others/customer_care/cubit/customer_report_form_cubit.dart';
@@ -17,7 +16,7 @@ import 'package:tarkeez/features/others/terms_and_conditions/presentation/terms_
 final GoRouter router = GoRouter(
   debugLogDiagnostics: false,
   initialLocation: RouteNames.home,
-  refreshListenable: getIt<AppBootNotifier>(),
+  // refreshListenable: getIt<AppBootNotifier>(),
 
   // ─────────────────────────────────────────────────────────────────────────────
   // Handles global auth-based routing: holds on splash until auth + profile check

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/theme/app_fonts.dart';
 import 'package:tarkeez/core/utils/app_clock.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
-import 'package:tarkeez/features/time_logs/bloc/time_log_bloc.dart';
 import 'package:tarkeez/features/time_logs/data/models/time_log_model.dart';
 
 class TimeLogTimerDisplay extends StatelessWidget {
@@ -20,12 +18,6 @@ class TimeLogTimerDisplay extends StatelessWidget {
   final bool colonVisible;
   final DateTime? startedAt;
 
-  static List<TimeLogModel> _logsFromState(TimeLogState state) {
-    if (state is TimeLogLoaded) return state.timeLogs;
-    if (state is TimeLogFailure) return state.timeLogs;
-    if (state is TimeLogLoading) return state.timeLogs;
-    return const [];
-  }
 
   static Duration _todaysLoggedDuration(List<TimeLogModel> logs) {
     final now = AppClock.now();
@@ -62,21 +54,12 @@ class TimeLogTimerDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TimeLogBloc, TimeLogState>(
-      builder: (context, state) {
-        final persistedToday = _todaysLoggedDuration(_logsFromState(state));
-        final liveToday = isRunning
-            ? _todaysLivePortion(startedAt)
-            : Duration.zero;
-        final total = persistedToday + liveToday;
-        final parts = _formatDuration(total);
-
         return Row(
           mainAxisSize: .min,
           crossAxisAlignment: .center,
           children: [
             Text(
-              parts.$1,
+              '12',
               style: TextUtils.title1(
                 context,
                 fontFamily: AppFontFamily.poppins,
@@ -96,7 +79,7 @@ class TimeLogTimerDisplay extends StatelessWidget {
               ),
             ),
             Text(
-              parts.$2,
+              '21',
               style: TextUtils.title1(
                 context,
                 fontFamily: AppFontFamily.poppins,
@@ -104,7 +87,6 @@ class TimeLogTimerDisplay extends StatelessWidget {
             ),
           ],
         );
-      },
-    );
+
   }
 }

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:tarkeez/core/services/sound_service.dart';
 import 'package:tarkeez/core/utils/app_clock.dart';
@@ -8,7 +7,6 @@ import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/time_log_interface_bottom_clipper.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/select_project_button.dart';
-import 'package:tarkeez/features/time_logs/bloc/time_log_bloc.dart';
 import 'package:tarkeez/features/time_logs/presentation/widgets/pause_play_button.dart';
 import 'package:tarkeez/features/time_logs/presentation/widgets/pomodoro_set_duration_button.dart';
 import 'package:tarkeez/features/time_logs/presentation/widgets/time_log_timer_display.dart';
@@ -63,13 +61,13 @@ class _TimeLogInterfaceState extends State<TimeLogInterface> {
     if (_isRunning) {
       final startedAt = _startedAt;
       if (startedAt != null) {
-        context.read<TimeLogBloc>().add(
-          EntryTimeLogRequested(
-            startedAt: startedAt,
-            endedAt: AppClock.now(),
-            project: _selectedProject,
-          ),
-        );
+        // context.read<TimeLogBloc>().add(
+        //   EntryTimeLogRequested(
+        //     startedAt: startedAt,
+        //     endedAt: AppClock.now(),
+        //     project: _selectedProject,
+        //   ),
+        // );
       }
       _stopTicker();
       setState(() {

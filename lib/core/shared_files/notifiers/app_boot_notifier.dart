@@ -7,7 +7,6 @@ import 'package:tarkeez/core/utils/connectivity_utils.dart';
 import 'package:tarkeez/features/profile/bloc/profile_bloc.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/features/projects/data/bloc/project_color_bloc.dart';
-import 'package:tarkeez/features/time_logs/bloc/time_log_bloc.dart';
 
 enum AppBootState { initializing, noInternet, unauthenticated, authenticated }
 
@@ -85,7 +84,6 @@ class AppBootNotifier extends ChangeNotifier {
         _preloadProfile(),
         _preloadProjectColors(),
         _preloadProjects(),
-        _preloadTimeLogs(),
       ]);
       _setState(AppBootState.authenticated);
     } finally {
@@ -112,13 +110,6 @@ class AppBootNotifier extends ChangeNotifier {
     if (projectBloc.state is ProjectLoaded) return;
     projectBloc.add(FetchProjectsRequested());
     await projectBloc.stream.firstWhere((s) => s is! ProjectLoading);
-  }
-
-  Future<void> _preloadTimeLogs() async {
-    final timeLogBloc = getIt<TimeLogBloc>();
-    if (timeLogBloc.state is TimeLogLoaded) return;
-    timeLogBloc.add(FetchTimeLogsRequested());
-    await timeLogBloc.stream.firstWhere((s) => s is! TimeLogLoading);
   }
 
   void onboardingCompleted() => _setState(AppBootState.authenticated);

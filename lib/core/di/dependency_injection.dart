@@ -12,7 +12,6 @@ import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/features/projects/data/bloc/project_color_bloc.dart';
 import 'package:tarkeez/features/projects/data/repositories/project_color_repository.dart';
 import 'package:tarkeez/features/projects/data/repositories/project_repository.dart';
-import 'package:tarkeez/features/time_logs/bloc/time_log_bloc.dart';
 import 'package:tarkeez/features/time_logs/data/repositories/time_log_repository.dart';
 
 final getIt = GetIt.instance;
@@ -61,15 +60,12 @@ Future<void> injectDependencies() async {
     () => ProjectBloc(getIt<ProjectRepository>()),
   );
 
-  // ── Time Logs ────────────────────────────────────────────────────────────
+  // ── Sessions ────────────────────────────────────────────────────────────
   getIt.registerLazySingleton<TimeLogRepository>(
     () => TimeLogRepositoryImpl(
       getIt<SupabaseClient>(),
       getIt<AuthSessionService>(),
     ),
-  );
-  getIt.registerLazySingleton<TimeLogBloc>(
-    () => TimeLogBloc(getIt<TimeLogRepository>()),
   );
 
   // ── Customer Care ───────────────────────────────────────────────────────
