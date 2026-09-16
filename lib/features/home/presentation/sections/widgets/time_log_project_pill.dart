@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
-import 'package:tarkeez/features/projects/data/bloc/project_color_bloc.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 
 class TimeLogProjectPill extends StatelessWidget {
@@ -14,9 +12,7 @@ class TimeLogProjectPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final resolvedColor =
-        context.watch<ProjectColorBloc>().state.colorFor(project?.colorId) ??
-        scheme.onTertiary;
+    final resolvedColor = scheme.onTertiary;
     return Container(
       width: width,
       padding: .symmetric(

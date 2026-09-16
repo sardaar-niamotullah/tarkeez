@@ -8,8 +8,6 @@ import 'package:tarkeez/features/profile/bloc/profile_bloc.dart';
 import 'package:tarkeez/features/profile/data/repositories/profile_repository.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
-import 'package:tarkeez/features/projects/data/bloc/project_color_bloc.dart';
 import 'package:tarkeez/features/projects/data/repositories/project_color_repository.dart';
 import 'package:tarkeez/features/projects/data/repositories/project_repository.dart';
 import 'package:tarkeez/features/time_logs/data/repositories/time_log_repository.dart';
@@ -47,17 +45,11 @@ Future<void> injectDependencies() async {
   getIt.registerLazySingleton<ProjectColorRepository>(
     () => ProjectColorRepositoryImpl(getIt<SupabaseClient>()),
   );
-  getIt.registerLazySingleton<ProjectColorBloc>(
-    () => ProjectColorBloc(getIt<ProjectColorRepository>()),
-  );
   getIt.registerLazySingleton<ProjectRepository>(
     () => ProjectRepositoryImpl(
       getIt<SupabaseClient>(),
       getIt<AuthSessionService>(),
     ),
-  );
-  getIt.registerLazySingleton<ProjectBloc>(
-    () => ProjectBloc(getIt<ProjectRepository>()),
   );
 
   // ── Sessions ────────────────────────────────────────────────────────────

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
-import 'package:tarkeez/features/projects/data/bloc/project_color_bloc.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/projects/presentation/sections/pick_project_bottom_sheet.dart';
 
@@ -23,11 +21,7 @@ class SelectProjectButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final isProjectSeleted = selectedProject != null;
-    final resolvedColor =
-        context.watch<ProjectColorBloc>().state.colorFor(
-          selectedProject?.colorId,
-        ) ??
-        scheme.surface;
+    final resolvedColor = Colors.amber;
 
     return Listener(
       behavior: .opaque,

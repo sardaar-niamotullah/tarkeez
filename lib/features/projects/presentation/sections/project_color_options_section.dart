@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
-import 'package:tarkeez/features/projects/data/bloc/project_color_bloc.dart';
 import 'package:tarkeez/features/projects/data/models/project_color_model.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/project_color_selection_box.dart';
 
@@ -21,6 +19,11 @@ class ProjectColorOptionsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final colors = [
+      ProjectColorModel(hexCode: '#123424', name: 'afawe', id: 1),
+      ProjectColorModel(hexCode: '#123424', name: 'afawe', id: 1),
+      ProjectColorModel(hexCode: '#123424', name: 'afawe', id: 1),
+    ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -38,20 +41,13 @@ class ProjectColorOptionsSection extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
-        BlocBuilder<ProjectColorBloc, ProjectColorState>(
-          builder: (context, state) {
-            final List<ProjectColorModel> colors = state is ProjectColorLoaded
-                ? state.projectColors
-                : [];
-            return Container(
-              padding: const .all(ContainerDesignUtils.halfPadding),
-              decoration: BoxDecoration(
-                color: scheme.onSurface,
-                borderRadius: ContainerDesignUtils.allRadius,
-              ),
-              child: Column(children: [_buildColorGrid(colors)]),
-            );
-          },
+        Container(
+          padding: const .all(ContainerDesignUtils.halfPadding),
+          decoration: BoxDecoration(
+            color: scheme.onSurface,
+            borderRadius: ContainerDesignUtils.allRadius,
+          ),
+          child: Column(children: [_buildColorGrid(colors)]),
         ),
       ],
     );

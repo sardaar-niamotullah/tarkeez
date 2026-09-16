@@ -5,8 +5,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tarkeez/core/di/dependency_injection.dart';
 import 'package:tarkeez/core/utils/connectivity_utils.dart';
 import 'package:tarkeez/features/profile/bloc/profile_bloc.dart';
-import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
-import 'package:tarkeez/features/projects/data/bloc/project_color_bloc.dart';
 
 enum AppBootState { initializing, noInternet, unauthenticated, authenticated }
 
@@ -82,8 +80,6 @@ class AppBootNotifier extends ChangeNotifier {
 
       await Future.wait([
         _preloadProfile(),
-        _preloadProjectColors(),
-        _preloadProjects(),
       ]);
       _setState(AppBootState.authenticated);
     } finally {
@@ -98,19 +94,6 @@ class AppBootNotifier extends ChangeNotifier {
     await profileBloc.stream.firstWhere((s) => s is! ProfileLoading);
   }
 
-  Future<void> _preloadProjectColors() async {
-    final projectColorBloc = getIt<ProjectColorBloc>();
-    if (projectColorBloc.state is ProjectColorLoaded) return;
-    projectColorBloc.add(FetchProjectColorsEvent());
-    await projectColorBloc.stream.firstWhere((s) => s is! ProjectColorLoading);
-  }
-
-  Future<void> _preloadProjects() async {
-    final projectBloc = getIt<ProjectBloc>();
-    if (projectBloc.state is ProjectLoaded) return;
-    projectBloc.add(FetchProjectsRequested());
-    await projectBloc.stream.firstWhere((s) => s is! ProjectLoading);
-  }
 
   void onboardingCompleted() => _setState(AppBootState.authenticated);
 

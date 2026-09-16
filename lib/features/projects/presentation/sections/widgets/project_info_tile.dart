@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/action_button.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
-import 'package:tarkeez/features/projects/data/bloc/project_color_bloc.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/projects/presentation/sections/add_or_update_project_dialog.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/project_delete_button.dart';
@@ -29,9 +27,8 @@ class ProjectInfoTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
-    final resolvedColor =
-        context.watch<ProjectColorBloc>().state.colorFor(project?.colorId) ??
-        scheme.onTertiary;
+    final resolvedColor = Colors.blueAccent;
+        
 
     return Container(
       padding: .symmetric(
