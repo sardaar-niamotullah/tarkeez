@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
-import 'package:tarkeez/core/localization/app_texts.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
@@ -19,7 +18,7 @@ class LogoWidget extends StatelessWidget {
           right: 0,
           bottom: -16,
           child: Text(
-            AppTexts.of(context).appTitle,
+            'Tarkeez',
             style: TextUtils.title1(
               context,
               color: AppTheme.white,

@@ -2,7 +2,6 @@ import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
 import 'package:tarkeez/core/shared_files/widgets/stand_alone_page_outer_structure.dart';
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
-import 'package:tarkeez/core/localization/app_texts.dart';
 import 'package:tarkeez/features/others/terms_and_conditions/presentation/widgets/terms_and_conditions_tile.dart';
 
 class TermsAndConditionsPage extends StatelessWidget {
@@ -10,26 +9,12 @@ class TermsAndConditionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final texts = AppTexts.of(context);
     final terms = [
-      AppTexts.of(context).terms1,
-      AppTexts.of(context).terms2,
-      AppTexts.of(context).terms3,
-      AppTexts.of(context).terms4,
-      AppTexts.of(context).terms5,
-      AppTexts.of(context).terms6,
-      AppTexts.of(context).terms7,
-      AppTexts.of(context).terms8,
-      AppTexts.of(context).terms9,
-      AppTexts.of(context).terms10,
-      AppTexts.of(context).terms11,
-      AppTexts.of(context).terms12,
-      AppTexts.of(context).terms13,
-      AppTexts.of(context).terms14,
-      AppTexts.of(context).terms15,
+      '12324',
+      'dfajwioef'
     ];
     return StandAlonePageOuterStructure(
-      title: texts.termsAndConditions,
+      title: 'Terms and conditions',
       actions: [ActionPageIcon(iconPath: SvgPaths.hammer)],
       content: CustomScrollView(
         slivers: [

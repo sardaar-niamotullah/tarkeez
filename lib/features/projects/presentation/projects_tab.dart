@@ -4,7 +4,6 @@ import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.da
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
-import 'package:tarkeez/core/localization/app_texts.dart';
 import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/create_new_project_button.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/project_page_info_tile.dart';
@@ -13,7 +12,6 @@ class ProjectsTab extends StatelessWidget {
   const ProjectsTab({super.key});
   @override
   Widget build(BuildContext context) {
-    final texts = AppTexts.of(context);
     final scheme = Theme.of(context).colorScheme;
 
     return Stack(
@@ -24,7 +22,7 @@ class ProjectsTab extends StatelessWidget {
           child: Column(
             children: [
               CustomAppBar(
-                title: texts.projects,
+                title: 'Projects',
                 isBackButtonEnabled: false,
                 actions: [ActionPageIcon(iconPath: SvgPaths.projects)],
               ),

@@ -1,4 +1,3 @@
-import 'package:tarkeez/core/localization/app_texts.dart';
 import 'package:tarkeez/core/shared_files/cubits/navigation_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,7 +10,6 @@ class MainBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final texts = AppTexts.of(context);
     final scheme = Theme.of(context).colorScheme;
     final currentIndex = context.watch<NavigationCubit>().currentIndex;
 
@@ -52,7 +50,7 @@ class MainBottomNavBar extends StatelessWidget {
               iconPath: SvgPaths.home,
               isActive: currentIndex == 0,
             ),
-            label: texts.home,
+            label: 'Home',
           ),
           // ────────────────────────────────────────────────────────────
           // Customers tab
@@ -62,7 +60,7 @@ class MainBottomNavBar extends StatelessWidget {
               iconPath: SvgPaths.pieChart,
               isActive: currentIndex == 1,
             ),
-            label: texts.reports,
+            label: 'Reports',
           ),
 
           // ────────────────────────────────────────────────────────────
@@ -73,7 +71,7 @@ class MainBottomNavBar extends StatelessWidget {
               iconPath: SvgPaths.projects,
               isActive: currentIndex == 2,
             ),
-            label: texts.projects,
+            label: 'Projects',
           ),
 
           // ────────────────────────────────────────────────────────────
@@ -84,7 +82,7 @@ class MainBottomNavBar extends StatelessWidget {
               iconPath: SvgPaths.user,
               isActive: currentIndex == 3,
             ),
-            label: texts.profile,
+            label: 'Profile',
           ),
           // BottomNavigationBarItem(
           //   icon: BottomNavBarIcon(

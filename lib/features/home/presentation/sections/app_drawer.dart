@@ -4,7 +4,6 @@ import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
-import 'package:tarkeez/core/localization/app_texts.dart';
 import 'package:tarkeez/core/routes/route_names.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
@@ -18,7 +17,6 @@ class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final texts = AppTexts.of(context);
 
     return Drawer(
       child: SafeArea(
@@ -54,7 +52,7 @@ class AppDrawer extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        texts.appTitle,
+                        'Tarkeez',
                         style: TextUtils.title1(context, color: scheme.primary),
                       ),
                     ],
@@ -73,7 +71,7 @@ class AppDrawer extends StatelessWidget {
                   child: Column(
                     children: [
                       AppDrawerItem(
-                        title: texts.settings,
+                        title: 'Settings',
                         iconPath: SvgPaths.gear,
                         onTap: () => showModalBottomSheet(
                           context: context,
@@ -82,18 +80,18 @@ class AppDrawer extends StatelessWidget {
                         ),
                       ),
                       AppDrawerItem(
-                        title: texts.userManual,
+                        title: 'User manual',
                         iconPath: SvgPaths.book,
                         onTap: () => context.push(RouteNames.userManualPage),
                       ),
                       AppDrawerItem(
-                        title: texts.termsAndConditions,
+                        title: 'Terms and conditions',
                         iconPath: SvgPaths.hammer,
                         onTap: () =>
                             context.push(RouteNames.termsAndConditionsPage),
                       ),
                       AppDrawerItem(
-                        title: texts.customerCare,
+                        title: 'Customer care',
                         iconPath: SvgPaths.headset,
                         onTap: () => context.push(RouteNames.customerCarePage),
                       ),
@@ -116,7 +114,7 @@ class AppDrawer extends StatelessWidget {
               Align(
                 alignment: .center,
                 child: Text(
-                  texts.appVersion,
+                  '1.0.0',
                   style: TextUtils.paragraph(context, color: AppTheme.grey),
                 ),
               ),

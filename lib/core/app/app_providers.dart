@@ -1,4 +1,3 @@
-import 'package:tarkeez/core/shared_files/cubits/language_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/navigation_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +18,6 @@ class AppProviders extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => ThemeCubit(initialState: initialTheme)),
-        BlocProvider(create: (_) => LanguageCubit()),
         BlocProvider(create: (_) => NavigationCubit()),
       ],
       child: child 

@@ -1,4 +1,3 @@
-import 'package:tarkeez/core/localization/app_texts.dart';
 import 'package:tarkeez/core/shared_files/buttons/disclaimer_text_button.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
@@ -16,11 +15,10 @@ class SubscriptionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final texts = AppTexts.of(context);
     final scheme = Theme.of(context).colorScheme;
 
     return StandAlonePageOuterStructure(
-      title: texts.goPremium,
+      title: 'Go premium',
       actions: [ActionPageIcon(iconPath: SvgPaths.medal)],
 
       // ──────────────────────────────────────────────────────────
@@ -30,7 +28,7 @@ class SubscriptionPage extends StatelessWidget {
         mainAxisSize: .min,
         children: [
           PrimaryButton(
-            title: texts.next,
+            title: 'Next',
             onPressed: () {
               showModalBottomSheet(
                 context: context,
@@ -54,7 +52,7 @@ class SubscriptionPage extends StatelessWidget {
             child: Padding(
               padding: const .symmetric(vertical: 16),
               child: Text(
-                texts.premiumPackageSelectionIntro,
+                'Choose your premium membership duration',
                 style: TextUtils.paragraph(context, color: scheme.onTertiary),
               ),
             ),
@@ -69,9 +67,9 @@ class SubscriptionPage extends StatelessWidget {
                 Row(
                   children: [
                     PricingCard(
-                      dealValue: texts.regularDeal,
-                      duration: '1 ${texts.month}',
-                      price: '2.9',
+                      dealValue: 'Regular deal',
+                      duration: '3 months',
+                      price: '1.9',
                       saveAmount: '0%',
                       color: AppTheme.blue,
                       colorBright: AppTheme.blueBright,
@@ -81,9 +79,9 @@ class SubscriptionPage extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     PricingCard(
-                      dealValue: texts.goodDeal,
-                      duration: '3 ${texts.months}',
-                      price: '4.9',
+                      dealValue: 'Good deal',
+                      duration: '6 months',
+                      price: '2.9',
                       saveAmount: '43%',
                       color: AppTheme.purple,
                       colorBright: AppTheme.purpleBright,
@@ -97,9 +95,9 @@ class SubscriptionPage extends StatelessWidget {
                 Row(
                   children: [
                     PricingCard(
-                      dealValue: texts.betterDeal,
-                      duration: '6 ${texts.months}',
-                      price: '6.9',
+                      dealValue: 'Better deal',
+                      duration: '1 year',
+                      price: '3.9',
                       saveAmount: '60%',
                       color: AppTheme.pink,
                       colorBright: AppTheme.pinkBright,
@@ -109,9 +107,9 @@ class SubscriptionPage extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     PricingCard(
-                      dealValue: texts.bestDeal,
-                      duration: '1 ${texts.year}',
-                      price: '8.9',
+                      dealValue: 'Best deal',
+                      duration: 'Life time',
+                      price: '4.9',
                       saveAmount: '74%',
                       color: AppTheme.fireTone,
                       colorBright: AppTheme.lightningGold,
@@ -132,30 +130,29 @@ class SubscriptionPage extends StatelessWidget {
                 // Perks
                 // ──────────────────────────────────────────────────────────
                 Text(
-                  texts.premiumPackagePerksIntro,
+                  'Your premium membership unlocks these exclusive features',
                   style: TextUtils.paragraph(context, color: scheme.onTertiary),
                 ),
                 const SizedBox(height: 16),
 
                 PerkTile(
                   title: 'Change app theme color',
-                  subTitle: texts.unlimitedCustomersDetails,
+                  subTitle: 'Chnage app theme colors of your choice',
                   iconPath: SvgPaths.colorPalette,
                   iconColor: scheme.primary,
                 ),
                 PerkTile(
                   title: 'Unlock all the advanced insights',
-                  subTitle: texts.unlimitedCustomersDetails,
+                  subTitle: 'Unlocak all the advanced insiges possible',
                   iconPath: SvgPaths.graphUp,
                   iconColor: scheme.primary,
                 ),
                 PerkTile(
-                  title: texts.downloadReports,
-                  subTitle: texts.downloadReportsDetails,
+                  title: 'Download reports',
+                  subTitle: 'Reports donwload',
                   iconPath: SvgPaths.download,
                   iconColor: scheme.primary,
                 ),
-
                 const SizedBox(height: 24),
               ],
             ),

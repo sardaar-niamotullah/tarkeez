@@ -1,5 +1,4 @@
 import 'package:tarkeez/core/constants/svg_paths.dart';
-import 'package:tarkeez/core/localization/app_texts.dart';
 import 'package:tarkeez/core/shared_files/buttons/cancel_button.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
@@ -9,8 +8,6 @@ import 'package:tarkeez/core/shared_files/widgets/stand_alone_page_outer_structu
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/others/customer_care/bloc/customer_report_bloc.dart';
 import 'package:tarkeez/features/others/customer_care/cubit/customer_report_form_cubit.dart';
-import 'package:tarkeez/features/others/customer_care/data/models/customer_report_model.dart';
-import 'package:tarkeez/features/profile/bloc/profile_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -24,25 +21,8 @@ class CustomerCarePage extends StatefulWidget {
 
 class _CustomerCarePageState extends State<CustomerCarePage> {
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final profileState = context.read<ProfileBloc>().state;
-    final profile = profileState is ProfileLoaded ? profileState.profile : null;
-    final mode = profile == null
-        ? CustomerReportMode.guest
-        : CustomerReportMode.authenticated;
-    context.read<CustomerReportFormCubit>().setMode(mode);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final texts = AppTexts.of(context);
     final scheme = Theme.of(context).colorScheme;
-
-    final profileState = context.watch<ProfileBloc>().state;
-    final profile = profileState is ProfileLoaded ? profileState.profile : null;
-
-    final isGuest = profile == null;
 
     return BlocConsumer<CustomerReportBloc, CustomerReportState>(
       listener: (context, state) {
@@ -64,7 +44,7 @@ class _CustomerCarePageState extends State<CustomerCarePage> {
             final cubit = context.read<CustomerReportFormCubit>();
 
             return StandAlonePageOuterStructure(
-              title: texts.customerCare,
+              title: 'Customer care',
               actions: [ActionPageIcon(iconPath: SvgPaths.headset)],
               isLoading: reportState is CustomerReportLoading,
 
@@ -82,10 +62,10 @@ class _CustomerCarePageState extends State<CustomerCarePage> {
                   Expanded(
                     flex: 2,
                     child: PrimaryButton(
-                      title: texts.submit,
+                      title: 'Submit',
                       isLoading: reportState is CustomerReportLoading,
                       enable: formState.canSubmit,
-                      onPressed: () => cubit.submit(context, profile: profile),
+                      onPressed: () {},
                     ),
                   ),
                 ],
@@ -98,54 +78,46 @@ class _CustomerCarePageState extends State<CustomerCarePage> {
                       const SizedBox(height: 24),
 
                       Text(
-                        texts.supportHeader,
+                        'We\'re here to help',
                         style: TextUtils.title1(context, color: scheme.primary),
                       ),
 
                       const SizedBox(height: 8),
 
                       Text(
-                        texts.supportSubtext,
+                        'To let us know about the problem you are facing, kindly fill out the form below. Our support team will get back to you as soon as possible in case of need. In Shaa Allah.',
                         style: TextUtils.paragraph(context),
                       ),
 
                       const SizedBox(height: 24),
 
-                      if (isGuest) ...[
-                        Text(
-                          texts.yourDetails,
-                          style: TextUtils.title3(context),
-                        ),
-                        const SizedBox(height: 12),
+                      Text('Your details', style: TextUtils.title3(context)),
+                      const SizedBox(height: 12),
 
-                        CommonTextInput(
-                          label: texts.nameLabel,
-                          controller: cubit.nameController,
-                          errorText: formState.nameError,
-                          prefixIconPath: SvgPaths.user,
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        CommonTextInput(
-                          label: texts.contactNumberLabel,
-                          controller: cubit.phoneController,
-                          errorText: formState.phoneError,
-                          prefixIconPath: SvgPaths.phone,
-                        ),
-
-                        const SizedBox(height: 28),
-                      ],
-
-                      Text(
-                        texts.describeIssue,
-                        style: TextUtils.title3(context),
+                      CommonTextInput(
+                        label: 'Name',
+                        controller: cubit.nameController,
+                        errorText: formState.nameError,
+                        prefixIconPath: SvgPaths.user,
                       ),
+
+                      const SizedBox(height: 16),
+
+                      CommonTextInput(
+                        label: 'Contact',
+                        controller: cubit.phoneController,
+                        errorText: formState.phoneError,
+                        prefixIconPath: SvgPaths.phone,
+                      ),
+
+                      const SizedBox(height: 28),
+
+                      Text('Describe issue', style: TextUtils.title3(context)),
 
                       const SizedBox(height: 12),
 
                       CommonTextInput(
-                        label: texts.problemLabel,
+                        label: 'Problem',
                         maxLines: 4,
                         controller: cubit.reportController,
                         errorText: formState.reportError,

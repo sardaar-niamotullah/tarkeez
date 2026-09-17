@@ -2,7 +2,6 @@ import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
 import 'package:tarkeez/core/shared_files/widgets/stand_alone_page_outer_structure.dart';
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
-import 'package:tarkeez/core/localization/app_texts.dart';
 import 'package:tarkeez/features/others/terms_and_conditions/presentation/widgets/terms_and_conditions_tile.dart';
 
 class UserManualPage extends StatelessWidget {
@@ -10,18 +9,9 @@ class UserManualPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final texts = AppTexts.of(context);
-    final terms = [
-      AppTexts.of(context).terms1,
-      AppTexts.of(context).terms2,
-      AppTexts.of(context).terms3,
-      AppTexts.of(context).terms4,
-      AppTexts.of(context).terms5,
-      AppTexts.of(context).terms6,
-      AppTexts.of(context).terms7,
-    ];
+    final terms = ['dfawe', 'awefawef'];
     return StandAlonePageOuterStructure(
-      title: texts.userManual,
+      title: 'User manual',
       actions: [ActionPageIcon(iconPath: SvgPaths.book)],
       content: CustomScrollView(
         slivers: [

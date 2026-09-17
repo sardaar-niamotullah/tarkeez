@@ -1,7 +1,5 @@
 import 'package:tarkeez/core/shared_files/validators/form_validators.dart';
-import 'package:tarkeez/features/others/customer_care/bloc/customer_report_bloc.dart';
 import 'package:tarkeez/features/others/customer_care/data/models/customer_report_model.dart';
-import 'package:tarkeez/features/profile/data/models/profile_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -82,30 +80,30 @@ class CustomerReportFormCubit extends Cubit<CustomerReportFormState> {
   // ─────────────────────────────────────────────
   // Submit
   // ─────────────────────────────────────────────
-  bool submit(BuildContext context, {ProfileModel? profile}) {
-    final mode = profile == null
-        ? CustomerReportMode.guest
-        : CustomerReportMode.authenticated;
+  // bool submit(BuildContext context, {ProfileModel? profile}) {
+  //   final mode = profile == null
+  //       ? CustomerReportMode.guest
+  //       : CustomerReportMode.authenticated;
 
-    emit(state.copyWith(mode: mode));
+  //   emit(state.copyWith(mode: mode));
 
-    final allTouched = mode == CustomerReportMode.guest
-        ? const {'name', 'phone', 'report'}
-        : const {'report'};
+  //   final allTouched = mode == CustomerReportMode.guest
+  //       ? const {'name', 'phone', 'report'}
+  //       : const {'report'};
 
-    final validated = _validate(state.copyWith(touched: allTouched));
+  //   final validated = _validate(state.copyWith(touched: allTouched));
 
-    emit(validated);
+  //   emit(validated);
 
-    if (!validated.canSubmit) return false;
+  //   if (!validated.canSubmit) return false;
 
-    context.read<CustomerReportBloc>().add(
-      SubmitCustomerReportRequested(
-        report: reportController.text.trim(),
-        profileId: profile?.id,
-        fullName: profile?.fullName ?? nameController.text.trim(),
-      ),
-    );
-    return true;
-  }
+  //   context.read<CustomerReportBloc>().add(
+  //     SubmitCustomerReportRequested(
+  //       report: reportController.text.trim(),
+  //       profileId: profile?.id,
+  //       fullName: profile?.fullName ?? nameController.text.trim(),
+  //     ),
+  //   );
+  //   return true;
+  // }
 }

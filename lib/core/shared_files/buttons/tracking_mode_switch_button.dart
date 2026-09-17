@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:tarkeez/core/localization/app_texts.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 enum TrackingType { linear, pomodoro }
 
 extension TrackingTypeLabel on TrackingType {
-  String label(AppTexts texts) {
+  String label(String texts) {
     switch (this) {
       case TrackingType.linear:
         return 'Linear';
@@ -30,7 +29,6 @@ class TrackingModeSwitchButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final texts = AppTexts.of(context);
     final scheme = Theme.of(context).colorScheme;
     final selectedIndex = _options.indexOf(value);
     final count = _options.length;
@@ -71,7 +69,7 @@ class TrackingModeSwitchButton extends StatelessWidget {
                           onTap: () => onChanged(option),
                           child: _Label(
                             context: context,
-                            text: option.label(texts),
+                            text: option.label('Linear'),
                             active: option == value,
                             activeColor: scheme.primary,
                             inactiveColor: scheme.onTertiary.withValues(

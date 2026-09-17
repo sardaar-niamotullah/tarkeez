@@ -4,7 +4,6 @@ import 'package:tarkeez/core/shared_files/widgets/common_text_input.dart';
 import 'package:tarkeez/core/shared_files/widgets/stand_alone_page_outer_structure.dart';
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
-import 'package:tarkeez/core/localization/app_texts.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/others/hire_us/presentation/widgets/hiring_term_tile.dart';
 import 'package:tarkeez/features/others/hire_us/presentation/widgets/tech_platfrom_card.dart';
@@ -15,7 +14,6 @@ class BuyCodebasePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final texts = AppTexts.of(context);
 
     return StandAlonePageOuterStructure(
       title: 'Buy codebase',
@@ -170,8 +168,8 @@ class BuyCodebasePage extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               CommonTextInput(
-                label: texts.contactNumberLabel,
-                hintText: texts.contactNumberHint,
+                label: '123',
+                hintText: '123',
                 prefixIconPath: SvgPaths.phone,
               ),
               const SizedBox(height: 8),

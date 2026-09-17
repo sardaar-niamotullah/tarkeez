@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
-import 'package:tarkeez/core/localization/app_texts.dart';
 import 'package:tarkeez/core/shared_files/bottom_sheet/bottom_sheet_title_tile.dart';
 import 'package:tarkeez/core/shared_files/bottom_sheet/bottom_sheet_wrapper.dart';
 import 'package:tarkeez/core/shared_files/bottom_sheet/duration_filter_bottom_sheet_section.dart';
@@ -13,11 +12,10 @@ class ReportFilterBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final texts = AppTexts.of(context);
     return BottomSheetWrapper(
       contents: [
         BottomSheetTitleTile(
-          title: texts.reportFilter,
+          title: 'Report filter',
           iconPath: SvgPaths.filter,
         ),
         const SizedBox(height: 16),

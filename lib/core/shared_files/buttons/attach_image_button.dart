@@ -1,4 +1,3 @@
-import 'package:tarkeez/core/localization/app_texts.dart';
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -54,7 +53,7 @@ class AttachImageButton extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                AppTexts.of(context).image,
+                'Image',
                 style: TextUtils.paragraph(context),
               ),
             ],

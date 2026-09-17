@@ -1,5 +1,4 @@
 import 'package:go_router/go_router.dart';
-import 'package:tarkeez/core/localization/app_texts.dart';
 import 'package:tarkeez/core/routes/route_names.dart';
 import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
 import 'package:tarkeez/core/shared_files/widgets/bubble_decorations.dart';
@@ -18,7 +17,6 @@ class SubscriptionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final texts = AppTexts.of(context);
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -109,7 +107,7 @@ class SubscriptionCard extends StatelessWidget {
                         colorFilter: .mode(AppTheme.white, .srcIn),
                       ),
                       title: Text(
-                        texts.goPremium,
+                        'Go premium',
                         style: TextUtils.paragraphBold(
                           context,
                           color: AppTheme.white,

@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tarkeez/core/localization/app_texts.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
@@ -21,7 +20,7 @@ class CancelButton extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return !isCupertinoVersion
         ? PrimaryButton(
-            title: AppTexts.of(context).cancel,
+            title: 'Cancel',
             textColor: scheme.primary,
             backgroundColorLeft: scheme.onSurface,
             backgroundColorRight: scheme.onSurface,

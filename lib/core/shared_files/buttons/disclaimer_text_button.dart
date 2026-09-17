@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tarkeez/core/localization/app_texts.dart';
 import 'package:tarkeez/core/routes/route_names.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
@@ -31,7 +30,7 @@ class DisclaimerTextButton extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  AppTexts.of(context).termsAndConditions,
+                  'Terms and Conditions',
                   style: TextUtils.paragraphSmall(
                     context,
                     color: Theme.of(context).colorScheme.onTertiary,

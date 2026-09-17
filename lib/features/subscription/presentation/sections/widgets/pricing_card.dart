@@ -1,4 +1,3 @@
-import 'package:tarkeez/core/localization/app_texts.dart';
 import 'package:tarkeez/core/shared_files/widgets/bubble_decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/theme/theme.dart';
@@ -123,7 +122,7 @@ class PricingCard extends StatelessWidget {
                               mainAxisAlignment: .center,
                               children: [
                                 Text(
-                                  '${AppTexts.of(context).save} $saveAmount',
+                                  'Save $saveAmount',
                                   style: TextUtils.paragraphBold(
                                     context,
                                     color: AppTheme.white,

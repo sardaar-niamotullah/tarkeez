@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
-import 'package:tarkeez/core/localization/app_texts.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
@@ -28,7 +27,7 @@ class AppDrawerButton extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                AppTexts.of(context).appTitle,
+                'Tarkeez',
                 style: TextUtils.title1Normal(context, color: AppTheme.white),
               ),
               const SizedBox(width: 4),

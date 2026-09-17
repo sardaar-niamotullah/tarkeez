@@ -8,7 +8,6 @@ import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.da
 import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
 import 'package:tarkeez/core/shared_files/widgets/custom_app_bar.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
-import 'package:tarkeez/core/localization/app_texts.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:tarkeez/features/report/presentation/sections/report_line_chart.dart';
@@ -26,7 +25,6 @@ class _ReportTabState extends State<ReportTab> {
 
   @override
   Widget build(BuildContext context) {
-    final texts = AppTexts.of(context);
     final scheme = Theme.of(context).colorScheme;
 
     return Stack(
@@ -40,7 +38,7 @@ class _ReportTabState extends State<ReportTab> {
               // App bar
               // ──────────────────────────────────────────────────────────
               CustomAppBar(
-                title: texts.reports,
+                title: 'Reportsi',
                 isBackButtonEnabled: false,
                 actions: [ActionPageIcon(iconPath: SvgPaths.pieChart)],
               ),
