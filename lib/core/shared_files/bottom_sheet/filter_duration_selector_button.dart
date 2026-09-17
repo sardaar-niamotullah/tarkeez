@@ -5,8 +5,8 @@ import 'package:tarkeez/core/shared_files/widgets/go_premium_dialog.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
-class LeaderboardFilterDurationSelectorButton extends StatelessWidget {
-  const LeaderboardFilterDurationSelectorButton({
+class FilterDurationSelectorButton extends StatelessWidget {
+  const FilterDurationSelectorButton({
     super.key,
     required this.title,
     required this.onTap,

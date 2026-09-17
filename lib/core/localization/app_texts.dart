@@ -2,7 +2,6 @@ import 'package:tarkeez/core/localization/form_strings.dart';
 import 'package:tarkeez/core/localization/others_strings.dart';
 import 'package:tarkeez/core/shared_files/cubits/language_cubit.dart';
 import 'package:tarkeez/core/shared_files/models/app_string_model.dart';
-import 'package:tarkeez/features/leaderboard/presentation/localization/leaderboard_strings.dart';
 import 'package:tarkeez/features/profile/presentation/localization/profile_page_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -91,11 +90,6 @@ class AppTexts {
   String get describeIssue => _r(CustomerCarePageStrings.describeIssue);
   String get problemLabel => _r(CustomerCarePageStrings.problemLabel);
   String get problemHint => _r(CustomerCarePageStrings.problemHint);
-
-  // ──────────────────────────────────────────────
-  // Leaderboard
-  // ──────────────────────────────────────────────
-  String get leaderboard => _r(LeaderboardStrings.leaderboard);
 
   // ──────────────────────────────────────────────
   // Terms and conditions

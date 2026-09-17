@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tarkeez/features/leaderboard/presentation/sections/widgets/leaderboard_filter_duration_selector_button.dart';
+import 'package:tarkeez/core/shared_files/bottom_sheet/filter_duration_selector_button.dart';
 
 enum DurationFilterOption {
   today('Today'),
@@ -64,7 +64,7 @@ class _DurationFilterBottomSheetSectionState
   }
 
   Widget _buildButton(DurationFilterOption option) {
-    return LeaderboardFilterDurationSelectorButton(
+    return FilterDurationSelectorButton(
       title: option.title,
       isSelected: option == _selected,
       isLocked: option.isLocked,
