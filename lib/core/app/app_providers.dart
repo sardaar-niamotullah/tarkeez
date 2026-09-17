@@ -1,7 +1,9 @@
+import 'package:tarkeez/core/di/dependency_injection.dart';
 import 'package:tarkeez/core/shared_files/cubits/navigation_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 
 class AppProviders extends StatelessWidget {
   final Widget child;
@@ -19,6 +21,7 @@ class AppProviders extends StatelessWidget {
       providers: [
         BlocProvider(create: (_) => ThemeCubit(initialState: initialTheme)),
         BlocProvider(create: (_) => NavigationCubit()),
+        BlocProvider(create: (_) => getIt<ProjectBloc>()),
       ],
       child: child 
     );
