@@ -5,10 +5,10 @@ import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/time_log_project_pill.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
-import 'package:tarkeez/features/time_logs/data/models/time_log_model.dart';
+import 'package:tarkeez/features/sessions/data/models/time_log_model.dart';
 
 class TimeLogSessionInfoTile extends StatelessWidget {
-  final TimeLogModel timeLog;
+  final SessionModel timeLog;
   final Color backgroundColor;
   const TimeLogSessionInfoTile({
     super.key,

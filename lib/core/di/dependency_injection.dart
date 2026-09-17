@@ -3,7 +3,6 @@ import 'package:tarkeez/core/services/sound_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tarkeez/features/projects/data/repositories/project_repository.dart';
-import 'package:tarkeez/features/time_logs/data/repositories/time_log_repository.dart';
 
 final getIt = GetIt.instance;
 
@@ -25,10 +24,4 @@ Future<void> injectDependencies() async {
   );
 
   // ── Sessions ────────────────────────────────────────────────────────────
-  getIt.registerLazySingleton<TimeLogRepository>(
-    () => TimeLogRepositoryImpl(
-      getIt<SupabaseClient>(),
-      getIt<AuthSessionService>(),
-    ),
-  );
 }

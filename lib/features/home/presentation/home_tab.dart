@@ -7,7 +7,7 @@ import 'package:tarkeez/core/utils/primary_page_margin.dart';
 import 'package:tarkeez/features/home/presentation/sections/home_last_three_days_bar_chart.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/time_log_index_tile.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/time_log_tile.dart';
-import 'package:tarkeez/features/time_logs/presentation/time_log_interface.dart';
+import 'package:tarkeez/features/sessions/presentation/session_log_interface.dart';
 
 class HomeTab extends StatelessWidget {
   final VoidCallback onMenuTap;
@@ -50,7 +50,7 @@ class HomeTab extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
-                          const TimeLogInterface(),
+                          const SessionLogInterface(),
                           Expanded(
                             child: SingleChildScrollView(
                               child: PrimaryPageMargin(

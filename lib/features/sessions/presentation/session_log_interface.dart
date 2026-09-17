@@ -1,24 +1,25 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:tarkeez/core/services/sound_service.dart';
 import 'package:tarkeez/core/utils/app_clock.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
-import 'package:tarkeez/core/utils/time_log_interface_bottom_clipper.dart';
+import 'package:tarkeez/core/utils/session_log_interface_bottom_clipper.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/select_project_button.dart';
-import 'package:tarkeez/features/time_logs/presentation/widgets/pause_play_button.dart';
-import 'package:tarkeez/features/time_logs/presentation/widgets/pomodoro_set_duration_button.dart';
-import 'package:tarkeez/features/time_logs/presentation/widgets/time_log_timer_display.dart';
+import 'package:tarkeez/features/sessions/presentation/widgets/pause_play_button.dart';
+import 'package:tarkeez/features/sessions/presentation/widgets/pomodoro_set_duration_button.dart';
+import 'package:tarkeez/features/sessions/presentation/widgets/time_log_timer_display.dart';
 
-class TimeLogInterface extends StatefulWidget {
-  const TimeLogInterface({super.key});
+class SessionLogInterface extends StatefulWidget {
+  const SessionLogInterface({super.key});
 
   @override
-  State<TimeLogInterface> createState() => _TimeLogInterfaceState();
+  State<SessionLogInterface> createState() => _SessionLogInterfaceState();
 }
 
-class _TimeLogInterfaceState extends State<TimeLogInterface> {
+class _SessionLogInterfaceState extends State<SessionLogInterface> {
   ProjectModel? _selectedProject;
 
   bool _isRunning = false;
@@ -61,8 +62,8 @@ class _TimeLogInterfaceState extends State<TimeLogInterface> {
     if (_isRunning) {
       final startedAt = _startedAt;
       if (startedAt != null) {
-        // context.read<TimeLogBloc>().add(
-        //   EntryTimeLogRequested(
+        // context.read<SessionLogBloc>().add(
+        //   EntrySessionLogRequested(
         //     startedAt: startedAt,
         //     endedAt: AppClock.now(),
         //     project: _selectedProject,
@@ -150,14 +151,14 @@ class _TimeLogInterfaceState extends State<TimeLogInterface> {
                 ),
 
                 // ──────────────────────────────────────────────
-                // TimeLogInterfaceBottomClipper
+                // SessionLogInterfaceBottomClipper
                 // ──────────────────────────────────────────────
                 Positioned(
                   left: 0,
                   right: 0,
                   top: 12,
                   child: ClipPath(
-                    clipper: TimeLogInterfaceBottomClipper(),
+                    clipper: SessionLogInterfaceBottomClipper(),
                     child: Container(
                       height: 65,
                       width: .infinity,

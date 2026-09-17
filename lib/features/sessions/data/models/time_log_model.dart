@@ -1,12 +1,12 @@
 import 'package:equatable/equatable.dart';
 
-class TimeLogModel extends Equatable {
+class SessionModel extends Equatable {
   final String? id;
   final DateTime startedAt, endedAt;
   final String userId;
   final String? projectId;
 
-  const TimeLogModel({
+  const SessionModel({
     this.id,
     required this.startedAt,
     required this.endedAt,
@@ -17,14 +17,14 @@ class TimeLogModel extends Equatable {
   @override
   List<Object?> get props => [id, startedAt, endedAt, userId, projectId];
 
-  TimeLogModel copyWith({
+  SessionModel copyWith({
     String? id,
     DateTime? startedAt,
     DateTime? endedAt,
     String? userId,
     String? projectId,
   }) {
-    return TimeLogModel(
+    return SessionModel(
       id: id ?? this.id,
       startedAt: startedAt ?? this.startedAt,
       endedAt: endedAt ?? this.endedAt,
@@ -33,8 +33,8 @@ class TimeLogModel extends Equatable {
     );
   }
 
-  factory TimeLogModel.fromJson(Map<String, dynamic> json) {
-    return TimeLogModel(
+  factory SessionModel.fromJson(Map<String, dynamic> json) {
+    return SessionModel(
       id: json['id'] as String?,
       startedAt: DateTime.parse(json['started_at'] as String).toLocal(),
       endedAt: DateTime.parse(json['ended_at'] as String).toLocal(),

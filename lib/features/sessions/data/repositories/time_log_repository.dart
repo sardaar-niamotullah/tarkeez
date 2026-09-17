@@ -4,15 +4,15 @@ import 'package:tarkeez/core/error/result.dart';
 import 'package:tarkeez/core/error/result_guard.dart';
 import 'package:tarkeez/core/services/auth_session_service.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
-import 'package:tarkeez/features/time_logs/data/models/time_log_model.dart';
+import 'package:tarkeez/features/sessions/data/models/time_log_model.dart';
 
 abstract interface class TimeLogRepository {
-  Future<Result<TimeLogModel>> entryTimeLog({
+  Future<Result<SessionModel>> entryTimeLog({
     required DateTime startedAt,
     required DateTime endedAt,
     ProjectModel? project,
   });
-  Future<Result<List<TimeLogModel>>> fetchTimeLogs();
+  Future<Result<List<SessionModel>>> fetchTimeLogs();
 }
 
 class TimeLogRepositoryImpl implements TimeLogRepository {
@@ -21,7 +21,7 @@ class TimeLogRepositoryImpl implements TimeLogRepository {
   const TimeLogRepositoryImpl(this._supabase, this._session);
 
   @override
-  Future<Result<TimeLogModel>> entryTimeLog({
+  Future<Result<SessionModel>> entryTimeLog({
     required DateTime startedAt,
     required DateTime endedAt,
     ProjectModel? project,
@@ -37,19 +37,19 @@ class TimeLogRepositoryImpl implements TimeLogRepository {
           })
           .select()
           .single();
-      return TimeLogModel.fromJson(data);
+      return SessionModel.fromJson(data);
     });
   }
 
   @override
-  Future<Result<List<TimeLogModel>>> fetchTimeLogs() async {
+  Future<Result<List<SessionModel>>> fetchTimeLogs() async {
     return resultGuard(() async {
       final data = await _supabase
           .from(DbTableAndStoragePaths.timeLogs)
           .select()
           .eq('user_id', _session.requiredUserId);
       final timeLogs = (data as List)
-          .map((e) => TimeLogModel.fromJson(e as Map<String, dynamic>))
+          .map((e) => SessionModel.fromJson(e as Map<String, dynamic>))
           .toList();
       return timeLogs;
     });

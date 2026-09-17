@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class TimeLogInterfaceBottomClipper extends CustomClipper<Path> {
+class SessionLogInterfaceBottomClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     final width = size.width;
