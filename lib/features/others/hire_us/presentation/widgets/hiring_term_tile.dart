@@ -20,7 +20,10 @@ class HiringTermTile extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return Container(
       margin: const .only(bottom: 8),
-      decoration: BoxDecoration(borderRadius: ContainerDesignUtils.allRadius),
+      decoration: BoxDecoration(
+        borderRadius: ContainerDesignUtils.allRadius,
+        color: scheme.onSurface,
+      ),
       child: ListTile(
         dense: false,
         leading: isPricingCard
@@ -28,7 +31,7 @@ class HiringTermTile extends StatelessWidget {
                 radius: 16,
                 backgroundColor: scheme.surface,
                 child: SvgPicture.asset(
-                  SvgPaths.taka,
+                  SvgPaths.dollar,
                   colorFilter: .mode(scheme.primary, .srcIn),
                 ),
               )
@@ -36,11 +39,23 @@ class HiringTermTile extends StatelessWidget {
                 SvgPaths.stop,
                 colorFilter: .mode(scheme.error, .srcIn),
               ),
-        title: Text(
-          title,
-          style: TextUtils.paragraphBold(context, color: scheme.onTertiary),
+        title: Container(
+          margin: .only(bottom: 4),
+          child: Text(
+            title,
+            style: TextUtils.paragraphBold(
+              context,
+              color: scheme.onTertiary.withValues(alpha: .9),
+            ),
+          ),
         ),
-        subtitle: Text(details, style: TextUtils.paragraph(context)),
+        subtitle: Text(
+          details,
+          style: TextUtils.paragraph(
+            context,
+            color: scheme.onTertiary.withValues(alpha: .7),
+          ),
+        ),
       ),
     );
   }

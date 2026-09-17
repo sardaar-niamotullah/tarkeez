@@ -38,6 +38,7 @@ class SvgPaths {
   static const String doneBold = 'assets/svgs/done_bold.svg';
   static const String doneOutline = 'assets/svgs/done_outline.svg';
   static const String download = 'assets/svgs/download.svg';
+  static const String dollar = 'assets/svgs/dollar.svg';
   static const String delete = 'assets/svgs/delete.svg';
   static const String deleteBack = 'assets/svgs/delete_back.svg';
   static const String document = 'assets/svgs/document.svg';
@@ -79,6 +80,7 @@ class SvgPaths {
   static const String pictureAdd = 'assets/svgs/picture_add.svg';
   static const String pieChart = 'assets/svgs/pie_chart.svg';
   static const String projects = 'assets/svgs/projects.svg';
+  static const String playStore = 'assets/svgs/play_store.svg';
   static const String question = 'assets/svgs/question.svg';
   static const String ruler = 'assets/svgs/ruler.svg';
   static const String rank = 'assets/svgs/rank.svg';

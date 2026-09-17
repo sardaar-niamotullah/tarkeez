@@ -60,7 +60,6 @@ class AppDrawer extends StatelessWidget {
                   const ThemeSwitchButton(),
                 ],
               ),
-              // const LanguageSwitchButton(),
               const SizedBox(height: 164),
 
               // ──────────────────────────────────────────────
@@ -91,9 +90,9 @@ class AppDrawer extends StatelessWidget {
                             context.push(RouteNames.termsAndConditionsPage),
                       ),
                       AppDrawerItem(
-                        title: 'Customer care',
-                        iconPath: SvgPaths.headset,
-                        onTap: () => context.push(RouteNames.customerCarePage),
+                        title: 'Feedback form',
+                        iconPath: SvgPaths.penLine,
+                        onTap: () => context.push(RouteNames.feedbackPage),
                       ),
                       AppDrawerItem(
                         title: 'Make app',

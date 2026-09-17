@@ -1,16 +1,12 @@
 import 'package:go_router/go_router.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/features/others/buy_codebase/presentation/buy_codebase_page.dart';
-import 'package:tarkeez/features/others/customer_care/bloc/customer_report_bloc.dart';
-import 'package:tarkeez/features/others/customer_care/cubit/customer_report_form_cubit.dart';
+import 'package:tarkeez/features/others/feedback/presentation/feedback_page.dart';
 import 'package:tarkeez/features/splash_screen.dart';
 import 'package:tarkeez/features/main_scaffold.dart';
 import 'package:tarkeez/core/routes/route_names.dart';
-import 'package:tarkeez/core/di/dependency_injection.dart';
 import 'package:tarkeez/features/others/hire_us/presentation/hire_us_page.dart';
 import 'package:tarkeez/features/subscription/presentation/subscription_page.dart';
 import 'package:tarkeez/features/others/user_manual/presentation/user_manual_page.dart';
-import 'package:tarkeez/features/others/customer_care/presentation/customer_care_page.dart';
 import 'package:tarkeez/features/others/terms_and_conditions/presentation/terms_and_conditions_page.dart';
 
 final GoRouter router = GoRouter(
@@ -71,14 +67,8 @@ final GoRouter router = GoRouter(
     // Others
     // ──────────────────────────────────────────────────────────────────────────
     GoRoute(
-      path: RouteNames.customerCarePage,
-      builder: (context, state) => MultiBlocProvider(
-        providers: [
-          BlocProvider(create: (_) => getIt<CustomerReportBloc>()),
-          BlocProvider(create: (_) => CustomerReportFormCubit()),
-        ],
-        child: const CustomerCarePage(),
-      ),
+      path: RouteNames.feedbackPage,
+      builder: (context, state) => const FeedbackPage(),
     ),
     GoRoute(
       path: RouteNames.termsAndConditionsPage,

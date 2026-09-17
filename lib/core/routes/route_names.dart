@@ -9,7 +9,7 @@ class RouteNames {
   static const String othersConnectionsPage = '/others_connections';
 
   // Others
-  static const String customerCarePage = '/customer_care';
+  static const String feedbackPage = '/feedback';
   static const String termsAndConditionsPage = '/terms_and_conditions';
   static const String userManualPage = '/user_manual';
   static const String hireUsPage = '/hire_us';
