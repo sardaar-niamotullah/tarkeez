@@ -1,5 +1,4 @@
 import 'package:tarkeez/core/constants/svg_paths.dart';
-import 'package:tarkeez/core/shared_files/buttons/cancel_button.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
 import 'package:tarkeez/core/shared_files/widgets/stand_alone_page_outer_structure.dart';
@@ -17,45 +16,31 @@ class FeedbackPage extends StatelessWidget {
       title: 'Feedback',
       actions: [ActionPageIcon(iconPath: SvgPaths.penLine)],
       isLoading: false,
-
-      bottomNavContent: Row(
-        children: [
-          Expanded(child: CancelButton(enable: true, onPressed: () {})),
-          const SizedBox(width: 16),
-          Expanded(
-            flex: 2,
-            child: PrimaryButton(
-              title: 'Submit',
-              isLoading: false,
-              enable: true,
-              onPressed: () {},
-            ),
-          ),
-        ],
-      ),
-
       content: CustomScrollView(
         slivers: [
           SliverList.list(
             children: [
               const SizedBox(height: 24),
-
               Text(
-                'We\'re here to help',
+                'Share your feedback',
                 style: TextUtils.title1(context, color: scheme.primary),
               ),
-              const SizedBox(height: 8),
-
+              const SizedBox(height: 12),
               Text(
-                'To let us know about the problem you are facing, kindly fill out the form below. Our support team will get back to you as soon as possible in case of need. In Shaa Allah.',
+                'Your feedback matters to us. Whether it\'s a bug you\'ve noticed or an idea for improvement, your valuable feedback can help us understand what\'s working well and what needs to be improved.',
+                style: TextUtils.paragraph(context),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Please take a moment to fill out the short form below.',
                 style: TextUtils.paragraph(context),
               ),
               const SizedBox(height: 24),
-
-              Text('Your details', style: TextUtils.title3(context)),
-              const SizedBox(height: 12),
-
-              const SizedBox(height: 32),
+              PrimaryButton(
+                title: 'Form link',
+                onPressed: () {},
+                iconPath: SvgPaths.document,
+              ),
             ],
           ),
         ],

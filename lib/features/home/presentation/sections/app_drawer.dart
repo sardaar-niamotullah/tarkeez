@@ -84,7 +84,7 @@ class AppDrawer extends StatelessWidget {
                         onTap: () => context.push(RouteNames.userManualPage),
                       ),
                       AppDrawerItem(
-                        title: 'Feedback form',
+                        title: 'Feedback',
                         iconPath: SvgPaths.penLine,
                         onTap: () => context.push(RouteNames.feedbackPage),
                       ),
@@ -98,7 +98,7 @@ class AppDrawer extends StatelessWidget {
                 ),
               ),
               const SubscriptionCard(),
-              const SizedBox(height: 48),
+              const SizedBox(height: 40),
               Row(
                 mainAxisAlignment: .spaceBetween,
                 children: [
