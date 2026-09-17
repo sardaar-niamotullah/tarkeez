@@ -96,13 +96,8 @@ class AppDrawer extends StatelessWidget {
                       ),
                       AppDrawerItem(
                         title: 'Make app',
-                        iconPath: SvgPaths.code,
-                        onTap: () => context.push(RouteNames.hireUsPage),
-                      ),
-                      AppDrawerItem(
-                        title: 'Buy codebase',
                         iconPath: SvgPaths.appStore,
-                        onTap: () => context.push(RouteNames.buyCodebasePage),
+                        onTap: () => context.push(RouteNames.hireUsPage),
                       ),
                     ],
                   ),

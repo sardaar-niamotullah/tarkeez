@@ -1,5 +1,4 @@
 import 'package:go_router/go_router.dart';
-import 'package:tarkeez/features/others/buy_codebase/presentation/buy_codebase_page.dart';
 import 'package:tarkeez/features/others/feedback/presentation/feedback_page.dart';
 import 'package:tarkeez/features/splash_screen.dart';
 import 'package:tarkeez/features/main_scaffold.dart';
@@ -81,10 +80,6 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: RouteNames.hireUsPage,
       builder: (context, state) => const HireUsPage(),
-    ),
-    GoRoute(
-      path: RouteNames.buyCodebasePage,
-      builder: (context, state) => const BuyCodebasePage(),
     ),
   ],
 );

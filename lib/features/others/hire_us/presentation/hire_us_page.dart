@@ -16,7 +16,7 @@ class HireUsPage extends StatelessWidget {
 
     return StandAlonePageOuterStructure(
       title: 'Make app',
-      actions: [ActionPageIcon(iconPath: SvgPaths.code)],
+      actions: [ActionPageIcon(iconPath: SvgPaths.appStore)],
       // ──────────────────────────────────────────────────────────
       // Body content.
       // ──────────────────────────────────────────────────────────

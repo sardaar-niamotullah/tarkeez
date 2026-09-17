@@ -13,6 +13,5 @@ class RouteNames {
   static const String termsAndConditionsPage = '/terms_and_conditions';
   static const String userManualPage = '/user_manual';
   static const String hireUsPage = '/hire_us';
-  static const String buyCodebasePage = '/buy_codebase';
   static const String reportPage = '/report';
 }
