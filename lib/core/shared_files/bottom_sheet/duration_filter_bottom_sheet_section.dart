@@ -8,12 +8,14 @@ enum DurationFilterOption {
   thisYear('This year', isLocked: true),
   last3Days('Last 3 days'),
   lastYear('Last year', isLocked: true),
-  thisWeek('This week'),
+  last5Days('Last 5 days'),
   this7Days('Last 7 days', isLocked: true),
-  lastWeek('Last week'),
+  thisWeek('This week'),
   last30Days('Last 30 days', isLocked: true),
+  lastWeek('Last week'),
+  last12Months('Last 12 months', isLocked: true),
   thisMonth('This month'),
-  last12Months('Last 12 months', isLocked: true);
+  allTime('All time', isLocked: true);
 
   const DurationFilterOption(this.title, {this.isLocked = false});
   final String title;

@@ -1,4 +1,3 @@
-import 'package:tarkeez/core/services/auth_session_service.dart';
 import 'package:tarkeez/core/services/sound_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -17,10 +16,7 @@ Future<void> injectDependencies() async {
 
   // ── Projects ────────────────────────────────────────────────────────────
   getIt.registerLazySingleton<ProjectRepository>(
-    () => ProjectRepositoryImpl(
-      getIt<SupabaseClient>(),
-      getIt<AuthSessionService>(),
-    ),
+    () => ProjectRepositoryImpl(getIt<SupabaseClient>()),
   );
 
   // ── Sessions ────────────────────────────────────────────────────────────

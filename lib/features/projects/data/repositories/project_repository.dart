@@ -2,7 +2,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tarkeez/core/constants/db_table_and_storage_paths.dart';
 import 'package:tarkeez/core/error/result.dart';
 import 'package:tarkeez/core/error/result_guard.dart';
-import 'package:tarkeez/core/services/auth_session_service.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 
 abstract interface class ProjectRepository {
@@ -17,8 +16,7 @@ abstract interface class ProjectRepository {
 
 class ProjectRepositoryImpl implements ProjectRepository {
   final SupabaseClient _supabase;
-  final AuthSessionService _session;
-  const ProjectRepositoryImpl(this._supabase, this._session);
+  const ProjectRepositoryImpl(this._supabase);
 
   @override
   Future<Result<ProjectModel>> createProject({
@@ -31,7 +29,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
           .insert({
             'name': name,
             'color_id': colorId,
-            'user_id': _session.requiredUserId,
+            'created_at': DateTime.now()
           })
           .select()
           .single();
@@ -44,8 +42,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
     return resultGuard(() async {
       final data = await _supabase
           .from(DbTableAndStoragePaths.projects)
-          .select()
-          .eq('user_id', _session.requiredUserId);
+          .select();
       final projects = (data as List)
           .map((e) => ProjectModel.fromJson(e as Map<String, dynamic>))
           .toList();
@@ -60,7 +57,6 @@ class ProjectRepositoryImpl implements ProjectRepository {
           .from(DbTableAndStoragePaths.projects)
           .update({'name': project.name, 'color_id': project.colorId})
           .eq('id', project.id!)
-          .eq('user_id', _session.requiredUserId)
           .select()
           .single();
       return ProjectModel.fromJson(data);
@@ -73,8 +69,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
       await _supabase
           .from(DbTableAndStoragePaths.projects)
           .delete()
-          .eq('id', project.id!)
-          .eq('user_id', _session.requiredUserId);
+          .eq('id', project.id!);
       return;
     });
   }
