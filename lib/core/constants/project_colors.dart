@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ProjectColors {
   static const List<Color> colors = [
     // green
-    Color(0xFF4ADE80),
+    Color(0xFF44C373),
     Color(0xFF22C55E),
     Color(0xFF15803D),
     // blue
@@ -15,7 +15,7 @@ class ProjectColors {
     Color(0xFFA855F7),
     Color(0xFF7E22CE),
     // yellow
-    Color(0xFFFFD220),
+    Color(0xFFF1CE41),
     Color(0xFFFFC30D),
     Color(0xFFE3AA00),
     // orange
@@ -29,6 +29,6 @@ class ProjectColors {
     // red
     Color(0xFFFF7878),
     Color(0xFFFF4646),
-    Color(0xFFFF1E1E),
+    Color(0xFFCA1919),
   ];
 }
