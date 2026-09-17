@@ -55,7 +55,6 @@ class TimeLogSessionInfoTile extends StatelessWidget {
           TimeLogProjectPill(
             project: ProjectModel(
               name: 'Some',
-              userId: 'ds',
               colorId: 1,
               createdAt: DateTime(2025),
             ),

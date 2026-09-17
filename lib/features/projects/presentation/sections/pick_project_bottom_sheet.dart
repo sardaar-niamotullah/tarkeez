@@ -28,7 +28,6 @@ class _PickProjectBottomSheetState extends State<PickProjectBottomSheet> {
   final projects = [
     ProjectModel(
       name: 'Some',
-      userId: '1',
       colorId: 1,
       createdAt: DateTime(2025),
     ),

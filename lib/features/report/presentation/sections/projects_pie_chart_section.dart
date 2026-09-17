@@ -128,7 +128,6 @@ class PieChart2State extends State<ProjectsPieChartSection> {
                         : scheme.onSurface;
                     return ProjectInfoTile(
                       project: ProjectModel(
-                        userId: '1',
                         name: project[0] as String,
                         colorId: 1,
                         createdAt: DateTime(2026)
