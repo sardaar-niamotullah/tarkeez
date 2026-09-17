@@ -1,5 +1,4 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:tarkeez/core/constants/db_table_and_storage_paths.dart';
+import 'package:tarkeez/core/database/app_database.dart';
 import 'package:tarkeez/core/error/result.dart';
 import 'package:tarkeez/core/error/result_guard.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
@@ -15,8 +14,8 @@ abstract interface class ProjectRepository {
 }
 
 class ProjectRepositoryImpl implements ProjectRepository {
-  final SupabaseClient _supabase;
-  const ProjectRepositoryImpl(this._supabase);
+  final AppDatabase _database;
+  const ProjectRepositoryImpl(this._database);
 
   @override
   Future<Result<ProjectModel>> createProject({
@@ -24,52 +23,45 @@ class ProjectRepositoryImpl implements ProjectRepository {
     required int colorId,
   }) async {
     return resultGuard(() async {
-      final data = await _supabase
-          .from(DbTableAndStoragePaths.projects)
-          .insert({
-            'name': name,
-            'color_id': colorId,
-            'created_at': DateTime.now()
-          })
-          .select()
-          .single();
-      return ProjectModel.fromJson(data);
+      final companion = ProjectsCompanion.insert(name: name, colorId: colorId);
+      final id = await _database.projectsDao.insertProject(companion);
+      final row = await _database.projectsDao.getProjectById(id);
+      if (row == null) {
+        throw StateError('Failed to load created project');
+      }
+      return ProjectModel.fromRow(row);
     });
   }
 
   @override
   Future<Result<List<ProjectModel>>> fetchProjects() async {
     return resultGuard(() async {
-      final data = await _supabase
-          .from(DbTableAndStoragePaths.projects)
-          .select();
-      final projects = (data as List)
-          .map((e) => ProjectModel.fromJson(e as Map<String, dynamic>))
-          .toList();
-      return projects;
+      final rows = await _database.projectsDao.getAllProjects();
+      return rows.map(ProjectModel.fromRow).toList();
     });
   }
 
   @override
   Future<Result<ProjectModel>> updateProject(ProjectModel project) async {
     return resultGuard(() async {
-      final data = await _supabase
-          .from(DbTableAndStoragePaths.projects)
-          .update({'name': project.name, 'color_id': project.colorId})
-          .eq('id', project.id!)
-          .select()
-          .single();
-      return ProjectModel.fromJson(data);
+      final row = Project(
+        id: project.id!,
+        name: project.name,
+        colorId: project.colorId,
+        createdAt: project.createdAt,
+      );
+      final success = await _database.projectsDao.updateProject(row);
+      if (!success) {
+        throw StateError('Failed to update project');
+      }
+      return project;
     });
   }
 
   @override
   Future<Result<void>> deleteProject(ProjectModel project) async {
     return resultGuard(() async {
-      await _supabase
-          .from(DbTableAndStoragePaths.projects)
-          .delete()
-          .eq('id', project.id!);
+      await _database.projectsDao.deleteProject(project.id!);
       return;
     });
   }

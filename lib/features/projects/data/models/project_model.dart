@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:tarkeez/core/database/app_database.dart';
 
 class ProjectModel extends Equatable {
   final String? id;
@@ -10,7 +11,7 @@ class ProjectModel extends Equatable {
     this.id,
     required this.name,
     required this.colorId,
-    required this.createdAt
+    required this.createdAt,
   });
 
   @override
@@ -30,12 +31,12 @@ class ProjectModel extends Equatable {
     );
   }
 
-  factory ProjectModel.fromJson(Map<String, dynamic> json) {
+  factory ProjectModel.fromRow(Project row) {
     return ProjectModel(
-      id: json['id'] as String?,
-      colorId: json['color_id'] as int,
-      name: json['name'] as String,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      id: row.id,
+      colorId: row.colorId,
+      name: row.name,
+      createdAt: row.createdAt,
     );
   }
 }
