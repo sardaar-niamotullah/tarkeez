@@ -5,7 +5,7 @@ import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
 import 'package:tarkeez/core/shared_files/widgets/section_image_lock_overlay.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/report/presentation/sections/widgets/time_log_session_info_tile.dart';
-import 'package:tarkeez/features/sessions/data/models/time_log_model.dart';
+import 'package:tarkeez/features/sessions/data/models/session_model.dart';
 
 class TimeLogSessionsSection extends StatelessWidget {
   final bool isLocked;

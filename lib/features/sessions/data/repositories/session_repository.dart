@@ -4,7 +4,7 @@ import 'package:tarkeez/core/error/result.dart';
 import 'package:tarkeez/core/error/result_guard.dart';
 import 'package:tarkeez/core/services/auth_session_service.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
-import 'package:tarkeez/features/sessions/data/models/time_log_model.dart';
+import 'package:tarkeez/features/sessions/data/models/session_model.dart';
 
 abstract interface class TimeLogRepository {
   Future<Result<SessionModel>> entryTimeLog({
