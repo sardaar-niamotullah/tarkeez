@@ -2,26 +2,20 @@ import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/cancel_button.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
-import 'package:tarkeez/core/shared_files/widgets/common_text_input.dart';
 import 'package:tarkeez/core/shared_files/widgets/stand_alone_page_outer_structure.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:flutter/material.dart';
 
-class FeedbackPage extends StatefulWidget {
+class FeedbackPage extends StatelessWidget {
   const FeedbackPage({super.key});
 
-  @override
-  State<FeedbackPage> createState() => _FeedbackPageState();
-}
-
-class _FeedbackPageState extends State<FeedbackPage> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
     return StandAlonePageOuterStructure(
       title: 'Feedback',
-      actions: [ActionPageIcon(iconPath: SvgPaths.headset)],
+      actions: [ActionPageIcon(iconPath: SvgPaths.penLine)],
       isLoading: false,
 
       bottomNavContent: Row(
@@ -61,32 +55,6 @@ class _FeedbackPageState extends State<FeedbackPage> {
               Text('Your details', style: TextUtils.title3(context)),
               const SizedBox(height: 12),
 
-              CommonTextInput(
-                label: 'Name',
-                // controller: cubit.nameController,
-                // errorText: formState.nameError,
-                prefixIconPath: SvgPaths.user,
-              ),
-              const SizedBox(height: 16),
-
-              CommonTextInput(
-                label: 'Contact',
-                // controller: cubit.phoneController,
-                // errorText: formState.phoneError,
-                prefixIconPath: SvgPaths.phone,
-              ),
-              const SizedBox(height: 28),
-
-              Text('Describe issue', style: TextUtils.title3(context)),
-              const SizedBox(height: 12),
-
-              CommonTextInput(
-                label: 'Problem',
-                maxLines: 4,
-                // controller: cubit.reportController,
-                // errorText: formState.reportError,
-                prefixIconPath: SvgPaths.penLine,
-              ),
               const SizedBox(height: 32),
             ],
           ),

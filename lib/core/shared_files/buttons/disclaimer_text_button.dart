@@ -16,8 +16,8 @@ class DisclaimerTextButton extends StatelessWidget {
         children: [
           TextSpan(text: 'By proceeding, you agree to our\n'),
           WidgetSpan(
-            alignment: PlaceholderAlignment.baseline,
             baseline: TextBaseline.alphabetic,
+            alignment: PlaceholderAlignment.baseline,
             child: GestureDetector(
               onTap: () => context.push(RouteNames.termsAndConditionsPage),
               child: Container(
@@ -30,7 +30,7 @@ class DisclaimerTextButton extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  'Terms and Conditions',
+                  'Terms and conditions',
                   style: TextUtils.paragraphSmall(
                     context,
                     color: Theme.of(context).colorScheme.onTertiary,

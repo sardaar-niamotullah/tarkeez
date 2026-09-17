@@ -17,6 +17,11 @@ class HireUsPage extends StatelessWidget {
     return StandAlonePageOuterStructure(
       title: 'Make app',
       actions: [ActionPageIcon(iconPath: SvgPaths.appStore)],
+      bottomNavContent: PrimaryButton(
+        title: 'Form link',
+        onPressed: () {},
+        iconPath: SvgPaths.document,
+      ),
       // ──────────────────────────────────────────────────────────
       // Body content.
       // ──────────────────────────────────────────────────────────
@@ -121,12 +126,6 @@ class HireUsPage extends StatelessWidget {
               Text(
                 'If you’re comfortable with the terms and pricing above, we’d love to hear about your project. Fill out the form below with a few details, and our team will get in touch if the project is a good fit and we have the availability to work on it.',
                 style: TextUtils.paragraph(context),
-              ),
-              const SizedBox(height: 16),
-              PrimaryButton(
-                title: 'Form link',
-                onPressed: () {},
-                iconPath: SvgPaths.document,
               ),
               const SizedBox(height: 32),
             ],

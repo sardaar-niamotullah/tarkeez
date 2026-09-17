@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tarkeez/core/shared_files/buttons/theme_switch_button.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
@@ -5,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/routes/route_names.dart';
-import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/app_drawer_item.dart';
 import 'package:tarkeez/features/settings/presentation/settings_bottom_sheet.dart';
@@ -84,12 +84,6 @@ class AppDrawer extends StatelessWidget {
                         onTap: () => context.push(RouteNames.userManualPage),
                       ),
                       AppDrawerItem(
-                        title: 'Terms and conditions',
-                        iconPath: SvgPaths.hammer,
-                        onTap: () =>
-                            context.push(RouteNames.termsAndConditionsPage),
-                      ),
-                      AppDrawerItem(
                         title: 'Feedback form',
                         iconPath: SvgPaths.penLine,
                         onTap: () => context.push(RouteNames.feedbackPage),
@@ -105,12 +99,31 @@ class AppDrawer extends StatelessWidget {
               ),
               const SubscriptionCard(),
               const SizedBox(height: 48),
-              Align(
-                alignment: .center,
-                child: Text(
-                  '1.0.0',
-                  style: TextUtils.paragraph(context, color: AppTheme.grey),
-                ),
+              Row(
+                mainAxisAlignment: .spaceBetween,
+                children: [
+                  CupertinoButton(
+                    onPressed: () =>
+                        context.push(RouteNames.termsAndConditionsPage),
+                    sizeStyle: .small,
+                    alignment: .centerLeft,
+                    padding: .zero,
+                    child: Text(
+                      'Terms and conditions',
+                      style: TextUtils.paragraphSmallBold(
+                        context,
+                        color: scheme.onTertiary.withValues(alpha: .5),
+                      ),
+                    ),
+                  ),
+                  Text(
+                    'Version: 1.0.0',
+                    style: TextUtils.paragraphSmallBold(
+                      context,
+                      color: scheme.onTertiary.withValues(alpha: .25),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
