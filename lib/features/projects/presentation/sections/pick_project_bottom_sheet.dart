@@ -24,7 +24,7 @@ class PickProjectBottomSheet extends StatefulWidget {
 
 class _PickProjectBottomSheetState extends State<PickProjectBottomSheet> {
   int selectedIndex = 0;
-  bool _initialized = false;
+  // bool _initialized = false;
   final projects = [
     ProjectModel(
       name: 'Some',
