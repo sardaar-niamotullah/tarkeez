@@ -6,6 +6,7 @@ import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/common_text_input.dart';
 import 'package:tarkeez/core/shared_files/widgets/dialog_box_wrapper.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
+import 'package:tarkeez/features/projects/presentation/sections/project_color_options_section.dart';
 
 class AddOrUpdateProjectDialog extends StatelessWidget {
   final ProjectModel? project;
@@ -32,10 +33,10 @@ class AddOrUpdateProjectDialog extends StatelessWidget {
             // errorText: formState.nameError,
           ),
           const SizedBox(height: 16),
-          // ProjectColorOptionsSection(
-          //   // selectedColorId: formState.selectedColorId,
-          //   // onColorSelected: formCubit.selectColor,
-          // ),
+          ProjectColorOptionsSection(
+            // selectedColorId: formState.selectedColorId,
+            // onColorSelected: formCubit.selectColor,
+          ),
           const SizedBox(height: 24),
           Row(
             children: [
