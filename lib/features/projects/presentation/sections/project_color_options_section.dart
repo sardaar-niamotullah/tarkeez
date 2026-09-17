@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tarkeez/core/constants/project_colors.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
-import 'package:tarkeez/features/projects/data/models/project_color_model.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/project_color_selection_box.dart';
 
 class ProjectColorOptionsSection extends StatelessWidget {
@@ -19,21 +19,16 @@ class ProjectColorOptionsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final colors = [
-      ProjectColorModel(hexCode: '#123424', name: 'afawe', id: 1),
-      ProjectColorModel(hexCode: '#123424', name: 'afawe', id: 1),
-      ProjectColorModel(hexCode: '#123424', name: 'afawe', id: 1),
-    ];
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Row(
           children: [
             SvgPicture.asset(
               SvgPaths.colorPalette,
-              colorFilter: ColorFilter.mode(
+              colorFilter: .mode(
                 scheme.onTertiary.withValues(alpha: .9),
-                BlendMode.srcIn,
+                .srcIn,
               ),
             ),
             const SizedBox(width: 6),
@@ -47,13 +42,14 @@ class ProjectColorOptionsSection extends StatelessWidget {
             color: scheme.onSurface,
             borderRadius: ContainerDesignUtils.allRadius,
           ),
-          child: Column(children: [_buildColorGrid(colors)]),
+          child: Column(children: [_buildColorGrid()]),
         ),
       ],
     );
   }
 
-  Widget _buildColorGrid(List<ProjectColorModel> colors) {
+  Widget _buildColorGrid() {
+    final colors = ProjectColors.colors;
     return GridView.count(
       shrinkWrap: true,
       crossAxisCount: 7,
@@ -62,11 +58,11 @@ class ProjectColorOptionsSection extends StatelessWidget {
       childAspectRatio: 1,
       physics: const NeverScrollableScrollPhysics(),
       children: [
-        for (final c in colors)
+        for (int i = 0; i < colors.length; i++)
           ProjectColorSelectionBox(
-            color: c,
-            isSelected: c.id == selectedColorId,
-            onTap: () => onColorSelected(c.id),
+            color: colors[i],
+            isSelected: i == selectedColorId,
+            onTap: () {},
           ),
       ],
     );

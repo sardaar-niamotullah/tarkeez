@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
-import 'package:tarkeez/core/utils/color_from_hex_code.dart';
-import 'package:tarkeez/features/projects/data/models/project_color_model.dart';
 
 class ProjectColorSelectionBox extends StatelessWidget {
-  final ProjectColorModel color;
+  final Color color;
   final bool isSelected;
   final VoidCallback onTap;
   const ProjectColorSelectionBox({
@@ -29,12 +27,12 @@ class ProjectColorSelectionBox extends StatelessWidget {
             padding: .all(2),
             decoration: BoxDecoration(
               shape: .circle,
-              color: colorFromHexCode(color.hexCode).withValues(alpha: .25),
+              color: color.withValues(alpha: .25),
             ),
             child: Ink(
               decoration: BoxDecoration(
                 shape: .circle,
-                color: colorFromHexCode(color.hexCode),
+                color: color,
               ),
               child: Center(
                 child: SvgPicture.asset(
