@@ -10,9 +10,15 @@ import 'package:tarkeez/features/subscription/presentation/sections/premium_perk
 import 'package:tarkeez/features/subscription/presentation/sections/subscription_bottom_sheet.dart';
 import 'package:tarkeez/features/subscription/presentation/sections/widgets/pricing_card.dart';
 
-class SubscriptionPage extends StatelessWidget {
+class SubscriptionPage extends StatefulWidget {
   const SubscriptionPage({super.key});
 
+  @override
+  State<SubscriptionPage> createState() => _SubscriptionPageState();
+}
+
+class _SubscriptionPageState extends State<SubscriptionPage> {
+  int _selectedPricingCardIndex = 0;
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
@@ -26,7 +32,6 @@ class SubscriptionPage extends StatelessWidget {
         color: AppTheme.blue,
         colorBright: AppTheme.blueBright,
         iconPath: SvgPaths.bookmark,
-        isActive: true,
       ),
       PricingPlan(
         dealValue: 'Good deal',
@@ -106,20 +111,20 @@ class SubscriptionPage extends StatelessWidget {
             mainAxisSpacing: 8,
             crossAxisSpacing: 8,
             childAspectRatio: 1.4,
-            children: pricingPlans
-                .map(
-                  (plan) => PricingCard(
-                    dealValue: plan.dealValue,
-                    duration: plan.duration,
-                    price: plan.price,
-                    saveAmount: plan.saveAmount,
-                    color: plan.color,
-                    colorBright: plan.colorBright,
-                    iconPath: plan.iconPath,
-                    isActive: plan.isActive,
-                  ),
-                )
-                .toList(),
+            children: List.generate(pricingPlans.length, (index) {
+              final plan = pricingPlans[index];
+              return PricingCard(
+                dealValue: plan.dealValue,
+                duration: plan.duration,
+                price: plan.price,
+                saveAmount: plan.saveAmount,
+                color: plan.color,
+                colorBright: plan.colorBright,
+                iconPath: plan.iconPath,
+                isActive: index == _selectedPricingCardIndex,
+                onTap: () => setState(() => _selectedPricingCardIndex = index),
+              );
+            }),
           ),
 
           // ──────────────────────────────────────────────────────────

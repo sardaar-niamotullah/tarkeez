@@ -38,6 +38,7 @@ class PricingCard extends StatelessWidget {
     required this.iconPath,
     this.isActive = false,
     this.isFreeCard = false,
+    this.onTap
   });
 
   final String dealValue;
@@ -49,6 +50,7 @@ class PricingCard extends StatelessWidget {
   final String iconPath;
   final bool isActive;
   final bool isFreeCard;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +59,7 @@ class PricingCard extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {},
+          onTap: onTap,
           borderRadius: ContainerDesignUtils.allRadius,
           child: Ink(
             padding: .all(2),
