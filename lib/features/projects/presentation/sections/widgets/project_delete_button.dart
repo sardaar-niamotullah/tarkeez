@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/action_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/delete_dialog.dart';
+import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 
 class ProjectDeleteButton extends StatelessWidget {
@@ -17,15 +20,27 @@ class ProjectDeleteButton extends StatelessWidget {
       backgroundColor: scheme.error.withValues(alpha: .1),
       onTap: () => showDialog(
         context: context,
-        builder: (_) {
-          return DeleteDialog(
-            isLoading: false,
-            onDeleteTap: () {},
-            message:
-                'Deleting this project will move all its tracked time to \'No project\'.\n\n'
-                'This action cannot be undone.',
-          );
-        },
+        builder: (_) => 
+        BlocConsumer<ProjectBloc, ProjectState>(
+          listener: (context, state) {
+            if (state is ProjectLoaded || state is ProjectFailure) {
+              context.pop();
+            }
+          },
+          builder: (context, state) {
+            return DeleteDialog(
+              isLoading: state is ProjectLoading,
+              onDeleteTap: () {
+                context.read<ProjectBloc>().add(
+                  DeleteProjectsRequested(project),
+                );
+              },
+              message:
+                  'Deleting this project will move all its tracked time to \'No project\'.\n\n'
+                  'This action cannot be undone.',
+            );
+          },
+        ),
       ),
     );
   }
