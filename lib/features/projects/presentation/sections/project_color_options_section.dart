@@ -7,18 +7,19 @@ import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/project_color_selection_box.dart';
 
 class ProjectColorOptionsSection extends StatelessWidget {
-  // final int? selectedColorId;
-  // final ValueChanged<int> onColorSelected;
+  final int? selectedColorId;
+  final ValueChanged<int> onColorSelected;
 
   const ProjectColorOptionsSection({
     super.key,
-    // required this.selectedColorId,
-    // required this.onColorSelected,
+    required this.selectedColorId,
+    required this.onColorSelected,
   });
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final colors = ProjectColors.colors;
     return Column(
       crossAxisAlignment: .start,
       children: [
@@ -42,28 +43,27 @@ class ProjectColorOptionsSection extends StatelessWidget {
             color: scheme.onSurface,
             borderRadius: ContainerDesignUtils.allRadius,
           ),
-          child: Column(children: [_buildColorGrid()]),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildColorGrid() {
-    final colors = ProjectColors.colors;
-    return GridView.count(
-      shrinkWrap: true,
-      crossAxisCount: 7,
-      mainAxisSpacing: 4,
-      crossAxisSpacing: 4,
-      childAspectRatio: 1,
-      physics: const NeverScrollableScrollPhysics(),
-      children: [
-        for (int i = 0; i < colors.length; i++)
-          ProjectColorSelectionBox(
-            color: colors[i],
-            isSelected: i == 4,
-            onTap: () {},
+          child: Column(
+            children: [
+              GridView.count(
+                shrinkWrap: true,
+                crossAxisCount: 7,
+                mainAxisSpacing: 4,
+                crossAxisSpacing: 4,
+                childAspectRatio: 1,
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  for (int i = 0; i < colors.length; i++)
+                    ProjectColorSelectionBox(
+                      color: colors[i],
+                      isSelected: i == selectedColorId,
+                      onTap: () => onColorSelected(i),
+                    ),
+                ],
+              ),
+            ],
           ),
+        ),
       ],
     );
   }
