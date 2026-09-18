@@ -18,6 +18,7 @@ class SvgPaths {
   static const String bkash = 'assets/svgs/bkash.svg';
   static const String briefcase = 'assets/svgs/briefcase.svg';
   static const String brokenLink = 'assets/svgs/broken_link.svg';
+  static const String broom = 'assets/svgs/broom.svg';
   static const String book = 'assets/svgs/book.svg';
   static const String bookmark = 'assets/svgs/bookmark.svg';
   static const String bookBookmark = 'assets/svgs/book_bookmark.svg';

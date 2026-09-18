@@ -16,10 +16,6 @@ class SettingsBottomSheet extends StatelessWidget {
       contents: [
         BottomSheetTitleTile(title: 'Settings', iconPath: SvgPaths.gear),
         const SizedBox(height: 8),
-        // SettingsBottomSheetOptionTile(
-        //   title: texts.language,
-        //   action: LanguageSwitchButton(),
-        // ),
         SettingsBottomSheetOptionTile(
           title: 'Theme mode',
           action: ThemeSwitchButton(),

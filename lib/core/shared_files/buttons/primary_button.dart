@@ -16,6 +16,7 @@ class PrimaryButton extends StatelessWidget {
   final String? iconPath;
   final bool isLoading;
   final bool enable;
+  final double? iconSize;
 
   const PrimaryButton({
     super.key,
@@ -32,6 +33,7 @@ class PrimaryButton extends StatelessWidget {
     this.isLoading = false,
     this.enable = true,
     this.onDisabled,
+    this.iconSize,
   });
 
   @override
@@ -89,6 +91,8 @@ class PrimaryButton extends StatelessWidget {
                     if (iconPath != null) ...[
                       SvgPicture.asset(
                         iconPath!,
+                        height: iconSize,
+                        width: iconSize,
                         colorFilter: .mode(textColor, .srcIn),
                       ),
                       const SizedBox(width: 6),

@@ -9,6 +9,7 @@ import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/features/profile/presentation/sections/heatmap.dart';
 import 'package:tarkeez/features/profile/presentation/sections/personal_bests_section.dart';
 import 'package:tarkeez/features/profile/presentation/sections/streaks.dart';
+import 'package:tarkeez/features/profile/presentation/sections/widgets/erase_all_data_button.dart';
 import 'package:tarkeez/features/report/presentation/sections/invested_times_section.dart';
 
 class ProfileTab extends StatelessWidget {
@@ -50,7 +51,7 @@ class ProfileTab extends StatelessWidget {
                                   padding: const .symmetric(
                                     horizontal: ContainerDesignUtils.padding,
                                   ),
-                                  child: const Column(
+                                  child: Column(
                                     crossAxisAlignment: .start,
                                     children: [
                                       Streaks(),
@@ -73,6 +74,9 @@ class ProfileTab extends StatelessWidget {
                                         lastThirtyDays: 12321,
                                         last365Days: 12321,
                                       ),
+                                      SizedBox(height: 16),
+                                      EraseAllDataButton(isLocked: false),
+                                      SizedBox(height: 32),
                                     ],
                                   ),
                                 ),

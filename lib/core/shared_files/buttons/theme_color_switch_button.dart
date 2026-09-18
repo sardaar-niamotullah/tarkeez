@@ -1,15 +1,18 @@
-import 'package:tarkeez/core/theme/theme.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:flutter/material.dart';
 
 class ThemeColorSwitchButton extends StatelessWidget {
   final Color themeColor;
   final VoidCallback onTap;
   final bool isActive;
+  final bool isLocked;
   const ThemeColorSwitchButton({
     super.key,
     required this.themeColor,
     required this.onTap,
     this.isActive = false,
+    this.isLocked = false,
   });
 
   @override
@@ -23,10 +26,17 @@ class ThemeColorSwitchButton extends StatelessWidget {
           height: 22,
           width: 22,
           decoration: BoxDecoration(color: themeColor, shape: .circle),
-          child: Icon(
-            Icons.done_rounded,
-            size: 16,
-            color: isActive ? AppTheme.white : Colors.transparent,
+          child: Center(
+            child: SvgPicture.asset(
+              height: 12,
+              width: 12,
+              SvgPaths.doneOutline,
+              colorFilter: .mode(
+                Theme.of(context).colorScheme.onTertiary
+                    .withValues(alpha: isActive ? 1 : 0),
+                .srcIn,
+              ),
+            ),
           ),
         ),
       ),

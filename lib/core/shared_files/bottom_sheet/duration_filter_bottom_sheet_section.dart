@@ -40,7 +40,7 @@ class _DurationFilterBottomSheetSectionState
     final rowCount = (options.length / 2).ceil();
 
     return ListView.builder(
-      padding: EdgeInsets.zero,
+      padding: .zero,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: rowCount,
@@ -50,7 +50,7 @@ class _DurationFilterBottomSheetSectionState
         final hasSecond = secondIndex < options.length;
 
         return Padding(
-          padding: EdgeInsets.only(bottom: rowIndex == rowCount - 1 ? 0 : 8),
+          padding: .only(bottom: rowIndex == rowCount - 1 ? 0 : 8),
           child: Row(
             children: [
               Expanded(child: _buildButton(options[firstIndex])),
