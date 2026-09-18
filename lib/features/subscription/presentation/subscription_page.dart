@@ -6,31 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
+import 'package:tarkeez/features/subscription/presentation/sections/premium_perks_section.dart';
 import 'package:tarkeez/features/subscription/presentation/sections/subscription_bottom_sheet.dart';
-import 'package:tarkeez/features/subscription/presentation/sections/widgets/perk_tile.dart';
 import 'package:tarkeez/features/subscription/presentation/sections/widgets/pricing_card.dart';
-
-class _PricingPlan {
-  const _PricingPlan({
-    required this.dealValue,
-    required this.duration,
-    required this.price,
-    required this.saveAmount,
-    required this.color,
-    required this.colorBright,
-    required this.iconPath,
-    this.isActive = false,
-  });
-
-  final String dealValue;
-  final String duration;
-  final String price;
-  final String saveAmount;
-  final Color color;
-  final Color colorBright;
-  final String iconPath;
-  final bool isActive;
-}
 
 class SubscriptionPage extends StatelessWidget {
   const SubscriptionPage({super.key});
@@ -40,7 +18,7 @@ class SubscriptionPage extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
 
     const pricingPlans = [
-      _PricingPlan(
+      PricingPlan(
         dealValue: 'Regular deal',
         duration: '3 months',
         price: '1.9',
@@ -50,7 +28,7 @@ class SubscriptionPage extends StatelessWidget {
         iconPath: SvgPaths.bookmark,
         isActive: true,
       ),
-      _PricingPlan(
+      PricingPlan(
         dealValue: 'Good deal',
         duration: '6 months',
         price: '2.9',
@@ -59,7 +37,7 @@ class SubscriptionPage extends StatelessWidget {
         colorBright: AppTheme.purpleBright,
         iconPath: SvgPaths.bookmark,
       ),
-      _PricingPlan(
+      PricingPlan(
         dealValue: 'Better deal',
         duration: '1 year',
         price: '3.9',
@@ -68,7 +46,7 @@ class SubscriptionPage extends StatelessWidget {
         colorBright: AppTheme.pinkBright,
         iconPath: SvgPaths.bookmark,
       ),
-      _PricingPlan(
+      PricingPlan(
         dealValue: 'Best deal',
         duration: 'Life time',
         price: '4.9',
@@ -144,52 +122,10 @@ class SubscriptionPage extends StatelessWidget {
                 .toList(),
           ),
 
-          SliverPadding(
-            padding: const .symmetric(vertical: 16),
-            sliver: SliverList.list(
-              children: [
-                // ──────────────────────────────────────────────────────────
-                // Perks
-                // ──────────────────────────────────────────────────────────
-                Text(
-                  'Your premium membership unlocks these exclusive features',
-                  style: TextUtils.paragraph(context, color: scheme.onTertiary),
-                ),
-                const SizedBox(height: 16),
-                PerkTile(
-                  title: 'Unlimited projects',
-                  subTitle: 'Break past the 2-project limit and manage everything at once, freely.',
-                  iconPath: SvgPaths.projects,
-                  iconColor: scheme.primary,
-                ),
-                PerkTile(
-                  title: 'Advanced insights',
-                  subTitle: 'Unlock heatmaps, personal bests, invested times and other advanced insights',
-                  iconPath: SvgPaths.graphUp,
-                  iconColor: scheme.primary,
-                ),
-                PerkTile(
-                  title: 'Extended date filters',
-                  subTitle: 'Unlock more ranges in report filter, from last month to all time.',
-                  iconPath: SvgPaths.filter,
-                  iconColor: scheme.primary,
-                ),
-                PerkTile(
-                  title: 'Theme colors',
-                  subTitle: 'Personalize your app with a curated set of premium color themes.',
-                  iconPath: SvgPaths.colorPalette,
-                  iconColor: scheme.primary,
-                ),
-                PerkTile(
-                  title: 'Fresh start anytime',
-                  subTitle: 'Clear all your data and start fresh, your premium status stays intact.',
-                  iconPath: SvgPaths.delete,
-                  iconColor: scheme.primary,
-                ),
-                const SizedBox(height: 24),
-              ],
-            ),
-          ),
+          // ──────────────────────────────────────────────────────────
+          // Perks
+          // ──────────────────────────────────────────────────────────
+          const PremiumPerksSection(),
         ],
       ),
     );
