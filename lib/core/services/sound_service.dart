@@ -15,7 +15,7 @@ class SoundService {
       _bellSound = await _soloud.loadAsset(
         SoundPaths.bell,
       );
-      debugPrint('🔊 SoundService initialized.');
+      debugPrint('🔊 Background SoundService initialized.');
     } catch (e, stackTrace) {
       debugPrint('❌ SoundService initialization failed: $e');
       debugPrint('$stackTrace');
