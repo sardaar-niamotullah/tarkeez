@@ -1,7 +1,9 @@
+import 'package:flutter_svg/svg.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
 import 'package:tarkeez/core/shared_files/widgets/stand_alone_page_outer_structure.dart';
+import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:flutter/material.dart';
 
@@ -41,6 +43,42 @@ class FeedbackPage extends StatelessWidget {
                 onPressed: () {},
                 iconPath: SvgPaths.document,
               ),
+              const SizedBox(height: 48),
+
+              Text(
+                'Loveing using our app?',
+                style: TextUtils.title1(context, color: scheme.primary),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Kindly give us a 5 star review on app store.',
+                style: TextUtils.paragraph(context),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  SizedBox(
+                    height: 36,
+                    child: ListView.builder(
+                      itemCount: 5,
+                      shrinkWrap: true,
+                      scrollDirection: .horizontal,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, i) => SvgPicture.asset(
+                        SvgPaths.starBold,
+                        colorFilter: .mode(AppTheme.trophyGold, .srcIn),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              PrimaryButton(
+                title: 'Review link',
+                onPressed: () {},
+                // iconPath: SvgPaths.star,
+              ),
+              const SizedBox(height: 24),
             ],
           ),
         ],

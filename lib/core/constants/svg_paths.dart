@@ -90,6 +90,8 @@ class SvgPaths {
   static const String sortDescending = 'assets/svgs/sort_descending.svg';
   static const String subtract = 'assets/svgs/subtract.svg';
   static const String stats = 'assets/svgs/stats.svg';
+  static const String star = 'assets/svgs/star.svg';
+  static const String starBold = 'assets/svgs/star_bold.svg';
   static const String stopwatch = 'assets/svgs/stopwatch.svg';
   static const String shieldStar = 'assets/svgs/shield_star.svg';
   static const String stop = 'assets/svgs/stop.svg';
