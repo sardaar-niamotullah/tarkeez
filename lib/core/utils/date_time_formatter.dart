@@ -1,12 +1,13 @@
 import 'package:intl/intl.dart';
 
-class DateFormatter {
+class DateTimeFormatter {
   static String readableDate(DateTime date) =>
       DateFormat('d MMM, yyyy').format(date);
   static String readableTime(DateTime date) =>
       DateFormat('hh:mma').format(date).toLowerCase();
   static String readableDateTime(DateTime date) =>
       DateFormat('hh:mma · d MMM, yy').format(date).toLowerCase();
+
   static int durationInSeconds({
     required DateTime startedAt,
     required DateTime endedAt,

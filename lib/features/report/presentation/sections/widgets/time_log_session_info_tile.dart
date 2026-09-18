@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
-import 'package:tarkeez/core/utils/date_formatter.dart';
+import 'package:tarkeez/core/utils/date_time_formatter.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/time_log_project_pill.dart';
@@ -34,18 +34,18 @@ class TimeLogSessionInfoTile extends StatelessWidget {
             crossAxisAlignment: .start,
             children: [
               Text(
-                DateFormatter.readableDate(timeLog.startedAt.toLocal()),
+                DateTimeFormatter.readableDate(timeLog.startedAt.toLocal()),
                 style: TextUtils.paragraphSmallBold(context),
               ),
               Row(
                 children: [
                   Text(
-                    DateFormatter.readableTime(timeLog.startedAt.toLocal()),
+                    DateTimeFormatter.readableTime(timeLog.startedAt.toLocal()),
                     style: TextUtils.paragraphSmallBold(context),
                   ),
                   Text('  -  ', style: TextUtils.paragraphSmallBold(context)),
                   Text(
-                    DateFormatter.readableTime(timeLog.endedAt.toLocal()),
+                    DateTimeFormatter.readableTime(timeLog.endedAt.toLocal()),
                     style: TextUtils.paragraphSmallBold(context),
                   ),
                 ],
@@ -65,7 +65,7 @@ class TimeLogSessionInfoTile extends StatelessWidget {
             child: Align(
               alignment: .centerEnd,
               child: DurationTextUtils(
-                durationInSeconds: DateFormatter.durationInSeconds(
+                durationInSeconds: DateTimeFormatter.durationInSeconds(
                   startedAt: timeLog.startedAt,
                   endedAt: timeLog.endedAt,
                 ),

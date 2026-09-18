@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
-import 'package:tarkeez/core/utils/date_formatter.dart';
+import 'package:tarkeez/core/utils/date_time_formatter.dart';
 
 class HeatmapPoint extends StatelessWidget {
   final int minute;
@@ -45,7 +45,7 @@ class HeatmapPoint extends StatelessWidget {
             child: InkWell(
               onTap: () {
                 if (date != null) {
-                  final durationText = DateFormatter.formatDurationMinutes(
+                  final durationText = DateTimeFormatter.formatDurationMinutes(
                     minute,
                   );
                   showInfoSnackBar(
@@ -56,7 +56,7 @@ class HeatmapPoint extends StatelessWidget {
                               .withValues(alpha: getOpacity(minute))
                         : Theme.of(context).colorScheme.surface,
                     message:
-                        '$durationText on ${DateFormatter.weekdayName(date!)}, ${DateFormatter.readableDate(date!)}',
+                        '$durationText on ${DateTimeFormatter.weekdayName(date!)}, ${DateTimeFormatter.readableDate(date!)}',
                   );
                 }
               },

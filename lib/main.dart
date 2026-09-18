@@ -15,6 +15,7 @@ Future<void> main() async {
   if (kDebugMode) Bloc.observer = AppBlocObserver();
   final initialTheme = await loadInitialTheme();
   await const AppStartupTasks().run();
+  debugPrint('🎨 Datetime now ${DateTime.now()}');
 
   stopwatch.stop();
   debugPrint('🟨 ⏱️ Total Startup time: ${stopwatch.elapsedMilliseconds}ms');
