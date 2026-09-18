@@ -2,12 +2,10 @@ import 'package:tarkeez/core/app/app_bloc_observer.dart';
 import 'package:tarkeez/core/di/dependency_injection.dart';
 import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<ThemeState> bootstrap() async {
-  WidgetsFlutterBinding.ensureInitialized();
   await injectDependencies();
   if (kDebugMode) Bloc.observer = AppBlocObserver();
 

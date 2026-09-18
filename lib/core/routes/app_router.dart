@@ -1,6 +1,5 @@
 import 'package:go_router/go_router.dart';
 import 'package:tarkeez/features/others/feedback/presentation/feedback_page.dart';
-import 'package:tarkeez/features/splash_screen.dart';
 import 'package:tarkeez/features/main_scaffold.dart';
 import 'package:tarkeez/core/routes/route_names.dart';
 import 'package:tarkeez/features/others/hire_us/presentation/hire_us_page.dart';
@@ -10,12 +9,8 @@ import 'package:tarkeez/features/others/terms_and_conditions/presentation/terms_
 
 final GoRouter router = GoRouter(
   debugLogDiagnostics: false,
-  initialLocation: RouteNames.splashScreen,
+  initialLocation: RouteNames.home,
   routes: [
-    GoRoute(
-      path: RouteNames.splashScreen,
-      builder: (context, state) => const SplashScreen(),
-    ),
     GoRoute(
       path: RouteNames.home,
       builder: (context, state) => const MainScaffold(),

@@ -38,6 +38,7 @@ dependencies:
   drift: ^2.35.0
   drift_flutter: ^0.3.1
   uuid: ^4.6.0
+  flutter_native_splash: ^2.4.8
 
 dev_dependencies:
   flutter_test:
@@ -77,3 +78,12 @@ flutter:
           weight: 600
         - asset: assets/fonts/poppins/Poppins-Bold.ttf
           weight: 700
+
+flutter_native_splash:
+  color: "#000000"
+  color_dark: "#000000" 
+  image: assets/icon/tarkeez_transparent_small.png
+  android_12:
+    color: "#000000"
+    color_dark: "#000000"
+    image: assets/icon/tarkeez_transparent_small.png
