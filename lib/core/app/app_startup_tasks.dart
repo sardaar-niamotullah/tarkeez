@@ -1,13 +1,11 @@
 import 'package:tarkeez/core/di/dependency_injection.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 
-class AppPreloader {
-  const AppPreloader();
+class AppStartupTasks {
+  const AppStartupTasks();
 
   Future<void> run() async {
-    await Future.wait([
-      _preloadProjects(),
-    ]);
+    await Future.wait([_preloadProjects()]);
   }
 
   Future<void> _preloadProjects() async {
