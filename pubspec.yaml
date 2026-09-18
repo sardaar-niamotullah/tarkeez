@@ -52,7 +52,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  assets: 
+  assets:
     - .env
     - assets/
     - assets/images/
@@ -80,10 +80,10 @@ flutter:
           weight: 700
 
 flutter_native_splash:
-  color: "#000000"
-  color_dark: "#000000" 
-  image: assets/icon/tarkeez_transparent_small.png
+  color: "#0A0A0A"
+  color_dark: "#0A0A0A"
+  image: assets/icon/combination_mark.png
   android_12:
-    color: "#000000"
-    color_dark: "#000000"
-    image: assets/icon/tarkeez_transparent_small.png
+    color: "#0A0A0A"
+    color_dark: "#0A0A0A"
+    image: assets/icon/combination_mark.png

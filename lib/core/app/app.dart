@@ -1,4 +1,3 @@
-import 'package:tarkeez/core/app/app_keys.dart';
 import 'package:tarkeez/core/app/app_providers.dart';
 import 'package:tarkeez/core/routes/app_router.dart';
 import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
@@ -19,12 +18,11 @@ class App extends StatelessWidget {
         builder: (context, themeState) {
           return MaterialApp.router(
             title: 'Tarkeez',
+            routerConfig: router,
+            themeMode: themeState.mode,
             debugShowCheckedModeBanner: false,
-            scaffoldMessengerKey: AppKeys.scaffoldMessenger,
             theme: AppTheme.lightTheme(themeState.color),
             darkTheme: AppTheme.darkTheme(themeState.color),
-            themeMode: themeState.mode,
-            routerConfig: router,
           );
         },
       ),
