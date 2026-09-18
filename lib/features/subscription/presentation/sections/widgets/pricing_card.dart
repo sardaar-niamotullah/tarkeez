@@ -5,16 +5,6 @@ import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class PricingCard extends StatelessWidget {
-  final String dealValue;
-  final String duration;
-  final String price;
-  final String saveAmount;
-  final Color color;
-  final Color colorBright;
-  final String iconPath;
-  final bool isActive;
-  final bool isFreeCard;
-
   const PricingCard({
     super.key,
     required this.dealValue,
@@ -27,6 +17,16 @@ class PricingCard extends StatelessWidget {
     this.isActive = false,
     this.isFreeCard = false,
   });
+
+  final String dealValue;
+  final String duration;
+  final String price;
+  final String saveAmount;
+  final Color color;
+  final Color colorBright;
+  final String iconPath;
+  final bool isActive;
+  final bool isFreeCard;
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +122,7 @@ class PricingCard extends StatelessWidget {
                               mainAxisAlignment: .center,
                               children: [
                                 Text(
-                                  'Save $saveAmount',
+                                  saveAmount,
                                   style: TextUtils.paragraphBold(
                                     context,
                                     color: AppTheme.white,

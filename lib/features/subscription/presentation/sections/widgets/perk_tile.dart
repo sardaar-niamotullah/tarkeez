@@ -22,7 +22,7 @@ class PerkTile extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
 
     return Container(
-      margin: const .only(bottom: 8),
+      margin: const .only(bottom: 12),
       decoration: BoxDecoration(
         color: scheme.onSurface,
         borderRadius: ContainerDesignUtils.allRadius,
@@ -33,9 +33,12 @@ class PerkTile extends StatelessWidget {
           iconPath,
           colorFilter: .mode(scheme.primary, .srcIn),
         ),
-        title: Text(
-          title,
-          style: TextUtils.paragraphBold(context, color: scheme.onTertiary),
+        title: Container(
+          margin: .only(bottom: 4),
+          child: Text(
+            title,
+            style: TextUtils.paragraphBold(context, color: scheme.onTertiary),
+          ),
         ),
         subtitle: Text(subTitle, style: TextUtils.paragraph(context)),
       ),

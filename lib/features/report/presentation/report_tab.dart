@@ -38,7 +38,7 @@ class _ReportTabState extends State<ReportTab> {
               // App bar
               // ──────────────────────────────────────────────────────────
               CustomAppBar(
-                title: 'Reportsi',
+                title: 'Reports',
                 isBackButtonEnabled: false,
                 actions: [ActionPageIcon(iconPath: SvgPaths.pieChart)],
               ),
