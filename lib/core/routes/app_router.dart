@@ -10,40 +10,7 @@ import 'package:tarkeez/features/others/terms_and_conditions/presentation/terms_
 
 final GoRouter router = GoRouter(
   debugLogDiagnostics: false,
-  initialLocation: RouteNames.home,
-  // refreshListenable: getIt<AppBootNotifier>(),
-
-  // ─────────────────────────────────────────────────────────────────────────────
-  // Handles global auth-based routing: holds on splash until auth + profile check
-  // are fully resolved, redirects unauthenticated users to login, forces new users
-  // through onboarding, and blocks auth/onboarding pages for returning users.
-  // ─────────────────────────────────────────────────────────────────────────────
-  // redirect: (context, state) {
-  //   final boot = getIt<AppBootNotifier>();
-  //   final location = state.matchedLocation;
-
-  //   switch (boot.state) {
-  //     case AppBootState.initializing:
-  //     case AppBootState.noInternet:
-  //       return location == RouteNames.splashScreen
-  //           ? null
-  //           : RouteNames.splashScreen;
-
-  //     case AppBootState.unauthenticated:
-  //       const publicRoutes = {
-  //         RouteNames.authPage,
-  //         RouteNames.customerCarePage,
-  //         RouteNames.termsAndConditionsPage,
-  //       };
-  //       return publicRoutes.contains(location) ? null : RouteNames.authPage;
-
-  //     case AppBootState.authenticated:
-  //       final isEntryRoute =
-  //           location == RouteNames.splashScreen ||
-  //           location == RouteNames.authPage;
-  //       return isEntryRoute ? RouteNames.home : null;
-  //   }
-  // },
+  initialLocation: RouteNames.splashScreen,
   routes: [
     GoRoute(
       path: RouteNames.splashScreen,

@@ -1,3 +1,6 @@
+import 'package:go_router/go_router.dart';
+import 'package:tarkeez/core/app/app_preloader.dart';
+import 'package:tarkeez/core/routes/route_names.dart';
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';
 import 'package:tarkeez/core/shared_files/widgets/logo_widget.dart';
 import 'package:flutter/material.dart';
@@ -21,11 +24,17 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
       duration: const Duration(milliseconds: 800),
     )..repeat(reverse: true);
-
     _scaleAnimation = Tween<double>(
       begin: 0.8,
       end: 1,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    _runPreloader();
+  }
+
+  Future<void> _runPreloader() async {
+    await const AppPreloader().run();
+    if (!mounted) return;
+    context.go(RouteNames.home);
   }
 
   @override
@@ -42,9 +51,8 @@ class _SplashScreenState extends State<SplashScreen>
           Positioned.fill(
             child: HeroImageBackgroundLayer(
               boxFit: .cover,
-              fillColor: Theme.of(
-                context,
-              ).colorScheme.primary.withValues(alpha: 0.85),
+              fillColor: Theme.of(context).colorScheme.primary
+                  .withValues(alpha: 0.85),
             ),
           ),
           Column(
