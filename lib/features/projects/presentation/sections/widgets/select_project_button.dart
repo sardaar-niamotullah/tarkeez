@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:tarkeez/core/constants/project_colors.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
@@ -21,7 +22,11 @@ class SelectProjectButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final isProjectSeleted = selectedProject != null;
-    final resolvedColor = Colors.amber;
+    final projectColors = ProjectColors.colors;
+
+    final resolvedColor = selectedProject != null
+        ? projectColors[selectedProject!.colorId]
+        : scheme.surface;
 
     return Listener(
       behavior: .opaque,

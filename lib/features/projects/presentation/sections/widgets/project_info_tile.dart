@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tarkeez/core/constants/project_colors.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/action_button.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
@@ -26,9 +27,11 @@ class ProjectInfoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final projectColors = ProjectColors.colors;
 
-    final resolvedColor = Colors.blueAccent;
-        
+    final resolvedColor = project != null
+        ? projectColors[project!.colorId]
+        : scheme.onTertiary;
 
     return Container(
       padding: .symmetric(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:tarkeez/core/constants/project_colors.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
@@ -12,7 +13,11 @@ class ProjectPickerTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final resolvedColor = scheme.onTertiary;
+    final projectColors = ProjectColors.colors;
+
+    final resolvedColor = project != null
+        ? projectColors[project!.colorId]
+        : scheme.onTertiary;
     final bool isLocked = true;
 
     return Row(

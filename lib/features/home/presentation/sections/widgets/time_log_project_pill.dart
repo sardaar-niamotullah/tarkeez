@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tarkeez/core/constants/project_colors.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
@@ -12,7 +13,12 @@ class TimeLogProjectPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final resolvedColor = scheme.onTertiary;
+    final projectColors = ProjectColors.colors;
+
+    final resolvedColor = project != null
+        ? projectColors[project!.colorId]
+        : scheme.onTertiary;
+        
     return Container(
       width: width,
       padding: .symmetric(
