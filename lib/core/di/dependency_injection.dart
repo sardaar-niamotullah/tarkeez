@@ -7,12 +7,19 @@ import 'package:tarkeez/features/projects/data/repositories/project_repository.d
 final getIt = GetIt.instance;
 
 Future<void> injectDependencies() async {
-  // ── Database ────────────────────────────────────────────────────────────
-  getIt.registerLazySingleton<AppDatabase>(() => AppDatabase());
-
-  // ── Sound ───────────────────────────────────────────────────────────────
+  // ── Core services (parallel init) ──────────────────────────────────────
+  // AppDatabase and SoundService are both slow to initialize on first use
+  // (DB: native lib load + file open + schema check; Sound: asset
+  // decoding). We create both up front and warm them concurrently via
+  // Future.wait so the app only pays the slower of the two costs, not
+  // both added together. `database.connect()` forces the connection to
+  // open now instead of lazily on whichever query runs first later.
+  final database = AppDatabase();
   final soundService = SoundService();
-  await soundService.init();
+
+  await Future.wait([database.connect(), soundService.init()]);
+
+  getIt.registerSingleton<AppDatabase>(database);
   getIt.registerSingleton<SoundService>(soundService);
 
   // ── Projects ────────────────────────────────────────────────────────────

@@ -8,13 +8,16 @@ import 'package:tarkeez/core/app/theme_loader.dart';
 import 'package:tarkeez/core/di/dependency_injection.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  final stopwatch = Stopwatch()..start();
 
+  WidgetsFlutterBinding.ensureInitialized();
   await injectDependencies();
   if (kDebugMode) Bloc.observer = AppBlocObserver();
-
   final initialTheme = await loadInitialTheme();
   await const AppStartupTasks().run();
+
+  stopwatch.stop();
+  debugPrint('🟨 ⏱️ Total Startup time: ${stopwatch.elapsedMilliseconds}ms');
 
   runApp(App(initialTheme: initialTheme));
 }

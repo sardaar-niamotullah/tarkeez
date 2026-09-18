@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:tarkeez/core/database/app_database.dart';
 import 'package:tarkeez/core/error/result.dart';
 import 'package:tarkeez/core/error/result_guard.dart';
@@ -37,12 +36,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
   @override
   Future<Result<List<ProjectModel>>> fetchProjects() async {
     return resultGuard(() async {
-      final stopwatch = Stopwatch()..start();
       final rows = await _database.projectsDao.getAllProjects();
-      stopwatch.stop();
-      debugPrint(
-        '🟨 ⏱️ fetchProjects() took ${stopwatch.elapsedMilliseconds}ms',
-      );
       return rows.map(ProjectModel.fromRow).toList();
     });
   }
