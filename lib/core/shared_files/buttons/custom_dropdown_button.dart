@@ -15,6 +15,7 @@ class CustomDropdownButton<T> extends StatefulWidget {
     this.onChanged,
     this.itemHeight = 28,
     this.isLocked,
+    this.buttonColor,
   });
 
   final List<T> items;
@@ -24,6 +25,7 @@ class CustomDropdownButton<T> extends StatefulWidget {
   final ValueChanged<T>? onChanged;
   final double itemHeight;
   final bool Function(T value)? isLocked;
+  final Color? buttonColor;
 
   @override
   State<CustomDropdownButton<T>> createState() =>
@@ -49,7 +51,7 @@ class _CustomDropdownButtonState<T> extends State<CustomDropdownButton<T>> {
         position.dx,
         position.dy,
       ),
-      color: scheme.onSurface,
+      color: widget.buttonColor ?? scheme.onSurface,
       elevation: 0,
       shadowColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
@@ -65,9 +67,9 @@ class _CustomDropdownButtonState<T> extends State<CustomDropdownButton<T>> {
         return PopupMenuItem<T>(
           value: item,
           height: widget.itemHeight,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const .symmetric(horizontal: 16),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: .spaceBetween,
             children: [
               Text(
                 widget.labelBuilder(item),
@@ -77,9 +79,9 @@ class _CustomDropdownButtonState<T> extends State<CustomDropdownButton<T>> {
                 SvgPicture.asset(
                   SvgPaths.lock,
                   height: 16,
-                  colorFilter: ColorFilter.mode(
+                  colorFilter: .mode(
                     scheme.onTertiary.withValues(alpha: .8),
-                    BlendMode.srcIn,
+                    .srcIn,
                   ),
                 ),
             ],
@@ -124,7 +126,7 @@ class _CustomDropdownButtonState<T> extends State<CustomDropdownButton<T>> {
               width: widget.buttonWidth,
               padding: const .only(left: 16, right: 12),
               decoration: BoxDecoration(
-                color: scheme.onSurface,
+                color: widget.buttonColor ?? scheme.onSurface,
                 borderRadius: buttonRadius,
               ),
               child: Row(

@@ -5,6 +5,7 @@ import 'package:tarkeez/core/database/app_database.dart';
 import 'package:tarkeez/core/services/sound_service.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/features/projects/data/repositories/project_repository.dart';
+import 'package:tarkeez/features/sessions/data/repositories/session_repository.dart';
 
 final getIt = GetIt.instance;
 
@@ -26,4 +27,12 @@ Future<void> injectDependencies() async {
   getIt.registerLazySingleton<ProjectBloc>(
     () => ProjectBloc(getIt<ProjectRepository>()),
   );
+
+  // ── Sessions ─────────────────────────────────────────────────────────
+  getIt.registerLazySingleton<SessionRepository>(
+    () => SessionRepositoryImpl(getIt<AppDatabase>()),
+  );
+  // getIt.registerLazySingleton<ProjectBloc>(
+  //   () => ProjectBloc(getIt<ProjectRepository>()),
+  // );
 }
