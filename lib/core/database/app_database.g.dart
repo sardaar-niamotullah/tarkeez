@@ -52,7 +52,7 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
     false,
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    clientDefault: () => DateTime.now().toUtc(),
   );
   @override
   List<GeneratedColumn> get $columns => [id, name, colorId, createdAt];

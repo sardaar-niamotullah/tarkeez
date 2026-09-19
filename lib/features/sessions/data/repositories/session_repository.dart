@@ -31,8 +31,8 @@ class SessionRepositoryImpl implements SessionRepository {
   }) async {
     return resultGuard(() async {
       final companion = SessionsCompanion.insert(
-        startedAt: startedAt,
-        endedAt: endedAt,
+        startedAt: startedAt.toUtc(),
+        endedAt: endedAt.toUtc(),
         projectId: Value(project?.id),
       );
       final id = await _database.sessionsDao.insertSession(companion);
