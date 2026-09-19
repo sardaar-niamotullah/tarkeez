@@ -60,6 +60,7 @@ class HireUsPage extends StatelessWidget {
                   TechPlatfromCard(title: 'Web', iconPath: SvgPaths.globeBold),
                 ],
               ),
+              const SizedBox(height: 24),
 
               Text(
                 'Whether it’s iOS, Android, Desktop, or Web — we can build your app on any platform you choose.',
