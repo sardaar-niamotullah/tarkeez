@@ -4,28 +4,6 @@ import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
-class PricingPlan {
-  const PricingPlan({
-    required this.dealValue,
-    required this.duration,
-    required this.price,
-    required this.saveAmount,
-    required this.color,
-    required this.colorBright,
-    required this.iconPath,
-    this.isActive = false,
-  });
-
-  final String dealValue;
-  final String duration;
-  final String price;
-  final String saveAmount;
-  final Color color;
-  final Color colorBright;
-  final String iconPath;
-  final bool isActive;
-}
-
 class PricingCard extends StatelessWidget {
   const PricingCard({
     super.key,

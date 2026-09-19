@@ -4,8 +4,8 @@ import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
 import 'package:tarkeez/core/shared_files/widgets/stand_alone_page_outer_structure.dart';
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
-import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
+import 'package:tarkeez/features/subscription/presentation/models/pricing_plan.dart';
 import 'package:tarkeez/features/subscription/presentation/sections/premium_perks_section.dart';
 import 'package:tarkeez/features/subscription/presentation/sections/subscription_bottom_sheet.dart';
 import 'package:tarkeez/features/subscription/presentation/sections/widgets/pricing_card.dart';
@@ -18,49 +18,14 @@ class SubscriptionPage extends StatefulWidget {
 }
 
 class _SubscriptionPageState extends State<SubscriptionPage> {
-  int _selectedPricingCardIndex = 0;
+  PricingPlanType _selectedPricingPlanType = PricingPlanType.regularDeal;
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-
-    const pricingPlans = [
-      PricingPlan(
-        dealValue: 'Regular deal',
-        duration: '3 months',
-        price: '1.9',
-        saveAmount: 'Save 0%',
-        color: AppTheme.blue,
-        colorBright: AppTheme.blueBright,
-        iconPath: SvgPaths.bookmark,
-      ),
-      PricingPlan(
-        dealValue: 'Good deal',
-        duration: '6 months',
-        price: '2.9',
-        saveAmount: 'Save 23%',
-        color: AppTheme.purple,
-        colorBright: AppTheme.purpleBright,
-        iconPath: SvgPaths.bookmark,
-      ),
-      PricingPlan(
-        dealValue: 'Better deal',
-        duration: '1 year',
-        price: '3.9',
-        saveAmount: 'Save 48%',
-        color: AppTheme.pink,
-        colorBright: AppTheme.pinkBright,
-        iconPath: SvgPaths.bookmark,
-      ),
-      PricingPlan(
-        dealValue: 'Best deal',
-        duration: 'Life time',
-        price: '4.9',
-        saveAmount: 'Maximum saving',
-        color: AppTheme.fireTone,
-        colorBright: AppTheme.lightningGold,
-        iconPath: SvgPaths.bookmark,
-      ),
-    ];
+    final selectedPlan = pricingPlans.firstWhere(
+      (plan) => plan.type == _selectedPricingPlanType,
+    );
 
     return StandAlonePageOuterStructure(
       title: 'Go premium',
@@ -74,9 +39,8 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
         children: [
           PrimaryButton(
             title: 'Next',
-            backgroundColorLeft: pricingPlans[_selectedPricingCardIndex].color,
-            backgroundColorRight:
-                pricingPlans[_selectedPricingCardIndex].colorBright,
+            backgroundColorLeft: selectedPlan.color,
+            backgroundColorRight: selectedPlan.colorBright,
             onPressed: () {
               showModalBottomSheet(
                 context: context,
@@ -114,8 +78,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
             mainAxisSpacing: 8,
             crossAxisSpacing: 8,
             childAspectRatio: 1.4,
-            children: List.generate(pricingPlans.length, (index) {
-              final plan = pricingPlans[index];
+            children: pricingPlans.map((plan) {
               return PricingCard(
                 dealValue: plan.dealValue,
                 duration: plan.duration,
@@ -124,18 +87,17 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                 color: plan.color,
                 colorBright: plan.colorBright,
                 iconPath: plan.iconPath,
-                isActive: index == _selectedPricingCardIndex,
-                onTap: () => setState(() => _selectedPricingCardIndex = index),
+                isActive: plan.type == _selectedPricingPlanType,
+                onTap: () =>
+                    setState(() => _selectedPricingPlanType = plan.type),
               );
-            }),
+            }).toList(),
           ),
 
           // ──────────────────────────────────────────────────────────
           // Perks
           // ──────────────────────────────────────────────────────────
-          PremiumPerksSection(
-            iconColor: pricingPlans[_selectedPricingCardIndex].color,
-          ),
+          PremiumPerksSection(iconColor: selectedPlan.color),
         ],
       ),
     );
