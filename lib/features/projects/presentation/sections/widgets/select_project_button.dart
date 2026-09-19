@@ -30,10 +30,6 @@ class SelectProjectButton extends StatelessWidget {
 
     return Listener(
       behavior: .opaque,
-      // onPointerUp: (_) => showModalBottomSheet<void>(
-      //   context: context,
-      //   builder: (_) => const PickProjectBottomSheet(),
-      // ),
       onPointerUp: (_) async {
         final result = await showModalBottomSheet<ProjectSelectionResult>(
           context: context,
