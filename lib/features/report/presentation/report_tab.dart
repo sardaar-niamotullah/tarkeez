@@ -1,8 +1,5 @@
-import 'package:tarkeez/core/shared_files/buttons/custom_dropdown_button.dart';
-import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/core/utils/primary_page_margin.dart';
 import 'package:tarkeez/features/report/presentation/sections/projects_pie_chart_section.dart';
-import 'package:tarkeez/features/report/presentation/sections/report_bar_chart.dart';
 import 'package:tarkeez/features/report/presentation/sections/report_filter_tile.dart';
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';
 import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
@@ -10,18 +7,11 @@ import 'package:tarkeez/core/shared_files/widgets/custom_app_bar.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:flutter/material.dart';
-import 'package:tarkeez/features/report/presentation/sections/report_line_chart.dart';
 import 'package:tarkeez/features/report/presentation/sections/time_log_sessions_section.dart';
+import 'package:tarkeez/features/report/presentation/sections/timeline_section.dart';
 
-class ReportTab extends StatefulWidget {
+class ReportTab extends StatelessWidget {
   const ReportTab({super.key});
-
-  @override
-  State<ReportTab> createState() => _ReportTabState();
-}
-
-class _ReportTabState extends State<ReportTab> {
-  String _selectedChartType = 'Bar chart';
 
   @override
   Widget build(BuildContext context) {
@@ -66,48 +56,7 @@ class _ReportTabState extends State<ReportTab> {
                                 //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
                                 // Timeline section
                                 //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-                                Container(
-                                  padding: .only(
-                                    top: ContainerDesignUtils.quarterPadding,
-                                    bottom: ContainerDesignUtils.quarterPadding,
-                                    left: ContainerDesignUtils.halfPadding,
-                                    right: ContainerDesignUtils.padding,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: scheme.onSurface,
-                                    borderRadius:
-                                        ContainerDesignUtils.allRadius,
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: .spaceBetween,
-                                    children: [
-                                      CustomDropdownButton<String>(
-                                        items: const [
-                                          'Bar chart',
-                                          'Line chart',
-                                        ],
-                                        buttonWidth: 130,
-                                        buttonColor: scheme.surface,
-                                        initialValue: _selectedChartType,
-                                        labelBuilder: (value) => value,
-                                        onChanged: (value) {
-                                          setState(
-                                            () => _selectedChartType = value,
-                                          );
-                                        },
-                                      ),
-                                      DurationTextUtils(
-                                        durationInSeconds: 12345,
-                                        fontSizePrimary: 18,
-                                        fontSizeSeconday: 14,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                _selectedChartType == 'Bar chart'
-                                    ? const ReportBarChart()
-                                    : const ReportLineChart(),
+                                const TimelineSection(),
                                 const SizedBox(height: 16),
                                 //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
                                 // Pie chart part
