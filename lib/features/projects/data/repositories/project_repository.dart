@@ -14,8 +14,8 @@ abstract interface class ProjectRepository {
 }
 
 class ProjectRepositoryImpl implements ProjectRepository {
-  final AppDatabase _database;
   const ProjectRepositoryImpl(this._database);
+  final AppDatabase _database;
 
   @override
   Future<Result<ProjectModel>> createProject({

@@ -39,7 +39,7 @@ class TimeLogSessionsSection extends StatelessWidget {
             itemCount: 12,
             itemBuilder: (context, index) {
               return TimeLogSessionInfoTile(
-                timeLog: SessionModel(startedAt: DateTime(2025), endedAt: DateTime.now(), userId: '1'),
+                timeLog: SessionModel(startedAt: DateTime(2025), endedAt: DateTime.now()),
                 backgroundColor: index.isEven
                     ? scheme.onSurface
                     : scheme.surface,

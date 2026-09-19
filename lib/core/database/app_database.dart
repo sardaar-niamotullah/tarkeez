@@ -9,6 +9,7 @@ import 'daos/sessions_dao.dart';
 
 part 'app_database.g.dart';
 
+// dart run build_runner build --delete-conflicting-outputs
 @DriftDatabase(tables: [Projects, Sessions], daos: [ProjectsDao, SessionsDao])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
