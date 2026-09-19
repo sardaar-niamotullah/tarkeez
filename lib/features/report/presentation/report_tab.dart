@@ -75,7 +75,7 @@ class ReportTab extends StatelessWidget {
                         padding: .symmetric(
                           horizontal: ContainerDesignUtils.padding,
                         ),
-                        sliver: const SessionsSection(isLocked: false),
+                        sliver: const SessionsSection(isLocked: true),
                       ),
                     ],
                   ),

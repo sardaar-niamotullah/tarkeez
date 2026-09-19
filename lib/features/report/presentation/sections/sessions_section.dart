@@ -19,15 +19,15 @@ class SessionsSection extends StatelessWidget {
         SliverToBoxAdapter(
           child: Text('Sessions', style: TextUtils.title2(context)),
         ),
-        const SliverToBoxAdapter(child: SizedBox(height: 8)),
+        const SliverToBoxAdapter(child: SizedBox(height: 16)),
         if (isLocked)
           BlocBuilder<ThemeCubit, ThemeState>(
             builder: (context, state) {
               return SliverToBoxAdapter(
                 child: SectionImageLockOverlay(
                   imgLocation: state.isDark
-                      ? ImgPaths.timeLogsLockBackdropsDark
-                      : ImgPaths.timeLogsLockBrackdropsLight,
+                      ? ImgPaths.sessionLockBackdropsDark
+                      : ImgPaths.sessionLockBackdropsLight,
                   height: 124,
                   lockedTopicName: 'sessions',
                 ),
@@ -36,12 +36,12 @@ class SessionsSection extends StatelessWidget {
           ),
         if (!isLocked)
           SliverList.builder(
-            itemCount: 12,
+            itemCount: 3,
             itemBuilder: (context, index) {
               return SessionInfoTile(
-                timeLog: SessionModel(
+                session: SessionModel(
                   startedAt: DateTime(2026),
-                  endedAt: DateTime(2026, 1, 3, 1, 32),
+                  endedAt: DateTime(2026, 1, 1, 1, 32),
                 ),
                 backgroundColor: index.isEven
                     ? scheme.onSurface

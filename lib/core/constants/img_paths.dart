@@ -16,8 +16,8 @@ class ImgPaths {
       'assets/images/locked_backdrops/invested_times_dark.png';
   static const String investedTimesLockBackdropsLight =
       'assets/images/locked_backdrops/invested_times_light.png';
-  static const String timeLogsLockBackdropsDark =
-      'assets/images/locked_backdrops/time_logs_dark.png';
-  static const String timeLogsLockBrackdropsLight =
-      'assets/images/locked_backdrops/time_logs_light.png';
+  static const String sessionLockBackdropsDark =
+      'assets/images/locked_backdrops/session_dark.png';
+  static const String sessionLockBackdropsLight =
+      'assets/images/locked_backdrops/session_light.png';
 }

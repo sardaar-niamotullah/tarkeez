@@ -11,11 +11,11 @@ import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/sessions/data/models/session_model.dart';
 
 class SessionInfoTile extends StatelessWidget {
-  final SessionModel timeLog;
+  final SessionModel session;
   final Color backgroundColor;
   const SessionInfoTile({
     super.key,
-    required this.timeLog,
+    required this.session,
     required this.backgroundColor,
   });
 
@@ -38,18 +38,18 @@ class SessionInfoTile extends StatelessWidget {
             crossAxisAlignment: .start,
             children: [
               Text(
-                DateTimeFormatter.readableDate(timeLog.startedAt.toLocal()),
+                DateTimeFormatter.readableDate(session.startedAt.toLocal()),
                 style: TextUtils.paragraphSmallBold(context),
               ),
               Row(
                 children: [
                   Text(
-                    DateTimeFormatter.readableTime(timeLog.startedAt.toLocal()),
+                    DateTimeFormatter.readableTime(session.startedAt.toLocal()),
                     style: TextUtils.paragraphSmallBold(context),
                   ),
                   Text('  -  ', style: TextUtils.paragraphSmallBold(context)),
                   Text(
-                    DateTimeFormatter.readableTime(timeLog.endedAt.toLocal()),
+                    DateTimeFormatter.readableTime(session.endedAt.toLocal()),
                     style: TextUtils.paragraphSmallBold(context),
                   ),
                 ],
@@ -70,8 +70,8 @@ class SessionInfoTile extends StatelessWidget {
               alignment: .centerEnd,
               child: DurationTextUtils(
                 durationInSeconds: DateTimeFormatter.durationInSeconds(
-                  startedAt: timeLog.startedAt,
-                  endedAt: timeLog.endedAt,
+                  startedAt: session.startedAt,
+                  endedAt: session.endedAt,
                 ),
                 fontSizePrimary: 18,
                 fontSizeSeconday: 14,
