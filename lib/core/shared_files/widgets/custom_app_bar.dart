@@ -20,37 +20,44 @@ class CustomAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        if (isBackButtonEnabled)
-          IconButton(
-            onPressed: () => context.pop(),
-            icon: Icon(Icons.arrow_back_rounded, color: AppTheme.white),
-          ),
-        if (!isBackButtonEnabled) const SizedBox(height: 48, width: 16),
-        if (isBackButtonEnabled) const SizedBox(width: 0),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: .start,
-            children: [
-              Text(
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+    return SizedBox(
+      height: isIOS ? 36 : 48,
+      child: Row(
+        crossAxisAlignment: isIOS ? .start : .center,
+        children: [
+          if (isBackButtonEnabled)
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => context.pop(),
+                customBorder: const CircleBorder(),
+                child: Ink(
+                  padding: .symmetric(horizontal: 8),
+                  child: Icon(
+                    Icons.arrow_back_rounded,
+                    color: AppTheme.white,
+                    size: 28,
+                  ),
+                ),
+              ),
+            ),
+          if (!isBackButtonEnabled) SizedBox(width: 16),
+          if (isBackButtonEnabled) const SizedBox(width: 0),
+          Expanded(
+            child: Padding(
+              padding: const .only(top: 2),
+              child: Text(
                 title,
                 style: TextUtils.title1Normal(context, color: AppTheme.white),
                 overflow: .ellipsis,
               ),
-              if (subtitle != null)
-                Text(
-                  subtitle!,
-                  overflow: .ellipsis,
-                  style: TextUtils.paragraph(context, color: AppTheme.white),
-                ),
-            ],
+            ),
           ),
-        ),
-        ...actions,
-        // SizedBox(width: isBackButtonEnabled ? 16 : 0),
-        const SizedBox(width: 16),
-      ],
+          ...actions,
+          const SizedBox(width: 16),
+        ],
+      ),
     );
   }
 }

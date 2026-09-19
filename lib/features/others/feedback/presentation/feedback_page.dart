@@ -14,6 +14,8 @@ class FeedbackPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+    final String storeName = isIOS ? 'App Store' : 'Play Store';
 
     return StandAlonePageOuterStructure(
       title: 'Feedback',
@@ -88,7 +90,7 @@ class FeedbackPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'We\'d really appreciate it if you could leave us a 5-star review on the App Store.',
+                      'We\'d really appreciate it if you could leave us a 5-star review on the $storeName.',
                       style: TextUtils.paragraph(context),
                     ),
                     const SizedBox(height: 16),
