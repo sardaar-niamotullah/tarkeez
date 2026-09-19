@@ -1,26 +1,37 @@
+import 'package:uuid/uuid.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:tarkeez/core/database/tables/projects.dart';
-import 'package:uuid/uuid.dart';
+import 'package:tarkeez/core/database/tables/sessions.dart';
 
 import 'daos/projects_dao.dart';
+import 'daos/sessions_dao.dart';
 
 part 'app_database.g.dart';
 
-@DriftDatabase(tables: [Projects], daos: [ProjectsDao])
+@DriftDatabase(tables: [Projects, Sessions], daos: [ProjectsDao, SessionsDao])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (m) => m.createAll(),
+    onUpgrade: (m, from, to) async {
+      if (from < 2) {
+        await m.createTable(sessions);
+      }
+    },
+    beforeOpen: (details) async {
+      await customStatement('PRAGMA foreign_keys = ON');
+    },
+  );
 
   static QueryExecutor _openConnection() {
     return driftDatabase(name: 'tarkeez_db');
   }
 
-  /// Forces the underlying connection to actually open (native lib load,
-  /// file open, schema/migration check) instead of lazily deferring that
-  /// cost to whichever query happens to run first. Call once at startup,
-  /// in parallel with other slow init work — not tied to any one table.
   Future<void> connect() => customStatement('SELECT 1');
 }
