@@ -31,7 +31,7 @@ class PerkTile extends StatelessWidget {
         dense: true,
         leading: SvgPicture.asset(
           iconPath,
-          colorFilter: .mode(scheme.primary, .srcIn),
+          colorFilter: .mode(iconColor, .srcIn),
         ),
         title: Container(
           margin: .only(bottom: 4),

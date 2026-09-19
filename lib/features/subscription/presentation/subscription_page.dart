@@ -74,6 +74,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
         children: [
           PrimaryButton(
             title: 'Next',
+            backgroundColorLeft: pricingPlans[_selectedPricingCardIndex].color,
+            backgroundColorRight:
+                pricingPlans[_selectedPricingCardIndex].colorBright,
             onPressed: () {
               showModalBottomSheet(
                 context: context,
@@ -130,7 +133,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
           // ──────────────────────────────────────────────────────────
           // Perks
           // ──────────────────────────────────────────────────────────
-          const PremiumPerksSection(),
+          PremiumPerksSection(
+            iconColor: pricingPlans[_selectedPricingCardIndex].color,
+          ),
         ],
       ),
     );
