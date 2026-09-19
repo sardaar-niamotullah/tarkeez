@@ -11,7 +11,7 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
 
   SessionBloc(this._repository) : super(SessionInitial()) {
     on<EntrySessionRequested>(_onEntrySessionRequested);
-    on<FetchSessionsRequested>(_onFetchSessionsRequested);
+    on<FetchAllSessionsRequested>(_onFetchAllSessionsRequested);
   }
 
   List<SessionModel> _currentSessions() {
@@ -22,6 +22,7 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     return const [];
   }
 
+  // ── Private helpers ─────────────────────────────────────────────────────
   List<(DateTime, DateTime)> _splitByLocalDay(
     DateTime startedAt,
     DateTime endedAt,
@@ -46,19 +47,7 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     return segments;
   }
 
-  Future<void> _onFetchSessionsRequested(
-    FetchSessionsRequested event,
-    Emitter<SessionState> emit,
-  ) async {
-    emit(SessionLoading(sessions: _currentSessions()));
-    final result = await _repository.fetchAllSessions();
-    result.fold(
-      onSuccess: (sessions) => emit(SessionLoaded(sessions)),
-      onFailure: (error) =>
-          emit(SessionFailure(error.message, sessions: _currentSessions())),
-    );
-  }
-
+  // ── Event handlers ──────────────────────────────────────────────────────
   Future<void> _onEntrySessionRequested(
     EntrySessionRequested event,
     Emitter<SessionState> emit,
@@ -73,7 +62,6 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
           ),
         )
         .toList();
-
     emit(SessionLoaded([...optimisticLogs, ..._currentSessions()]));
 
     for (final (segStart, segEnd) in segments) {
@@ -91,5 +79,18 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
         return;
       }
     }
+  }
+
+  Future<void> _onFetchAllSessionsRequested(
+    FetchAllSessionsRequested event,
+    Emitter<SessionState> emit,
+  ) async {
+    emit(SessionLoading(sessions: _currentSessions()));
+    final result = await _repository.fetchAllSessions();
+    result.fold(
+      onSuccess: (sessions) => emit(SessionLoaded(sessions)),
+      onFailure: (error) =>
+          emit(SessionFailure(error.message, sessions: _currentSessions())),
+    );
   }
 }

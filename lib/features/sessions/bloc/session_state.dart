@@ -1,6 +1,5 @@
 part of 'session_bloc.dart';
 
-
 sealed class SessionState {
   const SessionState();
 }

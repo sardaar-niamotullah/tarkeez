@@ -5,9 +5,21 @@ sealed class SessionEvent {
 }
 
 final class EntrySessionRequested extends SessionEvent {
+  const EntrySessionRequested({
+    required this.startedAt,
+    required this.endedAt,
+    this.project,
+  });
   final DateTime startedAt, endedAt;
   final ProjectModel? project;
-  const EntrySessionRequested({required this.startedAt, required this.endedAt, this.project});
 }
 
-final class FetchSessionsRequested extends SessionEvent {}
+final class FetchAllSessionsRequested extends SessionEvent {}
+
+final class FetchSessionsInDateRangeRequested extends SessionEvent {
+  const FetchSessionsInDateRangeRequested({
+    required this.startedAt,
+    required this.endedAt,
+  });
+  final DateTime startedAt, endedAt;
+}
