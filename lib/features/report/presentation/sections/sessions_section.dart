@@ -4,12 +4,12 @@ import 'package:tarkeez/core/constants/img_paths.dart';
 import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
 import 'package:tarkeez/core/shared_files/widgets/section_image_lock_overlay.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
-import 'package:tarkeez/features/report/presentation/sections/widgets/time_log_session_info_tile.dart';
 import 'package:tarkeez/features/sessions/data/models/session_model.dart';
+import 'package:tarkeez/features/sessions/presentation/widgets/session_info_tile.dart';
 
-class TimeLogSessionsSection extends StatelessWidget {
+class SessionsSection extends StatelessWidget {
   final bool isLocked;
-  const TimeLogSessionsSection({super.key, required this.isLocked});
+  const SessionsSection({super.key, required this.isLocked});
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +38,11 @@ class TimeLogSessionsSection extends StatelessWidget {
           SliverList.builder(
             itemCount: 12,
             itemBuilder: (context, index) {
-              return TimeLogSessionInfoTile(
-                timeLog: SessionModel(startedAt: DateTime(2025), endedAt: DateTime.now()),
+              return SessionInfoTile(
+                timeLog: SessionModel(
+                  startedAt: DateTime(2026),
+                  endedAt: DateTime(2026, 1, 3, 1, 32),
+                ),
                 backgroundColor: index.isEven
                     ? scheme.onSurface
                     : scheme.surface,

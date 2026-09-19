@@ -1,4 +1,4 @@
-import 'package:tarkeez/core/di/dependency_injection.dart';
+import 'package:tarkeez/core/dependency_injection/di.dart';
 import 'package:tarkeez/core/shared_files/cubits/navigation_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
 import 'package:flutter/material.dart';

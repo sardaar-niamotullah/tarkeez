@@ -7,7 +7,7 @@ import 'package:tarkeez/core/shared_files/widgets/custom_app_bar.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:flutter/material.dart';
-import 'package:tarkeez/features/report/presentation/sections/time_log_sessions_section.dart';
+import 'package:tarkeez/features/report/presentation/sections/sessions_section.dart';
 import 'package:tarkeez/features/report/presentation/sections/timeline_section.dart';
 
 class ReportTab extends StatelessWidget {
@@ -75,7 +75,7 @@ class ReportTab extends StatelessWidget {
                         padding: .symmetric(
                           horizontal: ContainerDesignUtils.padding,
                         ),
-                        sliver: const TimeLogSessionsSection(isLocked: true),
+                        sliver: const SessionsSection(isLocked: false),
                       ),
                     ],
                   ),

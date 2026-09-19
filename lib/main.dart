@@ -5,7 +5,7 @@ import 'package:tarkeez/core/app/app.dart';
 import 'package:tarkeez/core/app/app_bloc_observer.dart';
 import 'package:tarkeez/core/app/app_startup_tasks.dart';
 import 'package:tarkeez/core/app/theme_loader.dart';
-import 'package:tarkeez/core/di/dependency_injection.dart';
+import 'package:tarkeez/core/dependency_injection/di.dart';
 
 Future<void> main() async {
   final stopwatch = Stopwatch()..start();

@@ -16,6 +16,7 @@ abstract interface class SessionRepository {
     required DateTime startedAt,
     required DateTime endedAt,
   });
+  Future<Result<void>> deleteSession(SessionModel session);
 }
 
 class SessionRepositoryImpl implements SessionRepository {
@@ -62,6 +63,14 @@ class SessionRepositoryImpl implements SessionRepository {
         endedAt: endedAt,
       );
       return rows.map(SessionModel.fromRow).toList();
+    });
+  }
+
+  @override
+  Future<Result<void>> deleteSession(SessionModel session) async {
+    return resultGuard(() async {
+      await _database.sessionsDao.deleteSession(session.id!);
+      return;
     });
   }
 }

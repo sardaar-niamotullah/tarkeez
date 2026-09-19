@@ -21,10 +21,10 @@ class _TimelineSectionState extends State<TimelineSection> {
       children: [
         Container(
           padding: .only(
+            right: ContainerDesignUtils.padding,
+            left: ContainerDesignUtils.halfPadding,
             top: ContainerDesignUtils.quarterPadding,
             bottom: ContainerDesignUtils.quarterPadding,
-            left: ContainerDesignUtils.halfPadding,
-            right: ContainerDesignUtils.padding,
           ),
           decoration: BoxDecoration(
             color: scheme.onSurface,

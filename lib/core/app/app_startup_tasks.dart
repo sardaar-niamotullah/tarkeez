@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:tarkeez/core/di/dependency_injection.dart';
+import 'package:tarkeez/core/dependency_injection/di.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 
 class AppStartupTasks {

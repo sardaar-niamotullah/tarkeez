@@ -5,10 +5,10 @@ import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 
-class TimeLogProjectPill extends StatelessWidget {
+class SessionProjectPill extends StatelessWidget {
   final ProjectModel? project;
   final double width;
-  const TimeLogProjectPill({super.key, this.project, this.width = 116});
+  const SessionProjectPill({super.key, this.project, this.width = 116});
 
   @override
   Widget build(BuildContext context) {

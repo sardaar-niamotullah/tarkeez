@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
-import 'package:tarkeez/features/home/presentation/sections/widgets/time_log_project_pill.dart';
+import 'package:tarkeez/features/home/presentation/sections/widgets/session_project_pill.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 
 class TimeLogTile extends StatelessWidget {
@@ -29,7 +29,7 @@ class TimeLogTile extends StatelessWidget {
       child: Row(
         mainAxisAlignment: .spaceBetween,
         children: [
-          TimeLogProjectPill(project: project),
+          SessionProjectPill(project: project),
           DurationTextUtils(durationInSeconds: 6532),
         ],
       ),
