@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:collection/collection.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/utils/duration_text_utils.dart';
+import 'package:tarkeez/core/utils/date_time_formatter.dart';
+import 'package:tarkeez/core/utils/container_design_utils.dart';
+import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/core/shared_files/buttons/action_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/delete_dialog.dart';
-import 'package:tarkeez/core/utils/container_design_utils.dart';
-import 'package:tarkeez/core/utils/date_time_formatter.dart';
-import 'package:tarkeez/core/utils/duration_text_utils.dart';
-import 'package:tarkeez/core/utils/text_utils.dart';
-import 'package:tarkeez/features/home/presentation/sections/widgets/session_project_pill.dart';
-import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/sessions/data/models/session_model.dart';
+import 'package:tarkeez/features/home/presentation/sections/widgets/session_project_pill.dart';
 
 class SessionInfoTile extends StatelessWidget {
   final SessionModel session;
@@ -22,6 +24,13 @@ class SessionInfoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final projectState = context.watch<ProjectBloc>().state;
+    final projects = projectState is ProjectLoaded
+        ? projectState.projects
+        : (projectState is ProjectLoading ? projectState.projects : null);
+    final resolvedProject = projects?.firstWhereOrNull(
+      (p) => p.id == session.projectId,
+    );
     return Container(
       padding: .symmetric(
         horizontal: ContainerDesignUtils.padding,
@@ -56,14 +65,7 @@ class SessionInfoTile extends StatelessWidget {
               ),
             ],
           ),
-          SessionProjectPill(
-            width: 74,
-            project: ProjectModel(
-              name: 'Some',
-              colorId: 1,
-              createdAt: DateTime(2025),
-            ),
-          ),
+          SessionProjectPill(width: 74, project: resolvedProject),
           SizedBox(
             width: 70,
             child: Align(
