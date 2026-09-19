@@ -16,9 +16,6 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
   }
 
   // ── Private helpers ─────────────────────────────────────────────────────
-  /// Re-fetches from scratch after a mutation (create / update / delete).
-  /// Does not emit ProjectLoading — callers decide whether the list
-  /// should visibly reset while refreshing.
   Future<void> _refreshProjects(
     Emitter<ProjectState> emit, {
     bool created = false,

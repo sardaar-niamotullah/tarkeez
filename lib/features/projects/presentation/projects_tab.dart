@@ -23,26 +23,6 @@ class ProjectsTab extends StatelessWidget {
 
     return BlocConsumer<ProjectBloc, ProjectState>(
       listener: (context, state) {
-        if (state is ProjectLoaded) {
-          if (state.isDeleted) {
-            showSuccessSnackBar(
-              context,
-              message:
-                  'Project deleted. Tracked time was moved to \'No project\'.',
-            );
-          } else if (state.isCreated) {
-            showSuccessSnackBar(
-              context,
-              message: 'Project successfully created. You can now start tracking time on this project.',
-            );
-          } else if (state.isUpdated) {
-            showSuccessSnackBar(
-              context,
-              message:
-                  'Project successfully updated. Your changes have been saved.',
-            );
-          }
-        }
         if (state is ProjectFailure) {
           showErrorSnackBar(context, message: state.errorMessage);
         }
