@@ -9,11 +9,13 @@ class AppStartupTasks {
 
   Future<void> run() async {
     final stopwatch = Stopwatch()..start();
-    await Future.wait([
-      _preloadProjects(),
-      _preloadSessions(),
-      _preloadDailyRollups(),
-    ]);
+    
+    // Sequential by design: SQLite serializes all queries on one connection,
+    // so Future.wait here wouldn't run them concurrently — just queue them.
+    await _preloadProjects();
+    await _preloadSessions();
+    await _preloadDailyRollups();
+
     stopwatch.stop();
     debugPrint(
       '🟨 ⏱️ AppStartupTasks.run() took ${stopwatch.elapsedMilliseconds}ms',
@@ -28,30 +30,16 @@ class AppStartupTasks {
   }
 
   Future<void> _preloadSessions() async {
-    final stopwatch = Stopwatch()..start();
-
     final bloc = getIt<SessionBloc>();
     if (bloc.state is SessionLoaded) return;
     bloc.add(FetchAllSessionsRequested());
     await bloc.stream.firstWhere((s) => s is! SessionLoading);
-
-    stopwatch.stop();
-    debugPrint(
-      '🟨 ⏱️ loading all sessions took ${stopwatch.elapsedMilliseconds}ms',
-    );
   }
 
   Future<void> _preloadDailyRollups() async {
-    final stopwatch = Stopwatch()..start();
-
     final bloc = getIt<DailyRollupBloc>();
     if (bloc.state is DailyRollupLoaded) return;
     bloc.add(FetchDailyRollupRequested());
     await bloc.stream.firstWhere((s) => s is! DailyRollupLoading);
-
-    stopwatch.stop();
-    debugPrint(
-      '🟨 ⏱️ loading all daily rollups took ${stopwatch.elapsedMilliseconds}ms',
-    );
   }
 }

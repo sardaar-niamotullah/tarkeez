@@ -16,14 +16,7 @@ class DailyRollupRepositoryImpl implements DailyRollupRepository {
   Future<Result<List<DailyRollupModel>>> fetchAllRollups() async {
     return resultGuard(() async {
       final rows = await _database.dailyRollupsDao.getAllRollups();
-      return rows
-          .map(
-            (r) => DailyRollupModel(
-              date: r.date,
-              durationSeconds: r.durationSeconds,
-            ),
-          )
-          .toList();
+      return rows.map(DailyRollupModel.fromRow).toList();
     });
   }
 
@@ -38,14 +31,7 @@ class DailyRollupRepositoryImpl implements DailyRollupRepository {
         start,
         end,
       );
-      return rows
-          .map(
-            (r) => DailyRollupModel(
-              date: r.date,
-              durationSeconds: r.durationSeconds,
-            ),
-          )
-          .toList();
+      return rows.map(DailyRollupModel.fromRow).toList();
     });
   }
 
