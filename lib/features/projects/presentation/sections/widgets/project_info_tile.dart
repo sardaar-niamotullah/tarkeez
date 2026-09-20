@@ -32,7 +32,6 @@ class ProjectInfoTile extends StatelessWidget {
     final resolvedColor = project != null
         ? projectColors[project!.colorId]
         : scheme.onTertiary;
-
     return Container(
       padding: .symmetric(
         horizontal: ContainerDesignUtils.padding,

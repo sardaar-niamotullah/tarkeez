@@ -8,7 +8,11 @@ class AppStartupTasks {
 
   Future<void> run() async {
     final stopwatch = Stopwatch()..start();
-    await Future.wait([_preloadProjects(), _preloadSessions()]);
+    await Future.wait([
+      _preloadProjects(),
+      _preloadSessions(),
+      _preloadDailyRollups(),
+    ]);
     stopwatch.stop();
     debugPrint(
       '🟨 ⏱️ AppStartupTasks.run() took ${stopwatch.elapsedMilliseconds}ms',
@@ -35,4 +39,6 @@ class AppStartupTasks {
       '🟨 ⏱️ loading all sessions took ${stopwatch.elapsedMilliseconds}ms',
     );
   }
+
+  Future<void> _preloadDailyRollups() async {}
 }

@@ -2,17 +2,17 @@ import 'package:equatable/equatable.dart';
 import 'package:tarkeez/core/database/app_database.dart';
 
 class ProjectModel extends Equatable {
-  final String? id;
-  final String name;
-  final int colorId;
-  final DateTime createdAt;
-
   const ProjectModel({
     this.id,
     required this.name,
     required this.colorId,
     required this.createdAt,
   });
+  
+  final String? id;
+  final String name;
+  final int colorId;
+  final DateTime createdAt;
 
   @override
   List<Object?> get props => [id, name, colorId, createdAt];
