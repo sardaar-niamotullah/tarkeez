@@ -118,7 +118,7 @@ class DailyRollupStats {
 
     final byYear = <String, int>{};
     rollups.forEach((date, seconds) {
-      final key = date.substring(0, 4); // 'YYYY'
+      final key = date.substring(0, 4); 
       byYear[key] = (byYear[key] ?? 0) + seconds;
     });
 
