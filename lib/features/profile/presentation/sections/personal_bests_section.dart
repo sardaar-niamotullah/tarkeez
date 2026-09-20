@@ -6,15 +6,8 @@ import 'package:tarkeez/core/shared_files/widgets/section_image_lock_overlay.dar
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
+import 'package:tarkeez/features/daily_rollups/data/models/personal_best_period.dart';
 import 'package:tarkeez/features/profile/presentation/sections/widgets/personal_best_card.dart';
-
-class PersonalBestPeriod {
-  const PersonalBestPeriod({required this.seconds, required this.label});
-  final int seconds;
-  final String label;
-
-  static const empty = PersonalBestPeriod(seconds: 0, label: '—');
-}
 
 class PersonalBestsSection extends StatelessWidget {
   final bool isLocked;

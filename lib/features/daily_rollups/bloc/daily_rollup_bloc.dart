@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
+import 'package:tarkeez/features/daily_rollups/data/models/personal_best_period.dart';
 import 'package:tarkeez/features/daily_rollups/data/repositories/daily_rollup_repository.dart';
-import 'package:tarkeez/features/profile/presentation/sections/personal_bests_section.dart';
+import 'package:tarkeez/features/daily_rollups/utils/daily_rollup_date_utils.dart';
+import 'package:tarkeez/features/daily_rollups/utils/daily_rollup_stats.dart';
 
 part 'daily_rollup_event.dart';
 part 'daily_rollup_state.dart';
@@ -15,7 +17,6 @@ class DailyRollupBloc extends Bloc<DailyRollupEvent, DailyRollupState> {
     on<DailyRollupLiveStopped>(_onLiveStopped);
   }
 
-  // ── Private helpers ─────────────────────────────────────────────────────
   Future<void> _onFetchDailyRollupRequested(
     FetchDailyRollupRequested event,
     Emitter<DailyRollupState> emit,
@@ -63,7 +64,12 @@ class DailyRollupBloc extends Bloc<DailyRollupEvent, DailyRollupState> {
     if (current is! DailyRollupLoaded) return;
 
     final elapsed = DateTime.now().difference(event.timerStartedAt).inSeconds;
-    emit(current.copyWith(liveDate: _todayLocal(), liveElapsedSeconds: elapsed));
+    emit(
+      current.copyWith(
+        liveDate: DailyRollupDateUtils.todayLocal(),
+        liveElapsedSeconds: elapsed,
+      ),
+    );
   }
 
   void _onLiveStopped(
@@ -73,10 +79,5 @@ class DailyRollupBloc extends Bloc<DailyRollupEvent, DailyRollupState> {
     final current = state;
     if (current is! DailyRollupLoaded) return;
     emit(current.copyWith(clearLive: true));
-  }
-
-  String _todayLocal() {
-    final now = DateTime.now();
-    return '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
   }
 }
