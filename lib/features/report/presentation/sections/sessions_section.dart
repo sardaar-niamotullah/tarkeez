@@ -63,9 +63,9 @@ class SessionsSection extends StatelessWidget {
                   state is! SessionFailure)
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const .only(top: 128),
+                    padding: const .only(top: 16),
                     child: Text(
-                      'You don\'t have any projects to show. Add project to see projects in here.',
+                      'No sessions to show for this date range.',
                       style: TextUtils.paragraph(
                         context,
                         color: scheme.onTertiary.withValues(alpha: .7),
