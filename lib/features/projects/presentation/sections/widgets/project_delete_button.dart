@@ -20,8 +20,7 @@ class ProjectDeleteButton extends StatelessWidget {
       backgroundColor: scheme.error.withValues(alpha: .1),
       onTap: () => showDialog(
         context: context,
-        builder: (_) => 
-        BlocConsumer<ProjectBloc, ProjectState>(
+        builder: (_) => BlocConsumer<ProjectBloc, ProjectState>(
           listener: (context, state) {
             if (state is ProjectLoaded || state is ProjectFailure) {
               context.pop();
@@ -30,11 +29,9 @@ class ProjectDeleteButton extends StatelessWidget {
           builder: (context, state) {
             return DeleteDialog(
               isLoading: state is ProjectLoading,
-              onDeleteTap: () {
-                context.read<ProjectBloc>().add(
-                  DeleteProjectsRequested(project),
-                );
-              },
+              onDeleteTap: () => context.read<ProjectBloc>().add(
+                DeleteProjectsRequested(project),
+              ),
               message:
                   'Deleting this project will move all its tracked time to \'No project\'.\n\n'
                   'This action cannot be undone.',

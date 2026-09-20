@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
@@ -9,6 +10,7 @@ import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/core/shared_files/buttons/action_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/delete_dialog.dart';
+import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
 import 'package:tarkeez/features/sessions/data/models/session_model.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/session_project_pill.dart';
 
@@ -86,8 +88,21 @@ class SessionInfoTile extends StatelessWidget {
             backgroundColor: scheme.error.withValues(alpha: .1),
             onTap: () => showDialog(
               context: context,
-              builder: (_) =>
-                  DeleteDialog(isLoading: false, onDeleteTap: () {}),
+              builder: (_) => BlocConsumer<SessionBloc, SessionState>(
+                listener: (context, state) {
+                  if (state is SessionLoaded || state is SessionFailure) {
+                    context.pop();
+                  }
+                },
+                builder: (context, state) {
+                  return DeleteDialog(
+                    isLoading: state is SessionLoading,
+                    onDeleteTap: () => context.read<SessionBloc>().add(
+                      DeleteSessionRequested(session),
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ],
