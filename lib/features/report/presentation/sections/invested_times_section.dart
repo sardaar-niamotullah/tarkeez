@@ -10,33 +10,8 @@ import 'package:tarkeez/features/report/presentation/sections/widgets/invested_t
 
 class InvestedTimesSection extends StatelessWidget {
   final bool isLocked;
-  final int yesterday;
-  final int today;
-  final int lastWeek;
-  final int thisWeek;
-  final int lastMonth;
-  final int thisMonth;
-  final int thisYear;
-  final int lastYear;
-  final int lastSevenDays;
-  final int lastThirtyDays;
-  final int last365Days;
 
-  const InvestedTimesSection({
-    super.key,
-    required this.isLocked,
-    required this.today,
-    required this.yesterday,
-    required this.thisWeek,
-    required this.lastWeek,
-    required this.thisMonth,
-    required this.lastMonth,
-    required this.thisYear,
-    required this.lastYear,
-    required this.lastSevenDays,
-    required this.lastThirtyDays,
-    required this.last365Days,
-  });
+  const InvestedTimesSection({super.key, required this.isLocked});
 
   @override
   Widget build(BuildContext context) {
@@ -65,48 +40,48 @@ class InvestedTimesSection extends StatelessWidget {
                 InvestedTimeStatGroup(
                   emoji: '️☀️',
                   accentColor: AppTheme.trophyGold,
+                  topSeconds: 1432, // today
                   topLabel: 'Today',
-                  topSeconds: today,
+                  bottomSeconds: 4323, // yesterday
                   bottomLabel: 'Yesterday',
-                  bottomSeconds: yesterday,
                 ),
                 const SizedBox(width: ContainerDesignUtils.halfPadding),
                 InvestedTimeStatGroup(
                   emoji: '📅',
                   accentColor: AppTheme.crimsonTab,
+                  topSeconds: 12342, // this week
                   topLabel: 'This week',
-                  topSeconds: thisWeek,
+                  bottomSeconds: 3242, // last week
                   bottomLabel: 'Last week',
-                  bottomSeconds: lastWeek,
                 ),
                 const SizedBox(width: ContainerDesignUtils.halfPadding),
                 InvestedTimeStatGroup(
                   emoji: '🗓️',
                   accentColor: AppTheme.blue,
+                  topSeconds: 123434, // this month
                   topLabel: 'This month',
-                  topSeconds: thisMonth,
+                  bottomSeconds: 53423, // last month
                   bottomLabel: 'Last month',
-                  bottomSeconds: lastMonth,
                 ),
                 const SizedBox(width: ContainerDesignUtils.halfPadding),
                 InvestedTimeStatGroup(
                   emoji: '🌍',
                   accentColor: AppTheme.sandAmber,
+                  topSeconds: 123456, // this year
                   topLabel: 'This year',
-                  topSeconds: thisYear,
+                  bottomSeconds: 432312, // last year
                   bottomLabel: 'Last year',
-                  bottomSeconds: lastYear,
                 ),
                 const SizedBox(width: ContainerDesignUtils.halfPadding),
                 InvestedTimeStatGroup(
                   emoji: '⏳',
                   accentColor: AppTheme.sandAmber,
+                  topSeconds: 12132, // last 7 days
                   topLabel: 'Last 7 days',
-                  topSeconds: lastSevenDays,
+                  middleSeconds: 124234, // last 30 days
                   middleLabel: 'Last 30 days',
-                  middleSeconds: lastThirtyDays,
+                  bottomSeconds: 32423, // last 365 day
                   bottomLabel: 'Last 365 days',
-                  bottomSeconds: last365Days,
                 ),
               ],
             ),
