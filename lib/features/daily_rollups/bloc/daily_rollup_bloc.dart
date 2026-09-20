@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:tarkeez/features/daily_rollups/data/repositories/daily_rollup_repository.dart';
+import 'package:tarkeez/features/profile/presentation/sections/personal_bests_section.dart';
 
 part 'daily_rollup_event.dart';
 part 'daily_rollup_state.dart';

@@ -8,6 +8,14 @@ import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
 import 'package:tarkeez/features/profile/presentation/sections/widgets/personal_best_card.dart';
 
+class PersonalBestPeriod {
+  const PersonalBestPeriod({required this.seconds, required this.label});
+  final int seconds;
+  final String label;
+
+  static const empty = PersonalBestPeriod(seconds: 0, label: '—');
+}
+
 class PersonalBestsSection extends StatelessWidget {
   final bool isLocked;
   const PersonalBestsSection({super.key, required this.isLocked});
@@ -36,6 +44,10 @@ class PersonalBestsSection extends StatelessWidget {
             buildWhen: (previous, current) => current is DailyRollupLoaded,
             builder: (context, state) {
               final loaded = state is DailyRollupLoaded ? state : null;
+              final bestDay = loaded?.bestDay ?? PersonalBestPeriod.empty;
+              final bestWeek = loaded?.bestWeek ?? PersonalBestPeriod.empty;
+              final bestMonth = loaded?.bestMonth ?? PersonalBestPeriod.empty;
+              final bestYear = loaded?.bestYear ?? PersonalBestPeriod.empty;
 
               return GridView.count(
                 shrinkWrap: true,
@@ -47,25 +59,25 @@ class PersonalBestsSection extends StatelessWidget {
                 children: [
                   PersonalBestCard(
                     emoji: '☀️',
-                    title: 'Day',
-                    durationInSeconds: loaded?.bestDaySeconds ?? 0,
+                    title: bestDay.label,
+                    durationInSeconds: bestDay.seconds,
                   ),
                   PersonalBestCard(
                     emoji: '📅',
-                    title: 'Week',
-                    durationInSeconds: loaded?.bestWeekSeconds ?? 0,
+                    title: bestWeek.label,
+                    durationInSeconds: bestWeek.seconds,
                     mainAxisAlignment: .end,
                     crossAxisAlignment: .end,
                   ),
                   PersonalBestCard(
                     emoji: '🗓️',
-                    title: 'Month',
-                    durationInSeconds: loaded?.bestMonthSeconds ?? 0,
+                    title: bestMonth.label,
+                    durationInSeconds: bestMonth.seconds,
                   ),
                   PersonalBestCard(
                     emoji: '🌍',
-                    title: 'Year',
-                    durationInSeconds: loaded?.bestYearSeconds ?? 0,
+                    title: bestYear.label,
+                    durationInSeconds: bestYear.seconds,
                     mainAxisAlignment: .end,
                     crossAxisAlignment: .end,
                   ),

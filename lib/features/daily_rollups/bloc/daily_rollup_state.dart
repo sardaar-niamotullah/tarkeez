@@ -39,6 +39,7 @@ class DailyRollupLoaded extends DailyRollupState {
   //––––––––––––––––––––––––––––––––––––––––––––––––––––––
   // Streaks
   //––––––––––––––––––––––––––––––––––––––––––––––––––––––
+
   /// Consecutive days up to and including today with activity.
   /// If today has no activity yet, falls back to yesterday so an
   /// in-progress streak doesn't visually reset to 0 before the day ends.
@@ -87,6 +88,7 @@ class DailyRollupLoaded extends DailyRollupState {
   //––––––––––––––––––––––––––––––––––––––––––––––––––––––
   // Personal bests
   //––––––––––––––––––––––––––––––––––––––––––––––––––––––
+
   /// Merges DB-persisted rollups with today's live overlay into one
   /// date -> seconds map, so bests reflect the in-progress session too.
   Map<String, int> get _effectiveRollups {
@@ -96,61 +98,94 @@ class DailyRollupLoaded extends DailyRollupState {
     return merged;
   }
 
-  /// Best single day, in seconds.
-  int get bestDaySeconds {
-    final values = _effectiveRollups.values;
-    if (values.isEmpty) return 0;
-    return values.reduce((a, b) => a > b ? a : b);
-  }
-
-  /// Best rolling 7-day window, in seconds.
-  int get bestWeekSeconds => _bestWindow(7);
-
-  /// Best calendar month, in seconds.
-  int get bestMonthSeconds {
-    final byMonth = <String, int>{};
-    _effectiveRollups.forEach((date, seconds) {
-      final monthKey = date.substring(0, 7); // 'YYYY-MM'
-      byMonth[monthKey] = (byMonth[monthKey] ?? 0) + seconds;
-    });
-    if (byMonth.isEmpty) return 0;
-    return byMonth.values.reduce((a, b) => a > b ? a : b);
-  }
-
-  /// Best calendar year, in seconds.
-  int get bestYearSeconds {
-    final byYear = <String, int>{};
-    _effectiveRollups.forEach((date, seconds) {
-      final yearKey = date.substring(0, 4); // 'YYYY'
-      byYear[yearKey] = (byYear[yearKey] ?? 0) + seconds;
-    });
-    if (byYear.isEmpty) return 0;
-    return byYear.values.reduce((a, b) => a > b ? a : b);
-  }
-
-  /// Best sum over any `windowDays`-day sliding window across the
-  /// full recorded date range (inclusive of gaps, which count as 0).
-  int _bestWindow(int windowDays) {
+  /// Best single day — label e.g. '1 Sep, 2026'.
+  PersonalBestPeriod get bestDay {
     final rollups = _effectiveRollups;
-    if (rollups.isEmpty) return 0;
-
-    final dates = rollups.keys.toList()..sort();
-    final firstDate = dates.first;
-    final lastDate = dates.last;
-
-    var best = 0;
-    var cursor = firstDate;
-    while (!_isAfter(cursor, lastDate)) {
-      var sum = 0;
-      var windowCursor = cursor;
-      for (var i = 0; i < windowDays; i++) {
-        sum += rollups[windowCursor] ?? 0;
-        windowCursor = _shiftDate(windowCursor, 1);
+    if (rollups.isEmpty) return PersonalBestPeriod.empty;
+    String? bestDate;
+    var bestSeconds = -1;
+    rollups.forEach((date, seconds) {
+      if (seconds > bestSeconds) {
+        bestSeconds = seconds;
+        bestDate = date;
       }
-      best = sum > best ? sum : best;
-      cursor = _shiftDate(cursor, 1);
-    }
-    return best;
+    });
+
+    return PersonalBestPeriod(seconds: bestSeconds, label: _formatDayLabel(bestDate!));
+  }
+
+  /// Best ISO calendar week (Mon–Sun) — label e.g. 'Week 36, 2026'.
+  PersonalBestPeriod get bestWeek {
+    final rollups = _effectiveRollups;
+    if (rollups.isEmpty) return PersonalBestPeriod.empty;
+
+    // key: 'isoYear-Wweek' e.g. '2026-W36'
+    final byWeek = <String, int>{};
+    rollups.forEach((date, seconds) {
+      final key = _isoWeekKey(date);
+      byWeek[key] = (byWeek[key] ?? 0) + seconds;
+    });
+
+    String? bestKey;
+    var bestSeconds = -1;
+    byWeek.forEach((key, seconds) {
+      if (seconds > bestSeconds) {
+        bestSeconds = seconds;
+        bestKey = key;
+      }
+    });
+
+    final parts = bestKey!.split('-W');
+    final isoYear = parts[0];
+    final isoWeek = int.parse(parts[1]);
+
+    return PersonalBestPeriod(seconds: bestSeconds, label: 'Week $isoWeek, $isoYear');
+  }
+
+  /// Best calendar month — label e.g. 'Sep, 2026'.
+  PersonalBestPeriod get bestMonth {
+    final rollups = _effectiveRollups;
+    if (rollups.isEmpty) return PersonalBestPeriod.empty;
+
+    final byMonth = <String, int>{};
+    rollups.forEach((date, seconds) {
+      final key = date.substring(0, 7); // 'YYYY-MM'
+      byMonth[key] = (byMonth[key] ?? 0) + seconds;
+    });
+
+    String? bestKey;
+    var bestSeconds = -1;
+    byMonth.forEach((key, seconds) {
+      if (seconds > bestSeconds) {
+        bestSeconds = seconds;
+        bestKey = key;
+      }
+    });
+
+    return PersonalBestPeriod(seconds: bestSeconds, label: _formatMonthLabel(bestKey!));
+  }
+
+  /// Best calendar year — label e.g. '2026'.
+  PersonalBestPeriod get bestYear {
+    final rollups = _effectiveRollups;
+    if (rollups.isEmpty) return PersonalBestPeriod.empty;
+
+    final byYear = <String, int>{};
+    rollups.forEach((date, seconds) {
+      final key = date.substring(0, 4); // 'YYYY'
+      byYear[key] = (byYear[key] ?? 0) + seconds;
+    });
+
+    String? bestKey;
+    var bestSeconds = -1;
+    byYear.forEach((key, seconds) {
+      if (seconds > bestSeconds) {
+        bestSeconds = seconds;
+        bestKey = key;
+      }
+    });
+
+    return PersonalBestPeriod(seconds: bestSeconds, label: bestKey!);
   }
 
   DailyRollupLoaded copyWith({
@@ -166,6 +201,10 @@ class DailyRollupLoaded extends DailyRollupState {
         : (liveElapsedSeconds ?? this.liveElapsedSeconds),
   );
 
+  //––––––––––––––––––––––––––––––––––––––––––––––––––––––
+  // Date helpers
+  //––––––––––––––––––––––––––––––––––––––––––––––––––––––
+
   static String _todayLocal() {
     final now = DateTime.now();
     return '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
@@ -176,5 +215,55 @@ class DailyRollupLoaded extends DailyRollupState {
     return '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
   }
 
-  static bool _isAfter(String a, String b) => a.compareTo(b) > 0;
+  static const _monthNames = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+
+  /// '2026-09-01' -> '1 Sep, 2026'
+  static String _formatDayLabel(String date) {
+    final d = DateTime.parse(date);
+    return '${d.day} ${_monthNames[d.month - 1]}, ${d.year}';
+  }
+
+  /// '2026-09' -> 'Sep, 2026'
+  static String _formatMonthLabel(String monthKey) {
+    final parts = monthKey.split('-');
+    final year = parts[0];
+    final month = int.parse(parts[1]);
+    return '${_monthNames[month - 1]}, $year';
+  }
+
+  /// Returns ISO 8601 week key ('YYYY-Www') for a 'YYYY-MM-DD' date.
+  /// ISO weeks start Monday; week 1 is the week containing the year's
+  /// first Thursday (equivalently, containing Jan 4th).
+  static String _isoWeekKey(String date) {
+    final d = DateTime.parse(date);
+    // Thursday of this date's ISO week: shift to Monday, then +3 days.
+    final weekday = d.weekday; // Mon=1 ... Sun=7
+    final thursday = d.add(Duration(days: 4 - weekday));
+    final isoYear = thursday.year;
+
+    final jan4 = DateTime(isoYear, 1, 4);
+    final jan4Weekday = jan4.weekday;
+    final week1Monday = jan4.subtract(Duration(days: jan4Weekday - 1));
+
+    final diffDays = thursday
+        .add(const Duration(days: -3)) // back to this week's Monday
+        .difference(week1Monday)
+        .inDays;
+    final isoWeek = (diffDays / 7).floor() + 1;
+
+    return '$isoYear-W${isoWeek.toString().padLeft(2, '0')}';
+  }
 }
