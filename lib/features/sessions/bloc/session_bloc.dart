@@ -12,6 +12,7 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
   SessionBloc(this._repository) : super(SessionInitial()) {
     on<EntrySessionRequested>(_onEntrySessionRequested);
     on<FetchAllSessionsRequested>(_onFetchAllSessionsRequested);
+    on<DeleteSessionRequested>(_onDeleteSessionRequested);
   }
 
   List<SessionModel> _currentSessions() {
@@ -91,6 +92,25 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
       onSuccess: (sessions) => emit(SessionLoaded(sessions)),
       onFailure: (error) =>
           emit(SessionFailure(error.message, sessions: _currentSessions())),
+    );
+  }
+
+  Future<void> _onDeleteSessionRequested(
+    DeleteSessionRequested event,
+    Emitter<SessionState> emit,
+  ) async {
+    final previousSessions = _currentSessions();
+    final optimisticSessions = previousSessions
+        .where((s) => s.id != event.session.id)
+        .toList();
+
+    // Optimistic removal so the UI updates instantly.
+    emit(SessionLoaded.deleted(optimisticSessions));
+    final result = await _repository.deleteSession(event.session);
+    result.fold(
+      onSuccess: (_) {}, // optimistic state already reflects the delete
+      onFailure: (error) =>
+          emit(SessionFailure(error.message, sessions: previousSessions)),
     );
   }
 }

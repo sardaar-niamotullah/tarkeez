@@ -23,3 +23,8 @@ final class FetchSessionsInDateRangeRequested extends SessionEvent {
   });
   final DateTime startedAt, endedAt;
 }
+
+final class DeleteSessionRequested extends SessionEvent {
+  const DeleteSessionRequested(this.session);
+  final SessionModel session;
+}
