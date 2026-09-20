@@ -36,6 +36,9 @@ class DailyRollupLoaded extends DailyRollupState {
   /// including the live (unsaved) elapsed time for today.
   bool _hasActivity(String date) => durationFor(date) > 0;
 
+  //––––––––––––––––––––––––––––––––––––––––––––––––––––––
+  // Streaks
+  //––––––––––––––––––––––––––––––––––––––––––––––––––––––
   /// Consecutive days up to and including today with activity.
   /// If today has no activity yet, falls back to yesterday so an
   /// in-progress streak doesn't visually reset to 0 before the day ends.
@@ -81,6 +84,75 @@ class DailyRollupLoaded extends DailyRollupState {
     return longest > currentStreak ? longest : currentStreak;
   }
 
+  //––––––––––––––––––––––––––––––––––––––––––––––––––––––
+  // Personal bests
+  //––––––––––––––––––––––––––––––––––––––––––––––––––––––
+  /// Merges DB-persisted rollups with today's live overlay into one
+  /// date -> seconds map, so bests reflect the in-progress session too.
+  Map<String, int> get _effectiveRollups {
+    if (liveDate == null || liveElapsedSeconds == 0) return rollupsByDate;
+    final merged = Map<String, int>.from(rollupsByDate);
+    merged[liveDate!] = durationFor(liveDate!);
+    return merged;
+  }
+
+  /// Best single day, in seconds.
+  int get bestDaySeconds {
+    final values = _effectiveRollups.values;
+    if (values.isEmpty) return 0;
+    return values.reduce((a, b) => a > b ? a : b);
+  }
+
+  /// Best rolling 7-day window, in seconds.
+  int get bestWeekSeconds => _bestWindow(7);
+
+  /// Best calendar month, in seconds.
+  int get bestMonthSeconds {
+    final byMonth = <String, int>{};
+    _effectiveRollups.forEach((date, seconds) {
+      final monthKey = date.substring(0, 7); // 'YYYY-MM'
+      byMonth[monthKey] = (byMonth[monthKey] ?? 0) + seconds;
+    });
+    if (byMonth.isEmpty) return 0;
+    return byMonth.values.reduce((a, b) => a > b ? a : b);
+  }
+
+  /// Best calendar year, in seconds.
+  int get bestYearSeconds {
+    final byYear = <String, int>{};
+    _effectiveRollups.forEach((date, seconds) {
+      final yearKey = date.substring(0, 4); // 'YYYY'
+      byYear[yearKey] = (byYear[yearKey] ?? 0) + seconds;
+    });
+    if (byYear.isEmpty) return 0;
+    return byYear.values.reduce((a, b) => a > b ? a : b);
+  }
+
+  /// Best sum over any `windowDays`-day sliding window across the
+  /// full recorded date range (inclusive of gaps, which count as 0).
+  int _bestWindow(int windowDays) {
+    final rollups = _effectiveRollups;
+    if (rollups.isEmpty) return 0;
+
+    final dates = rollups.keys.toList()..sort();
+    final firstDate = dates.first;
+    final lastDate = dates.last;
+
+    var best = 0;
+    var cursor = firstDate;
+    while (!_isAfter(cursor, lastDate)) {
+      var sum = 0;
+      var windowCursor = cursor;
+      for (var i = 0; i < windowDays; i++) {
+        sum += rollups[windowCursor] ?? 0;
+        windowCursor = _shiftDate(windowCursor, 1);
+      }
+      best = sum > best ? sum : best;
+      cursor = _shiftDate(cursor, 1);
+    }
+    return best;
+  }
+
   DailyRollupLoaded copyWith({
     Map<String, int>? rollupsByDate,
     String? liveDate,
@@ -103,4 +175,6 @@ class DailyRollupLoaded extends DailyRollupState {
     final d = DateTime.parse(date).add(Duration(days: deltaDays));
     return '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
   }
+
+  static bool _isAfter(String a, String b) => a.compareTo(b) > 0;
 }
