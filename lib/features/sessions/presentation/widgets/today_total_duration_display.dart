@@ -62,6 +62,7 @@ class TodayTotalDurationDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return BlocBuilder<SessionBloc, SessionState>(
       builder: (context, state) {
         final persistedToday = _todaysLoggedDuration(_logsFromState(state));
@@ -82,17 +83,32 @@ class TodayTotalDurationDisplay extends StatelessWidget {
                 fontFamily: AppFontFamily.poppins,
               ).copyWith(fontSize: 84),
             ),
-            Transform.translate(
-              offset: const Offset(0, -6.5),
-              child: Opacity(
-                opacity: (isRunning && !colonVisible) ? 0 : 1,
-                child: Text(
-                  ':',
-                  style: TextUtils.title1(
-                    context,
-                    fontFamily: AppFontFamily.poppins,
-                  ).copyWith(fontSize: 84),
-                ),
+            Container(
+              margin: .symmetric(horizontal: 3.5),
+              child: Column(
+                children: [
+                  Container(
+                    height: 14,
+                    width: 14,
+                    decoration: BoxDecoration(
+                      color: scheme.onTertiary.withValues(
+                        alpha: (isRunning && !colonVisible) ? 0 : .9,
+                      ),
+                      shape: .circle,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    height: 14,
+                    width: 14,
+                    decoration: BoxDecoration(
+                      color: scheme.onTertiary.withValues(
+                        alpha: (isRunning && !colonVisible) ? 0 : .9,
+                      ),
+                      shape: .circle,
+                    ),
+                  ),
+                ],
               ),
             ),
             Text(

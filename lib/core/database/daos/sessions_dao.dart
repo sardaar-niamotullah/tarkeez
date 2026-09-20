@@ -21,23 +21,32 @@ class SessionsDao extends DatabaseAccessor<AppDatabase>
   // READ
   // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   // Read: one-shot
-  Future<List<Session>> getAllSessions() => select(sessions).get();
+  Future<List<Session>> getAllSessions() {
+    return (select(
+      sessions,
+    )..orderBy([(t) => OrderingTerm.desc(t.startedAt)])).get();
+  }
   Future<List<Session>> getAllSessionsInDateRange({
     required DateTime startedAt,
     required DateTime endedAt,
   }) {
     return (select(sessions)
-          ..where((t) => t.startedAt.isBiggerOrEqualValue(startedAt))
-          ..where((t) => t.endedAt.isSmallerOrEqualValue(endedAt)))
+          ..where((t) => t.startedAt.isBiggerOrEqualValue(startedAt.toUtc()))
+          ..where((t) => t.endedAt.isSmallerOrEqualValue(endedAt.toUtc()))
+          ..orderBy([(t) => OrderingTerm.desc(t.startedAt)]))
         .get();
   }
   // Read by id
   Future<Session?> getSessionById(String id) =>
       (select(sessions)..where((t) => t.id.equals(id))).getSingleOrNull();
   // Read by project id
-  Future<List<Session>> getSessionsForProject(String projectId) =>
-      (select(sessions)..where((t) => t.projectId.equals(projectId))).get();
-  // READ (reactive stream — auto-updates on any write)
+  Future<List<Session>> getSessionsForProject(String projectId) {
+    return (select(sessions)
+          ..where((t) => t.projectId.equals(projectId))
+          ..orderBy([(t) => OrderingTerm.desc(t.startedAt)]))
+        .get();
+  }
+  // Read: reactive stream — auto-updates on any write
   Stream<List<Session>> watchAllSessions() {
     return (select(
       sessions,
@@ -55,5 +64,6 @@ class SessionsDao extends DatabaseAccessor<AppDatabase>
   // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   Future<int> deleteSession(String id) =>
       (delete(sessions)..where((t) => t.id.equals(id))).go();
+
   Future<int> deleteAllSessions() => delete(sessions).go();
 }

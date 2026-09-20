@@ -621,18 +621,244 @@ class SessionsCompanion extends UpdateCompanion<Session> {
   }
 }
 
+class $DailyRollupsTable extends DailyRollups
+    with TableInfo<$DailyRollupsTable, DailyRollup> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DailyRollupsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<String> date = GeneratedColumn<String>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _durationSecondsMeta = const VerificationMeta(
+    'durationSeconds',
+  );
+  @override
+  late final GeneratedColumn<int> durationSeconds = GeneratedColumn<int>(
+    'duration_seconds',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [date, durationSeconds];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'daily_rollups';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DailyRollup> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('duration_seconds')) {
+      context.handle(
+        _durationSecondsMeta,
+        durationSeconds.isAcceptableOrUnknown(
+          data['duration_seconds']!,
+          _durationSecondsMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {date};
+  @override
+  DailyRollup map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DailyRollup(
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}date'],
+      )!,
+      durationSeconds: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}duration_seconds'],
+      )!,
+    );
+  }
+
+  @override
+  $DailyRollupsTable createAlias(String alias) {
+    return $DailyRollupsTable(attachedDatabase, alias);
+  }
+}
+
+class DailyRollup extends DataClass implements Insertable<DailyRollup> {
+  final String date;
+  final int durationSeconds;
+  const DailyRollup({required this.date, required this.durationSeconds});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['date'] = Variable<String>(date);
+    map['duration_seconds'] = Variable<int>(durationSeconds);
+    return map;
+  }
+
+  DailyRollupsCompanion toCompanion(bool nullToAbsent) {
+    return DailyRollupsCompanion(
+      date: Value(date),
+      durationSeconds: Value(durationSeconds),
+    );
+  }
+
+  factory DailyRollup.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DailyRollup(
+      date: serializer.fromJson<String>(json['date']),
+      durationSeconds: serializer.fromJson<int>(json['durationSeconds']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'date': serializer.toJson<String>(date),
+      'durationSeconds': serializer.toJson<int>(durationSeconds),
+    };
+  }
+
+  DailyRollup copyWith({String? date, int? durationSeconds}) => DailyRollup(
+    date: date ?? this.date,
+    durationSeconds: durationSeconds ?? this.durationSeconds,
+  );
+  DailyRollup copyWithCompanion(DailyRollupsCompanion data) {
+    return DailyRollup(
+      date: data.date.present ? data.date.value : this.date,
+      durationSeconds: data.durationSeconds.present
+          ? data.durationSeconds.value
+          : this.durationSeconds,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DailyRollup(')
+          ..write('date: $date, ')
+          ..write('durationSeconds: $durationSeconds')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(date, durationSeconds);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DailyRollup &&
+          other.date == this.date &&
+          other.durationSeconds == this.durationSeconds);
+}
+
+class DailyRollupsCompanion extends UpdateCompanion<DailyRollup> {
+  final Value<String> date;
+  final Value<int> durationSeconds;
+  final Value<int> rowid;
+  const DailyRollupsCompanion({
+    this.date = const Value.absent(),
+    this.durationSeconds = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DailyRollupsCompanion.insert({
+    required String date,
+    this.durationSeconds = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : date = Value(date);
+  static Insertable<DailyRollup> custom({
+    Expression<String>? date,
+    Expression<int>? durationSeconds,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (date != null) 'date': date,
+      if (durationSeconds != null) 'duration_seconds': durationSeconds,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DailyRollupsCompanion copyWith({
+    Value<String>? date,
+    Value<int>? durationSeconds,
+    Value<int>? rowid,
+  }) {
+    return DailyRollupsCompanion(
+      date: date ?? this.date,
+      durationSeconds: durationSeconds ?? this.durationSeconds,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (date.present) {
+      map['date'] = Variable<String>(date.value);
+    }
+    if (durationSeconds.present) {
+      map['duration_seconds'] = Variable<int>(durationSeconds.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DailyRollupsCompanion(')
+          ..write('date: $date, ')
+          ..write('durationSeconds: $durationSeconds, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $ProjectsTable projects = $ProjectsTable(this);
   late final $SessionsTable sessions = $SessionsTable(this);
+  late final $DailyRollupsTable dailyRollups = $DailyRollupsTable(this);
   late final ProjectsDao projectsDao = ProjectsDao(this as AppDatabase);
   late final SessionsDao sessionsDao = SessionsDao(this as AppDatabase);
+  late final DailyRollupsDao dailyRollupsDao = DailyRollupsDao(
+    this as AppDatabase,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [projects, sessions];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    projects,
+    sessions,
+    dailyRollups,
+  ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
     WritePropagation(
@@ -1222,6 +1448,160 @@ typedef $$SessionsTableProcessedTableManager =
       Session,
       PrefetchHooks Function({bool projectId})
     >;
+typedef $$DailyRollupsTableCreateCompanionBuilder =
+    DailyRollupsCompanion Function({
+      required String date,
+      Value<int> durationSeconds,
+      Value<int> rowid,
+    });
+typedef $$DailyRollupsTableUpdateCompanionBuilder =
+    DailyRollupsCompanion Function({
+      Value<String> date,
+      Value<int> durationSeconds,
+      Value<int> rowid,
+    });
+
+class $$DailyRollupsTableFilterComposer
+    extends Composer<_$AppDatabase, $DailyRollupsTable> {
+  $$DailyRollupsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get durationSeconds => $composableBuilder(
+    column: $table.durationSeconds,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DailyRollupsTableOrderingComposer
+    extends Composer<_$AppDatabase, $DailyRollupsTable> {
+  $$DailyRollupsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get durationSeconds => $composableBuilder(
+    column: $table.durationSeconds,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DailyRollupsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DailyRollupsTable> {
+  $$DailyRollupsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<int> get durationSeconds => $composableBuilder(
+    column: $table.durationSeconds,
+    builder: (column) => column,
+  );
+}
+
+class $$DailyRollupsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DailyRollupsTable,
+          DailyRollup,
+          $$DailyRollupsTableFilterComposer,
+          $$DailyRollupsTableOrderingComposer,
+          $$DailyRollupsTableAnnotationComposer,
+          $$DailyRollupsTableCreateCompanionBuilder,
+          $$DailyRollupsTableUpdateCompanionBuilder,
+          (
+            DailyRollup,
+            BaseReferences<_$AppDatabase, $DailyRollupsTable, DailyRollup>,
+          ),
+          DailyRollup,
+          PrefetchHooks Function()
+        > {
+  $$DailyRollupsTableTableManager(_$AppDatabase db, $DailyRollupsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DailyRollupsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DailyRollupsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DailyRollupsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> date = const Value.absent(),
+                Value<int> durationSeconds = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DailyRollupsCompanion(
+                date: date,
+                durationSeconds: durationSeconds,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String date,
+                Value<int> durationSeconds = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DailyRollupsCompanion.insert(
+                date: date,
+                durationSeconds: durationSeconds,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$DailyRollupsTable, DailyRollup>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $DailyRollupsTable,
+                    DailyRollup
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DailyRollupsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DailyRollupsTable,
+      DailyRollup,
+      $$DailyRollupsTableFilterComposer,
+      $$DailyRollupsTableOrderingComposer,
+      $$DailyRollupsTableAnnotationComposer,
+      $$DailyRollupsTableCreateCompanionBuilder,
+      $$DailyRollupsTableUpdateCompanionBuilder,
+      (
+        DailyRollup,
+        BaseReferences<_$AppDatabase, $DailyRollupsTable, DailyRollup>,
+      ),
+      DailyRollup,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -1230,4 +1610,6 @@ class $AppDatabaseManager {
       $$ProjectsTableTableManager(_db, _db.projects);
   $$SessionsTableTableManager get sessions =>
       $$SessionsTableTableManager(_db, _db.sessions);
+  $$DailyRollupsTableTableManager get dailyRollups =>
+      $$DailyRollupsTableTableManager(_db, _db.dailyRollups);
 }
