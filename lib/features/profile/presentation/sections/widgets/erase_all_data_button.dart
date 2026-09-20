@@ -9,6 +9,7 @@ import 'package:tarkeez/core/shared_files/widgets/go_premium_dialog.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
+import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
 
@@ -35,6 +36,7 @@ class _EraseAllDataButtonState extends State<EraseAllDataButton> {
       ]);
       getIt<ProjectBloc>().add(FetchProjectsRequested());
       getIt<SessionBloc>().add(FetchAllSessionsRequested());
+      getIt<DailyRollupBloc>().add(FetchDailyRollupRequested());
       if (!mounted) return;
       context.pop();
     } catch (e) {
