@@ -31,55 +31,37 @@ class PersonalBestsSection extends StatelessWidget {
             },
           ),
         if (!isLocked)
-          Stack(
+          GridView.count(
+            shrinkWrap: true,
+            crossAxisCount: 2,
+            mainAxisExtent: 54,
+            crossAxisSpacing: ContainerDesignUtils.halfPadding,
+            mainAxisSpacing: ContainerDesignUtils.halfPadding,
+            physics: const NeverScrollableScrollPhysics(),
             children: [
-              const SizedBox(width: .infinity, height: 116),
-              Row(
-                children: [
-                  Expanded(
-                    child: PersonalBestCard(
-                      title: 'Day',
-                      durationInSeconds: 91321,
-                      emoji: '☀️',
-                    ),
-                  ),
-                  const SizedBox(width: ContainerDesignUtils.halfPadding),
-                  Expanded(
-                    child: PersonalBestCard(
-                      title: 'Week',
-                      durationInSeconds: 91321,
-                      emoji: '📅',
-                      mainAxisAlignment: .end,
-                      crossAxisAlignment: .end,
-                    ),
-                  ),
-                ],
+              PersonalBestCard(
+                emoji: '☀️',
+                title: 'Day',
+                durationInSeconds: 91321,
               ),
-              Positioned(
-                top: 62,
-                left: 0,
-                right: 0,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: PersonalBestCard(
-                        title: 'Month',
-                        durationInSeconds: 12345,
-                        emoji: '🗓️',
-                      ),
-                    ),
-                    const SizedBox(width: ContainerDesignUtils.halfPadding),
-                    Expanded(
-                      child: PersonalBestCard(
-                        title: 'Year',
-                        durationInSeconds: 123456,
-                        emoji: '🌍',
-                        mainAxisAlignment: .end,
-                        crossAxisAlignment: .end,
-                      ),
-                    ),
-                  ],
-                ),
+              PersonalBestCard(
+                emoji: '📅',
+                title: 'Week',
+                durationInSeconds: 91321,
+                mainAxisAlignment: .end,
+                crossAxisAlignment: .end,
+              ),
+              PersonalBestCard(
+                emoji: '🗓️',
+                title: 'Month',
+                durationInSeconds: 12345,
+              ),
+              PersonalBestCard(
+                emoji: '🌍',
+                title: 'Year',
+                durationInSeconds: 123456,
+                mainAxisAlignment: .end,
+                crossAxisAlignment: .end,
               ),
             ],
           ),
