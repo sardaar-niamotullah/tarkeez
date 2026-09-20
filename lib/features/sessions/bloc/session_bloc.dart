@@ -15,14 +15,6 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     on<DeleteSessionRequested>(_onDeleteSessionRequested);
   }
 
-  List<SessionModel> _currentSessions() {
-    final s = state;
-    if (s is SessionLoaded) return s.sessions;
-    if (s is SessionFailure) return s.sessions;
-    if (s is SessionLoading) return s.sessions;
-    return const [];
-  }
-
   // ── Private helpers ─────────────────────────────────────────────────────
   List<(DateTime, DateTime)> _splitByLocalDay(
     DateTime startedAt,
@@ -48,22 +40,37 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     return segments;
   }
 
+  Future<void> _refreshSessions(
+    Emitter<SessionState> emit, {
+    bool entered = false,
+    bool deleted = false,
+    bool isInitialLoad = false,
+  }) async {
+    final previousSessions = state is SessionLoaded
+        ? (state as SessionLoaded).sessions
+        : null;
+    emit(
+      SessionLoading(
+        sessions: previousSessions ?? const [],
+        isInitialLoad: isInitialLoad,
+      ),
+    );
+    final result = await _repository.fetchAllSessions();
+    result.fold(
+      onSuccess: (sessions) =>
+          emit(SessionLoaded(sessions, isEntered: entered, isDeleted: deleted)),
+      onFailure: (error) => emit(
+        SessionFailure(error.message, sessions: previousSessions ?? const []),
+      ),
+    );
+  }
+
   // ── Event handlers ──────────────────────────────────────────────────────
   Future<void> _onEntrySessionRequested(
     EntrySessionRequested event,
     Emitter<SessionState> emit,
   ) async {
     final segments = _splitByLocalDay(event.startedAt, event.endedAt);
-    final optimisticLogs = segments
-        .map(
-          (s) => SessionModel(
-            startedAt: s.$1,
-            endedAt: s.$2,
-            projectId: event.project?.id,
-          ),
-        )
-        .toList();
-    emit(SessionLoaded([...optimisticLogs, ..._currentSessions()]));
 
     for (final (segStart, segEnd) in segments) {
       final result = await _repository.entrySession(
@@ -76,41 +83,36 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
         onFailure: (error) => error.message,
       );
       if (failed != null) {
-        emit(SessionFailure(failed, sessions: _currentSessions()));
+        final previousSessions = state is SessionLoaded
+            ? (state as SessionLoaded).sessions
+            : const <SessionModel>[];
+        emit(SessionFailure(failed, sessions: previousSessions));
         return;
       }
     }
+    await _refreshSessions(emit, entered: true);
   }
 
   Future<void> _onFetchAllSessionsRequested(
     FetchAllSessionsRequested event,
     Emitter<SessionState> emit,
-  ) async {
-    emit(SessionLoading(sessions: _currentSessions()));
-    final result = await _repository.fetchAllSessions();
-    result.fold(
-      onSuccess: (sessions) => emit(SessionLoaded(sessions)),
-      onFailure: (error) =>
-          emit(SessionFailure(error.message, sessions: _currentSessions())),
-    );
-  }
+  ) async => await _refreshSessions(emit, isInitialLoad: true);
 
   Future<void> _onDeleteSessionRequested(
     DeleteSessionRequested event,
     Emitter<SessionState> emit,
   ) async {
-    final previousSessions = _currentSessions();
-    final optimisticSessions = previousSessions
-        .where((s) => s.id != event.session.id)
-        .toList();
-
-    // Optimistic removal so the UI updates instantly.
-    emit(SessionLoaded.deleted(optimisticSessions));
     final result = await _repository.deleteSession(event.session);
-    result.fold(
-      onSuccess: (_) {}, // optimistic state already reflects the delete
-      onFailure: (error) =>
-          emit(SessionFailure(error.message, sessions: previousSessions)),
+    await result.fold(
+      onSuccess: (_) => _refreshSessions(emit, deleted: true),
+      onFailure: (error) async => emit(
+        SessionFailure(
+          error.message,
+          sessions: state is SessionLoaded
+              ? (state as SessionLoaded).sessions
+              : const [],
+        ),
+      ),
     );
   }
 }
