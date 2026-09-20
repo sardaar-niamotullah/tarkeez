@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:tarkeez/core/shared_files/buttons/go_premium_button.dart';
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';
@@ -12,6 +13,7 @@ import 'package:tarkeez/features/home/presentation/sections/home_last_three_days
 import 'package:tarkeez/features/home/presentation/sections/widgets/time_log_index_tile.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/time_log_tile.dart';
 import 'package:tarkeez/features/sessions/presentation/session_log_interface.dart';
+import 'package:tarkeez/mock_sessions.dart';
 
 class HomeTab extends StatelessWidget {
   final VoidCallback onMenuTap;
@@ -74,6 +76,7 @@ class HomeTab extends StatelessWidget {
           ],
         ),
         const Positioned(bottom: 16, right: 16, child: GoPremiumButton()),
+        const MockSessions(),
         Positioned(
           bottom: 16,
           left: 16,
@@ -95,7 +98,7 @@ class HomeTab extends StatelessWidget {
         ),
         Positioned(
           bottom: 16,
-          left: 100,
+          left: 92,
           child: FilledButton(
             onPressed: () {
               AppClock.reset();
