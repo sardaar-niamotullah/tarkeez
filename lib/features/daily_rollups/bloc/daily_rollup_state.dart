@@ -51,6 +51,18 @@ class DailyRollupLoaded extends DailyRollupState {
   PersonalBestPeriod get bestYear =>
       DailyRollupStats.bestYear(_effectiveRollups);
 
+  int get today => DailyRollupStats.today(_effectiveRollups);
+  int get yesterday => DailyRollupStats.yesterday(_effectiveRollups);
+  int get thisWeek => DailyRollupStats.thisWeek(_effectiveRollups);
+  int get lastWeek => DailyRollupStats.lastWeek(_effectiveRollups);
+  int get thisMonth => DailyRollupStats.thisMonth(_effectiveRollups);
+  int get lastMonth => DailyRollupStats.lastMonth(_effectiveRollups);
+  int get thisYear => DailyRollupStats.thisYear(_effectiveRollups);
+  int get lastYear => DailyRollupStats.lastYear(_effectiveRollups);
+  int get last7Days => DailyRollupStats.last7Days(_effectiveRollups);
+  int get last30Days => DailyRollupStats.last30Days(_effectiveRollups);
+  int get last365Days => DailyRollupStats.last365Days(_effectiveRollups);
+
   DailyRollupLoaded copyWith({
     Map<String, int>? rollupsByDate,
     String? liveDate,

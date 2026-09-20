@@ -11,19 +11,30 @@ class DailyRollupDateUtils {
     return format(d);
   }
 
+  /// Monday of the ISO week containing date.
+  static String startOfIsoWeek(String date) {
+    final d = DateTime.parse(date);
+    final monday = d.subtract(Duration(days: d.weekday - 1)); // Mon=1..Sun=7
+    return format(monday);
+  }
+
+  /// 1st of the calendar month containing date.
+  static String startOfMonth(String date) {
+    final d = DateTime.parse(date);
+    return format(DateTime(d.year, d.month, 1));
+  }
+
+  /// Jan 1st of the calendar year containing date.
+  static String startOfYear(String date) {
+    final d = DateTime.parse(date);
+    return format(DateTime(d.year, 1, 1));
+  }
+
+  static bool isAfter(String a, String b) => a.compareTo(b) > 0;
+
   static const monthNames = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
   ];
 
   /// '2026-09-01' -> '1 Sep, 2026'
@@ -45,7 +56,7 @@ class DailyRollupDateUtils {
   /// first Thursday (equivalently, containing Jan 4th).
   static String isoWeekKey(String date) {
     final d = DateTime.parse(date);
-    final weekday = d.weekday; // Mon=1 ... Sun=7
+    final weekday = d.weekday;
     final thursday = d.add(Duration(days: 4 - weekday));
     final isoYear = thursday.year;
 

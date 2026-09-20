@@ -6,6 +6,7 @@ import 'package:tarkeez/core/shared_files/widgets/section_image_lock_overlay.dar
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
+import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
 import 'package:tarkeez/features/report/presentation/sections/widgets/invested_time_stat_group.dart';
 
 class InvestedTimesSection extends StatelessWidget {
@@ -33,58 +34,65 @@ class InvestedTimesSection extends StatelessWidget {
             },
           ),
         if (!isLocked)
-          SingleChildScrollView(
-            scrollDirection: .horizontal,
-            child: Row(
-              children: [
-                InvestedTimeStatGroup(
-                  emoji: '️☀️',
-                  accentColor: AppTheme.trophyGold,
-                  topSeconds: 1432, // today
-                  topLabel: 'Today',
-                  bottomSeconds: 4323, // yesterday
-                  bottomLabel: 'Yesterday',
+          BlocBuilder<DailyRollupBloc, DailyRollupState>(
+            buildWhen: (previous, current) => current is DailyRollupLoaded,
+            builder: (context, state) {
+              final loaded = state is DailyRollupLoaded ? state : null;
+
+              return SingleChildScrollView(
+                scrollDirection: .horizontal,
+                child: Row(
+                  children: [
+                    InvestedTimeStatGroup(
+                      emoji: '️☀️',
+                      accentColor: AppTheme.trophyGold,
+                      topSeconds: loaded?.today ?? 0,
+                      topLabel: 'Today',
+                      bottomSeconds: loaded?.yesterday ?? 0,
+                      bottomLabel: 'Yesterday',
+                    ),
+                    const SizedBox(width: ContainerDesignUtils.halfPadding),
+                    InvestedTimeStatGroup(
+                      emoji: '📅',
+                      accentColor: AppTheme.crimsonTab,
+                      topSeconds: loaded?.thisWeek ?? 0,
+                      topLabel: 'This week',
+                      bottomSeconds: loaded?.lastWeek ?? 0,
+                      bottomLabel: 'Last week',
+                    ),
+                    const SizedBox(width: ContainerDesignUtils.halfPadding),
+                    InvestedTimeStatGroup(
+                      emoji: '🗓️',
+                      accentColor: AppTheme.blue,
+                      topSeconds: loaded?.thisMonth ?? 0,
+                      topLabel: 'This month',
+                      bottomSeconds: loaded?.lastMonth ?? 0,
+                      bottomLabel: 'Last month',
+                    ),
+                    const SizedBox(width: ContainerDesignUtils.halfPadding),
+                    InvestedTimeStatGroup(
+                      emoji: '🌍',
+                      accentColor: AppTheme.sandAmber,
+                      topSeconds: loaded?.thisYear ?? 0,
+                      topLabel: 'This year',
+                      bottomSeconds: loaded?.lastYear ?? 0,
+                      bottomLabel: 'Last year',
+                    ),
+                    const SizedBox(width: ContainerDesignUtils.halfPadding),
+                    InvestedTimeStatGroup(
+                      emoji: '⏳',
+                      accentColor: AppTheme.sandAmber,
+                      topSeconds: loaded?.last7Days ?? 0,
+                      topLabel: 'Last 7 days',
+                      middleSeconds: loaded?.last30Days ?? 0,
+                      middleLabel: 'Last 30 days',
+                      bottomSeconds: loaded?.last365Days ?? 0,
+                      bottomLabel: 'Last 365 days',
+                    ),
+                  ],
                 ),
-                const SizedBox(width: ContainerDesignUtils.halfPadding),
-                InvestedTimeStatGroup(
-                  emoji: '📅',
-                  accentColor: AppTheme.crimsonTab,
-                  topSeconds: 12342, // this week
-                  topLabel: 'This week',
-                  bottomSeconds: 3242, // last week
-                  bottomLabel: 'Last week',
-                ),
-                const SizedBox(width: ContainerDesignUtils.halfPadding),
-                InvestedTimeStatGroup(
-                  emoji: '🗓️',
-                  accentColor: AppTheme.blue,
-                  topSeconds: 123434, // this month
-                  topLabel: 'This month',
-                  bottomSeconds: 53423, // last month
-                  bottomLabel: 'Last month',
-                ),
-                const SizedBox(width: ContainerDesignUtils.halfPadding),
-                InvestedTimeStatGroup(
-                  emoji: '🌍',
-                  accentColor: AppTheme.sandAmber,
-                  topSeconds: 123456, // this year
-                  topLabel: 'This year',
-                  bottomSeconds: 432312, // last year
-                  bottomLabel: 'Last year',
-                ),
-                const SizedBox(width: ContainerDesignUtils.halfPadding),
-                InvestedTimeStatGroup(
-                  emoji: '⏳',
-                  accentColor: AppTheme.sandAmber,
-                  topSeconds: 12132, // last 7 days
-                  topLabel: 'Last 7 days',
-                  middleSeconds: 124234, // last 30 days
-                  middleLabel: 'Last 30 days',
-                  bottomSeconds: 32423, // last 365 day
-                  bottomLabel: 'Last 365 days',
-                ),
-              ],
-            ),
+              );
+            },
           ),
       ],
     );
