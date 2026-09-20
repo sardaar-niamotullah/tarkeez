@@ -40,28 +40,37 @@ class DailyRollupLoaded extends DailyRollupState {
       ..[liveDate!] = durationFor(liveDate!);
   }
 
-  int get currentStreak => DailyRollupStats.currentStreak(_effectiveRollups);
-  int get longestStreak => DailyRollupStats.longestStreak(_effectiveRollups);
+  //––––––––––––––––––––––––––––––––––––––––––––––––––––––
+  // Streaks
+  //––––––––––––––––––––––––––––––––––––––––––––––––––––––
+  int get currentStreak => StreakStats.currentStreak(_effectiveRollups);
+  int get longestStreak => StreakStats.longestStreak(_effectiveRollups);
 
-  PersonalBestPeriod get bestDay => DailyRollupStats.bestDay(_effectiveRollups);
+  //––––––––––––––––––––––––––––––––––––––––––––––––––––––
+  // Personal bests
+  //––––––––––––––––––––––––––––––––––––––––––––––––––––––
+  PersonalBestPeriod get bestDay => PersonalBestStats.bestDay(_effectiveRollups);
   PersonalBestPeriod get bestWeek =>
-      DailyRollupStats.bestWeek(_effectiveRollups);
+      PersonalBestStats.bestWeek(_effectiveRollups);
   PersonalBestPeriod get bestMonth =>
-      DailyRollupStats.bestMonth(_effectiveRollups);
+      PersonalBestStats.bestMonth(_effectiveRollups);
   PersonalBestPeriod get bestYear =>
-      DailyRollupStats.bestYear(_effectiveRollups);
+      PersonalBestStats.bestYear(_effectiveRollups);
 
-  int get today => DailyRollupStats.today(_effectiveRollups);
-  int get yesterday => DailyRollupStats.yesterday(_effectiveRollups);
-  int get thisWeek => DailyRollupStats.thisWeek(_effectiveRollups);
-  int get lastWeek => DailyRollupStats.lastWeek(_effectiveRollups);
-  int get thisMonth => DailyRollupStats.thisMonth(_effectiveRollups);
-  int get lastMonth => DailyRollupStats.lastMonth(_effectiveRollups);
-  int get thisYear => DailyRollupStats.thisYear(_effectiveRollups);
-  int get lastYear => DailyRollupStats.lastYear(_effectiveRollups);
-  int get last7Days => DailyRollupStats.last7Days(_effectiveRollups);
-  int get last30Days => DailyRollupStats.last30Days(_effectiveRollups);
-  int get last365Days => DailyRollupStats.last365Days(_effectiveRollups);
+  //––––––––––––––––––––––––––––––––––––––––––––––––––––––
+  // Invested times
+  //––––––––––––––––––––––––––––––––––––––––––––––––––––––
+  int get today => InvestedTimeStats.today(_effectiveRollups);
+  int get yesterday => InvestedTimeStats.yesterday(_effectiveRollups);
+  int get thisWeek => InvestedTimeStats.thisWeek(_effectiveRollups);
+  int get lastWeek => InvestedTimeStats.lastWeek(_effectiveRollups);
+  int get thisMonth => InvestedTimeStats.thisMonth(_effectiveRollups);
+  int get lastMonth => InvestedTimeStats.lastMonth(_effectiveRollups);
+  int get thisYear => InvestedTimeStats.thisYear(_effectiveRollups);
+  int get lastYear => InvestedTimeStats.lastYear(_effectiveRollups);
+  int get last7Days => InvestedTimeStats.last7Days(_effectiveRollups);
+  int get last30Days => InvestedTimeStats.last30Days(_effectiveRollups);
+  int get last365Days => InvestedTimeStats.last365Days(_effectiveRollups);
 
   DailyRollupLoaded copyWith({
     Map<String, int>? rollupsByDate,
