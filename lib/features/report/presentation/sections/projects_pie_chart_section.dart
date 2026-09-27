@@ -1,10 +1,13 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/color_from_hex_code.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
+import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
+import 'package:tarkeez/features/daily_rollups/data/models/timeline_model.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/project_info_tile.dart';
 
@@ -58,10 +61,21 @@ class PieChart2State extends State<ProjectsPieChartSection> {
                   // Total duration
                   //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
                   Expanded(
-                    child: DurationTextUtils(
-                      durationInSeconds: 12345,
-                      fontSizePrimary: 24,
-                      fontSizeSeconday: 14,
+                    child: BlocBuilder<DailyRollupBloc, DailyRollupState>(
+                      builder: (context, state) {
+                        final entries = state is DailyRollupLoaded
+                            ? state.timeline(days: 30)
+                            : const <TimelineModel>[];
+                        final totalSeconds = entries.fold<int>(
+                          0,
+                          (total, entry) => total + entry.seconds,
+                        );
+                        return DurationTextUtils(
+                          durationInSeconds: totalSeconds,
+                          fontSizePrimary: 24,
+                          fontSizeSeconday: 14,
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -130,7 +144,7 @@ class PieChart2State extends State<ProjectsPieChartSection> {
                       project: ProjectModel(
                         name: project[0] as String,
                         colorId: 1,
-                        createdAt: DateTime(2026)
+                        createdAt: DateTime(2026),
                       ),
                       tileColor: tileColor,
                       durationInSeconds: project[2] as int,
