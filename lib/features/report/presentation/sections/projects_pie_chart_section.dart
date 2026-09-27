@@ -1,15 +1,19 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tarkeez/core/constants/project_colors.dart';
 import 'package:tarkeez/core/theme/theme.dart';
-import 'package:tarkeez/core/utils/color_from_hex_code.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
 import 'package:tarkeez/features/daily_rollups/data/models/timeline_model.dart';
+import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/project_info_tile.dart';
+import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
+import 'package:tarkeez/features/sessions/data/models/session_model.dart';
+import 'package:tarkeez/features/sessions/stats/project_session_stats.dart';
 
 class ProjectsPieChartSection extends StatefulWidget {
   const ProjectsPieChartSection({super.key});
@@ -21,159 +25,200 @@ class ProjectsPieChartSection extends StatefulWidget {
 class PieChart2State extends State<ProjectsPieChartSection> {
   int touchedIndex = -1;
 
-  // Each entry: [name, code, durationInMinutes]
-  final List<List<dynamic>> data = [
-    ['Name', '#921334', 124],
-    ['Name2', '#721612', 224],
-    ['Name3', '#897652', 324],
-    ['Name4', '#876128', 424],
-    ['Name5', '#562781', 524],
-    ['Name6', '#522721', 100],
-  ];
-
-  List<List<dynamic>> get sortedData =>
-      List<List<dynamic>>.from(data)
-        ..sort((a, b) => (b[2] as int).compareTo(a[2] as int));
-  int get totalMinutes =>
-      data.fold<int>(0, (sum, item) => sum + (item[2] as int));
-  int get totalHours => totalMinutes ~/ 60;
-  int get remainderMinutes => totalMinutes % 60;
-
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Projects', style: TextUtils.title2(context)),
-        const SizedBox(height: 8),
-        Container(
-          padding: const .only(top: 36, left: 16, right: 16),
-          decoration: BoxDecoration(
-            color: scheme.onSurface,
-            borderRadius: ContainerDesignUtils.allRadius,
-          ),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-                  // Total duration
-                  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-                  Expanded(
-                    child: BlocBuilder<DailyRollupBloc, DailyRollupState>(
-                      builder: (context, state) {
-                        final entries = state is DailyRollupLoaded
-                            ? state.timeline(days: 30)
-                            : const <TimelineModel>[];
-                        final totalSeconds = entries.fold<int>(
-                          0,
-                          (total, entry) => total + entry.seconds,
-                        );
-                        return DurationTextUtils(
-                          durationInSeconds: totalSeconds,
-                          fontSizePrimary: 24,
-                          fontSizeSeconday: 14,
-                        );
-                      },
-                    ),
+    final projectColors = ProjectColors.colors;
+
+    return BlocBuilder<SessionBloc, SessionState>(
+      builder: (context, sessionState) {
+        final List<SessionModel> sessions = switch (sessionState) {
+          SessionLoaded(:final sessions) => sessions,
+          SessionLoading(:final sessions) => sessions,
+          SessionFailure(:final sessions) => sessions,
+          _ => const <SessionModel>[],
+        };
+        return BlocBuilder<ProjectBloc, ProjectState>(
+          builder: (context, projectState) {
+            final List<ProjectModel> projects = switch (projectState) {
+              ProjectLoaded(:final projects) => projects,
+              ProjectLoading(:final projects) =>
+                projects ?? const <ProjectModel>[],
+              _ => const <ProjectModel>[],
+            };
+            final projectDurations = ProjectSessionStats.aggregateByProject(
+              sessions: sessions,
+              projects: projects,
+            );
+            final totalSeconds = projectDurations.fold<int>(
+              0,
+              (sum, entry) => sum + entry.durationInSeconds,
+            );
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Projects', style: TextUtils.title2(context)),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.only(top: 36, left: 16, right: 16),
+                  decoration: BoxDecoration(
+                    color: scheme.onSurface,
+                    borderRadius: ContainerDesignUtils.allRadius,
                   ),
-                  const SizedBox(width: 16),
-                  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-                  // Pie chart
-                  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-                  Expanded(
-                    child: AspectRatio(
-                      aspectRatio: 1,
-                      child: PieChart(
-                        PieChartData(
-                          sectionsSpace: 2,
-                          centerSpaceRadius: 48,
-                          borderData: FlBorderData(show: true),
-                          sections: showingSections(),
-                          pieTouchData: PieTouchData(
-                            touchCallback:
-                                (
-                                  FlTouchEvent event,
-                                  PieTouchResponse? pieTouchResponse,
-                                ) {
-                                  setState(() {
-                                    if (!event.isInterestedForInteractions ||
-                                        pieTouchResponse == null ||
-                                        pieTouchResponse.touchedSection ==
-                                            null) {
-                                      touchedIndex = -1;
-                                      return;
-                                    }
-                                    touchedIndex = pieTouchResponse
-                                        .touchedSection!
-                                        .touchedSectionIndex;
-                                  });
-                                },
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          //–––––––––––––––––––––––––––––––––––––––––––
+                          // Total duration — daily rollups, project-agnostic
+                          //–––––––––––––––––––––––––––––––––––––––––––
+                          Expanded(
+                            child:
+                                BlocBuilder<DailyRollupBloc, DailyRollupState>(
+                                  builder: (context, state) {
+                                    final entries = state is DailyRollupLoaded
+                                        ? state.timeline(days: 30)
+                                        : const <TimelineModel>[];
+                                    final rollupTotalSeconds = entries
+                                        .fold<int>(
+                                          0,
+                                          (total, entry) =>
+                                              total + entry.seconds,
+                                        );
+                                    return DurationTextUtils(
+                                      durationInSeconds: rollupTotalSeconds,
+                                      fontSizePrimary: 24,
+                                      fontSizeSeconday: 14,
+                                    );
+                                  },
+                                ),
+                          ),
+                          const SizedBox(width: 16),
+                          //–––––––––––––––––––––––––––––––––––––––––––
+                          // Pie chart — sessions grouped by project
+                          //–––––––––––––––––––––––––––––––––––––––––––
+                          Expanded(
+                            child: AspectRatio(
+                              aspectRatio: 1,
+                              child: projectDurations.isEmpty
+                                  ? Center(
+                                      child: Text(
+                                        'No sessions yet',
+                                        style: TextUtils.paragraph(context),
+                                      ),
+                                    )
+                                  : PieChart(
+                                      PieChartData(
+                                        sectionsSpace: 2,
+                                        centerSpaceRadius: 48,
+                                        borderData: FlBorderData(show: true),
+                                        sections: _showingSections(
+                                          projectDurations,
+                                          totalSeconds,
+                                          projectColors,
+                                          scheme,
+                                          context,
+                                        ),
+                                        pieTouchData: PieTouchData(
+                                          touchCallback:
+                                              (
+                                                FlTouchEvent event,
+                                                PieTouchResponse?
+                                                pieTouchResponse,
+                                              ) {
+                                                setState(() {
+                                                  if (!event
+                                                          .isInterestedForInteractions ||
+                                                      pieTouchResponse ==
+                                                          null ||
+                                                      pieTouchResponse
+                                                              .touchedSection ==
+                                                          null) {
+                                                    touchedIndex = -1;
+                                                    return;
+                                                  }
+                                                  touchedIndex =
+                                                      pieTouchResponse
+                                                          .touchedSection!
+                                                          .touchedSectionIndex;
+                                                });
+                                              },
+                                        ),
+                                      ),
+                                    ),
+                            ),
+                          ),
+                          const SizedBox(width: 24),
+                        ],
+                      ),
+                      const SizedBox(height: 36),
+
+                      //–––––––––––––––––––––––––––––––––––––––––––
+                      // Project details
+                      //–––––––––––––––––––––––––––––––––––––––––––
+                      if (projectDurations.isNotEmpty)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: ContainerDesignUtils.padding,
+                          ),
+                          decoration: BoxDecoration(
+                            color: scheme.surface,
+                            borderRadius: ContainerDesignUtils.allRadius,
+                          ),
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: projectDurations.length,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, i) {
+                              final entry = projectDurations[i];
+                              final tileColor = i.isEven
+                                  ? scheme.surface
+                                  : scheme.onSurface;
+                              return ProjectInfoTile(
+                                project: entry.project,
+                                tileColor: tileColor,
+                                durationInSeconds: entry.durationInSeconds,
+                              );
+                            },
                           ),
                         ),
-                      ),
-                    ),
+                      const SizedBox(height: 16),
+                    ],
                   ),
-                  const SizedBox(width: 24),
-                ],
-              ),
-              const SizedBox(height: 36),
-
-              //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-              // Project details
-              //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-              Container(
-                padding: const .symmetric(
-                  horizontal: ContainerDesignUtils.padding,
                 ),
-                decoration: BoxDecoration(
-                  color: scheme.surface,
-                  borderRadius: ContainerDesignUtils.allRadius,
-                ),
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: sortedData.length,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, i) {
-                    final project = sortedData[i];
-                    final tileColor = i.isEven
-                        ? scheme.surface
-                        : scheme.onSurface;
-                    return ProjectInfoTile(
-                      project: ProjectModel(
-                        name: project[0] as String,
-                        colorId: 1,
-                        createdAt: DateTime(2026),
-                      ),
-                      tileColor: tileColor,
-                      durationInSeconds: project[2] as int,
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-          ),
-        ),
-      ],
+              ],
+            );
+          },
+        );
+      },
     );
   }
 
-  List<PieChartSectionData> showingSections() {
-    return List.generate(sortedData.length, (i) {
+  List<PieChartSectionData> _showingSections(
+    List<ProjectDurationModel> projectDurations,
+    int totalSeconds,
+    List<Color> projectColors,
+    ColorScheme scheme,
+    BuildContext context,
+  ) {
+    return List.generate(projectDurations.length, (i) {
+      final entry = projectDurations[i];
       final isTouched = i == touchedIndex;
       final fontSize = isTouched ? 12 : 10;
       final radius = isTouched ? 60.0 : 50.0;
 
-      final int duration = sortedData[i][2] as int;
+      final resolvedColor = entry.project != null
+          ? projectColors[entry.project!.colorId]
+          : scheme.onTertiary;
 
-      final double percentage =
-          ((duration / totalMinutes) * 100 * 10).ceil() / 10;
+      final percentage = totalSeconds == 0
+          ? 0.0
+          : ((entry.durationInSeconds / totalSeconds) * 100 * 10).ceil() / 10;
 
       return PieChartSectionData(
-        color: colorFromHexCode(sortedData[i][1] as String),
-        value: duration.toDouble(),
+        color: resolvedColor,
+        value: entry.durationInSeconds.toDouble(),
         title: '${percentage.toStringAsFixed(1)}%',
         radius: radius,
         cornerRadius: 12,
