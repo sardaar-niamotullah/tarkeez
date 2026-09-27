@@ -13,7 +13,7 @@ class InvestedTimeStatGroup extends StatelessWidget {
   final int bottomSeconds;
   final String? middleLabel;
   final int? middleSeconds;
-  
+
   const InvestedTimeStatGroup({
     super.key,
     required this.emoji,
@@ -31,7 +31,7 @@ class InvestedTimeStatGroup extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return Container(
       width: 100,
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const .symmetric(vertical: 8),
       decoration: BoxDecoration(
         color: scheme.onSurface,
         borderRadius: ContainerDesignUtils.allRadius,

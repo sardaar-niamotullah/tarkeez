@@ -25,7 +25,7 @@ class ProjectsPieChartSection extends StatefulWidget {
 
 class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
   int touchedIndex = -1;
-  ReportPeriod _selectedPeriod = ReportPeriod.last12Months;
+  ReportPeriod _selectedPeriod = ReportPeriod.thisWeek;
 
   void _onPeriodSelected(ReportPeriod period) {
     if (period.isLocked) {
@@ -67,9 +67,6 @@ class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
               projects: projects,
             );
 
-            // When there's nothing to show, fall back to a single "No
-            // project" entry at 0m so the pie chart and list always render
-            // something rather than an empty-state message.
             final projectDurations = aggregated.isEmpty
                 ? const [
                     ProjectDurationModel(project: null, durationInSeconds: 0),
@@ -87,7 +84,7 @@ class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
                 Text('Projects', style: TextUtils.title2(context)),
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.only(top: 36, left: 16, right: 16),
+                  padding: const .only(top: 36, left: 16, right: 16),
                   decoration: BoxDecoration(
                     color: scheme.onSurface,
                     borderRadius: ContainerDesignUtils.allRadius,
@@ -171,11 +168,10 @@ class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
                       // Project details
                       //–––––––––––––––––––––––––––––––––––––––––––
                       Container(
-                        padding: const EdgeInsets.symmetric(
+                        padding: const .symmetric(
                           horizontal: ContainerDesignUtils.padding,
                         ),
                         decoration: BoxDecoration(
-                          color: scheme.surface,
                           borderRadius: ContainerDesignUtils.allRadius,
                         ),
                         child: ListView.builder(
@@ -219,7 +215,6 @@ class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
       final isTouched = i == touchedIndex;
       final fontSize = isTouched ? 12 : 10;
       final radius = isTouched ? 60.0 : 50.0;
-
       final resolvedColor = entry.project != null
           ? projectColors[entry.project!.colorId]
           : scheme.onTertiary;
