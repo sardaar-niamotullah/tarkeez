@@ -5,6 +5,8 @@ import 'package:tarkeez/features/daily_rollups/stats/invested_time_stats.dart';
 import 'package:tarkeez/features/daily_rollups/stats/personal_best_stats.dart';
 import 'package:tarkeez/features/daily_rollups/stats/streak_stats.dart';
 import 'package:tarkeez/features/daily_rollups/utils/daily_rollup_date_utils.dart';
+import 'package:tarkeez/features/daily_rollups/data/models/heatmap_day.dart';
+import 'package:tarkeez/features/daily_rollups/stats/heatmap_stats.dart';
 
 part 'daily_rollup_event.dart';
 part 'daily_rollup_state.dart';

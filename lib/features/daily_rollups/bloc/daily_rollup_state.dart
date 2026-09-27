@@ -40,6 +40,9 @@ class DailyRollupLoaded extends DailyRollupState {
       ..[liveDate!] = durationFor(liveDate!);
   }
 
+  // Heatmap
+  List<HeatmapDay> get heatmapGrid => HeatmapStats.buildGrid(_effectiveRollups);
+
   //––––––––––––––––––––––––––––––––––––––––––––––––––––––
   // Streaks
   //––––––––––––––––––––––––––––––––––––––––––––––––––––––

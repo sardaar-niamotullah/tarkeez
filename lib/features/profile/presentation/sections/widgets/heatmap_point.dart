@@ -17,16 +17,15 @@ class HeatmapPoint extends StatelessWidget {
 
   double getOpacity(num seconds) {
     final s = seconds.toDouble();
-    const fifteenMin = 15 * 60;
+    const thirtyMin = 30 * 60;
     const fiveHours = 5 * 60 * 60;
     const tenHours = 10 * 60 * 60;
 
-    if (s < fifteenMin) {
-      // 0 – 14 min
-      return 0.0;
+    if (s < thirtyMin) {
+      return 0.0; // 0 – 29 min
     } else if (s <= fiveHours) {
-      // 15 min → 5 h : 0.2 → 0.8
-      return 0.2 + ((s - fifteenMin) / (fiveHours - fifteenMin)) * (0.8 - 0.2);
+      // 30 min → 5 h : 0.2 → 0.8
+      return 0.2 + ((s - thirtyMin) / (fiveHours - thirtyMin)) * (0.8 - 0.2);
     } else if (s <= tenHours) {
       // 5 h → 10 h : 0.8 → 1.0
       return 0.8 + ((s - fiveHours) / (tenHours - fiveHours)) * (1.0 - 0.8);
@@ -39,6 +38,7 @@ class HeatmapPoint extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const armSize = 10;
+    final scheme = Theme.of(context).colorScheme;
 
     return !paintHeatmap
         ? const SizedBox(height: 12, width: 12)
@@ -62,26 +62,27 @@ class HeatmapPoint extends StatelessWidget {
                   );
                 }
               },
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: .circular(2),
               child: Ink(
-                padding: const EdgeInsets.all(1),
+                padding: const .all(1),
                 child: Stack(
                   children: [
                     Ink(
                       width: armSize.toDouble(),
                       height: armSize.toDouble(),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(2),
+                        color: scheme.surface,
+                        borderRadius: .circular(2),
                       ),
                     ),
                     Ink(
                       width: armSize.toDouble(),
                       height: armSize.toDouble(),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primaryContainer
-                            .withValues(alpha: getOpacity(seconds)),
-                        borderRadius: BorderRadius.circular(2),
+                        color: scheme.primaryContainer.withValues(
+                          alpha: getOpacity(seconds),
+                        ),
+                        borderRadius: .circular(2),
                       ),
                     ),
                   ],
