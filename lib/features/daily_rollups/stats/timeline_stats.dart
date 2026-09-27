@@ -1,10 +1,10 @@
+import 'package:tarkeez/features/daily_rollups/data/models/timeline_model.dart';
 import 'package:tarkeez/features/daily_rollups/utils/daily_rollup_date_utils.dart';
-import 'package:tarkeez/features/report/data/model/timeline_model.dart';
 
 class TimelineStats {
   TimelineStats._();
   
-  static List<TimelineModel> recentDays(
+  static List<TimelineModel> timeline(
     Map<String, int> rollups, {
     int days = 7,
     DateTime? now,

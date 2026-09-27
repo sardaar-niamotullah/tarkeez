@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
-import 'package:tarkeez/features/report/data/model/timeline_model.dart';
+import 'package:tarkeez/features/daily_rollups/data/models/timeline_model.dart';
 import 'package:tarkeez/features/report/presentation/sections/report_timeline_chart_config.dart';
 import 'package:tarkeez/features/report/presentation/sections/widgets/chart_y_axis_label.dart';
 import 'package:tarkeez/features/report/presentation/sections/widgets/time_visualizer_bar.dart';
@@ -24,7 +24,7 @@ class HomeBarChart extends StatelessWidget {
     return BlocBuilder<DailyRollupBloc, DailyRollupState>(
       builder: (context, state) {
         final entries = state is DailyRollupLoaded
-            ? state.recentTimeline(days: 7)
+            ? state.timeline(days: 7)
             : const <TimelineModel>[];
 
         return LayoutBuilder(

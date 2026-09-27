@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
-import 'package:tarkeez/features/report/data/model/timeline_model.dart';
+import 'package:tarkeez/features/daily_rollups/data/models/timeline_model.dart';
 import 'package:tarkeez/features/report/presentation/sections/report_timeline_chart_config.dart';
 
 class TimeVisualizerBar extends StatelessWidget {

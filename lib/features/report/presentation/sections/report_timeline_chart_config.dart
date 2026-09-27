@@ -1,7 +1,6 @@
 import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
-import 'package:tarkeez/features/report/data/model/timeline_model.dart';
+import 'package:tarkeez/features/daily_rollups/data/models/timeline_model.dart';
 
 class ReportTimelineChartConfig {
   static const double horizontalPageMargin = 16 * 2;
