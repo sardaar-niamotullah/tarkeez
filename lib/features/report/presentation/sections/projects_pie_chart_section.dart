@@ -25,7 +25,7 @@ class ProjectsPieChartSection extends StatefulWidget {
 
 class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
   int touchedIndex = -1;
-  ReportPeriod _selectedPeriod = ReportPeriod.thisWeek;
+  ReportPeriod _selectedPeriod = ReportPeriod.last12Months;
 
   void _onPeriodSelected(ReportPeriod period) {
     if (period.isLocked) {
@@ -62,10 +62,19 @@ class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
               _selectedPeriod,
             );
 
-            final projectDurations = ProjectSessionStats.aggregateByProject(
+            final aggregated = ProjectSessionStats.aggregateByProject(
               sessions: filteredSessions,
               projects: projects,
             );
+
+            // When there's nothing to show, fall back to a single "No
+            // project" entry at 0m so the pie chart and list always render
+            // something rather than an empty-state message.
+            final projectDurations = aggregated.isEmpty
+                ? const [
+                    ProjectDurationModel(project: null, durationInSeconds: 0),
+                  ]
+                : aggregated;
 
             final totalSeconds = projectDurations.fold<int>(
               0,
@@ -73,7 +82,7 @@ class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
             );
 
             return Column(
-              crossAxisAlignment: .start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Projects', style: TextUtils.title2(context)),
                 const SizedBox(height: 8),
@@ -115,52 +124,42 @@ class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
                           Expanded(
                             child: AspectRatio(
                               aspectRatio: 1,
-                              child: projectDurations.isEmpty
-                                  ? Center(
-                                      child: Text(
-                                        'No sessions yet',
-                                        style: TextUtils.paragraph(context),
-                                      ),
-                                    )
-                                  : PieChart(
-                                      PieChartData(
-                                        sectionsSpace: 2,
-                                        centerSpaceRadius: 48,
-                                        borderData: FlBorderData(show: true),
-                                        sections: _showingSections(
-                                          projectDurations,
-                                          totalSeconds,
-                                          projectColors,
-                                          scheme,
-                                          context,
-                                        ),
-                                        pieTouchData: PieTouchData(
-                                          touchCallback:
-                                              (
-                                                FlTouchEvent event,
-                                                PieTouchResponse?
-                                                pieTouchResponse,
-                                              ) {
-                                                setState(() {
-                                                  if (!event
-                                                          .isInterestedForInteractions ||
-                                                      pieTouchResponse ==
-                                                          null ||
-                                                      pieTouchResponse
-                                                              .touchedSection ==
-                                                          null) {
-                                                    touchedIndex = -1;
-                                                    return;
-                                                  }
-                                                  touchedIndex =
-                                                      pieTouchResponse
-                                                          .touchedSection!
-                                                          .touchedSectionIndex;
-                                                });
-                                              },
-                                        ),
-                                      ),
-                                    ),
+                              child: PieChart(
+                                PieChartData(
+                                  sectionsSpace: 2,
+                                  centerSpaceRadius: 48,
+                                  borderData: FlBorderData(show: true),
+                                  sections: _showingSections(
+                                    projectDurations,
+                                    totalSeconds,
+                                    projectColors,
+                                    scheme,
+                                    context,
+                                  ),
+                                  pieTouchData: PieTouchData(
+                                    touchCallback:
+                                        (
+                                          FlTouchEvent event,
+                                          PieTouchResponse? pieTouchResponse,
+                                        ) {
+                                          setState(() {
+                                            if (!event
+                                                    .isInterestedForInteractions ||
+                                                pieTouchResponse == null ||
+                                                pieTouchResponse
+                                                        .touchedSection ==
+                                                    null) {
+                                              touchedIndex = -1;
+                                              return;
+                                            }
+                                            touchedIndex = pieTouchResponse
+                                                .touchedSection!
+                                                .touchedSectionIndex;
+                                          });
+                                        },
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                           const SizedBox(width: 24),
@@ -171,32 +170,31 @@ class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
                       //–––––––––––––––––––––––––––––––––––––––––––
                       // Project details
                       //–––––––––––––––––––––––––––––––––––––––––––
-                      if (projectDurations.isNotEmpty)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: ContainerDesignUtils.padding,
-                          ),
-                          decoration: BoxDecoration(
-                            color: scheme.surface,
-                            borderRadius: ContainerDesignUtils.allRadius,
-                          ),
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: projectDurations.length,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemBuilder: (context, i) {
-                              final entry = projectDurations[i];
-                              final tileColor = i.isEven
-                                  ? scheme.surface
-                                  : scheme.onSurface;
-                              return ProjectInfoTile(
-                                project: entry.project,
-                                tileColor: tileColor,
-                                durationInSeconds: entry.durationInSeconds,
-                              );
-                            },
-                          ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: ContainerDesignUtils.padding,
                         ),
+                        decoration: BoxDecoration(
+                          color: scheme.surface,
+                          borderRadius: ContainerDesignUtils.allRadius,
+                        ),
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: projectDurations.length,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, i) {
+                            final entry = projectDurations[i];
+                            final tileColor = i.isEven
+                                ? scheme.surface
+                                : scheme.onSurface;
+                            return ProjectInfoTile(
+                              project: entry.project,
+                              tileColor: tileColor,
+                              durationInSeconds: entry.durationInSeconds,
+                            );
+                          },
+                        ),
+                      ),
                       const SizedBox(height: 16),
                     ],
                   ),
@@ -227,12 +225,12 @@ class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
           : scheme.onTertiary;
 
       final percentage = totalSeconds == 0
-          ? 0.0
+          ? 100.0
           : ((entry.durationInSeconds / totalSeconds) * 100 * 10).ceil() / 10;
 
       return PieChartSectionData(
         color: resolvedColor,
-        value: entry.durationInSeconds.toDouble(),
+        value: totalSeconds == 0 ? 1 : entry.durationInSeconds.toDouble(),
         title: '${percentage.toStringAsFixed(1)}%',
         radius: radius,
         cornerRadius: 12,
