@@ -2,12 +2,12 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/constants/project_colors.dart';
+import 'package:tarkeez/core/shared_files/enums/report_period.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
-import 'package:tarkeez/features/daily_rollups/data/models/timeline_model.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/project_info_tile.dart';
@@ -19,11 +19,20 @@ class ProjectsPieChartSection extends StatefulWidget {
   const ProjectsPieChartSection({super.key});
 
   @override
-  State<ProjectsPieChartSection> createState() => PieChart2State();
+  State<ProjectsPieChartSection> createState() =>
+      ProjectsPieChartSectionState();
 }
 
-class PieChart2State extends State<ProjectsPieChartSection> {
+class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
   int touchedIndex = -1;
+  ReportPeriod _selectedPeriod = ReportPeriod.thisWeek;
+
+  void _onPeriodSelected(ReportPeriod period) {
+    if (period.isLocked) {
+      return;
+    }
+    setState(() => _selectedPeriod = period);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +47,7 @@ class PieChart2State extends State<ProjectsPieChartSection> {
           SessionFailure(:final sessions) => sessions,
           _ => const <SessionModel>[],
         };
+
         return BlocBuilder<ProjectBloc, ProjectState>(
           builder: (context, projectState) {
             final List<ProjectModel> projects = switch (projectState) {
@@ -46,17 +56,24 @@ class PieChart2State extends State<ProjectsPieChartSection> {
                 projects ?? const <ProjectModel>[],
               _ => const <ProjectModel>[],
             };
+
+            final filteredSessions = ProjectSessionStats.sessionsInPeriod(
+              sessions,
+              _selectedPeriod,
+            );
+
             final projectDurations = ProjectSessionStats.aggregateByProject(
-              sessions: sessions,
+              sessions: filteredSessions,
               projects: projects,
             );
+
             final totalSeconds = projectDurations.fold<int>(
               0,
               (sum, entry) => sum + entry.durationInSeconds,
             );
 
             return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 Text('Projects', style: TextUtils.title2(context)),
                 const SizedBox(height: 8),
@@ -77,15 +94,12 @@ class PieChart2State extends State<ProjectsPieChartSection> {
                             child:
                                 BlocBuilder<DailyRollupBloc, DailyRollupState>(
                                   builder: (context, state) {
-                                    final entries = state is DailyRollupLoaded
-                                        ? state.timeline(days: 30)
-                                        : const <TimelineModel>[];
-                                    final rollupTotalSeconds = entries
-                                        .fold<int>(
-                                          0,
-                                          (total, entry) =>
-                                              total + entry.seconds,
-                                        );
+                                    final rollupTotalSeconds =
+                                        state is DailyRollupLoaded
+                                        ? state.totalSecondsForPeriod(
+                                            _selectedPeriod,
+                                          )
+                                        : 0;
                                     return DurationTextUtils(
                                       durationInSeconds: rollupTotalSeconds,
                                       fontSizePrimary: 24,

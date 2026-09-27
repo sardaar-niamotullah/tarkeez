@@ -32,6 +32,19 @@ class DailyRollupLoaded extends DailyRollupState {
     return base;
   }
 
+  int totalSecondsForPeriod(ReportPeriod period) {
+    final range = period.dateRange();
+    if (range == null) {
+      return _effectiveRollups.values.fold<int>(0, (a, b) => a + b);
+    }
+    final (start, end) = range;
+    return InvestedTimeStats.sumRange(
+      _effectiveRollups,
+      DailyRollupDateUtils.format(start),
+      DailyRollupDateUtils.format(end),
+    );
+  }
+
   /// Merges DB-persisted rollups with today's live overlay — the single
   /// map every stats computation below reads from.
   Map<String, int> get _effectiveRollups {

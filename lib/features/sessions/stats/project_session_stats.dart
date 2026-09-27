@@ -1,3 +1,5 @@
+import 'package:tarkeez/core/shared_files/enums/report_period.dart';
+import 'package:tarkeez/core/shared_files/enums/report_period_range.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/sessions/data/models/session_model.dart';
 
@@ -6,12 +8,33 @@ import 'package:tarkeez/features/sessions/data/models/session_model.dart';
 /// resolves to a known project).
 class ProjectDurationModel {
   const ProjectDurationModel({this.project, required this.durationInSeconds});
+
   final ProjectModel? project;
   final int durationInSeconds;
 }
 
 class ProjectSessionStats {
   ProjectSessionStats._();
+
+  /// Keeps only sessions whose local start-day falls inside period.
+  /// Safe to rely on the session's day alone because SessionBloc splits
+  /// every entry at local midnight, so a session never spans two days.
+  static List<SessionModel> sessionsInPeriod(
+    List<SessionModel> sessions,
+    ReportPeriod period,
+  ) {
+    final range = period.dateRange();
+    if (range == null) return sessions;
+
+    final (start, end) = range;
+    final endExclusive = end.add(const Duration(days: 1));
+
+    return sessions.where((s) {
+      final localDay = _dateOnly(s.startedAt.toLocal());
+      return !localDay.isBefore(start) && localDay.isBefore(endExclusive);
+    }).toList();
+  }
+
   /// Sums session durations per project, bucketing unassigned/unresolvable
   /// sessions under a single null-project entry. Zero-duration entries are
   /// dropped. Result is sorted by duration, descending.
@@ -57,4 +80,6 @@ class ProjectSessionStats {
 
     return result;
   }
+
+  static DateTime _dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);
 }

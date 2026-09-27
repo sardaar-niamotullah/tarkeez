@@ -30,7 +30,7 @@ class SessionsSection extends StatelessWidget {
             SliverToBoxAdapter(
               child: Text('Sessions', style: TextUtils.title2(context)),
             ),
-            const SliverToBoxAdapter(child: SizedBox(height: 16)),
+            const SliverToBoxAdapter(child: SizedBox(height: 8)),
             if (isLocked) ...[
               BlocBuilder<ThemeCubit, ThemeState>(
                 builder: (context, state) {
