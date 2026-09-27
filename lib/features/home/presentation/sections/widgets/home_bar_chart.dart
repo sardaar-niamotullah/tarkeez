@@ -24,7 +24,7 @@ class HomeBarChart extends StatelessWidget {
     return BlocBuilder<DailyRollupBloc, DailyRollupState>(
       builder: (context, state) {
         final entries = state is DailyRollupLoaded
-            ? state.timeline(days: 7)
+            ? state.timeline(days: 3)
             : const <TimelineModel>[];
 
         return LayoutBuilder(
