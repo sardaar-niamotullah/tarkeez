@@ -31,13 +31,12 @@ class DateTimeFormatter {
     return 'just now';
   }
 
-  static String formatDurationMinutes(int minutes) {
-    final hours = minutes ~/ 60;
-    final remainingMinutes = minutes % 60;
+  static String formatDurationSeconds(int seconds) {
+    final hours = seconds ~/ 3600;
+    final minutes = (seconds % 3600) ~/ 60;
 
-    if (hours == 0) return '${remainingMinutes}m';
-    if (remainingMinutes == 0) return '${hours}h';
-
-    return '${hours}h ${remainingMinutes}m';
+    if (hours == 0) return '${minutes}m';
+    if (minutes == 0) return '${hours}h';
+    return '${hours}h ${minutes}m';
   }
 }

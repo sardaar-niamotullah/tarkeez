@@ -4,56 +4,58 @@ import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
 import 'package:tarkeez/core/utils/date_time_formatter.dart';
 
 class HeatmapPoint extends StatelessWidget {
-  final int minute;
+  final int seconds;
   final DateTime? date;
   final bool paintHeatmap;
+
   const HeatmapPoint({
     super.key,
-    required this.minute,
+    required this.seconds,
     this.date,
     this.paintHeatmap = true,
   });
 
-  double getOpacity(num minutes) {
-    final m = minutes.toDouble();
+  double getOpacity(num seconds) {
+    final s = seconds.toDouble();
+    const fifteenMin = 15 * 60;
+    const fiveHours = 5 * 60 * 60;
+    const tenHours = 10 * 60 * 60;
 
-    const fiveHours = 5 * 60; // 300
-    const tenHours = 10 * 60; // 600
-
-    if (m < 15) {
-      // 0 - 14 min
+    if (s < fifteenMin) {
+      // 0 – 14 min
       return 0.0;
-    } else if (m <= fiveHours) {
-      // 15 min -> 5 hr : 0.2 -> 0.8
-      return 0.2 + ((m - 15) / (fiveHours - 15)) * (0.8 - 0.2);
-    } else if (m <= tenHours) {
-      // 5 hr -> 10 hr : 0.8 -> 1.0
-      return 0.8 + ((m - fiveHours) / (tenHours - fiveHours)) * (1.0 - 0.8);
+    } else if (s <= fiveHours) {
+      // 15 min → 5 h : 0.2 → 0.8
+      return 0.2 + ((s - fifteenMin) / (fiveHours - fifteenMin)) * (0.8 - 0.2);
+    } else if (s <= tenHours) {
+      // 5 h → 10 h : 0.8 → 1.0
+      return 0.8 + ((s - fiveHours) / (tenHours - fiveHours)) * (1.0 - 0.8);
     } else {
-      // 10 hr+
+      // 10 h+
       return 1.0;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    int armSize = 10;
+    const armSize = 10;
+
     return !paintHeatmap
-        ? SizedBox(height: 12, width: 12)
+        ? const SizedBox(height: 12, width: 12)
         : Material(
             color: Colors.transparent,
             child: InkWell(
               onTap: () {
                 if (date != null) {
-                  final durationText = DateTimeFormatter.formatDurationMinutes(
-                    minute,
+                  final durationText = DateTimeFormatter.formatDurationSeconds(
+                    seconds,
                   );
                   showInfoSnackBar(
                     context,
                     iconPath: SvgPaths.square,
-                    iconColor: minute > 15
+                    iconColor: seconds > 15 * 60
                         ? Theme.of(context).colorScheme.primaryContainer
-                              .withValues(alpha: getOpacity(minute))
+                              .withValues(alpha: getOpacity(seconds))
                         : Theme.of(context).colorScheme.surface,
                     message:
                         '$durationText on ${DateTimeFormatter.weekdayName(date!)}, ${DateTimeFormatter.readableDate(date!)}',
@@ -62,7 +64,7 @@ class HeatmapPoint extends StatelessWidget {
               },
               borderRadius: BorderRadius.circular(2),
               child: Ink(
-                padding: .all(1),
+                padding: const EdgeInsets.all(1),
                 child: Stack(
                   children: [
                     Ink(
@@ -78,7 +80,7 @@ class HeatmapPoint extends StatelessWidget {
                       height: armSize.toDouble(),
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.primaryContainer
-                            .withValues(alpha: getOpacity(minute)),
+                            .withValues(alpha: getOpacity(seconds)),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),

@@ -41,20 +41,14 @@ class Heatmap extends StatelessWidget {
     );
   }
 
-  int _minuteForDate({
+  int _secondsForDate({
     required DateTime date,
     required DateTime today,
     required List<int> heatMapValues,
   }) {
-    if (date.isAfter(today)) {
-      return 0;
-    }
-
+    if (date.isAfter(today)) return 0;
     final daysAgo = _dateOnly(today).difference(date).inDays;
-    if (daysAgo < 0 || daysAgo >= heatMapValues.length) {
-      return 0;
-    }
-
+    if (daysAgo < 0 || daysAgo >= heatMapValues.length) return 0;
     return heatMapValues[daysAgo];
   }
 
@@ -131,13 +125,13 @@ class Heatmap extends StatelessWidget {
                                   final date =
                                       visibleDates[columnIndex * _daysPerWeek +
                                           rowIndex];
-                                  final minute = _minuteForDate(
+                                  final seconds = _secondsForDate(
                                     date: date,
                                     today: today,
                                     heatMapValues: heatMapValues,
                                   );
                                   return HeatmapPoint(
-                                    minute: minute,
+                                    seconds: seconds,
                                     date: date.isAfter(today) ? null : date,
                                     paintHeatmap: !date.isAfter(today),
                                   );
