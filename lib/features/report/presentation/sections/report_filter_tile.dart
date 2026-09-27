@@ -40,16 +40,10 @@ class ReportFilterTile extends StatelessWidget {
                 children: [
                   CustomIconButton(
                     iconPath: SvgPaths.filter,
-                    onTap: () {
-                      final cubit = context.read<ReportPeriodCubit>();
-                      showModalBottomSheet(
-                        context: context,
-                        builder: (_) => BlocProvider.value(
-                          value: cubit,
-                          child: const ReportFilterBottomSheet(),
-                        ),
-                      );
-                    },
+                    onTap: () => showModalBottomSheet(
+                      context: context,
+                      builder: (_) => const ReportFilterBottomSheet(),
+                    ),
                   ),
                 ],
               ),
