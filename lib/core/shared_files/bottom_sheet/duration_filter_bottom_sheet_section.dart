@@ -1,42 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/shared_files/bottom_sheet/filter_duration_selector_button.dart';
+import 'package:tarkeez/core/shared_files/enums/report_period.dart';
 
-enum DurationFilterOption {
-  today('Today'),
-  lastMonth('Last month', isLocked: true),
-  yesterday('Yesterday'),
-  thisYear('This year', isLocked: true),
-  last3Days('Last 3 days'),
-  lastYear('Last year', isLocked: true),
-  last5Days('Last 5 days'),
-  this7Days('Last 7 days', isLocked: true),
-  thisWeek('This week'),
-  last30Days('Last 30 days', isLocked: true),
-  lastWeek('Last week'),
-  last12Months('Last 12 months', isLocked: true),
-  thisMonth('This month'),
-  allTime('All time', isLocked: true);
+class DurationFilterBottomSheetSection extends StatelessWidget {
+  const DurationFilterBottomSheetSection({
+    super.key,
+    required this.selected,
+    required this.onSelected,
+  });
 
-  const DurationFilterOption(this.title, {this.isLocked = false});
-  final String title;
-  final bool isLocked;
-}
-
-class DurationFilterBottomSheetSection extends StatefulWidget {
-  const DurationFilterBottomSheetSection({super.key});
-
-  @override
-  State<DurationFilterBottomSheetSection> createState() =>
-      _DurationFilterBottomSheetSectionState();
-}
-
-class _DurationFilterBottomSheetSectionState
-    extends State<DurationFilterBottomSheetSection> {
-  DurationFilterOption _selected = DurationFilterOption.last3Days;
+  final ReportPeriod selected;
+  final ValueChanged<ReportPeriod> onSelected;
 
   @override
   Widget build(BuildContext context) {
-    const options = DurationFilterOption.values;
+    const options = ReportPeriod.values;
     final rowCount = (options.length / 2).ceil();
 
     return ListView.builder(
@@ -50,7 +28,7 @@ class _DurationFilterBottomSheetSectionState
         final hasSecond = secondIndex < options.length;
 
         return Padding(
-          padding: .only(bottom: rowIndex == rowCount - 1 ? 0 : 8),
+          padding: EdgeInsets.only(bottom: rowIndex == rowCount - 1 ? 0 : 8),
           child: Row(
             children: [
               Expanded(child: _buildButton(options[firstIndex])),
@@ -65,12 +43,12 @@ class _DurationFilterBottomSheetSectionState
     );
   }
 
-  Widget _buildButton(DurationFilterOption option) {
+  Widget _buildButton(ReportPeriod option) {
     return FilterDurationSelectorButton(
-      title: option.title,
-      isSelected: option == _selected,
+      title: option.label,
+      isSelected: option == selected,
       isLocked: option.isLocked,
-      onTap: () => setState(() => _selected = option),
+      onTap: () => onSelected(option),
     );
   }
 }

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/custom_icon_button.dart';
+import 'package:tarkeez/core/shared_files/enums/report_period.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
+import 'package:tarkeez/features/report/cubit/report_period_cubit.dart';
 import 'package:tarkeez/features/report/presentation/sections/report_filter_bottom_sheet.dart';
 
 class ReportFilterTile extends StatelessWidget {
@@ -10,6 +13,7 @@ class ReportFilterTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+
     return SliverAppBar(
       pinned: false,
       floating: true,
@@ -22,26 +26,31 @@ class ReportFilterTile extends StatelessWidget {
       expandedHeight: 47,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
-          padding: .only(left: 16, right: 10, top: 8, bottom: 8),
+          padding: const .only(left: 16, right: 10, top: 8, bottom: 8),
           decoration: BoxDecoration(color: scheme.onSurface),
           child: Row(
-            mainAxisAlignment: .spaceBetween,
             crossAxisAlignment: .center,
+            mainAxisAlignment: .spaceBetween,
             children: [
-              Text('Last 7 days', style: TextUtils.paragraphBold(context)),
+              BlocBuilder<ReportPeriodCubit, ReportPeriod>(
+                builder: (context, period) =>
+                    Text(period.label, style: TextUtils.paragraphBold(context)),
+              ),
               Row(
                 children: [
                   CustomIconButton(
                     iconPath: SvgPaths.filter,
-                    onTap: () => showModalBottomSheet(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return const ReportFilterBottomSheet();
-                      },
-                    ),
+                    onTap: () {
+                      final cubit = context.read<ReportPeriodCubit>();
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (_) => BlocProvider.value(
+                          value: cubit,
+                          child: const ReportFilterBottomSheet(),
+                        ),
+                      );
+                    },
                   ),
-                  // CustomIconButton(iconPath: SvgPaths.refresh, onTap: () {}),
-                  // CustomIconButton(iconPath: SvgPaths.download, onTap: () {}),
                 ],
               ),
             ],

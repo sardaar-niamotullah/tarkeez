@@ -6,7 +6,7 @@ enum ReportPeriod {
   last3Days('Last 3 days'),
   lastYear('Last year', isLocked: true),
   last5Days('Last 5 days'),
-  this7Days('Last 7 days', isLocked: true),
+  last7Days('Last 7 days', isLocked: true),
   thisWeek('This week'),
   last30Days('Last 30 days', isLocked: true),
   lastWeek('Last week'),

@@ -17,7 +17,7 @@ extension ReportPeriodRange on ReportPeriod {
         return (today.subtract(const Duration(days: 2)), today);
       case ReportPeriod.last5Days:
         return (today.subtract(const Duration(days: 4)), today);
-      case ReportPeriod.this7Days:
+      case ReportPeriod.last7Days:
         return (today.subtract(const Duration(days: 6)), today);
       case ReportPeriod.last30Days:
         return (today.subtract(const Duration(days: 29)), today);
