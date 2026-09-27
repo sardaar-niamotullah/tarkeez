@@ -11,7 +11,7 @@ class HomeAppBar extends StatelessWidget {
     final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
     return SafeArea(
       child: Container(
-        height: isIOS ? 36 : 48,
+        height: isIOS ? 34 : 48,
         padding: const .only(right: 16, left: 12),
         child: AppDrawerButton(onTap: onAppMenuTap),
       ),

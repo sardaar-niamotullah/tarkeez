@@ -17,9 +17,9 @@ class _MockSessionsState extends State<MockSessions> {
 
   static const _projectIds = <String?>[
     null, // no project
-    '891e3ebc-b548-4fb1-94c8-89f727c6d5a1',
-    '7cfe93cb-509b-4f5f-87d4-9fe323f4280c',
-    '4f3e2a65-87f6-4c5a-a8c1-65ac34a69814',
+    '792c2781-652c-4bdc-9adc-51a55ba84dec',
+    'c3a16347-9566-4223-b273-e367aaa188aa',
+    '4b661333-18c4-483d-be2d-a81bdeee5c65',
   ];
 
   Future<void> _insertMockSessions() async {

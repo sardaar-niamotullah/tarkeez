@@ -22,7 +22,7 @@ class CustomAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
     return SizedBox(
-      height: isIOS ? 36 : 48,
+      height: isIOS ? 34 : 48,
       child: Row(
         crossAxisAlignment: isIOS ? .start : .center,
         children: [

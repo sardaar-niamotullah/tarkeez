@@ -19,6 +19,7 @@ class AppDrawerButton extends StatelessWidget {
           onTap: () {},
           borderRadius: .circular(4),
           child: Row(
+            crossAxisAlignment: .start,
             children: [
               SvgPicture.asset(
                 SvgPaths.hamburger,

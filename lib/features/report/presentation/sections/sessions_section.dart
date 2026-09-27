@@ -65,7 +65,7 @@ class SessionsSection extends StatelessWidget {
                   child: Padding(
                     padding: const .only(top: 16),
                     child: Text(
-                      'No sessions to show for this date range.',
+                      'No sessions to show for this period',
                       style: TextUtils.paragraph(
                         context,
                         color: scheme.onTertiary.withValues(alpha: .7),

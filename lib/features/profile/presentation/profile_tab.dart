@@ -63,7 +63,7 @@ class ProfileTab extends StatelessWidget {
                                       InvestedTimesSection(isLocked: false),
                                       SizedBox(height: 16),
                                       EraseAllDataButton(isLocked: false),
-                                      SizedBox(height: 32),
+                                      SizedBox(height: 64),
                                     ],
                                   ),
                                 ),
