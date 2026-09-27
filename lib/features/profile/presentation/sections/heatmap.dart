@@ -50,8 +50,6 @@ class Heatmap extends StatelessWidget {
           BlocBuilder<DailyRollupBloc, DailyRollupState>(
             builder: (context, state) {
               final grid = _resolveGrid(state);
-              final firstVisibleDate = grid.first.date;
-
               return Container(
                 width: .infinity,
                 padding: const .only(top: 8, bottom: 4, left: 8, right: 12),
@@ -106,7 +104,6 @@ class Heatmap extends StatelessWidget {
                                   final label =
                                       HeatmapStats.monthLabelForColumn(
                                         columnStart,
-                                        firstVisibleDate,
                                       );
                                   return SizedBox(
                                     width: 12,
@@ -115,7 +112,7 @@ class Heatmap extends StatelessWidget {
                                         label ?? '',
                                         maxLines: 1,
                                         softWrap: false,
-                                        overflow: .visible,
+                                        overflow: TextOverflow.visible,
                                         style: TextUtils.paragraphSmall(context)
                                             .copyWith(fontSize: 10),
                                       ),

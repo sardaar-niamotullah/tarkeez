@@ -33,15 +33,10 @@ class HeatmapStats {
   }
 
   /// Month label for the column starting at columnStart, or null when
-  /// this column shouldn't carry one (only the first visible column and
-  /// columns landing in a new month's first week get a label).
-  static String? monthLabelForColumn(
-    DateTime columnStart,
-    DateTime firstVisibleDate,
-  ) {
-    final isFirstColumn = columnStart.isAtSameMomentAs(firstVisibleDate);
-    final isMonthStartVisible = columnStart.day <= 7;
-    if (!isFirstColumn && !isMonthStartVisible) return null;
+  /// this column isn't the start of a month (only the week containing a
+  /// month's first 7 days gets a label).
+  static String? monthLabelForColumn(DateTime columnStart) {
+    if (columnStart.day > 7) return null;
     return DailyRollupDateUtils.monthNames[columnStart.month - 1];
   }
 
