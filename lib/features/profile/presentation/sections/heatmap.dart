@@ -5,6 +5,7 @@ import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
 import 'package:tarkeez/core/shared_files/widgets/section_image_lock_overlay.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
+import 'package:tarkeez/features/daily_rollups/utils/daily_rollup_date_utils.dart';
 import 'package:tarkeez/features/profile/presentation/sections/widgets/heatmap_point.dart';
 import 'package:tarkeez/features/profile/presentation/sections/widgets/heatmap_title_and_guide_tile.dart';
 import 'package:tarkeez/features/profile/presentation/sections/widgets/heatmap_weekdays_name.dart';
@@ -20,12 +21,12 @@ class Heatmap extends StatelessWidget {
   DateTime _dateOnly(DateTime date) =>
       DateTime(date.year, date.month, date.day);
 
-  /// Saturday is the first row in the grid.
+  /// Sunday is the first row in the grid.
   DateTime _startOfWeek(DateTime date) {
     final normalized = _dateOnly(date);
-    const saturdayIndex = DateTime.saturday;
+    const sundayIndex = DateTime.sunday;
     final diff =
-        (normalized.weekday + _daysPerWeek - saturdayIndex) % _daysPerWeek;
+        (normalized.weekday + _daysPerWeek - sundayIndex) % _daysPerWeek;
     return normalized.subtract(Duration(days: diff));
   }
 
@@ -63,27 +64,10 @@ class Heatmap extends StatelessWidget {
   ) {
     final isFirstColumn = columnStart.isAtSameMomentAs(firstVisibleDate);
     final isMonthStartVisible = columnStart.day <= 7;
-
     if (!isFirstColumn && !isMonthStartVisible) {
       return null;
     }
-
-    const months = <int, String>{
-      DateTime.january: 'Jan',
-      DateTime.february: 'Feb',
-      DateTime.march: 'Mar',
-      DateTime.april: 'Apr',
-      DateTime.may: 'May',
-      DateTime.june: 'Jun',
-      DateTime.july: 'Jul',
-      DateTime.august: 'Aug',
-      DateTime.september: 'Sep',
-      DateTime.october: 'Oct',
-      DateTime.november: 'Nov',
-      DateTime.december: 'Dec',
-    };
-
-    return months[columnStart.month];
+    return DailyRollupDateUtils.monthNames[columnStart.month - 1];
   }
 
   @override

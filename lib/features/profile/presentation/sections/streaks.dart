@@ -10,6 +10,7 @@ class Streaks extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //TODO: streak isn't updating in real time, need app restart.
     return Column(
       crossAxisAlignment: .start,
       children: [
