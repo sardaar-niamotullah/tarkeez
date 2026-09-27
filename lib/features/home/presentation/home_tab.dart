@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:tarkeez/core/utils/date_time_formatter.dart';
 import 'package:tarkeez/core/utils/primary_page_margin.dart';
 import 'package:tarkeez/features/home/presentation/sections/home_app_bar.dart';
-import 'package:tarkeez/features/home/presentation/sections/home_last_three_days_bar_chart.dart';
+import 'package:tarkeez/features/home/presentation/sections/home_bar_chart_section.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/time_log_index_tile.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/time_log_tile.dart';
 import 'package:tarkeez/features/sessions/presentation/session_log_interface.dart';
@@ -54,7 +54,7 @@ class HomeTab extends StatelessWidget {
                                 child: Column(
                                   children: [
                                     const SizedBox(height: 24),
-                                    const HomeLastThreeDaysBarChart(),
+                                    const HomeBarChartSection(),
                                     const SizedBox(height: 24),
                                     const TimeLogIndexTile(),
                                     const SizedBox(height: 8),
