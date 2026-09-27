@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:tarkeez/core/shared_files/buttons/go_premium_button.dart';
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';

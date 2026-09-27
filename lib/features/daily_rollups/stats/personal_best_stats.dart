@@ -5,7 +5,7 @@ class PersonalBestStats {
   PersonalBestStats._();
 
   static PersonalBestPeriod bestDay(Map<String, int> rollups) {
-    if (rollups.isEmpty) return PersonalBestPeriod.empty;
+    if (rollups.isEmpty) return PersonalBestPeriod(label: 'Day', seconds: 0);
 
     String? bestDate;
     var bestSeconds = -1;
@@ -23,7 +23,7 @@ class PersonalBestStats {
   }
 
   static PersonalBestPeriod bestWeek(Map<String, int> rollups) {
-    if (rollups.isEmpty) return PersonalBestPeriod.empty;
+    if (rollups.isEmpty) return PersonalBestPeriod(label: 'Week', seconds: 0);
 
     final byWeek = <String, int>{};
     rollups.forEach((date, seconds) {
@@ -48,11 +48,11 @@ class PersonalBestStats {
   }
 
   static PersonalBestPeriod bestMonth(Map<String, int> rollups) {
-    if (rollups.isEmpty) return PersonalBestPeriod.empty;
+    if (rollups.isEmpty) return PersonalBestPeriod(label: 'Month', seconds: 0);
 
     final byMonth = <String, int>{};
     rollups.forEach((date, seconds) {
-      final key = date.substring(0, 7); 
+      final key = date.substring(0, 7);
       byMonth[key] = (byMonth[key] ?? 0) + seconds;
     });
 
@@ -72,11 +72,11 @@ class PersonalBestStats {
   }
 
   static PersonalBestPeriod bestYear(Map<String, int> rollups) {
-    if (rollups.isEmpty) return PersonalBestPeriod.empty;
+    if (rollups.isEmpty) return PersonalBestPeriod(label: 'Year', seconds: 0);
 
     final byYear = <String, int>{};
     rollups.forEach((date, seconds) {
-      final key = date.substring(0, 4); 
+      final key = date.substring(0, 4);
       byYear[key] = (byYear[key] ?? 0) + seconds;
     });
 

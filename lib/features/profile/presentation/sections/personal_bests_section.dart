@@ -37,10 +37,18 @@ class PersonalBestsSection extends StatelessWidget {
             buildWhen: (previous, current) => current is DailyRollupLoaded,
             builder: (context, state) {
               final loaded = state is DailyRollupLoaded ? state : null;
-              final bestDay = loaded?.bestDay ?? PersonalBestPeriod.empty;
-              final bestWeek = loaded?.bestWeek ?? PersonalBestPeriod.empty;
-              final bestMonth = loaded?.bestMonth ?? PersonalBestPeriod.empty;
-              final bestYear = loaded?.bestYear ?? PersonalBestPeriod.empty;
+              final bestDay =
+                  loaded?.bestDay ??
+                  PersonalBestPeriod(label: 'Day', seconds: 0);
+              final bestWeek =
+                  loaded?.bestWeek ??
+                  PersonalBestPeriod(label: 'Week', seconds: 0);
+              final bestMonth =
+                  loaded?.bestMonth ??
+                  PersonalBestPeriod(label: 'Month', seconds: 0);
+              final bestYear =
+                  loaded?.bestYear ??
+                  PersonalBestPeriod(label: 'Year', seconds: 0);
 
               return GridView.count(
                 shrinkWrap: true,
