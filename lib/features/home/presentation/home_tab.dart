@@ -12,7 +12,6 @@ import 'package:tarkeez/features/home/presentation/sections/home_bar_chart_secti
 import 'package:tarkeez/features/home/presentation/sections/widgets/time_log_index_tile.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/time_log_tile.dart';
 import 'package:tarkeez/features/sessions/presentation/session_log_interface.dart';
-import 'package:tarkeez/mock_sessions.dart';
 
 class HomeTab extends StatelessWidget {
   final VoidCallback onMenuTap;
@@ -75,7 +74,6 @@ class HomeTab extends StatelessWidget {
           ],
         ),
         const Positioned(bottom: 16, right: 16, child: GoPremiumButton()),
-        const MockSessions(),
         Positioned(
           bottom: 16,
           left: 16,

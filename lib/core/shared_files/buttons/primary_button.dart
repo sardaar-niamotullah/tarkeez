@@ -3,21 +3,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class PrimaryButton extends StatelessWidget {
-  final String title;
-  final VoidCallback onPressed;
-  final VoidCallback? onDisabled;
-  final Color? backgroundColorLeft;
-  final Color? backgroundColorRight;
-  final Color textColor;
-  final double height;
-  final double width;
-  final double borderRaius;
-  final bool isBorderOn;
-  final String? iconPath;
-  final bool isLoading;
-  final bool enable;
-  final double? iconSize;
-
   const PrimaryButton({
     super.key,
     required this.title,
@@ -35,6 +20,21 @@ class PrimaryButton extends StatelessWidget {
     this.onDisabled,
     this.iconSize,
   });
+
+  final String title;
+  final VoidCallback onPressed;
+  final VoidCallback? onDisabled;
+  final Color? backgroundColorLeft;
+  final Color? backgroundColorRight;
+  final Color textColor;
+  final double height;
+  final double width;
+  final double borderRaius;
+  final bool isBorderOn;
+  final String? iconPath;
+  final bool isLoading;
+  final bool enable;
+  final double? iconSize;
 
   @override
   Widget build(BuildContext context) {

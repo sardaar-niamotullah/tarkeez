@@ -25,28 +25,28 @@ class EraseAllDataButton extends StatefulWidget {
 class _EraseAllDataButtonState extends State<EraseAllDataButton> {
   bool _isLoading = false;
 
-  Future<void> _eraseAllData(BuildContext dialogContext) async {
+  Future<void> _eraseAllData(StateSetter setDialogState) async {
     if (_isLoading) return;
     setState(() => _isLoading = true);
+    setDialogState(() {});
+
     try {
       final database = getIt<AppDatabase>();
-      await Future.wait([
-        database.projectsDao.deleteAllProjects(),
-        database.sessionsDao.deleteAllSessions(),
-      ]);
+      // await database.projectsDao.deleteAllProjects();
+      await database.sessionsDao.deleteAllSessions(); 
       getIt<ProjectBloc>().add(FetchProjectsRequested());
       getIt<SessionBloc>().add(FetchAllSessionsRequested());
       getIt<DailyRollupBloc>().add(FetchDailyRollupRequested());
       if (!mounted) return;
       context.pop();
-    } catch (e) {
-      if (!mounted) return;
-      showErrorSnackBar(context, message: e.toString());
-    } finally {
       showSuccessSnackBar(
         context,
         message: 'Your data has been deleted. Welcome to a fresh start!',
       );
+    } catch (e) {
+      if (!mounted) return;
+      showErrorSnackBar(context, message: e.toString());
+    } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
@@ -61,7 +61,7 @@ class _EraseAllDataButtonState extends State<EraseAllDataButton> {
         borderRadius: ContainerDesignUtils.allRadius,
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: .spaceBetween,
         children: [
           Text(
             'Erase all data, and start fresh.',
@@ -84,10 +84,10 @@ class _EraseAllDataButtonState extends State<EraseAllDataButton> {
                 showDialog(
                   context: context,
                   barrierDismissible: !_isLoading,
-                  builder: (dialogContext) => StatefulBuilder(
+                  builder: (_) => StatefulBuilder(
                     builder: (dialogContext, setDialogState) => DeleteDialog(
                       isLoading: _isLoading,
-                      onDeleteTap: () => _eraseAllData(dialogContext),
+                      onDeleteTap: () => _eraseAllData(setDialogState),
                       message:
                           'This will permanently delete all your Tarkeez data, including projects, sessions, and stats.\n\n'
                           'If you have a Premium subscription, it will remain active, so you can start fresh as a Premium member.',

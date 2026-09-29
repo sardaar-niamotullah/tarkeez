@@ -3,8 +3,10 @@ import 'package:tarkeez/features/daily_rollups/utils/daily_rollup_date_utils.dar
 class StreakStats {
   StreakStats._();
 
+  static const int minStreakSeconds = 30 * 60; // 30 minutes
+
   static bool _hasActivity(Map<String, int> rollups, String date) =>
-      (rollups[date] ?? 0) > 0;
+      (rollups[date] ?? 0) >= minStreakSeconds;
 
   static int currentStreak(Map<String, int> rollups) {
     final today = DailyRollupDateUtils.todayLocal();
@@ -22,7 +24,10 @@ class StreakStats {
 
   static int longestStreak(Map<String, int> rollups) {
     final activeDates =
-        rollups.entries.where((e) => e.value > 0).map((e) => e.key).toList()
+        rollups.entries
+            .where((e) => e.value >= minStreakSeconds)
+            .map((e) => e.key)
+            .toList()
           ..sort();
 
     if (activeDates.isEmpty) return 0;
