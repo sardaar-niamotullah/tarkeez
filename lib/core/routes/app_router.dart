@@ -3,6 +3,7 @@ import 'package:tarkeez/features/others/feedback/presentation/feedback_page.dart
 import 'package:tarkeez/features/main_scaffold.dart';
 import 'package:tarkeez/core/routes/route_names.dart';
 import 'package:tarkeez/features/others/hire_us/presentation/hire_us_page.dart';
+import 'package:tarkeez/features/sessions/presentation/sessions_page.dart';
 import 'package:tarkeez/features/subscription/presentation/subscription_page.dart';
 import 'package:tarkeez/features/others/user_manual/presentation/user_manual_page.dart';
 import 'package:tarkeez/features/others/terms_and_conditions/presentation/terms_and_conditions_page.dart';
@@ -14,6 +15,10 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: RouteNames.home,
       builder: (context, state) => const MainScaffold(),
+    ),
+    GoRoute(
+      path: RouteNames.sessions,
+      builder: (context, state) => const SessionsPage(),
     ),
     GoRoute(
       path: RouteNames.subscriptionPage,

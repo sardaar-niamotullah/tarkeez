@@ -70,6 +70,11 @@ class AppDrawer extends StatelessWidget {
                   child: Column(
                     children: [
                       AppDrawerItem(
+                        title: 'Sessions',
+                        iconPath: SvgPaths.sessions,
+                        onTap: () => context.push(RouteNames.sessions),
+                      ),
+                      AppDrawerItem(
                         title: 'Settings',
                         iconPath: SvgPaths.gear,
                         onTap: () => showModalBottomSheet(

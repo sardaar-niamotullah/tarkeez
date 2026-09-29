@@ -27,9 +27,6 @@ class SessionsSection extends StatelessWidget {
         };
         return SliverMainAxisGroup(
           slivers: [
-            SliverToBoxAdapter(
-              child: Text('Sessions', style: TextUtils.title2(context)),
-            ),
             const SliverToBoxAdapter(child: SizedBox(height: 8)),
             if (isLocked) ...[
               BlocBuilder<ThemeCubit, ThemeState>(

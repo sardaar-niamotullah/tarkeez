@@ -3,6 +3,7 @@ class RouteNames {
   static const String authPage = '/auth';
   static const String home = '/home';
   static const String notificationsPage = '/notifications';
+  static const String sessions = '/sessions';
   static const String subscriptionPage = '/subscription';
   static const String othersProfilePage = '/profiles';
   static const String connectionsPage = '/connections';

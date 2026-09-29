@@ -86,6 +86,7 @@ class SvgPaths {
   static const String ruler = 'assets/svgs/ruler.svg';
   static const String rank = 'assets/svgs/rank.svg';
   static const String refresh = 'assets/svgs/refresh.svg';
+  static const String sessions = 'assets/svgs/sessions.svg';
   static const String sortAscending = 'assets/svgs/sort_ascending.svg';
   static const String sortDescending = 'assets/svgs/sort_descending.svg';
   static const String subtract = 'assets/svgs/subtract.svg';
