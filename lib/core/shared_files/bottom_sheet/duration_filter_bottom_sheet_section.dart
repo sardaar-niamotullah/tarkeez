@@ -23,19 +23,20 @@ class DurationFilterBottomSheetSection extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       itemCount: rowCount,
       itemBuilder: (context, rowIndex) {
-        final firstIndex = rowIndex * 2;
-        final secondIndex = firstIndex + 1;
-        final hasSecond = secondIndex < options.length;
+        final leftIndex = rowIndex; // first column: 0..rowCount-1
+        final rightIndex = rowIndex + rowCount; // second column: rowCount..end
+        final hasRight = rightIndex < options.length;
 
         return Padding(
           padding: .only(bottom: rowIndex == rowCount - 1 ? 0 : 8),
           child: Row(
             children: [
-              Expanded(child: _buildButton(options[firstIndex])),
-              if (hasSecond) ...[
-                const SizedBox(width: 8),
-                Expanded(child: _buildButton(options[secondIndex])),
-              ],
+              Expanded(child: _buildButton(options[leftIndex])),
+              const SizedBox(width: 8),
+              if (hasRight)
+                Expanded(child: _buildButton(options[rightIndex]))
+              else
+                const Spacer(),
             ],
           ),
         );
