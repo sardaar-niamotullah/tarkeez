@@ -839,15 +839,290 @@ class DailyRollupsCompanion extends UpdateCompanion<DailyRollup> {
   }
 }
 
+class $ProjectRollupsTable extends ProjectRollups
+    with TableInfo<$ProjectRollupsTable, ProjectRollup> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ProjectRollupsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<String> date = GeneratedColumn<String>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _projectIdMeta = const VerificationMeta(
+    'projectId',
+  );
+  @override
+  late final GeneratedColumn<String> projectId = GeneratedColumn<String>(
+    'project_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(noProjectKey),
+  );
+  static const VerificationMeta _durationSecondsMeta = const VerificationMeta(
+    'durationSeconds',
+  );
+  @override
+  late final GeneratedColumn<int> durationSeconds = GeneratedColumn<int>(
+    'duration_seconds',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [date, projectId, durationSeconds];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'project_rollups';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ProjectRollup> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('project_id')) {
+      context.handle(
+        _projectIdMeta,
+        projectId.isAcceptableOrUnknown(data['project_id']!, _projectIdMeta),
+      );
+    }
+    if (data.containsKey('duration_seconds')) {
+      context.handle(
+        _durationSecondsMeta,
+        durationSeconds.isAcceptableOrUnknown(
+          data['duration_seconds']!,
+          _durationSecondsMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {date, projectId};
+  @override
+  ProjectRollup map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ProjectRollup(
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}date'],
+      )!,
+      projectId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}project_id'],
+      )!,
+      durationSeconds: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}duration_seconds'],
+      )!,
+    );
+  }
+
+  @override
+  $ProjectRollupsTable createAlias(String alias) {
+    return $ProjectRollupsTable(attachedDatabase, alias);
+  }
+}
+
+class ProjectRollup extends DataClass implements Insertable<ProjectRollup> {
+  /// Local date, 'YYYY-MM-DD' (same format as daily_rollups.date).
+  final String date;
+
+  /// projects.id, or [noProjectKey] for sessions without a project.
+  final String projectId;
+  final int durationSeconds;
+  const ProjectRollup({
+    required this.date,
+    required this.projectId,
+    required this.durationSeconds,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['date'] = Variable<String>(date);
+    map['project_id'] = Variable<String>(projectId);
+    map['duration_seconds'] = Variable<int>(durationSeconds);
+    return map;
+  }
+
+  ProjectRollupsCompanion toCompanion(bool nullToAbsent) {
+    return ProjectRollupsCompanion(
+      date: Value(date),
+      projectId: Value(projectId),
+      durationSeconds: Value(durationSeconds),
+    );
+  }
+
+  factory ProjectRollup.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ProjectRollup(
+      date: serializer.fromJson<String>(json['date']),
+      projectId: serializer.fromJson<String>(json['projectId']),
+      durationSeconds: serializer.fromJson<int>(json['durationSeconds']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'date': serializer.toJson<String>(date),
+      'projectId': serializer.toJson<String>(projectId),
+      'durationSeconds': serializer.toJson<int>(durationSeconds),
+    };
+  }
+
+  ProjectRollup copyWith({
+    String? date,
+    String? projectId,
+    int? durationSeconds,
+  }) => ProjectRollup(
+    date: date ?? this.date,
+    projectId: projectId ?? this.projectId,
+    durationSeconds: durationSeconds ?? this.durationSeconds,
+  );
+  ProjectRollup copyWithCompanion(ProjectRollupsCompanion data) {
+    return ProjectRollup(
+      date: data.date.present ? data.date.value : this.date,
+      projectId: data.projectId.present ? data.projectId.value : this.projectId,
+      durationSeconds: data.durationSeconds.present
+          ? data.durationSeconds.value
+          : this.durationSeconds,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProjectRollup(')
+          ..write('date: $date, ')
+          ..write('projectId: $projectId, ')
+          ..write('durationSeconds: $durationSeconds')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(date, projectId, durationSeconds);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ProjectRollup &&
+          other.date == this.date &&
+          other.projectId == this.projectId &&
+          other.durationSeconds == this.durationSeconds);
+}
+
+class ProjectRollupsCompanion extends UpdateCompanion<ProjectRollup> {
+  final Value<String> date;
+  final Value<String> projectId;
+  final Value<int> durationSeconds;
+  final Value<int> rowid;
+  const ProjectRollupsCompanion({
+    this.date = const Value.absent(),
+    this.projectId = const Value.absent(),
+    this.durationSeconds = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ProjectRollupsCompanion.insert({
+    required String date,
+    this.projectId = const Value.absent(),
+    this.durationSeconds = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : date = Value(date);
+  static Insertable<ProjectRollup> custom({
+    Expression<String>? date,
+    Expression<String>? projectId,
+    Expression<int>? durationSeconds,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (date != null) 'date': date,
+      if (projectId != null) 'project_id': projectId,
+      if (durationSeconds != null) 'duration_seconds': durationSeconds,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ProjectRollupsCompanion copyWith({
+    Value<String>? date,
+    Value<String>? projectId,
+    Value<int>? durationSeconds,
+    Value<int>? rowid,
+  }) {
+    return ProjectRollupsCompanion(
+      date: date ?? this.date,
+      projectId: projectId ?? this.projectId,
+      durationSeconds: durationSeconds ?? this.durationSeconds,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (date.present) {
+      map['date'] = Variable<String>(date.value);
+    }
+    if (projectId.present) {
+      map['project_id'] = Variable<String>(projectId.value);
+    }
+    if (durationSeconds.present) {
+      map['duration_seconds'] = Variable<int>(durationSeconds.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProjectRollupsCompanion(')
+          ..write('date: $date, ')
+          ..write('projectId: $projectId, ')
+          ..write('durationSeconds: $durationSeconds, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $ProjectsTable projects = $ProjectsTable(this);
   late final $SessionsTable sessions = $SessionsTable(this);
   late final $DailyRollupsTable dailyRollups = $DailyRollupsTable(this);
+  late final $ProjectRollupsTable projectRollups = $ProjectRollupsTable(this);
   late final ProjectsDao projectsDao = ProjectsDao(this as AppDatabase);
   late final SessionsDao sessionsDao = SessionsDao(this as AppDatabase);
   late final DailyRollupsDao dailyRollupsDao = DailyRollupsDao(
+    this as AppDatabase,
+  );
+  late final ProjectRollupsDao projectRollupsDao = ProjectRollupsDao(
     this as AppDatabase,
   );
   @override
@@ -858,6 +1133,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     projects,
     sessions,
     dailyRollups,
+    projectRollups,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -1602,6 +1878,181 @@ typedef $$DailyRollupsTableProcessedTableManager =
       DailyRollup,
       PrefetchHooks Function()
     >;
+typedef $$ProjectRollupsTableCreateCompanionBuilder =
+    ProjectRollupsCompanion Function({
+      required String date,
+      Value<String> projectId,
+      Value<int> durationSeconds,
+      Value<int> rowid,
+    });
+typedef $$ProjectRollupsTableUpdateCompanionBuilder =
+    ProjectRollupsCompanion Function({
+      Value<String> date,
+      Value<String> projectId,
+      Value<int> durationSeconds,
+      Value<int> rowid,
+    });
+
+class $$ProjectRollupsTableFilterComposer
+    extends Composer<_$AppDatabase, $ProjectRollupsTable> {
+  $$ProjectRollupsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get projectId => $composableBuilder(
+    column: $table.projectId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get durationSeconds => $composableBuilder(
+    column: $table.durationSeconds,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ProjectRollupsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ProjectRollupsTable> {
+  $$ProjectRollupsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get projectId => $composableBuilder(
+    column: $table.projectId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get durationSeconds => $composableBuilder(
+    column: $table.durationSeconds,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ProjectRollupsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ProjectRollupsTable> {
+  $$ProjectRollupsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<String> get projectId =>
+      $composableBuilder(column: $table.projectId, builder: (column) => column);
+
+  GeneratedColumn<int> get durationSeconds => $composableBuilder(
+    column: $table.durationSeconds,
+    builder: (column) => column,
+  );
+}
+
+class $$ProjectRollupsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ProjectRollupsTable,
+          ProjectRollup,
+          $$ProjectRollupsTableFilterComposer,
+          $$ProjectRollupsTableOrderingComposer,
+          $$ProjectRollupsTableAnnotationComposer,
+          $$ProjectRollupsTableCreateCompanionBuilder,
+          $$ProjectRollupsTableUpdateCompanionBuilder,
+          (
+            ProjectRollup,
+            BaseReferences<_$AppDatabase, $ProjectRollupsTable, ProjectRollup>,
+          ),
+          ProjectRollup,
+          PrefetchHooks Function()
+        > {
+  $$ProjectRollupsTableTableManager(
+    _$AppDatabase db,
+    $ProjectRollupsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ProjectRollupsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ProjectRollupsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ProjectRollupsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> date = const Value.absent(),
+                Value<String> projectId = const Value.absent(),
+                Value<int> durationSeconds = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ProjectRollupsCompanion(
+                date: date,
+                projectId: projectId,
+                durationSeconds: durationSeconds,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String date,
+                Value<String> projectId = const Value.absent(),
+                Value<int> durationSeconds = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ProjectRollupsCompanion.insert(
+                date: date,
+                projectId: projectId,
+                durationSeconds: durationSeconds,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ProjectRollupsTable, ProjectRollup>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $ProjectRollupsTable,
+                    ProjectRollup
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ProjectRollupsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ProjectRollupsTable,
+      ProjectRollup,
+      $$ProjectRollupsTableFilterComposer,
+      $$ProjectRollupsTableOrderingComposer,
+      $$ProjectRollupsTableAnnotationComposer,
+      $$ProjectRollupsTableCreateCompanionBuilder,
+      $$ProjectRollupsTableUpdateCompanionBuilder,
+      (
+        ProjectRollup,
+        BaseReferences<_$AppDatabase, $ProjectRollupsTable, ProjectRollup>,
+      ),
+      ProjectRollup,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -1612,4 +2063,6 @@ class $AppDatabaseManager {
       $$SessionsTableTableManager(_db, _db.sessions);
   $$DailyRollupsTableTableManager get dailyRollups =>
       $$DailyRollupsTableTableManager(_db, _db.dailyRollups);
+  $$ProjectRollupsTableTableManager get projectRollups =>
+      $$ProjectRollupsTableTableManager(_db, _db.projectRollups);
 }
