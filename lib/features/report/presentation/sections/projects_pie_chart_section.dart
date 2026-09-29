@@ -2,7 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/constants/project_colors.dart';
-import 'package:tarkeez/core/shared_files/enums/report_period.dart';
+import 'package:tarkeez/core/shared_files/enums/period_range.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
@@ -32,7 +32,7 @@ class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
     final scheme = Theme.of(context).colorScheme;
     final projectColors = ProjectColors.colors;
 
-    return BlocBuilder<ReportPeriodCubit, ReportPeriod>(
+    return BlocBuilder<ReportPeriodCubit, PeriodRange>(
       builder: (context, selectedPeriod) {
         return BlocBuilder<SessionBloc, SessionState>(
           builder: (context, sessionState) {

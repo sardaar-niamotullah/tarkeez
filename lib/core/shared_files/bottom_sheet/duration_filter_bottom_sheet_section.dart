@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/shared_files/bottom_sheet/filter_duration_selector_button.dart';
-import 'package:tarkeez/core/shared_files/enums/report_period.dart';
+import 'package:tarkeez/core/shared_files/enums/period_range.dart';
 
 class DurationFilterBottomSheetSection extends StatelessWidget {
   const DurationFilterBottomSheetSection({
@@ -9,12 +9,12 @@ class DurationFilterBottomSheetSection extends StatelessWidget {
     required this.onSelected,
   });
 
-  final ReportPeriod selected;
-  final ValueChanged<ReportPeriod> onSelected;
+  final PeriodRange selected;
+  final ValueChanged<PeriodRange> onSelected;
 
   @override
   Widget build(BuildContext context) {
-    const options = ReportPeriod.values;
+    const options = PeriodRange.values;
     final rowCount = (options.length / 2).ceil();
 
     return ListView.builder(
@@ -43,7 +43,7 @@ class DurationFilterBottomSheetSection extends StatelessWidget {
     );
   }
 
-  Widget _buildButton(ReportPeriod option) {
+  Widget _buildButton(PeriodRange option) {
     return FilterDurationSelectorButton(
       title: option.label,
       isSelected: option == selected,

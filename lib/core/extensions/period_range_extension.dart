@@ -1,36 +1,33 @@
-import 'package:tarkeez/core/shared_files/enums/report_period.dart';
+import 'package:tarkeez/core/shared_files/enums/period_range.dart';
 
-extension ReportPeriodRange on ReportPeriod {
-  /// Inclusive local-day range [start, end] this period covers, both
-  /// truncated to midnight. Returns null for ReportPeriod.allTime
-  /// (signals "no filtering — use every record").
+extension PeriodRangeExtension on PeriodRange {
   (DateTime start, DateTime end)? dateRange({DateTime? now}) {
     final today = _dateOnly(now ?? DateTime.now());
 
     switch (this) {
-      case ReportPeriod.today:
+      case PeriodRange.today:
         return (today, today);
-      case ReportPeriod.yesterday:
+      case PeriodRange.yesterday:
         final y = today.subtract(const Duration(days: 1));
         return (y, y);
-      case ReportPeriod.last3Days:
+      case PeriodRange.last3Days:
         return (today.subtract(const Duration(days: 2)), today);
-      case ReportPeriod.last5Days:
+      case PeriodRange.last5Days:
         return (today.subtract(const Duration(days: 4)), today);
-      case ReportPeriod.last7Days:
+      case PeriodRange.last7Days:
         return (today.subtract(const Duration(days: 6)), today);
-      case ReportPeriod.last30Days:
+      case PeriodRange.last30Days:
         return (today.subtract(const Duration(days: 29)), today);
-      case ReportPeriod.thisWeek:
+      case PeriodRange.thisWeek:
         return (_startOfIsoWeek(today), today);
-      case ReportPeriod.lastWeek:
+      case PeriodRange.lastWeek:
         final thisWeekStart = _startOfIsoWeek(today);
         final lastWeekEnd = thisWeekStart.subtract(const Duration(days: 1));
         final lastWeekStart = lastWeekEnd.subtract(const Duration(days: 6));
         return (lastWeekStart, lastWeekEnd);
-      case ReportPeriod.thisMonth:
+      case PeriodRange.thisMonth:
         return (DateTime(today.year, today.month, 1), today);
-      case ReportPeriod.lastMonth:
+      case PeriodRange.lastMonth:
         final thisMonthStart = DateTime(today.year, today.month, 1);
         final lastMonthEnd = thisMonthStart.subtract(const Duration(days: 1));
         final lastMonthStart = DateTime(
@@ -39,18 +36,16 @@ extension ReportPeriodRange on ReportPeriod {
           1,
         );
         return (lastMonthStart, lastMonthEnd);
-      case ReportPeriod.thisYear:
+      case PeriodRange.thisYear:
         return (DateTime(today.year, 1, 1), today);
-      case ReportPeriod.lastYear:
+      case PeriodRange.lastYear:
         return (
           DateTime(today.year - 1, 1, 1),
           DateTime(today.year - 1, 12, 31),
         );
-      case ReportPeriod.last12Months:
-        // Dart's DateTime constructor normalizes a negative/underflowed
-        // month by rolling the year back, so this is safe across Jan.
+      case PeriodRange.last12Months:
         return (DateTime(today.year, today.month - 11, 1), today);
-      case ReportPeriod.allTime:
+      case PeriodRange.allTime:
         return null;
     }
   }

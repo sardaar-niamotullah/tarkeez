@@ -1,3 +1,4 @@
+import 'package:tarkeez/core/shared_files/buttons/go_premium_button.dart';
 import 'package:tarkeez/core/utils/primary_page_margin.dart';
 import 'package:tarkeez/features/report/presentation/sections/projects_pie_chart_section.dart';
 import 'package:tarkeez/features/report/presentation/sections/report_filter_tile.dart';
@@ -7,7 +8,6 @@ import 'package:tarkeez/core/shared_files/widgets/custom_app_bar.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:flutter/material.dart';
-import 'package:tarkeez/features/report/presentation/sections/sessions_section.dart';
 import 'package:tarkeez/features/report/presentation/sections/timeline_section.dart';
 
 class ReportTab extends StatelessWidget {
@@ -62,20 +62,11 @@ class ReportTab extends StatelessWidget {
                                 // Pie chart part
                                 //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
                                 const ProjectsPieChartSection(),
-                                const SizedBox(height: 16),
+                                const SizedBox(height: 64),
                               ],
                             ),
                           ),
                         ],
-                      ),
-                      //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-                      // Time session section
-                      //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-                      SliverPadding(
-                        padding: .symmetric(
-                          horizontal: ContainerDesignUtils.padding,
-                        ),
-                        sliver: const SessionsSection(isLocked: false),
                       ),
                     ],
                   ),
@@ -84,6 +75,7 @@ class ReportTab extends StatelessWidget {
             ],
           ),
         ),
+        const Positioned(bottom: 16, right: 16, child: GoPremiumButton()),
       ],
     );
   }
