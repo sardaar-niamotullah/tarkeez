@@ -7,6 +7,7 @@ import 'package:tarkeez/features/report/cubit/report_period_cubit.dart';
 import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
 import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/navigation_cubit.dart';
+import 'package:tarkeez/features/sessions/cubit/session_period_cubit.dart';
 
 class AppProviders extends StatelessWidget {
   const AppProviders({
@@ -25,6 +26,7 @@ class AppProviders extends StatelessWidget {
         BlocProvider(create: (_) => ThemeCubit(initialState: initialTheme)),
         BlocProvider(create: (_) => NavigationCubit()),
         BlocProvider(create: (_) => ReportPeriodCubit()),
+        BlocProvider(create: (_) => SessionPeriodCubit()),
         BlocProvider(create: (_) => getIt<ProjectBloc>()),
         BlocProvider(create: (_) => getIt<SessionBloc>()),
         BlocProvider(create: (_) => getIt<DailyRollupBloc>()),

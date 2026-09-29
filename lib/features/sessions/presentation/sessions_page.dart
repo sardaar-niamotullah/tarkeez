@@ -3,8 +3,8 @@ import 'package:tarkeez/core/shared_files/widgets/stand_alone_page_outer_structu
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
-import 'package:tarkeez/features/report/presentation/sections/report_filter_tile.dart';
 import 'package:tarkeez/features/report/presentation/sections/sessions_section.dart';
+import 'package:tarkeez/features/sessions/presentation/widgets/sessions_filter_tile.dart';
 
 class SessionsPage extends StatelessWidget {
   const SessionsPage({super.key});
@@ -21,7 +21,7 @@ class SessionsPage extends StatelessWidget {
       // ──────────────────────────────────────────────────────────
       content: CustomScrollView(
         slivers: [
-          const ReportFilterTile(),
+          const SessionsFilterTile(),
           SliverPadding(
             padding: .symmetric(horizontal: ContainerDesignUtils.padding),
             sliver: const SessionsSection(isLocked: false),
