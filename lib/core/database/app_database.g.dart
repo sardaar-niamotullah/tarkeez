@@ -946,10 +946,7 @@ class $ProjectRollupsTable extends ProjectRollups
 }
 
 class ProjectRollup extends DataClass implements Insertable<ProjectRollup> {
-  /// Local date, 'YYYY-MM-DD' (same format as daily_rollups.date).
   final String date;
-
-  /// projects.id, or [noProjectKey] for sessions without a project.
   final String projectId;
   final int durationSeconds;
   const ProjectRollup({

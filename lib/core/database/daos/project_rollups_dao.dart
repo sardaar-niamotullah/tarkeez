@@ -107,7 +107,6 @@ class ProjectRollupsDao extends DatabaseAccessor<AppDatabase>
     final rows = await _totalsByProjectQuery(start, end, total).get();
     return _mapTotals(rows, total);
   }
-
   Stream<Map<String?, int>> watchTotalsByProjectInRange(
     String start,
     String end,
