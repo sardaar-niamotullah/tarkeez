@@ -176,11 +176,10 @@ class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
                           // Project details
                           //–––––––––––––––––––––––––––––––––––––––––––
                           Container(
-                            padding: const EdgeInsets.symmetric(
+                            padding: const .symmetric(
                               horizontal: ContainerDesignUtils.padding,
                             ),
                             decoration: BoxDecoration(
-                              color: scheme.surface,
                               borderRadius: ContainerDesignUtils.allRadius,
                             ),
                             child: ListView.builder(
