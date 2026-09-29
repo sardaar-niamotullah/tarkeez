@@ -1,8 +1,7 @@
 import 'package:tarkeez/core/database/app_database.dart';
 import 'package:tarkeez/core/error/result.dart';
 import 'package:tarkeez/core/error/result_guard.dart';
-import 'package:tarkeez/core/utils/date_key_utils.dart';
-import 'package:tarkeez/features/daily_rollups/data/models/daily_rollup_model.dart';
+import 'package:tarkeez/features/rollups/data/models/daily_rollup_model.dart';
 
 abstract interface class DailyRollupRepository {
   Future<Result<List<DailyRollupModel>>> fetchAllRollups();
@@ -26,15 +25,23 @@ class DailyRollupRepositoryImpl implements DailyRollupRepository {
     int days = 5,
   }) async {
     return resultGuard(() async {
-      final now = DateTime.now();
-      final end = DateTime(now.year, now.month, now.day);
-      final start = DateTime(end.year, end.month, end.day - days);
-
+      final end = _todayLocal();
+      final start = _shiftDate(end, -days);
       final rows = await _database.dailyRollupsDao.getRollupsInRange(
-        DateKeyUtils.format(start),
-        DateKeyUtils.format(end),
+        start,
+        end,
       );
       return rows.map(DailyRollupModel.fromRow).toList();
     });
+  }
+
+  String _todayLocal() {
+    final now = DateTime.now();
+    return '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+  }
+
+  String _shiftDate(String date, int deltaDays) {
+    final d = DateTime.parse(date).add(Duration(days: deltaDays));
+    return '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
   }
 }

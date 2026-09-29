@@ -2,18 +2,18 @@ enum PeriodRange {
   // left column
   today('Today'),
   thisWeek('This week'),
-  thisMonth('This month'),
-  thisYear('This year'),
   last3Days('Last 3 days'),
   last7Days('Last 7 days'),
+  thisMonth('This month'),
+  thisYear('This year'),
   last12Months('Last 12 months'),
   // right column
   yesterday('Yesterday'),
   lastWeek('Last week'),
-  lastMonth('Last month'),
-  lastYear('Last year'),
   last5Days('Last 5 days'),
   last30Days('Last 30 days'),
+  lastMonth('Last month'),
+  lastYear('Last year'),
   allTime('All time');
 
   // ignore: unused_element_parameter
