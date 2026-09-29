@@ -1,4 +1,5 @@
-import 'package:tarkeez/features/daily_rollups/utils/daily_rollup_date_utils.dart';
+
+import 'package:tarkeez/core/utils/rollup_date_utils.dart';
 
 class StreakStats {
   StreakStats._();
@@ -9,15 +10,15 @@ class StreakStats {
       (rollups[date] ?? 0) >= minStreakSeconds;
 
   static int currentStreak(Map<String, int> rollups) {
-    final today = DailyRollupDateUtils.todayLocal();
+    final today = RollupDateUtils.todayLocal();
     var cursor = _hasActivity(rollups, today)
         ? today
-        : DailyRollupDateUtils.shiftDate(today, -1);
+        : RollupDateUtils.shiftDate(today, -1);
 
     var streak = 0;
     while (_hasActivity(rollups, cursor)) {
       streak++;
-      cursor = DailyRollupDateUtils.shiftDate(cursor, -1);
+      cursor = RollupDateUtils.shiftDate(cursor, -1);
     }
     return streak;
   }
@@ -38,7 +39,7 @@ class StreakStats {
 
     for (final date in activeDates) {
       if (previous != null &&
-          DailyRollupDateUtils.shiftDate(previous, 1) == date) {
+          RollupDateUtils.shiftDate(previous, 1) == date) {
         current++;
       } else {
         current = 1;

@@ -1,5 +1,5 @@
+import 'package:tarkeez/core/utils/rollup_date_utils.dart';
 import 'package:tarkeez/features/daily_rollups/data/models/timeline_model.dart';
-import 'package:tarkeez/features/daily_rollups/utils/daily_rollup_date_utils.dart';
 
 class TimelineStats {
   TimelineStats._();
@@ -9,10 +9,10 @@ class TimelineStats {
     int days = 7,
     DateTime? now,
   }) {
-    final todayKey = DailyRollupDateUtils.format(now ?? DateTime.now());
+    final todayKey = RollupDateUtils.format(now ?? DateTime.now());
 
     return List.generate(days, (index) {
-      final dateKey = DailyRollupDateUtils.shiftDate(todayKey, -index);
+      final dateKey = RollupDateUtils.shiftDate(todayKey, -index);
 
       return TimelineModel(
         date: DateTime.parse(dateKey),

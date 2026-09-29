@@ -40,8 +40,8 @@ class DailyRollupLoaded extends DailyRollupState {
     final (start, end) = range;
     return InvestedTimeStats.sumRange(
       _effectiveRollups,
-      DailyRollupDateUtils.format(start),
-      DailyRollupDateUtils.format(end),
+      RollupDateUtils.format(start),
+      RollupDateUtils.format(end),
     );
   }
 

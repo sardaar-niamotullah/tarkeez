@@ -1,4 +1,4 @@
-import 'package:tarkeez/features/daily_rollups/utils/daily_rollup_date_utils.dart';
+import 'package:tarkeez/core/utils/rollup_date_utils.dart';
 
 class InvestedTimeStats {
   InvestedTimeStats._();
@@ -7,71 +7,71 @@ class InvestedTimeStats {
   static int sumRange(Map<String, int> rollups, String start, String end) {
     var sum = 0;
     var cursor = start;
-    while (!DailyRollupDateUtils.isAfter(cursor, end)) {
+    while (!RollupDateUtils.isAfter(cursor, end)) {
       sum += rollups[cursor] ?? 0;
-      cursor = DailyRollupDateUtils.shiftDate(cursor, 1);
+      cursor = RollupDateUtils.shiftDate(cursor, 1);
     }
     return sum;
   }
 
   static int today(Map<String, int> rollups) =>
-      rollups[DailyRollupDateUtils.todayLocal()] ?? 0;
+      rollups[RollupDateUtils.todayLocal()] ?? 0;
 
   static int yesterday(Map<String, int> rollups) =>
-      rollups[DailyRollupDateUtils.shiftDate(
-        DailyRollupDateUtils.todayLocal(),
+      rollups[RollupDateUtils.shiftDate(
+        RollupDateUtils.todayLocal(),
         -1,
       )] ??
       0;
 
   /// Sum from Monday of the current ISO week through today (partial week).
   static int thisWeek(Map<String, int> rollups) {
-    final today = DailyRollupDateUtils.todayLocal();
-    final start = DailyRollupDateUtils.startOfIsoWeek(today);
+    final today = RollupDateUtils.todayLocal();
+    final start = RollupDateUtils.startOfIsoWeek(today);
     return sumRange(rollups, start, today);
   }
 
   /// Sum of the full previous ISO week (Mon–Sun).
   static int lastWeek(Map<String, int> rollups) {
-    final thisWeekStart = DailyRollupDateUtils.startOfIsoWeek(
-      DailyRollupDateUtils.todayLocal(),
+    final thisWeekStart = RollupDateUtils.startOfIsoWeek(
+      RollupDateUtils.todayLocal(),
     );
-    final lastWeekEnd = DailyRollupDateUtils.shiftDate(thisWeekStart, -1);
-    final lastWeekStart = DailyRollupDateUtils.shiftDate(lastWeekEnd, -6);
+    final lastWeekEnd = RollupDateUtils.shiftDate(thisWeekStart, -1);
+    final lastWeekStart = RollupDateUtils.shiftDate(lastWeekEnd, -6);
     return sumRange(rollups, lastWeekStart, lastWeekEnd);
   }
 
   /// Sum from the 1st of this month through today (partial month).
   static int thisMonth(Map<String, int> rollups) {
-    final today = DailyRollupDateUtils.todayLocal();
-    final start = DailyRollupDateUtils.startOfMonth(today);
+    final today = RollupDateUtils.todayLocal();
+    final start = RollupDateUtils.startOfMonth(today);
     return sumRange(rollups, start, today);
   }
 
   /// Sum of the full previous calendar month.
   static int lastMonth(Map<String, int> rollups) {
-    final thisMonthStart = DailyRollupDateUtils.startOfMonth(
-      DailyRollupDateUtils.todayLocal(),
+    final thisMonthStart = RollupDateUtils.startOfMonth(
+      RollupDateUtils.todayLocal(),
     );
-    final lastMonthEnd = DailyRollupDateUtils.shiftDate(thisMonthStart, -1);
-    final lastMonthStart = DailyRollupDateUtils.startOfMonth(lastMonthEnd);
+    final lastMonthEnd = RollupDateUtils.shiftDate(thisMonthStart, -1);
+    final lastMonthStart = RollupDateUtils.startOfMonth(lastMonthEnd);
     return sumRange(rollups, lastMonthStart, lastMonthEnd);
   }
 
   /// Sum from Jan 1st of this year through today (partial year).
   static int thisYear(Map<String, int> rollups) {
-    final today = DailyRollupDateUtils.todayLocal();
-    final start = DailyRollupDateUtils.startOfYear(today);
+    final today = RollupDateUtils.todayLocal();
+    final start = RollupDateUtils.startOfYear(today);
     return sumRange(rollups, start, today);
   }
 
   /// Sum of the full previous calendar year.
   static int lastYear(Map<String, int> rollups) {
-    final thisYearStart = DailyRollupDateUtils.startOfYear(
-      DailyRollupDateUtils.todayLocal(),
+    final thisYearStart = RollupDateUtils.startOfYear(
+      RollupDateUtils.todayLocal(),
     );
-    final lastYearEnd = DailyRollupDateUtils.shiftDate(thisYearStart, -1);
-    final lastYearStart = DailyRollupDateUtils.startOfYear(lastYearEnd);
+    final lastYearEnd = RollupDateUtils.shiftDate(thisYearStart, -1);
+    final lastYearStart = RollupDateUtils.startOfYear(lastYearEnd);
     return sumRange(rollups, lastYearStart, lastYearEnd);
   }
 
@@ -82,8 +82,8 @@ class InvestedTimeStats {
 
   /// Rolling window of n days ending today (inclusive of today).
   static int _sumLastNDays(Map<String, int> rollups, int n) {
-    final today = DailyRollupDateUtils.todayLocal();
-    final start = DailyRollupDateUtils.shiftDate(today, -(n - 1));
+    final today = RollupDateUtils.todayLocal();
+    final start = RollupDateUtils.shiftDate(today, -(n - 1));
     return sumRange(rollups, start, today);
   }
 }

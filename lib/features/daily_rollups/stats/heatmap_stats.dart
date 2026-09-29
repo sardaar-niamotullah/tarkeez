@@ -1,5 +1,5 @@
+import 'package:tarkeez/core/utils/rollup_date_utils.dart';
 import 'package:tarkeez/features/daily_rollups/data/models/heatmap_day.dart';
-import 'package:tarkeez/features/daily_rollups/utils/daily_rollup_date_utils.dart';
 
 class HeatmapStats {
   HeatmapStats._();
@@ -23,7 +23,7 @@ class HeatmapStats {
       final isFuture = date.isAfter(today);
       final seconds = isFuture
           ? 0
-          : (rollups[DailyRollupDateUtils.format(date)] ?? 0);
+          : (rollups[RollupDateUtils.format(date)] ?? 0);
       return HeatmapDay(
         date: date,
         durationSeconds: seconds,
@@ -37,7 +37,7 @@ class HeatmapStats {
   /// month's first 7 days gets a label).
   static String? monthLabelForColumn(DateTime columnStart) {
     if (columnStart.day > 7) return null;
-    return DailyRollupDateUtils.monthNames[columnStart.month - 1];
+    return RollupDateUtils.monthNames[columnStart.month - 1];
   }
 
   static DateTime _dateOnly(DateTime date) =>

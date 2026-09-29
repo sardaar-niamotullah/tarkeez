@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:tarkeez/core/extensions/period_range_extension.dart';
 import 'package:tarkeez/core/shared_files/enums/period_range.dart';
+import 'package:tarkeez/core/utils/rollup_date_utils.dart';
 import 'package:tarkeez/features/daily_rollups/data/models/personal_best_period.dart';
 import 'package:tarkeez/features/daily_rollups/data/models/timeline_model.dart';
 import 'package:tarkeez/features/daily_rollups/data/repositories/daily_rollup_repository.dart';
@@ -8,7 +9,6 @@ import 'package:tarkeez/features/daily_rollups/stats/invested_time_stats.dart';
 import 'package:tarkeez/features/daily_rollups/stats/personal_best_stats.dart';
 import 'package:tarkeez/features/daily_rollups/stats/streak_stats.dart';
 import 'package:tarkeez/features/daily_rollups/stats/timeline_stats.dart';
-import 'package:tarkeez/features/daily_rollups/utils/daily_rollup_date_utils.dart';
 import 'package:tarkeez/features/daily_rollups/data/models/heatmap_day.dart';
 import 'package:tarkeez/features/daily_rollups/stats/heatmap_stats.dart';
 
@@ -74,7 +74,7 @@ class DailyRollupBloc extends Bloc<DailyRollupEvent, DailyRollupState> {
     final elapsed = DateTime.now().difference(event.timerStartedAt).inSeconds;
     emit(
       current.copyWith(
-        liveDate: DailyRollupDateUtils.todayLocal(),
+        liveDate: RollupDateUtils.todayLocal(),
         liveElapsedSeconds: elapsed,
       ),
     );

@@ -1,5 +1,5 @@
+import 'package:tarkeez/core/utils/rollup_date_utils.dart';
 import 'package:tarkeez/features/daily_rollups/data/models/personal_best_period.dart';
-import 'package:tarkeez/features/daily_rollups/utils/daily_rollup_date_utils.dart';
 
 class PersonalBestStats {
   PersonalBestStats._();
@@ -18,7 +18,7 @@ class PersonalBestStats {
 
     return PersonalBestPeriod(
       seconds: bestSeconds,
-      label: DailyRollupDateUtils.formatDayLabel(bestDate!),
+      label: RollupDateUtils.formatDayLabel(bestDate!),
     );
   }
 
@@ -27,7 +27,7 @@ class PersonalBestStats {
 
     final byWeek = <String, int>{};
     rollups.forEach((date, seconds) {
-      final key = DailyRollupDateUtils.isoWeekKey(date);
+      final key = RollupDateUtils.isoWeekKey(date);
       byWeek[key] = (byWeek[key] ?? 0) + seconds;
     });
 
@@ -67,7 +67,7 @@ class PersonalBestStats {
 
     return PersonalBestPeriod(
       seconds: bestSeconds,
-      label: DailyRollupDateUtils.formatMonthLabel(bestKey!),
+      label: RollupDateUtils.formatMonthLabel(bestKey!),
     );
   }
 
