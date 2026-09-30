@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/responsive/app_breakpoints.dart';
 import 'package:tarkeez/core/shared_files/buttons/go_premium_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
 import 'package:tarkeez/core/shared_files/widgets/custom_app_bar.dart';
@@ -47,24 +48,34 @@ class ProfileTab extends StatelessWidget {
                             child: Column(
                               children: [
                                 const SizedBox(height: 16),
-                                Container(
-                                  padding: const .symmetric(
-                                    horizontal: ContainerDesignUtils.padding,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: .start,
-                                    children: [
-                                      Streaks(),
-                                      SizedBox(height: 16),
-                                      Heatmap(isLocked: false),
-                                      SizedBox(height: 16),
-                                      PersonalBestsSection(isLocked: false),
-                                      SizedBox(height: 16),
-                                      InvestedTimesSection(isLocked: false),
-                                      SizedBox(height: 16),
-                                      EraseAllDataButton(isLocked: false),
-                                      SizedBox(height: 64),
-                                    ],
+                                Align(
+                                  alignment: .topCenter,
+                                  child: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      maxWidth: AppBreakpoints.xl,
+                                    ),
+                                    child: Container(
+                                      width: .infinity,
+                                      padding: const .symmetric(
+                                        horizontal:
+                                            ContainerDesignUtils.padding,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment: .start,
+                                        children: [
+                                          Streaks(),
+                                          SizedBox(height: 16),
+                                          Heatmap(isLocked: false),
+                                          SizedBox(height: 16),
+                                          PersonalBestsSection(isLocked: false),
+                                          SizedBox(height: 16),
+                                          InvestedTimesSection(isLocked: false),
+                                          SizedBox(height: 16),
+                                          EraseAllDataButton(isLocked: false),
+                                          SizedBox(height: 64),
+                                        ],
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ],

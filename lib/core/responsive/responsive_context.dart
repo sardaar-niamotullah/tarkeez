@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tarkeez/core/shared_files/enums/screen_size.dart';
-
 import 'app_breakpoints.dart';
 
 extension ResponsiveContext on BuildContext {
@@ -13,5 +11,4 @@ extension ResponsiveContext on BuildContext {
   bool get isMd => screenSize == ScreenSize.md;
   bool get isLg => screenSize == ScreenSize.lg;
   bool get isXl => screenSize == ScreenSize.xl;
-  bool get isXxl => screenSize == ScreenSize.xxl;
 }

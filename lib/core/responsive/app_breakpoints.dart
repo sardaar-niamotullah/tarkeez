@@ -1,14 +1,12 @@
-import 'package:tarkeez/core/shared_files/enums/screen_size.dart';
+enum ScreenSize { xs, sm, md, lg, xl }
 
 class AppBreakpoints {
   static const double sm = 640;
   static const double md = 768;
   static const double lg = 1024;
   static const double xl = 1280;
-  static const double xxl = 1536;
 
   static ScreenSize fromWidth(double width) {
-    if (width >= xxl) return ScreenSize.xxl;
     if (width >= xl) return ScreenSize.xl;
     if (width >= lg) return ScreenSize.lg;
     if (width >= md) return ScreenSize.md;
