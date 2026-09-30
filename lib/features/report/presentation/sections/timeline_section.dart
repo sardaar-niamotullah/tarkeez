@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/shared_files/buttons/custom_dropdown_button.dart';
 import 'package:tarkeez/core/shared_files/enums/chart_type.dart';
+import 'package:tarkeez/core/shared_files/enums/period_range.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
-import 'package:tarkeez/features/daily_rollups/data/models/timeline_model.dart';
 import 'package:tarkeez/features/report/presentation/sections/report_bar_chart.dart';
 import 'package:tarkeez/features/report/presentation/sections/report_line_chart.dart';
 
 class TimelineSection extends StatefulWidget {
-  const TimelineSection({super.key});
+  const new({super.key, required this.periodRange});
+
+  final PeriodRange periodRange;
 
   @override
   State<TimelineSection> createState() => _TimelineSectionState();
@@ -50,13 +52,9 @@ class _TimelineSectionState extends State<TimelineSection> {
               ),
               BlocBuilder<DailyRollupBloc, DailyRollupState>(
                 builder: (context, state) {
-                  final entries = state is DailyRollupLoaded
-                      ? state.timeline(days: 30)
-                      : const <TimelineModel>[];
-                  final totalSeconds = entries.fold<int>(
-                    0,
-                    (total, entry) => total + entry.seconds,
-                  );
+                  final totalSeconds = state is DailyRollupLoaded
+                      ? state.totalSecondsForPeriod(widget.periodRange)
+                      : 0;
                   return DurationTextUtils(
                     durationInSeconds: totalSeconds,
                     fontSizePrimary: 18,
