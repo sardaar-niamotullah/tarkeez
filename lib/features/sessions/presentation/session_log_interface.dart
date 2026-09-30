@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -22,10 +23,8 @@ class SessionLogInterface extends StatefulWidget {
 
 class _SessionLogInterfaceState extends State<SessionLogInterface> {
   ProjectModel? _selectedProject;
-
   bool _isRunning = false;
   DateTime? _startedAt;
-
   Timer? _tickTimer;
   bool _colonVisible = true;
   Duration _liveElapsed = Duration.zero;

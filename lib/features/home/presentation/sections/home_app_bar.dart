@@ -13,7 +13,10 @@ class HomeAppBar extends StatelessWidget {
       child: Container(
         height: isIOS ? 34 : 48,
         padding: const .only(right: 16, left: 12),
-        child: AppDrawerButton(onTap: onAppMenuTap),
+        child: Align(
+          alignment: .centerStart,
+          child: AppDrawerButton(onTap: onAppMenuTap),
+        ),
       ),
     );
   }

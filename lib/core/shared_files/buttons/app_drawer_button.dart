@@ -10,7 +10,6 @@ class AppDrawerButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
     return Listener(
       behavior: .opaque,
       onPointerUp: (_) => onTap(),
@@ -20,7 +19,8 @@ class AppDrawerButton extends StatelessWidget {
           onTap: () {},
           borderRadius: .circular(4),
           child: Row(
-            crossAxisAlignment: isIOS ? .start : .center,
+            mainAxisSize: .min,
+            crossAxisAlignment: .center,
             children: [
               SvgPicture.asset(
                 SvgPaths.hamburger,

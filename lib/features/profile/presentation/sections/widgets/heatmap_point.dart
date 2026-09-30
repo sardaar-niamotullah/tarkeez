@@ -53,7 +53,7 @@ class HeatmapPoint extends StatelessWidget {
                   showInfoSnackBar(
                     context,
                     iconPath: SvgPaths.square,
-                    iconColor: seconds > 15 * 60
+                    iconColor: seconds > 30 * 60
                         ? Theme.of(context).colorScheme.primaryContainer
                               .withValues(alpha: getOpacity(seconds))
                         : Theme.of(context).colorScheme.surface,
