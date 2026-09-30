@@ -13,7 +13,6 @@ class TimelineStats {
   }) {
     final n = now ?? DateTime.now();
     final today = DateTime(n.year, n.month, n.day);
-
     final range = period.dateRange(now: now);
     final DateTime start;
     final DateTime end;
@@ -23,8 +22,6 @@ class TimelineStats {
       start = _earliestDate(rollups) ?? today;
       end = today;
     }
-
-    // UTC so DST can't skew the day count.
     final dayCount =
         DateTime.utc(
           end.year,
@@ -32,7 +29,6 @@ class TimelineStats {
           end.day,
         ).difference(DateTime.utc(start.year, start.month, start.day)).inDays +
         1;
-
     return List.generate(dayCount, (index) {
       final date = DateTime(end.year, end.month, end.day - index);
       return TimelineModel(

@@ -188,7 +188,7 @@ class ReportLineChart extends StatelessWidget {
                           enabled: true,
                           touchSpotThreshold: pointWidth / 2,
                           getTouchLineStart: (_, _) => -double.infinity,
-                          getTouchLineEnd: (_, _) => double.infinity,
+                          getTouchLineEnd: (_, _) => .infinity,
 
                           getTouchedSpotIndicator:
                               (
