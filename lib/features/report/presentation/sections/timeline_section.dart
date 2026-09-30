@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/shared_files/buttons/custom_dropdown_button.dart';
+import 'package:tarkeez/core/shared_files/enums/chart_type.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
@@ -9,14 +10,15 @@ import 'package:tarkeez/features/report/presentation/sections/report_bar_chart.d
 import 'package:tarkeez/features/report/presentation/sections/report_line_chart.dart';
 
 class TimelineSection extends StatefulWidget {
-  const new({super.key});
+  const TimelineSection({super.key});
 
   @override
   State<TimelineSection> createState() => _TimelineSectionState();
 }
 
 class _TimelineSectionState extends State<TimelineSection> {
-  String _selectedChartType = 'Bar chart';
+  ChartType _selectedChartType = ChartType.bar;
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
@@ -36,12 +38,12 @@ class _TimelineSectionState extends State<TimelineSection> {
           child: Row(
             mainAxisAlignment: .spaceBetween,
             children: [
-              CustomDropdownButton<String>(
-                items: const ['Bar chart', 'Line chart'],
+              CustomDropdownButton<ChartType>(
+                items: ChartType.values,
                 buttonWidth: 130,
                 buttonColor: scheme.surface,
                 initialValue: _selectedChartType,
-                labelBuilder: (value) => value,
+                labelBuilder: (type) => type.label,
                 onChanged: (value) {
                   setState(() => _selectedChartType = value);
                 },
@@ -66,9 +68,10 @@ class _TimelineSectionState extends State<TimelineSection> {
           ),
         ),
         const SizedBox(height: 8),
-        _selectedChartType == 'Bar chart'
-            ? const ReportBarChart()
-            : const ReportLineChart(),
+        switch (_selectedChartType) {
+          ChartType.bar => const ReportBarChart(),
+          ChartType.line => const ReportLineChart(),
+        },
       ],
     );
   }

@@ -17,7 +17,7 @@ enum PeriodRange {
   allTime('All time');
 
   // ignore: unused_element_parameter
-  const PeriodRange(this.label, {this.isLocked = false});
+  const new(this.label, {this.isLocked = false});
 
   final String label;
   final bool isLocked;

@@ -7,9 +7,8 @@ import 'package:tarkeez/core/shared_files/bottom_sheet/bottom_sheet_wrapper.dart
 import 'package:tarkeez/core/shared_files/bottom_sheet/duration_filter_bottom_sheet_section.dart';
 import 'package:tarkeez/core/shared_files/buttons/cancel_button.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
+import 'package:tarkeez/core/shared_files/cubits/session_period_cubit.dart';
 import 'package:tarkeez/core/shared_files/enums/period_range.dart';
-import 'package:tarkeez/features/report/cubit/report_period_cubit.dart';
-import 'package:tarkeez/features/sessions/cubit/session_period_cubit.dart';
 
 class SessionsFilterBottomSheet extends StatefulWidget {
   const SessionsFilterBottomSheet({super.key});
@@ -25,7 +24,7 @@ class _SessionsFilterBottomSheetState extends State<SessionsFilterBottomSheet> {
   @override
   void initState() {
     super.initState();
-    _pending = context.read<ReportPeriodCubit>().state;
+    _pending = context.read<SessionPeriodCubit>().state;
   }
 
   @override

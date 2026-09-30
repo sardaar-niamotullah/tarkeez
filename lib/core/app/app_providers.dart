@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/dependency_injection/di.dart';
+import 'package:tarkeez/core/shared_files/cubits/report_period_cubit.dart';
+import 'package:tarkeez/core/shared_files/cubits/session_period_cubit.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
 import 'package:tarkeez/features/project_rollups/bloc/project_rollup_bloc.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
-import 'package:tarkeez/features/report/cubit/report_period_cubit.dart';
 import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
 import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/navigation_cubit.dart';
-import 'package:tarkeez/features/sessions/cubit/session_period_cubit.dart';
 
 class AppProviders extends StatelessWidget {
   const AppProviders({
