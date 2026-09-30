@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/extensions/period_range_extension.dart';
@@ -19,8 +20,13 @@ class ReportTimelineChartConfig {
   static const double labelGap = 4;
   static const double labelTopInset = 16.0;
 
-  static double getChartHeight(BuildContext context) =>
-      getAvailableWidth(context) / 2.1;
+  static const double maxChartBoxHeight = 300;
+  static const double maxChartBoxWidth = 1200;
+
+  static double getChartHeight(BuildContext context) => math.min(
+    getAvailableWidth(context) / 2.1,
+    maxChartBoxHeight - labelTopInset,
+  );
 
   static int getMaxMinutes(List<TimelineModel> entries) {
     if (entries.isEmpty) return 180;
@@ -53,12 +59,16 @@ class ReportTimelineChartConfig {
     return (chartTopHours * 60) / barAreaHeight;
   }
 
-  static double getAvailableWidth(BuildContext context) =>
-      MediaQuery.of(context).size.width -
-      horizontalPageMargin -
-      timelineChartBoxHorizontalPadding -
-      getYAxisIndexColumnWidth(context) -
-      horizontalGapAfterYAxis;
+  static double getAvailableWidth(BuildContext context) {
+    final boxWidth = math.min(
+      MediaQuery.of(context).size.width - horizontalPageMargin,
+      maxChartBoxWidth,
+    );
+    return boxWidth -
+        timelineChartBoxHorizontalPadding -
+        getYAxisIndexColumnWidth(context) -
+        horizontalGapAfterYAxis;
+  }
 
   static double getBarWidth({
     required BuildContext context,
@@ -66,6 +76,7 @@ class ReportTimelineChartConfig {
     required double availableWidth,
   }) {
     final granularity = context.watch<ReportPeriodCubit>().state.granularity;
+    
 
     final dailyWidth = availableWidth / 7;
     final monthlyWidth = availableWidth / 5;

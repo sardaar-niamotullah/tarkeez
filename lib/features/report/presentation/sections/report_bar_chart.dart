@@ -65,6 +65,10 @@ class ReportBarChart extends StatelessWidget {
             color: scheme.onSurface,
             borderRadius: ContainerDesignUtils.allRadius,
           ),
+          constraints: const BoxConstraints(
+            maxWidth: ReportTimelineChartConfig.maxChartBoxWidth,
+            maxHeight: ReportTimelineChartConfig.maxChartBoxHeight,
+          ),
           child: Row(
             crossAxisAlignment: .start,
             children: [
@@ -160,7 +164,7 @@ class ReportBarChart extends StatelessWidget {
                               return TimeVisualizerBarLabel(
                                 date: entry.date,
                                 slotWidth: dataVisualiserBarWidth,
-                                 granularity: granularity,
+                                granularity: granularity,
                               );
                             },
                           ),
