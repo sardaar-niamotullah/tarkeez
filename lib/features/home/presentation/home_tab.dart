@@ -1,19 +1,16 @@
 import 'package:tarkeez/core/shared_files/buttons/go_premium_button.dart';
-import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';
-import 'package:tarkeez/core/utils/app_clock.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/utils/primary_page_margin.dart';
 import 'package:tarkeez/features/home/presentation/sections/home_app_bar.dart';
 import 'package:tarkeez/features/home/presentation/sections/home_bar_chart_section.dart';
-import 'package:tarkeez/features/home/presentation/sections/widgets/time_log_index_tile.dart';
-import 'package:tarkeez/features/home/presentation/sections/widgets/time_log_tile.dart';
+import 'package:tarkeez/features/home/presentation/sections/recent_project_rollups_section.dart';
 import 'package:tarkeez/features/sessions/presentation/session_log_interface.dart';
 
 class HomeTab extends StatelessWidget {
   final VoidCallback onMenuTap;
-  const HomeTab({super.key, required this.onMenuTap});
+  const new({super.key, required this.onMenuTap});
 
   @override
   Widget build(BuildContext context) {
@@ -53,10 +50,7 @@ class HomeTab extends StatelessWidget {
                                     const SizedBox(height: 24),
                                     const HomeBarChartSection(),
                                     const SizedBox(height: 24),
-                                    const TimeLogIndexTile(),
-                                    const SizedBox(height: 8),
-                                    const TimeLogTile(isActive: true),
-                                    const TimeLogTile(),
+                                    const RecentProjectRollupsSection(),
                                   ],
                                 ),
                               ),
@@ -72,18 +66,6 @@ class HomeTab extends StatelessWidget {
           ],
         ),
         const Positioned(bottom: 16, right: 16, child: GoPremiumButton()),
-        
-        Positioned(
-          bottom: 16,
-          left: 92,
-          child: FilledButton(
-            onPressed: () {
-              AppClock.reset();
-              showSuccessSnackBar(context, message: '🕰️ fake time reset');
-            },
-            child: Icon(Icons.block_rounded),
-          ),
-        ),
       ],
     );
   }

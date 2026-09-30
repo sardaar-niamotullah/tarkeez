@@ -4,11 +4,12 @@ import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/session_project_pill.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 
-class TimeLogTile extends StatelessWidget {
+class ProjectDurationTile extends StatelessWidget {
+  const new({super.key, this.project, this.isActive = false});
+
   final ProjectModel? project;
   final bool isActive;
 
-  const TimeLogTile({super.key, this.project, this.isActive = false});
 
   @override
   Widget build(BuildContext context) {
