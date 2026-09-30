@@ -23,6 +23,11 @@ class App extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme(themeState.color),
             darkTheme: AppTheme.darkTheme(themeState.color),
+            builder: (context, child) {
+              final size = MediaQuery.sizeOf(context);
+              debugPrint('🟦 Screen size (width, height): $size');
+              return child!;
+            },
           );
         },
       ),

@@ -13,7 +13,7 @@ import 'package:tarkeez/features/profile/presentation/sections/widgets/heatmap_t
 import 'package:tarkeez/features/profile/presentation/sections/widgets/heatmap_weekdays_name.dart';
 
 class Heatmap extends StatelessWidget {
-  const Heatmap({super.key, required this.isLocked});
+  const new({super.key, required this.isLocked});
 
   final bool isLocked;
 
@@ -29,108 +29,114 @@ class Heatmap extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
-    return Column(
-      crossAxisAlignment: .start,
-      children: [
-        const HeatmapTitleAndGuideTile(),
-        const SizedBox(height: 8),
-        if (isLocked)
-          BlocBuilder<ThemeCubit, ThemeState>(
-            builder: (context, state) {
-              return SectionImageLockOverlay(
-                imgLocation: state.isDark
-                    ? ImgPaths.heatmapLockedBackdropsDark
-                    : ImgPaths.heatmapLockedBackdropsLight,
-                height: 110,
-                lockedTopicName: 'heatmap',
-              );
-            },
-          ),
-        if (!isLocked)
-          BlocBuilder<DailyRollupBloc, DailyRollupState>(
-            builder: (context, state) {
-              final grid = _resolveGrid(state);
-              return Container(
-                width: .infinity,
-                padding: const .only(top: 8, bottom: 4, left: 8, right: 12),
-                decoration: BoxDecoration(
-                  color: scheme.onSurface,
-                  borderRadius: ContainerDesignUtils.allRadius,
-                ),
-                child: Row(
-                  crossAxisAlignment: .start,
-                  children: [
-                    const HeatmapWeekdaysName(),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        reverse: true,
-                        scrollDirection: .horizontal,
-                        child: Column(
-                          crossAxisAlignment: .start,
-                          children: [
-                            Column(
-                              children: List.generate(
-                                HeatmapStats.daysPerWeek,
-                                (rowIndex) => SizedBox(
-                                  height: 12,
-                                  child: Row(
-                                    children: List.generate(
-                                      HeatmapStats.weeksToShow,
-                                      (columnIndex) {
-                                        final day =
-                                            grid[columnIndex *
-                                                    HeatmapStats.daysPerWeek +
-                                                rowIndex];
-                                        return HeatmapPoint(
-                                          seconds: day.durationSeconds,
-                                          date: day.isFuture ? null : day.date,
-                                          paintHeatmap: !day.isFuture,
-                                        );
-                                      },
+    return SizedBox(
+      width: 680,
+      child: Column(
+        crossAxisAlignment: .start,
+        children: [
+          const HeatmapTitleAndGuideTile(),
+          const SizedBox(height: 8),
+          if (isLocked)
+            BlocBuilder<ThemeCubit, ThemeState>(
+              builder: (context, state) {
+                return SectionImageLockOverlay(
+                  imgLocation: state.isDark
+                      ? ImgPaths.heatmapLockedBackdropsDark
+                      : ImgPaths.heatmapLockedBackdropsLight,
+                  height: 110,
+                  lockedTopicName: 'heatmap',
+                );
+              },
+            ),
+          if (!isLocked)
+            BlocBuilder<DailyRollupBloc, DailyRollupState>(
+              builder: (context, state) {
+                final grid = _resolveGrid(state);
+                return Container(
+                  width: .infinity,
+                  padding: const .only(top: 8, bottom: 4, left: 8, right: 12),
+                  decoration: BoxDecoration(
+                    color: scheme.onSurface,
+                    borderRadius: ContainerDesignUtils.allRadius,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: .start,
+                    children: [
+                      const HeatmapWeekdaysName(),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          reverse: true,
+                          scrollDirection: .horizontal,
+                          child: Column(
+                            crossAxisAlignment: .start,
+                            children: [
+                              Column(
+                                children: List.generate(
+                                  HeatmapStats.daysPerWeek,
+                                  (rowIndex) => SizedBox(
+                                    height: 12,
+                                    child: Row(
+                                      children: List.generate(
+                                        HeatmapStats.weeksToShow,
+                                        (columnIndex) {
+                                          final day =
+                                              grid[columnIndex *
+                                                      HeatmapStats.daysPerWeek +
+                                                  rowIndex];
+                                          return HeatmapPoint(
+                                            seconds: day.durationSeconds,
+                                            date: day.isFuture
+                                                ? null
+                                                : day.date,
+                                            paintHeatmap: !day.isFuture,
+                                          );
+                                        },
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(height: 2),
-                            Row(
-                              children: List.generate(
-                                HeatmapStats.weeksToShow,
-                                (columnIndex) {
-                                  final columnStart =
-                                      grid[columnIndex *
-                                              HeatmapStats.daysPerWeek]
-                                          .date;
-                                  final label =
-                                      HeatmapStats.monthLabelForColumn(
-                                        columnStart,
-                                      );
-                                  return SizedBox(
-                                    width: 12,
-                                    child: Center(
-                                      child: Text(
-                                        label ?? '',
-                                        maxLines: 1,
-                                        softWrap: false,
-                                        overflow: TextOverflow.visible,
-                                        style: TextUtils.paragraphSmall(context)
-                                            .copyWith(fontSize: 10),
+                              const SizedBox(height: 2),
+                              Row(
+                                children: List.generate(
+                                  HeatmapStats.weeksToShow,
+                                  (columnIndex) {
+                                    final columnStart =
+                                        grid[columnIndex *
+                                                HeatmapStats.daysPerWeek]
+                                            .date;
+                                    final label =
+                                        HeatmapStats.monthLabelForColumn(
+                                          columnStart,
+                                        );
+                                    return SizedBox(
+                                      width: 12,
+                                      child: Center(
+                                        child: Text(
+                                          label ?? '',
+                                          maxLines: 1,
+                                          softWrap: false,
+                                          overflow: TextOverflow.visible,
+                                          style: TextUtils.paragraphSmall(
+                                            context,
+                                          ).copyWith(fontSize: 10),
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                },
+                                    );
+                                  },
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-      ],
+                    ],
+                  ),
+                );
+              },
+            ),
+        ],
+      ),
     );
   }
 }
