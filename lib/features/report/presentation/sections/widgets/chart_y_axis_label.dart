@@ -17,12 +17,13 @@ class ChartYAxisLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final textStyle = TextUtils.paragraphSmall(
+    final textStyle = TextUtils.paragraphXs(
       context,
       color: scheme.onTertiary.withValues(alpha: .7),
-    ).copyWith(fontSize: 10);
-    
+    );
+
     return Container(
+      height: labelHeight,
       margin: .only(
         right: crossAxisAlignment == null
             ? ReportTimelineChartConfig.horizontalGapAfterYAxis
@@ -31,11 +32,10 @@ class ChartYAxisLabel extends StatelessWidget {
             ? ReportTimelineChartConfig.horizontalGapAfterYAxis
             : 0,
       ),
-      width: ReportTimelineChartConfig.yAxisIndexColumnWidth,
-      height: labelHeight,
+      width: ReportTimelineChartConfig.getYAxisIndexColumnWidth(context),
       child: Column(
-        crossAxisAlignment: crossAxisAlignment ?? .end,
         mainAxisAlignment: .spaceBetween,
+        crossAxisAlignment: crossAxisAlignment ?? .end,
         children: [
           Text('${chartTopHours}h', style: textStyle),
           Text('${hoursPerStep * 2}h', style: textStyle),

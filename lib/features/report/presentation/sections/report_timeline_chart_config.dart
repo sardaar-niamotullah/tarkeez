@@ -1,20 +1,26 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tarkeez/core/extensions/period_range_extension.dart';
+import 'package:tarkeez/core/shared_files/cubits/report_period_cubit.dart';
 import 'package:tarkeez/features/daily_rollups/data/models/timeline_model.dart';
 
 class ReportTimelineChartConfig {
   static const double horizontalPageMargin = 16 * 2;
   static const double timelineChartBoxHorizontalPadding = 6 + 12;
-  static const double yAxisIndexColumnWidth = 18;
+  static double getYAxisIndexColumnWidth(BuildContext context) {
+    final granularity = context.watch<ReportPeriodCubit>().state.granularity;
+    return granularity == .daily ? 18 : 23;
+  }
+
   static const double horizontalGapAfterYAxis = 4;
   static const double barWidthInset = 12;
   static const double labelAreaHeight = 28;
   static const double labelGap = 4;
   static const double labelTopInset = 16.0;
 
-  static double getChartHeight(BuildContext context) {
-    return getAvailableWidth(context) / 2.1;
-  }
+  static double getChartHeight(BuildContext context) =>
+      getAvailableWidth(context) / 2.1;
 
   static int getMaxMinutes(List<TimelineModel> entries) {
     if (entries.isEmpty) return 180;
@@ -44,36 +50,29 @@ class ReportTimelineChartConfig {
   ) {
     final chartTopHours = getChartTopHours(entries);
     final barAreaHeight = getBarAreaHeight(context);
-
     return (chartTopHours * 60) / barAreaHeight;
   }
 
-  static double getAvailableWidth(BuildContext context) {
-    return MediaQuery.of(context).size.width -
-        horizontalPageMargin -
-        timelineChartBoxHorizontalPadding -
-        yAxisIndexColumnWidth -
-        horizontalGapAfterYAxis;
-  }
+  static double getAvailableWidth(BuildContext context) =>
+      MediaQuery.of(context).size.width -
+      horizontalPageMargin -
+      timelineChartBoxHorizontalPadding -
+      getYAxisIndexColumnWidth(context) -
+      horizontalGapAfterYAxis;
 
   static double getBarWidth({
     required List<TimelineModel> entries,
     required double availableWidth,
-  }) {
-    return entries.length <= 7
-        ? availableWidth / math.max(entries.length, 1)
-        : availableWidth / 7;
-  }
+  }) => entries.length <= 7
+      ? availableWidth / math.max(entries.length, 1)
+      : availableWidth / 7;
 
-  static List<TimelineModel> getVisibleEntries(List<TimelineModel> entries) {
-    return entries.reversed.toList();
-  }
+  static List<TimelineModel> getVisibleEntries(List<TimelineModel> entries) =>
+      entries.reversed.toList();
 
   static double getTotalTimelineWidth({
     required List<TimelineModel> entries,
     required double availableWidth,
     required double barWidth,
-  }) {
-    return math.max(availableWidth, entries.length * barWidth);
-  }
+  }) => math.max(availableWidth, entries.length * barWidth);
 }

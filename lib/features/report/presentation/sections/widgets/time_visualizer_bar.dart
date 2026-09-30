@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tarkeez/core/extensions/period_range_extension.dart';
+import 'package:tarkeez/core/shared_files/cubits/report_period_cubit.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/features/daily_rollups/data/models/timeline_model.dart';
@@ -22,6 +25,7 @@ class TimeVisualizerBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final granularity = context.watch<ReportPeriodCubit>().state.granularity;
     final scheme = Theme.of(context).colorScheme;
     final durationInMinutes = entry.seconds ~/ 60;
     final barHeight = durationInMinutes <= 0
@@ -56,8 +60,8 @@ class TimeVisualizerBar extends StatelessWidget {
                 child: Center(
                   child: DurationTextUtils(
                     durationInSeconds: entry.seconds,
-                    fontSizePrimary: 10,
-                    fontSizeSeconday: 8,
+                    fontSizePrimary: granularity == .daily ? 10 : 9,
+                    fontSizeSeconday: granularity == .daily ? 8 : 7,
                     middleGap: 1,
                     showOnlyHour: showOnlyHour,
                   ),

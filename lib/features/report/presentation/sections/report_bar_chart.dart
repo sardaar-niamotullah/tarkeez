@@ -143,7 +143,7 @@ class ReportBarChart extends StatelessWidget {
                         const SizedBox(
                           height: ReportTimelineChartConfig.labelGap,
                         ),
-
+                        
                         //–––––––––––––––––––––––––––––––––––––––––––––––––––––
                         // Date and day labels
                         //–––––––––––––––––––––––––––––––––––––––––––––––––––––
