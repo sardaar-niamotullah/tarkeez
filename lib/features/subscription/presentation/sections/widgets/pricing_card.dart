@@ -5,7 +5,7 @@ import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class PricingCard extends StatelessWidget {
-  const PricingCard({
+  const new({
     super.key,
     required this.dealValue,
     required this.duration,
@@ -16,7 +16,7 @@ class PricingCard extends StatelessWidget {
     required this.iconPath,
     this.isActive = false,
     this.isFreeCard = false,
-    this.onTap
+    this.onTap,
   });
 
   final String dealValue;
@@ -33,168 +33,166 @@ class PricingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return Expanded(
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: ContainerDesignUtils.allRadius,
-          child: Ink(
-            padding: .all(2),
-            decoration: BoxDecoration(
-              color: isActive ? scheme.onTertiary : Colors.transparent,
-              borderRadius: ContainerDesignUtils.allRadius,
-            ),
-            child: ClipRRect(
-              borderRadius: ContainerDesignUtils.allRadius,
-              child: Ink(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: .topLeft,
-                    end: .bottomRight,
-                    colors: [colorBright, color],
-                  ),
-                  borderRadius: ContainerDesignUtils.allRadius,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: ContainerDesignUtils.allRadius,
+        child: Ink(
+          padding: .all(2),
+          decoration: BoxDecoration(
+            color: isActive ? scheme.onTertiary : Colors.transparent,
+            borderRadius: ContainerDesignUtils.allRadius,
+          ),
+          child: ClipRRect(
+            borderRadius: ContainerDesignUtils.allRadius,
+            child: Ink(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: .topLeft,
+                  end: .bottomRight,
+                  colors: [colorBright, color],
                 ),
-                child: Stack(
-                  alignment: .center,
-                  clipBehavior: .hardEdge,
-                  children: [
-                    // ──────────────────────────────────────────────
-                    // Content
-                    // ──────────────────────────────────────────────
-                    Padding(
-                      padding: const .symmetric(vertical: 8),
-                      child: Column(
-                        mainAxisAlignment: .center,
-                        children: [
+                borderRadius: ContainerDesignUtils.allRadius,
+              ),
+              child: Stack(
+                alignment: .center,
+                clipBehavior: .hardEdge,
+                children: [
+                  // ──────────────────────────────────────────────
+                  // Content
+                  // ──────────────────────────────────────────────
+                  Padding(
+                    padding: const .symmetric(vertical: 8),
+                    child: Column(
+                      mainAxisAlignment: .center,
+                      children: [
+                        // ──────────────────────────────────────────────
+                        // Deal value
+                        // ──────────────────────────────────────────────
+                        Text(
+                          dealValue,
+                          style: TextUtils.paragraphBold(
+                            context,
+                            color: AppTheme.white,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+
+                        // ──────────────────────────────────────────────
+                        // Price
+                        // ──────────────────────────────────────────────
+                        if (!isFreeCard) ...[
+                          RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: '\$ ',
+                                  style: TextUtils.title3(
+                                    context,
+                                    color: Colors.white70,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: price,
+                                  style: TextUtils.title1(
+                                    context,
+                                    color: AppTheme.white,
+                                  ).copyWith(fontSize: 28),
+                                ),
+                              ],
+                            ),
+                          ),
+
                           // ──────────────────────────────────────────────
-                          // Deal value
+                          // Duration
                           // ──────────────────────────────────────────────
                           Text(
-                            dealValue,
+                            duration,
                             style: TextUtils.paragraphBold(
                               context,
                               color: AppTheme.white,
                             ),
                           ),
-                          const SizedBox(height: 8),
-
-                          // ──────────────────────────────────────────────
-                          // Price
-                          // ──────────────────────────────────────────────
-                          if (!isFreeCard) ...[
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: '\$ ',
-                                    style: TextUtils.title3(
-                                      context,
-                                      color: Colors.white70,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: price,
-                                    style: TextUtils.title1(
-                                      context,
-                                      color: AppTheme.white,
-                                    ).copyWith(fontSize: 28),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            // ──────────────────────────────────────────────
-                            // Duration
-                            // ──────────────────────────────────────────────
-                            Text(
-                              duration,
-                              style: TextUtils.paragraphBold(
-                                context,
-                                color: AppTheme.white,
-                              ),
-                            ),
-                          ],
-                          const SizedBox(height: 8),
-
-                          Container(
-                            color: AppTheme.black.withValues(alpha: .25),
-                            child: Row(
-                              mainAxisAlignment: .center,
-                              children: [
-                                Text(
-                                  saveAmount,
-                                  style: TextUtils.paragraphBold(
-                                    context,
-                                    color: AppTheme.white,
-                                  ),
-                                  textAlign: .center,
-                                ),
-                              ],
-                            ),
-                          ),
                         ],
-                      ),
-                    ),
+                        const SizedBox(height: 8),
 
-                    /// BUBBLE — large, top-right (bleeds off edge)
-                    Positioned(
-                      top: -18,
-                      right: -18,
-                      child: BubbleSolid(
-                        size: 70,
-                        color: Colors.white,
-                        opacity: 0.12,
-                      ),
+                        Container(
+                          color: AppTheme.black.withValues(alpha: .25),
+                          child: Row(
+                            mainAxisAlignment: .center,
+                            children: [
+                              Text(
+                                saveAmount,
+                                style: TextUtils.paragraphBold(
+                                  context,
+                                  color: AppTheme.white,
+                                ),
+                                textAlign: .center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
+                  ),
 
-                    /// BUBBLE — medium, bottom-left (bleeds off edge)
-                    Positioned(
-                      bottom: -14,
-                      left: -14,
-                      child: BubbleSolid(
-                        size: 54,
-                        color: Colors.white,
-                        opacity: 0.10,
-                      ),
+                  /// BUBBLE — large, top-right (bleeds off edge)
+                  Positioned(
+                    top: -18,
+                    right: -18,
+                    child: BubbleSolid(
+                      size: 70,
+                      color: Colors.white,
+                      opacity: 0.12,
                     ),
+                  ),
 
-                    /// BUBBLE — small, top-left
+                  /// BUBBLE — medium, bottom-left (bleeds off edge)
+                  Positioned(
+                    bottom: -14,
+                    left: -14,
+                    child: BubbleSolid(
+                      size: 54,
+                      color: Colors.white,
+                      opacity: 0.10,
+                    ),
+                  ),
+
+                  /// BUBBLE — small, top-left
+                  Positioned(
+                    top: 10,
+                    left: 6,
+                    child: BubbleSolid(
+                      size: 20,
+                      color: Colors.white,
+                      opacity: 0.15,
+                    ),
+                  ),
+
+                  /// BUBBLE — tiny, bottom-right
+                  Positioned(
+                    bottom: 12,
+                    right: 10,
+                    child: BubbleSolid(
+                      size: 14,
+                      color: Colors.white,
+                      opacity: 0.18,
+                    ),
+                  ),
+
+                  /// BUBBLE — ring, center-right
+                  if (!isFreeCard)
                     Positioned(
-                      top: 10,
-                      left: 6,
-                      child: BubbleSolid(
-                        size: 20,
+                      top: 28,
+                      right: 8,
+                      child: BubbleRing(
+                        size: 30,
                         color: Colors.white,
                         opacity: 0.15,
                       ),
                     ),
-
-                    /// BUBBLE — tiny, bottom-right
-                    Positioned(
-                      bottom: 12,
-                      right: 10,
-                      child: BubbleSolid(
-                        size: 14,
-                        color: Colors.white,
-                        opacity: 0.18,
-                      ),
-                    ),
-
-                    /// BUBBLE — ring, center-right
-                    if (!isFreeCard)
-                      Positioned(
-                        top: 28,
-                        right: 8,
-                        child: BubbleRing(
-                          size: 30,
-                          color: Colors.white,
-                          opacity: 0.15,
-                        ),
-                      ),
-                  ],
-                ),
+                ],
               ),
             ),
           ),
