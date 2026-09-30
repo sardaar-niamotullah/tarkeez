@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tarkeez/core/shared_files/enums/period_range.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
@@ -24,7 +25,7 @@ class HomeBarChart extends StatelessWidget {
     return BlocBuilder<DailyRollupBloc, DailyRollupState>(
       builder: (context, state) {
         final entries = state is DailyRollupLoaded
-            ? state.timeline(days: 3)
+            ? state.timelineForPeriod(PeriodRange.last3Days)
             : const <TimelineModel>[];
 
         return LayoutBuilder(

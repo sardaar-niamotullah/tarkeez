@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tarkeez/core/shared_files/cubits/report_period_cubit.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
@@ -16,11 +17,12 @@ class ReportLineChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final periodRange = context.watch<ReportPeriodCubit>().state;
 
     return BlocBuilder<DailyRollupBloc, DailyRollupState>(
       builder: (context, state) {
         final entries = state is DailyRollupLoaded
-            ? state.timeline(days: 30)
+            ? state.timelineForPeriod(periodRange)
             : const <TimelineModel>[];
 
         if (entries.isEmpty) const SizedBox.shrink();

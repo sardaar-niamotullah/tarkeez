@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tarkeez/core/shared_files/enums/period_range.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
-import 'package:tarkeez/features/daily_rollups/data/models/timeline_model.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/home_bar_chart.dart';
 
 class HomeBarChartSection extends StatelessWidget {
@@ -30,13 +30,9 @@ class HomeBarChartSection extends StatelessWidget {
                   ),
                   child: BlocBuilder<DailyRollupBloc, DailyRollupState>(
                     builder: (context, state) {
-                      final entries = state is DailyRollupLoaded
-                          ? state.timeline(days: 3)
-                          : const <TimelineModel>[];
-                      final totalSeconds = entries.fold<int>(
-                        0,
-                        (total, entry) => total + entry.seconds,
-                      );
+                      final totalSeconds = state is DailyRollupLoaded
+                          ? state.totalSecondsForPeriod(PeriodRange.last3Days)
+                          : 0;
                       return DurationTextUtils(
                         durationInSeconds: totalSeconds,
                         fontSizePrimary: 24,

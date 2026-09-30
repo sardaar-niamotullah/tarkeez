@@ -56,8 +56,8 @@ class DailyRollupLoaded extends DailyRollupState {
   // Heatmap
   List<HeatmapDay> get heatmapGrid => HeatmapStats.buildGrid(_effectiveRollups);
   // Barchart
-  List<TimelineModel> timeline({int days = 7}) =>
-      TimelineStats.timeline(_effectiveRollups, days: days);
+  List<TimelineModel> timelineForPeriod(PeriodRange period) =>
+      TimelineStats.timelineForPeriod(_effectiveRollups, period);
 
   //––––––––––––––––––––––––––––––––––––––––––––––––––––––
   // Streaks
