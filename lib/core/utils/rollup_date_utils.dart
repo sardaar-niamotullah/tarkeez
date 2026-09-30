@@ -1,5 +1,20 @@
 class RollupDateUtils {
   RollupDateUtils._();
+  static const monthNames = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+  static const weekdayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   static String todayLocal() => format(DateTime.now());
 
@@ -31,21 +46,6 @@ class RollupDateUtils {
   }
 
   static bool isAfter(String a, String b) => a.compareTo(b) > 0;
-
-  static const monthNames = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
 
   /// '2026-09-01' -> '1 Sep, 2026'
   static String formatDayLabel(String date) {

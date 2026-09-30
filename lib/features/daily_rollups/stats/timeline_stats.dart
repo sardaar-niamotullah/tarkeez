@@ -16,19 +16,39 @@ class TimelineStats {
     final today = DateTime(n.year, n.month, n.day);
     final range = period.dateRange(now: now);
     final DateTime start;
-    final DateTime end;
+    DateTime end;
     if (range != null) {
       (start, end) = range;
     } else {
       start = _earliestDate(rollups) ?? today;
       end = today;
     }
+
+    end = _periodEnd(period, today) ?? end;
+
     return switch (period.granularity) {
       TimelineGranularity.daily => _daily(rollups, start, end),
       TimelineGranularity.monthly => _monthly(rollups, start, end),
     };
   }
 
+  /// End of the period for "this ..." ranges, or null to keep the default end.
+  static DateTime? _periodEnd(PeriodRange period, DateTime today) {
+    return switch (period) {
+      // Week runs Mon–Sun (matches weekdayLabel order).
+      PeriodRange.thisWeek => DateTime(
+        today.year,
+        today.month,
+        today.day + (DateTime.sunday - today.weekday),
+      ),
+      // Day 0 of next month = last day of this month.
+      PeriodRange.thisMonth => DateTime(today.year, today.month + 1, 0),
+      PeriodRange.thisYear => DateTime(today.year, 12, 31),
+      _ => null,
+    };
+  }
+
+  /// One entry per day, newest first.
   static List<TimelineModel> _daily(
     Map<String, int> rollups,
     DateTime start,
@@ -41,6 +61,7 @@ class TimelineStats {
           end.day,
         ).difference(DateTime.utc(start.year, start.month, start.day)).inDays +
         1;
+
     return List.generate(dayCount, (index) {
       final date = DateTime(end.year, end.month, end.day - index);
       return TimelineModel(
@@ -56,8 +77,10 @@ class TimelineStats {
     DateTime end,
   ) {
     int monthKey(DateTime d) => d.year * 12 + (d.month - 1);
+
     final startKey = monthKey(start);
     final endKey = monthKey(end);
+
     final totals = <int, int>{};
     for (final e in rollups.entries) {
       final d = DateTime.tryParse(e.key);
@@ -66,6 +89,7 @@ class TimelineStats {
       if (k < startKey || k > endKey) continue;
       totals[k] = (totals[k] ?? 0) + e.value;
     }
+
     return List.generate(endKey - startKey + 1, (i) {
       final k = endKey - i;
       return TimelineModel(
