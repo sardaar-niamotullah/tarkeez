@@ -5,6 +5,6 @@ sealed class ProjectRollupEvent {}
 class FetchProjectRollupRequested extends ProjectRollupEvent {}
 
 class RefreshProjectRollupRequested extends ProjectRollupEvent {
-  RefreshProjectRollupRequested({this.days = 5});
+  RefreshProjectRollupRequested({this.days = 3});
   final int days;
 }

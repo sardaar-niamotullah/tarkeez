@@ -45,26 +45,18 @@ class ProjectRollupBloc extends Bloc<ProjectRollupEvent, ProjectRollupState> {
     RefreshProjectRollupRequested event,
     Emitter<ProjectRollupState> emit,
   ) async {
-    if (_currentRollups == null) return; // nothing loaded yet
+    if (_currentRollups == null) return; 
 
     final result = await _repository.fetchRecentRollups(days: event.days);
 
     result.fold(
       onSuccess: (recent) {
-        // Read state AFTER the await so overlapping refreshes don't merge
-        // into a stale snapshot.
         final current = _currentRollups;
         if (current == null) return;
-
-        // Same window the repository queried: today - days .. today.
         final now = DateTime.now();
         final windowStart = RollupDateUtils.format(
           DateTime(now.year, now.month, now.day - event.days),
         );
-
-        // Replace the whole window instead of upserting. A session edit can
-        // move time between projects, so a row inside the window may no
-        // longer exist and must be dropped.
         final merged = [
           ...current.where((r) => r.date.compareTo(windowStart) < 0),
           ...recent,
