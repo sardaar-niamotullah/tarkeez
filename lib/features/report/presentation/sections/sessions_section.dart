@@ -60,7 +60,7 @@ class SessionsSection extends StatelessWidget {
                   state is! SessionFailure)
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const .only(top: 16),
+                    padding: const .only(top: 184),
                     child: Text(
                       'No sessions to show for this period',
                       style: TextUtils.paragraph(

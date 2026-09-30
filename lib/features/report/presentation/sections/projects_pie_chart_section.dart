@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/constants/project_colors.dart';
 import 'package:tarkeez/core/shared_files/enums/period_range.dart';
-import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
@@ -45,7 +44,6 @@ class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
                 rollups ?? const <ProjectRollupModel>[],
               _ => const <ProjectRollupModel>[],
             };
-
             return BlocBuilder<ProjectBloc, ProjectState>(
               builder: (context, projectState) {
                 final List<ProjectModel> projects = switch (projectState) {
@@ -78,16 +76,12 @@ class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
                 );
 
                 return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Text('Projects', style: TextUtils.title2(context)),
                     const SizedBox(height: 8),
                     Container(
-                      padding: const EdgeInsets.only(
-                        top: 36,
-                        left: 16,
-                        right: 16,
-                      ),
+                      padding: const .only(top: 36, left: 16, right: 16),
                       decoration: BoxDecoration(
                         color: scheme.onSurface,
                         borderRadius: ContainerDesignUtils.allRadius,
@@ -241,7 +235,7 @@ class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
         cornerRadius: 12,
         titleStyle: TextUtils.paragraphBold(
           context,
-          color: AppTheme.white,
+          color: scheme.tertiary,
         ).copyWith(fontSize: fontSize.toDouble()),
       );
     });
