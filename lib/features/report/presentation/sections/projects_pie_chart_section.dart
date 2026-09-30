@@ -2,7 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/constants/project_colors.dart';
-import 'package:tarkeez/core/shared_files/enums/period_range.dart';
+import 'package:tarkeez/core/shared_files/cubits/report_period_cubit.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
@@ -16,9 +16,7 @@ import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/project_info_tile.dart';
 
 class ProjectsPieChartSection extends StatefulWidget {
-  const new({super.key, required this.periodRange});
-
-  final PeriodRange periodRange;
+  const new({super.key});
 
   @override
   State<ProjectsPieChartSection> createState() =>
@@ -30,8 +28,9 @@ class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     final projectColors = ProjectColors.colors;
+    final scheme = Theme.of(context).colorScheme;
+    final periodRange = context.watch<ReportPeriodCubit>().state;
 
     return BlocBuilder<ProjectRollupBloc, ProjectRollupState>(
       builder: (context, rollupState) {
@@ -55,7 +54,7 @@ class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
             final aggregated = PieChartStats.aggregateByProject(
               rollups: rollups,
               projects: projects,
-              period: widget.periodRange,
+              period: periodRange,
             );
 
             // No rollups in range → fall back to a single "No project"
@@ -96,7 +95,7 @@ class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
                                     final totalSeconds =
                                         state is DailyRollupLoaded
                                         ? state.totalSecondsForPeriod(
-                                            widget.periodRange,
+                                            periodRange,
                                           )
                                         : 0;
                                     return DurationTextUtils(

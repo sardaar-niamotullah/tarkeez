@@ -1,7 +1,4 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/shared_files/buttons/go_premium_button.dart';
-import 'package:tarkeez/core/shared_files/cubits/report_period_cubit.dart';
-import 'package:tarkeez/core/shared_files/enums/period_range.dart';
 import 'package:tarkeez/core/utils/primary_page_margin.dart';
 import 'package:tarkeez/features/report/presentation/sections/projects_pie_chart_section.dart';
 import 'package:tarkeez/features/report/presentation/sections/report_filter_tile.dart';
@@ -19,7 +16,6 @@ class ReportTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-
     return Stack(
       children: [
         const Positioned.fill(child: HeroImageBackgroundLayer()),
@@ -52,27 +48,21 @@ class ReportTab extends StatelessWidget {
                       SliverList.list(
                         children: [
                           PrimaryPageMargin(
-                            child: BlocBuilder<ReportPeriodCubit, PeriodRange>(
-                              builder: (context, periodRange) {
-                                return Column(
-                                  crossAxisAlignment: .start,
-                                  children: [
-                                    const SizedBox(height: 12),
-                                    //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-                                    // Timeline section
-                                    //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-                                    TimelineSection(periodRange: periodRange),
-                                    const SizedBox(height: 16),
-                                    //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-                                    // Pie chart part
-                                    //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-                                    ProjectsPieChartSection(
-                                      periodRange: periodRange,
-                                    ),
-                                    const SizedBox(height: 64),
-                                  ],
-                                );
-                              },
+                            child: Column(
+                              crossAxisAlignment: .start,
+                              children: [
+                                const SizedBox(height: 12),
+                                //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+                                // Timeline section
+                                //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+                                TimelineSection(),
+                                const SizedBox(height: 16),
+                                //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+                                // Pie chart part
+                                //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+                                ProjectsPieChartSection(),
+                                const SizedBox(height: 64),
+                              ],
                             ),
                           ),
                         ],
