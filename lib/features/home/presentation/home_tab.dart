@@ -1,11 +1,9 @@
-import 'dart:async';
 import 'package:tarkeez/core/shared_files/buttons/go_premium_button.dart';
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';
 import 'package:tarkeez/core/utils/app_clock.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:tarkeez/core/utils/date_time_formatter.dart';
 import 'package:tarkeez/core/utils/primary_page_margin.dart';
 import 'package:tarkeez/features/home/presentation/sections/home_app_bar.dart';
 import 'package:tarkeez/features/home/presentation/sections/home_bar_chart_section.dart';
@@ -74,25 +72,7 @@ class HomeTab extends StatelessWidget {
           ],
         ),
         const Positioned(bottom: 16, right: 16, child: GoPremiumButton()),
-        Positioned(
-          bottom: 16,
-          left: 16,
-          child: FilledButton(
-            onPressed: () {
-              AppClock.fakeCurrentTime(
-                DateTime(2026, 9, 12, 03, 00),
-                speed: 60,
-              );
-              showSuccessSnackBar(context, message: '🕰️ fake time started');
-              Timer.periodic(const Duration(seconds: 1), (_) {
-                debugPrint(
-                  '🕰️ fake clock: ${DateTimeFormatter.readableDateTime(AppClock.now())}',
-                );
-              });
-            },
-            child: Icon(Icons.timer_rounded),
-          ),
-        ),
+        
         Positioned(
           bottom: 16,
           left: 92,
