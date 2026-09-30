@@ -61,11 +61,24 @@ class ReportTimelineChartConfig {
       horizontalGapAfterYAxis;
 
   static double getBarWidth({
+    required BuildContext context,
     required List<TimelineModel> entries,
     required double availableWidth,
-  }) => entries.length <= 7
-      ? availableWidth / math.max(entries.length, 1)
-      : availableWidth / 7;
+  }) {
+    final granularity = context.watch<ReportPeriodCubit>().state.granularity;
+
+    final dailyWidth = availableWidth / 7;
+    final monthlyWidth = availableWidth / 5;
+    final lessThanWeekWidth = availableWidth / math.max(entries.length, 1);
+
+    final calculatedWidth = granularity == .monthly
+        ? monthlyWidth
+        : entries.length <= 7
+        ? lessThanWeekWidth
+        : dailyWidth;
+
+    return calculatedWidth;
+  }
 
   static List<TimelineModel> getVisibleEntries(List<TimelineModel> entries) =>
       entries.reversed.toList();

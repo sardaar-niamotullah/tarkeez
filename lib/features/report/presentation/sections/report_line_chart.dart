@@ -42,6 +42,7 @@ class ReportLineChart extends StatelessWidget {
           context,
         );
         final pointWidth = ReportTimelineChartConfig.getBarWidth(
+          context: context,
           entries: chartEntries,
           availableWidth: availableWidth,
         );

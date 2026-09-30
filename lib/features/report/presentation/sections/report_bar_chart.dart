@@ -44,6 +44,7 @@ class ReportBarChart extends StatelessWidget {
           context,
         );
         final dataVisualiserBarWidth = ReportTimelineChartConfig.getBarWidth(
+          context: context,
           entries: entries,
           availableWidth: availableWidth,
         );
@@ -143,7 +144,7 @@ class ReportBarChart extends StatelessWidget {
                         const SizedBox(
                           height: ReportTimelineChartConfig.labelGap,
                         ),
-                        
+
                         //–––––––––––––––––––––––––––––––––––––––––––––––––––––
                         // Date and day labels
                         //–––––––––––––––––––––––––––––––––––––––––––––––––––––
