@@ -7,15 +7,15 @@ class RollupDateUtils {
       '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
   static String shiftDate(String date, int deltaDays) {
-    final d = DateTime.parse(date).add(Duration(days: deltaDays));
-    return format(d);
+    final d = DateTime.parse(date);
+    return format(DateTime(d.year, d.month, d.day + deltaDays));
   }
 
   /// Monday of the ISO week containing date.
   static String startOfIsoWeek(String date) {
     final d = DateTime.parse(date);
-    final monday = d.subtract(Duration(days: d.weekday - 1)); // Mon=1..Sun=7
-    return format(monday);
+    // Mon=1..Sun=7
+    return format(DateTime(d.year, d.month, d.day - (d.weekday - 1)));
   }
 
   /// 1st of the calendar month containing date.
@@ -65,18 +65,18 @@ class RollupDateUtils {
   /// ISO weeks start Monday; week 1 is the week containing the year's
   /// first Thursday (equivalently, containing Jan 4th).
   static String isoWeekKey(String date) {
-    final d = DateTime.parse(date);
-    final weekday = d.weekday;
-    final thursday = d.add(Duration(days: 4 - weekday));
+    final parsed = DateTime.parse(date);
+    // UTC has no DST, so add/subtract/difference are exact whole days.
+    final d = DateTime.utc(parsed.year, parsed.month, parsed.day);
+
+    final thursday = d.add(Duration(days: 4 - d.weekday));
     final isoYear = thursday.year;
 
-    final jan4 = DateTime(isoYear, 1, 4);
+    final jan4 = DateTime.utc(isoYear, 1, 4);
     final week1Monday = jan4.subtract(Duration(days: jan4.weekday - 1));
 
-    final diffDays = thursday
-        .add(const Duration(days: -3))
-        .difference(week1Monday)
-        .inDays;
+    final monday = thursday.subtract(const Duration(days: 3));
+    final diffDays = monday.difference(week1Monday).inDays;
     final isoWeek = (diffDays / 7).floor() + 1;
 
     return '$isoYear-W${isoWeek.toString().padLeft(2, '0')}';

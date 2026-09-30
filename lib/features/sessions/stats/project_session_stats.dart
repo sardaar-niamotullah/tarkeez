@@ -1,7 +1,8 @@
 import 'package:tarkeez/core/extensions/period_range_extension.dart';
 import 'package:tarkeez/core/shared_files/enums/period_range.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
-import 'package:tarkeez/features/sessions/data/models/session_model.dart';
+import 'package:tarkeez/core/utils/rollup_date_utils.dart';
+import 'package:tarkeez/features/project_rollups/data/models/project_rollup_model.dart';
 
 /// Aggregated time spent on a single project. project is null for the
 /// "No project" bucket (sessions with no projectId, or one that no longer
@@ -13,34 +14,39 @@ class ProjectDurationModel {
   final int durationInSeconds;
 }
 
-class ProjectSessionStats {
-  ProjectSessionStats._();
+class ProjectRollupStats {
+  ProjectRollupStats._();
 
-  /// Keeps only sessions whose local start-day falls inside period.
-  /// Safe to rely on the session's day alone because SessionBloc splits
-  /// every entry at local midnight, so a session never spans two days.
-  static List<SessionModel> sessionsInPeriod(
-    List<SessionModel> sessions,
-    PeriodRange period,
-  ) {
-    final range = period.dateRange();
-    if (range == null) return sessions;
+  /// Keeps rollups whose date key falls inside [period]. 'YYYY-MM-DD' keys
+  /// sort lexicographically, so plain string comparison is enough.
+  static List<ProjectRollupModel> rollupsInPeriod(
+    List<ProjectRollupModel> rollups,
+    PeriodRange period, {
+    DateTime? now,
+  }) {
+    final range = period.dateRange(now: now);
+    if (range == null) return rollups;
 
     final (start, end) = range;
-    final endExclusive = end.add(const Duration(days: 1));
+    final startKey = RollupDateUtils.format(start);
+    final endKey = RollupDateUtils.format(end);
 
-    return sessions.where((s) {
-      final localDay = _dateOnly(s.startedAt.toLocal());
-      return !localDay.isBefore(start) && localDay.isBefore(endExclusive);
-    }).toList();
+    return rollups
+        .where(
+          (r) =>
+              r.date.compareTo(startKey) >= 0 && r.date.compareTo(endKey) <= 0,
+        )
+        .toList();
   }
 
-  /// Sums session durations per project, bucketing unassigned/unresolvable
-  /// sessions under a single null-project entry. Zero-duration entries are
-  /// dropped. Result is sorted by duration, descending.
+  /// Sums rollup seconds per project. Rows with no project, or whose
+  /// project no longer exists, go into a single null-project bucket.
+  /// Sorted by duration, descending.
   static List<ProjectDurationModel> aggregateByProject({
-    required List<SessionModel> sessions,
+    required List<ProjectRollupModel> rollups,
     required List<ProjectModel> projects,
+    required PeriodRange period,
+    DateTime? now,
   }) {
     final projectsById = {
       for (final p in projects)
@@ -49,37 +55,29 @@ class ProjectSessionStats {
 
     final durationByProjectId = <String?, int>{};
 
-    for (final session in sessions) {
-      final seconds = session.endedAt.difference(session.startedAt).inSeconds;
-      if (seconds <= 0) continue;
+    for (final rollup in rollupsInPeriod(rollups, period, now: now)) {
+      if (rollup.durationSeconds <= 0) continue;
 
       final key =
-          session.projectId != null &&
-              projectsById.containsKey(session.projectId)
-          ? session.projectId
+          rollup.projectId != null && projectsById.containsKey(rollup.projectId)
+          ? rollup.projectId
           : null;
 
       durationByProjectId.update(
         key,
-        (existing) => existing + seconds,
-        ifAbsent: () => seconds,
+        (existing) => existing + rollup.durationSeconds,
+        ifAbsent: () => rollup.durationSeconds,
       );
     }
 
-    final result =
-        durationByProjectId.entries
-            .where((entry) => entry.value > 0)
-            .map(
-              (entry) => ProjectDurationModel(
-                project: entry.key == null ? null : projectsById[entry.key],
-                durationInSeconds: entry.value,
-              ),
-            )
-            .toList()
-          ..sort((a, b) => b.durationInSeconds.compareTo(a.durationInSeconds));
-
-    return result;
+    return durationByProjectId.entries
+        .map(
+          (e) => ProjectDurationModel(
+            project: e.key == null ? null : projectsById[e.key],
+            durationInSeconds: e.value,
+          ),
+        )
+        .toList()
+      ..sort((a, b) => b.durationInSeconds.compareTo(a.durationInSeconds));
   }
-
-  static DateTime _dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);
 }

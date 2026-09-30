@@ -1,7 +1,7 @@
 import 'package:tarkeez/core/database/app_database.dart';
 import 'package:tarkeez/core/error/result.dart';
 import 'package:tarkeez/core/error/result_guard.dart';
-import 'package:tarkeez/core/utils/date_key_utils.dart';
+import 'package:tarkeez/core/utils/rollup_date_utils.dart';
 import 'package:tarkeez/features/daily_rollups/data/models/daily_rollup_model.dart';
 
 abstract interface class DailyRollupRepository {
@@ -31,8 +31,8 @@ class DailyRollupRepositoryImpl implements DailyRollupRepository {
       final start = DateTime(end.year, end.month, end.day - days);
 
       final rows = await _database.dailyRollupsDao.getRollupsInRange(
-        DateKeyUtils.format(start),
-        DateKeyUtils.format(end),
+        RollupDateUtils.format(start),
+        RollupDateUtils.format(end),
       );
       return rows.map(DailyRollupModel.fromRow).toList();
     });

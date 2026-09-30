@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/dependency_injection/di.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
+import 'package:tarkeez/features/project_rollups/bloc/project_rollup_bloc.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/features/report/cubit/report_period_cubit.dart';
 import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
@@ -30,6 +31,7 @@ class AppProviders extends StatelessWidget {
         BlocProvider(create: (_) => getIt<ProjectBloc>()),
         BlocProvider(create: (_) => getIt<SessionBloc>()),
         BlocProvider(create: (_) => getIt<DailyRollupBloc>()),
+        BlocProvider(create: (_) => getIt<ProjectRollupBloc>()),
       ],
       child: child,
     );

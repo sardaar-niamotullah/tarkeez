@@ -1,10 +1,11 @@
 import 'dart:async';
-
 import 'package:get_it/get_it.dart';
 import 'package:tarkeez/core/database/app_database.dart';
 import 'package:tarkeez/core/services/sound_service.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
 import 'package:tarkeez/features/daily_rollups/data/repositories/daily_rollup_repository.dart';
+import 'package:tarkeez/features/project_rollups/bloc/project_rollup_bloc.dart';
+import 'package:tarkeez/features/project_rollups/data/repositories/project_rollup_repository.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/features/projects/data/repositories/project_repository.dart';
 import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
@@ -45,5 +46,13 @@ Future<void> injectDependencies() async {
   );
   getIt.registerLazySingleton<DailyRollupBloc>(
     () => DailyRollupBloc(getIt<DailyRollupRepository>()),
+  );
+
+  // ── Project Rollups ────────────────────────────────────────────────────
+  getIt.registerLazySingleton<ProjectRollupRepository>(
+    () => ProjectRollupRepositoryImpl(getIt<AppDatabase>()),
+  );
+  getIt.registerLazySingleton<ProjectRollupBloc>(
+    () => ProjectRollupBloc(getIt<ProjectRollupRepository>()),
   );
 }

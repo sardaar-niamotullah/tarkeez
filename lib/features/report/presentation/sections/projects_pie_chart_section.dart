@@ -8,12 +8,12 @@ import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
+import 'package:tarkeez/features/project_rollups/bloc/project_rollup_bloc.dart';
+import 'package:tarkeez/features/project_rollups/data/models/project_rollup_model.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/project_info_tile.dart';
 import 'package:tarkeez/features/report/cubit/report_period_cubit.dart';
-import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
-import 'package:tarkeez/features/sessions/data/models/session_model.dart';
 import 'package:tarkeez/features/sessions/stats/project_session_stats.dart';
 
 class ProjectsPieChartSection extends StatefulWidget {
@@ -34,13 +34,15 @@ class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
 
     return BlocBuilder<ReportPeriodCubit, PeriodRange>(
       builder: (context, selectedPeriod) {
-        return BlocBuilder<SessionBloc, SessionState>(
-          builder: (context, sessionState) {
-            final List<SessionModel> sessions = switch (sessionState) {
-              SessionLoaded(:final sessions) => sessions,
-              SessionLoading(:final sessions) => sessions,
-              SessionFailure(:final sessions) => sessions,
-              _ => const <SessionModel>[],
+        return BlocBuilder<ProjectRollupBloc, ProjectRollupState>(
+          builder: (context, rollupState) {
+            final List<ProjectRollupModel> rollups = switch (rollupState) {
+              ProjectRollupLoaded(:final rollups) => rollups,
+              ProjectRollupLoading(:final rollups) =>
+                rollups ?? const <ProjectRollupModel>[],
+              ProjectRollupFailure(:final rollups) =>
+                rollups ?? const <ProjectRollupModel>[],
+              _ => const <ProjectRollupModel>[],
             };
 
             return BlocBuilder<ProjectBloc, ProjectState>(
@@ -52,17 +54,13 @@ class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
                   _ => const <ProjectModel>[],
                 };
 
-                final filteredSessions = ProjectSessionStats.sessionsInPeriod(
-                  sessions,
-                  selectedPeriod,
-                );
-
-                final aggregated = ProjectSessionStats.aggregateByProject(
-                  sessions: filteredSessions,
+                final aggregated = ProjectRollupStats.aggregateByProject(
+                  rollups: rollups,
                   projects: projects,
+                  period: selectedPeriod,
                 );
 
-                // No sessions in range → fall back to a single "No project"
+                // No rollups in range → fall back to a single "No project"
                 // entry at 0m so the pie chart and list always render.
                 final projectDurations = aggregated.isEmpty
                     ? const [
@@ -123,7 +121,7 @@ class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
                               ),
                               const SizedBox(width: 16),
                               //–––––––––––––––––––––––––––––––––––––––––––
-                              // Pie chart — sessions grouped by project
+                              // Pie chart — project rollups grouped by project
                               //–––––––––––––––––––––––––––––––––––––––––––
                               Expanded(
                                 child: AspectRatio(

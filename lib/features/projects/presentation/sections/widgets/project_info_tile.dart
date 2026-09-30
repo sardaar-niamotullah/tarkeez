@@ -32,7 +32,7 @@ class ProjectInfoTile extends StatelessWidget {
     final resolvedColor = project != null
         ? projectColors[project!.colorId]
         : scheme.onTertiary;
-    debugPrint('🎨 proid: ${project?.id.toString()}');
+        
     return Container(
       padding: .symmetric(
         horizontal: ContainerDesignUtils.padding,

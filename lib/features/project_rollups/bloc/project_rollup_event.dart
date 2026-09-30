@@ -1,8 +1,10 @@
 part of 'project_rollup_bloc.dart';
 
-sealed class ProjectRollupEvent extends Equatable {
-  const ProjectRollupEvent();
+sealed class ProjectRollupEvent {}
 
-  @override
-  List<Object> get props => [];
+class FetchProjectRollupRequested extends ProjectRollupEvent {}
+
+class RefreshProjectRollupRequested extends ProjectRollupEvent {
+  RefreshProjectRollupRequested({this.days = 5});
+  final int days;
 }
