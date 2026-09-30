@@ -1,5 +1,6 @@
 import 'package:tarkeez/core/extensions/period_range_extension.dart';
 import 'package:tarkeez/core/shared_files/enums/period_range.dart';
+import 'package:tarkeez/core/shared_files/enums/timeline_granularity.dart';
 import 'package:tarkeez/core/utils/rollup_date_utils.dart';
 import 'package:tarkeez/features/daily_rollups/data/models/timeline_model.dart';
 
@@ -22,6 +23,17 @@ class TimelineStats {
       start = _earliestDate(rollups) ?? today;
       end = today;
     }
+    return switch (period.granularity) {
+      TimelineGranularity.daily => _daily(rollups, start, end),
+      TimelineGranularity.monthly => _monthly(rollups, start, end),
+    };
+  }
+
+  static List<TimelineModel> _daily(
+    Map<String, int> rollups,
+    DateTime start,
+    DateTime end,
+  ) {
     final dayCount =
         DateTime.utc(
           end.year,
@@ -34,6 +46,31 @@ class TimelineStats {
       return TimelineModel(
         date: date,
         seconds: rollups[RollupDateUtils.format(date)] ?? 0,
+      );
+    });
+  }
+
+  static List<TimelineModel> _monthly(
+    Map<String, int> rollups,
+    DateTime start,
+    DateTime end,
+  ) {
+    int monthKey(DateTime d) => d.year * 12 + (d.month - 1);
+    final startKey = monthKey(start);
+    final endKey = monthKey(end);
+    final totals = <int, int>{};
+    for (final e in rollups.entries) {
+      final d = DateTime.tryParse(e.key);
+      if (d == null) continue;
+      final k = monthKey(d);
+      if (k < startKey || k > endKey) continue;
+      totals[k] = (totals[k] ?? 0) + e.value;
+    }
+    return List.generate(endKey - startKey + 1, (i) {
+      final k = endKey - i;
+      return TimelineModel(
+        date: DateTime(k ~/ 12, k % 12 + 1),
+        seconds: totals[k] ?? 0,
       );
     });
   }

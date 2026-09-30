@@ -1,0 +1,1 @@
+enum TimelineGranularity { daily, monthly }

@@ -1,4 +1,5 @@
 import 'package:tarkeez/core/shared_files/enums/period_range.dart';
+import 'package:tarkeez/core/shared_files/enums/timeline_granularity.dart';
 
 extension PeriodRangeExtension on PeriodRange {
   (DateTime start, DateTime end)? dateRange({DateTime? now}) {
@@ -55,4 +56,14 @@ extension PeriodRangeExtension on PeriodRange {
   /// Monday = 1 .. Sunday = 7 (ISO week).
   static DateTime _startOfIsoWeek(DateTime date) =>
       date.subtract(Duration(days: date.weekday - 1));
+}
+
+extension PeriodRangeGranularity on PeriodRange {
+  TimelineGranularity get granularity => switch (this) {
+    PeriodRange.thisYear ||
+    PeriodRange.last12Months ||
+    PeriodRange.lastYear ||
+    PeriodRange.allTime => TimelineGranularity.monthly,
+    _ => TimelineGranularity.daily,
+  };
 }

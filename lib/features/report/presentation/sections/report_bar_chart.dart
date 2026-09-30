@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tarkeez/core/extensions/period_range_extension.dart';
 import 'package:tarkeez/core/shared_files/cubits/report_period_cubit.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
@@ -18,6 +19,7 @@ class ReportBarChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final periodRange = context.watch<ReportPeriodCubit>().state;
+    final granularity = periodRange.granularity;
 
     return BlocBuilder<DailyRollupBloc, DailyRollupState>(
       builder: (context, state) {
@@ -154,10 +156,10 @@ class ReportBarChart extends StatelessWidget {
                             physics: const NeverScrollableScrollPhysics(),
                             itemBuilder: (context, index) {
                               final entry = visibleEntries[index];
-
                               return TimeVisualizerBarLabel(
                                 date: entry.date,
                                 slotWidth: dataVisualiserBarWidth,
+                                 granularity: granularity,
                               );
                             },
                           ),
