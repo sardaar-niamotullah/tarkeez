@@ -1,3 +1,4 @@
+import 'package:tarkeez/core/responsive/app_breakpoints.dart';
 import 'package:tarkeez/core/shared_files/buttons/go_premium_button.dart';
 import 'package:tarkeez/core/utils/primary_page_margin.dart';
 import 'package:tarkeez/features/report/presentation/sections/projects_pie_chart_section.dart';
@@ -74,7 +75,21 @@ class ReportTab extends StatelessWidget {
             ],
           ),
         ),
-        const Positioned(bottom: 16, right: 16, child: GoPremiumButton()),
+        Positioned.fill(
+          child: Align(
+            alignment: .bottomCenter,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: AppBreakpoints.xl),
+              child: const Align(
+                alignment: .bottomRight,
+                child: Padding(
+                  padding: .only(right: 16, bottom: 16),
+                  child: GoPremiumButton(),
+                ),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }

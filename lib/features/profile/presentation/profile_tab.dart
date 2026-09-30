@@ -90,7 +90,21 @@ class ProfileTab extends StatelessWidget {
             ],
           ),
         ),
-        const Positioned(bottom: 16, right: 16, child: GoPremiumButton()),
+        Positioned.fill(
+          child: Align(
+            alignment: .bottomCenter,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: AppBreakpoints.xl),
+              child: const Align(
+                alignment: .bottomRight,
+                child: Padding(
+                  padding: .only(right: 16, bottom: 16),
+                  child: GoPremiumButton(),
+                ),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/responsive/responsive_context.dart';
 import 'package:tarkeez/core/shared_files/cubits/navigation_cubit.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/bottom_nav_bar_icon.dart';
@@ -14,13 +15,12 @@ class MainBottomNavBar extends StatelessWidget {
     final currentIndex = context.watch<NavigationCubit>().currentIndex;
 
     return Material(
-      color:
-          scheme.surface,
+      color: scheme.surface,
       elevation: 8,
       child: Center(
         heightFactor: 1,
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 1600),
+          constraints: BoxConstraints(maxWidth: 1524),
           child: Theme(
             data: Theme.of(context).copyWith(
               splashFactory: InkRipple.splashFactory,
@@ -92,13 +92,18 @@ class MainBottomNavBar extends StatelessWidget {
                   ),
                   label: 'Profile',
                 ),
-                // BottomNavigationBarItem(
-                //   icon: BottomNavBarIcon(
-                //     iconPath: SvgPaths.gear,
-                //     isActive: currentIndex == 3,
-                //   ),
-                //   label: texts.settings,
-                // ),
+
+                // ────────────────────────────────────────────────────────────
+                // Profile tab
+                // ────────────────────────────────────────────────────────────
+                if (context.isSm)
+                  BottomNavigationBarItem(
+                    icon: BottomNavBarIcon(
+                      iconPath: SvgPaths.hamburger,
+                      isActive: currentIndex == 4,
+                    ),
+                    label: 'Menu',
+                  ),
               ],
             ),
           ),
