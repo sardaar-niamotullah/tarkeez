@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:tarkeez/core/error/result.dart';
 import 'package:tarkeez/core/error/result_guard.dart';
 import 'package:tarkeez/core/database/app_database.dart';
@@ -21,6 +22,7 @@ class ProjectRollupRepositoryImpl implements ProjectRollupRepository {
   Future<Result<List<ProjectRollupModel>>> fetchAllRollups() {
     return resultGuard(() async {
       final rows = await _database.projectRollupsDao.getAllRollups();
+      debugPrint('🔥 Project rollup rows fetched: ${rows.length}');
       return rows.map(ProjectRollupModel.fromRow).toList();
     });
   }

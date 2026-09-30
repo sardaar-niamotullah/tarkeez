@@ -9,12 +9,13 @@ import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
 import 'package:tarkeez/features/project_rollups/bloc/project_rollup_bloc.dart';
+import 'package:tarkeez/features/project_rollups/data/models/project_duration_model.dart';
 import 'package:tarkeez/features/project_rollups/data/models/project_rollup_model.dart';
+import 'package:tarkeez/features/project_rollups/stats/pie_chart_stats.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/project_info_tile.dart';
 import 'package:tarkeez/features/report/cubit/report_period_cubit.dart';
-import 'package:tarkeez/features/sessions/stats/project_session_stats.dart';
 
 class ProjectsPieChartSection extends StatefulWidget {
   const ProjectsPieChartSection({super.key});
@@ -54,7 +55,7 @@ class ProjectsPieChartSectionState extends State<ProjectsPieChartSection> {
                   _ => const <ProjectModel>[],
                 };
 
-                final aggregated = ProjectRollupStats.aggregateByProject(
+                final aggregated = PieChartStats.aggregateByProject(
                   rollups: rollups,
                   projects: projects,
                   period: selectedPeriod,

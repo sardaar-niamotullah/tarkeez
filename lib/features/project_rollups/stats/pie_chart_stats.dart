@@ -1,21 +1,12 @@
 import 'package:tarkeez/core/extensions/period_range_extension.dart';
 import 'package:tarkeez/core/shared_files/enums/period_range.dart';
+import 'package:tarkeez/features/project_rollups/data/models/project_duration_model.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/core/utils/rollup_date_utils.dart';
 import 'package:tarkeez/features/project_rollups/data/models/project_rollup_model.dart';
 
-/// Aggregated time spent on a single project. project is null for the
-/// "No project" bucket (sessions with no projectId, or one that no longer
-/// resolves to a known project).
-class ProjectDurationModel {
-  const ProjectDurationModel({this.project, required this.durationInSeconds});
-
-  final ProjectModel? project;
-  final int durationInSeconds;
-}
-
-class ProjectRollupStats {
-  ProjectRollupStats._();
+class PieChartStats {
+  PieChartStats._();
 
   /// Keeps rollups whose date key falls inside [period]. 'YYYY-MM-DD' keys
   /// sort lexicographically, so plain string comparison is enough.
