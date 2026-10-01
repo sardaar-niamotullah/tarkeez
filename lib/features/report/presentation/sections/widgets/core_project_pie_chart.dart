@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/constants/project_colors.dart';
+import 'package:tarkeez/core/responsive/responsive_context.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/project_rollups/data/models/project_duration_model.dart';
 
@@ -19,22 +20,33 @@ class _CoreProjectPieChartState extends State<CoreProjectPieChart> {
   @override
   Widget build(BuildContext context) {
     final projectColors = ProjectColors.colors;
-    final scheme = Theme.of(context).colorScheme;
     final totalSeconds = widget.projectDurations.fold<int>(
       0,
       (sum, entry) => sum + entry.durationInSeconds,
     );
+    final centerRadius = context.isMd
+        ? 80.0
+        : context.isSm
+        ? 64.0
+        : 48.0;
+    final sectionRadius = context.isMd
+        ? 70.0
+        : context.isSm
+        ? 56.0
+        : 42.0;
+    const touchedExtra = 5.0;
     return PieChart(
       PieChartData(
         sectionsSpace: 2,
-        centerSpaceRadius: 48,
+        centerSpaceRadius: centerRadius,
         borderData: FlBorderData(show: true),
         sections: _showingSections(
           widget.projectDurations,
           totalSeconds,
           projectColors,
-          scheme,
           context,
+          sectionRadius: sectionRadius,
+          touchedExtra: touchedExtra,
         ),
         pieTouchData: PieTouchData(
           touchCallback:
@@ -59,14 +71,16 @@ class _CoreProjectPieChartState extends State<CoreProjectPieChart> {
     List<ProjectDurationModel> projectDurations,
     int totalSeconds,
     List<Color> projectColors,
-    ColorScheme scheme,
-    BuildContext context,
-  ) {
+    BuildContext context, {
+    required double sectionRadius,
+    required double touchedExtra,
+  }) {
+    final scheme = Theme.of(context).colorScheme;
     return List.generate(projectDurations.length, (i) {
       final entry = projectDurations[i];
       final isTouched = i == touchedIndex;
       final fontSize = isTouched ? 12 : 10;
-      final radius = isTouched ? 60.0 : 50.0;
+      final radius = isTouched ? sectionRadius + touchedExtra : sectionRadius;
 
       final resolvedColor = entry.project != null
           ? projectColors[entry.project!.colorId]

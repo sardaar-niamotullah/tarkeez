@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tarkeez/core/responsive/responsive_context.dart';
 import 'package:tarkeez/core/shared_files/cubits/report_period_cubit.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
@@ -61,7 +62,11 @@ class ProjectsPieChartSection extends StatelessWidget {
                 Text('Projects', style: TextUtils.title2(context)),
                 const SizedBox(height: 8),
                 Container(
-                  padding: const .only(top: 36, left: 16, right: 16),
+                  padding: .only(
+                    top: !context.isSm ? 16 : 0,
+                    left: 16,
+                    right: 16,
+                  ),
                   decoration: BoxDecoration(
                     color: scheme.onSurface,
                     borderRadius: ContainerDesignUtils.allRadius,
@@ -73,48 +78,85 @@ class ProjectsPieChartSection extends StatelessWidget {
                           //–––––––––––––––––––––––––––––––––––––––––––
                           // Total duration — daily rollups, project-agnostic
                           //–––––––––––––––––––––––––––––––––––––––––––
-                          Expanded(
-                            child:
-                                BlocBuilder<DailyRollupBloc, DailyRollupState>(
-                                  builder: (context, state) {
-                                    final totalSeconds =
-                                        state is DailyRollupLoaded
-                                        ? state.totalSecondsForPeriod(
-                                            periodRange,
-                                          )
-                                        : 0;
-                                    return DurationTextUtils(
-                                      durationInSeconds: totalSeconds,
-                                      fontSizePrimary: 24,
-                                      fontSizeSeconday: 14,
-                                    );
-                                  },
-                                ),
-                          ),
-                          const SizedBox(width: 16),
+                          if (!context.isSm)
+                            Expanded(
+                              child:
+                                  BlocBuilder<
+                                    DailyRollupBloc,
+                                    DailyRollupState
+                                  >(
+                                    builder: (context, state) {
+                                      final totalSeconds =
+                                          state is DailyRollupLoaded
+                                          ? state.totalSecondsForPeriod(
+                                              periodRange,
+                                            )
+                                          : 0;
+                                      return Padding(
+                                        padding: const .only(left: 16),
+                                        child: DurationTextUtils(
+                                          durationInSeconds: totalSeconds,
+                                          fontSizePrimary: 24,
+                                          fontSizeSeconday: 14,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                            ),
                           //–––––––––––––––––––––––––––––––––––––––––––
                           // Pie chart — project rollups grouped by project
                           //–––––––––––––––––––––––––––––––––––––––––––
                           Expanded(
-                            child: AspectRatio(
-                              aspectRatio: 1,
-                              child: CoreProjectPieChart(
-                                projectDurations: projectDurations,
+                            flex: 2,
+                            child: SizedBox(
+                              height: context.isSm ? 360 : 200,
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  CoreProjectPieChart(
+                                    projectDurations: projectDurations,
+                                  ),
+                                  if (context.isSm)
+                                    BlocBuilder<
+                                      DailyRollupBloc,
+                                      DailyRollupState
+                                    >(
+                                      builder: (context, state) {
+                                        final totalSeconds =
+                                            state is DailyRollupLoaded
+                                            ? state.totalSecondsForPeriod(
+                                                periodRange,
+                                              )
+                                            : 0;
+                                        return DurationTextUtils(
+                                          durationInSeconds: totalSeconds,
+                                          fontSizePrimary: 24,
+                                          fontSizeSeconday: 14,
+                                        );
+                                      },
+                                    ),
+                                ],
                               ),
                             ),
                           ),
-                          const SizedBox(width: 24),
+                          if (context.isSm) ...[
+                            const SizedBox(width: 16),
+                            Expanded(
+                              flex: 2,
+                              child: PieChartProjectDetailsSection(
+                                projectDurations: projectDurations,
+                              ),
+                            ),
+                          ],
                         ],
                       ),
-                      const SizedBox(height: 36),
-
-                      //–––––––––––––––––––––––––––––––––––––––––––
-                      // Project details
-                      //–––––––––––––––––––––––––––––––––––––––––––
-                      PieChartProjectDetailsSection(
-                        projectDurations: projectDurations,
-                      ),
-                      const SizedBox(height: 16),
+                      if (!context.isSm) ...[
+                        const SizedBox(height: 16),
+                        PieChartProjectDetailsSection(
+                          projectDurations: projectDurations,
+                        ),
+                        const SizedBox(height: 16),
+                      ],
                     ],
                   ),
                 ),
