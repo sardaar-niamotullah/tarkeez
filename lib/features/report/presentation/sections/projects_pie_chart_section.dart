@@ -63,7 +63,7 @@ class ProjectsPieChartSection extends StatelessWidget {
                 const SizedBox(height: 8),
                 Container(
                   padding: .only(
-                    top: !context.isSm ? 16 : 0,
+                    top: !context.sm ? 16 : 0,
                     left: 16,
                     right: 16,
                   ),
@@ -78,7 +78,7 @@ class ProjectsPieChartSection extends StatelessWidget {
                           //–––––––––––––––––––––––––––––––––––––––––––
                           // Total duration — daily rollups, project-agnostic
                           //–––––––––––––––––––––––––––––––––––––––––––
-                          if (!context.isSm)
+                          if (!context.sm)
                             Expanded(
                               child:
                                   BlocBuilder<
@@ -109,14 +109,14 @@ class ProjectsPieChartSection extends StatelessWidget {
                           Expanded(
                             flex: 2,
                             child: SizedBox(
-                              height: context.isSm ? 360 : 200,
+                              height: context.sm ? 360 : 200,
                               child: Stack(
                                 alignment: Alignment.center,
                                 children: [
                                   CoreProjectPieChart(
                                     projectDurations: projectDurations,
                                   ),
-                                  if (context.isSm)
+                                  if (context.sm)
                                     BlocBuilder<
                                       DailyRollupBloc,
                                       DailyRollupState
@@ -139,7 +139,7 @@ class ProjectsPieChartSection extends StatelessWidget {
                               ),
                             ),
                           ),
-                          if (context.isSm) ...[
+                          if (context.sm) ...[
                             const SizedBox(width: 16),
                             Expanded(
                               flex: 2,
@@ -150,7 +150,7 @@ class ProjectsPieChartSection extends StatelessWidget {
                           ],
                         ],
                       ),
-                      if (!context.isSm) ...[
+                      if (!context.sm) ...[
                         const SizedBox(height: 16),
                         PieChartProjectDetailsSection(
                           projectDurations: projectDurations,

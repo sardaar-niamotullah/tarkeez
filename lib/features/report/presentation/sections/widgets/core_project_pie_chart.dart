@@ -24,14 +24,14 @@ class _CoreProjectPieChartState extends State<CoreProjectPieChart> {
       0,
       (sum, entry) => sum + entry.durationInSeconds,
     );
-    final centerRadius = context.isMd
+    final centerRadius = context.md
         ? 80.0
-        : context.isSm
+        : context.sm
         ? 64.0
         : 48.0;
-    final sectionRadius = context.isMd
+    final sectionRadius = context.md
         ? 70.0
-        : context.isSm
+        : context.sm
         ? 56.0
         : 42.0;
     const touchedExtra = 5.0;

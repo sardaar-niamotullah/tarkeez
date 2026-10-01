@@ -8,9 +8,9 @@ extension ResponsiveContext on BuildContext {
 
   ScreenSize get screenSize => AppBreakpoints.fromWidth(screenWidth);
 
-  bool get isXs => screenWidth < AppBreakpoints.sm;
-  bool get isSm => screenWidth >= AppBreakpoints.sm;
-  bool get isMd => screenWidth >= AppBreakpoints.md;
-  bool get isLg => screenWidth >= AppBreakpoints.lg;
-  bool get isXl => screenWidth >= AppBreakpoints.xl;
+  bool get xs => screenWidth < AppBreakpoints.sm;
+  bool get sm => screenWidth >= AppBreakpoints.sm;
+  bool get md => screenWidth >= AppBreakpoints.md;
+  bool get lg => screenWidth >= AppBreakpoints.lg;
+  bool get xl => screenWidth >= AppBreakpoints.xl;
 }

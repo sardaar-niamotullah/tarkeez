@@ -62,7 +62,7 @@ class ProjectsTab extends StatelessWidget {
                       ),
                       child: MaximumWidthBox(
                         child: PrimaryPageMargin(
-                          margin: context.isXl ? 16 : 0,
+                          margin: context.xl ? 16 : 0,
                           child: CustomScrollView(
                             slivers: [
                               SliverList.list(

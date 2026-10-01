@@ -103,7 +103,7 @@ class MainBottomNavBar extends StatelessWidget {
                 // ────────────────────────────────────────────────────────────
                 // Profile tab
                 // ────────────────────────────────────────────────────────────
-                if (context.isSm)
+                if (context.sm)
                   BottomNavigationBarItem(
                     icon: BottomNavBarIcon(
                       iconPath: SvgPaths.hamburger,
