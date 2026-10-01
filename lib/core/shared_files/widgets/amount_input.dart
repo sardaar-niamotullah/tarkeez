@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
-import 'package:tarkeez/core/utils/primary_page_margin.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class AmountInput extends StatefulWidget {
@@ -64,7 +63,7 @@ class _AmountInputState extends State<AmountInput> {
           onTap: () => _focusNode.requestFocus(),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 150),
-            padding: .all(PrimaryPageMargin.margin),
+            padding: .all(ContainerDesignUtils.margin),
             decoration: BoxDecoration(
               color: scheme.onSurface,
               borderRadius: ContainerDesignUtils.allRadius,

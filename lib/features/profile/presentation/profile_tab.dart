@@ -7,6 +7,7 @@ import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
 import 'package:tarkeez/core/shared_files/widgets/custom_app_bar.dart';
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
+import 'package:tarkeez/core/utils/maximum_width_box.dart';
 import 'package:tarkeez/features/profile/presentation/sections/heatmap.dart';
 import 'package:tarkeez/features/profile/presentation/sections/personal_bests_section.dart';
 import 'package:tarkeez/features/profile/presentation/sections/streaks.dart';
@@ -48,33 +49,26 @@ class ProfileTab extends StatelessWidget {
                             child: Column(
                               children: [
                                 const SizedBox(height: 16),
-                                Align(
-                                  alignment: .topCenter,
-                                  child: ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                      maxWidth: AppBreakpoints.xl,
+                                MaximumWidthBox(
+                                  child: Container(
+                                    width: .infinity,
+                                    padding: const .symmetric(
+                                      horizontal: ContainerDesignUtils.padding,
                                     ),
-                                    child: Container(
-                                      width: .infinity,
-                                      padding: const .symmetric(
-                                        horizontal:
-                                            ContainerDesignUtils.padding,
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment: .start,
-                                        children: [
-                                          Streaks(),
-                                          SizedBox(height: 16),
-                                          Heatmap(isLocked: false),
-                                          SizedBox(height: 16),
-                                          PersonalBestsSection(isLocked: false),
-                                          SizedBox(height: 16),
-                                          InvestedTimesSection(isLocked: false),
-                                          SizedBox(height: 16),
-                                          EraseAllDataButton(isLocked: false),
-                                          SizedBox(height: 64),
-                                        ],
-                                      ),
+                                    child: Column(
+                                      crossAxisAlignment: .start,
+                                      children: [
+                                        Streaks(),
+                                        SizedBox(height: 16),
+                                        Heatmap(isLocked: false),
+                                        SizedBox(height: 16),
+                                        PersonalBestsSection(isLocked: false),
+                                        SizedBox(height: 16),
+                                        InvestedTimesSection(isLocked: false),
+                                        SizedBox(height: 16),
+                                        EraseAllDataButton(isLocked: false),
+                                        SizedBox(height: 64),
+                                      ],
                                     ),
                                   ),
                                 ),

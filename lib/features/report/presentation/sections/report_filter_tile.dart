@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/responsive/app_breakpoints.dart';
 import 'package:tarkeez/core/shared_files/buttons/custom_icon_button.dart';
 import 'package:tarkeez/core/shared_files/cubits/report_period_cubit.dart';
 import 'package:tarkeez/core/shared_files/enums/period_range.dart';
+import 'package:tarkeez/core/utils/maximum_width_box.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/report/presentation/sections/report_filter_bottom_sheet.dart';
 
@@ -28,26 +30,34 @@ class ReportFilterTile extends StatelessWidget {
         background: Container(
           padding: const .only(left: 16, right: 10, top: 8, bottom: 8),
           decoration: BoxDecoration(color: scheme.onSurface),
-          child: Row(
-            crossAxisAlignment: .center,
-            mainAxisAlignment: .spaceBetween,
-            children: [
-              BlocBuilder<ReportPeriodCubit, PeriodRange>(
-                builder: (context, period) =>
-                    Text(period.label, style: TextUtils.paragraphBold(context)),
-              ),
-              Row(
+          child: Align(
+            alignment: .center,
+            child: MaximumWidthBox(
+              maxWidth: AppBreakpoints.xl - 26,
+              child: Row(
+                crossAxisAlignment: .center,
+                mainAxisAlignment: .spaceBetween,
                 children: [
-                  CustomIconButton(
-                    iconPath: SvgPaths.filter,
-                    onTap: () => showModalBottomSheet(
-                      context: context,
-                      builder: (_) => const ReportFilterBottomSheet(),
+                  BlocBuilder<ReportPeriodCubit, PeriodRange>(
+                    builder: (context, period) => Text(
+                      period.label,
+                      style: TextUtils.paragraphBold(context),
                     ),
+                  ),
+                  Row(
+                    children: [
+                      CustomIconButton(
+                        iconPath: SvgPaths.filter,
+                        onTap: () => showModalBottomSheet(
+                          context: context,
+                          builder: (_) => const ReportFilterBottomSheet(),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
         ),
       ),

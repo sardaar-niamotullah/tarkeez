@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 class PrimaryPageMargin extends StatelessWidget {
+  const new({super.key, required this.child, this.margin = 16});
+
   final Widget child;
-  static final double margin = 16;
-  const PrimaryPageMargin({super.key, required this.child});
+  final double margin;
 
   @override
   Widget build(BuildContext context) {

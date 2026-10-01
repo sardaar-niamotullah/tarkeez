@@ -1,5 +1,6 @@
 import 'package:tarkeez/core/responsive/app_breakpoints.dart';
 import 'package:tarkeez/core/shared_files/buttons/go_premium_button.dart';
+import 'package:tarkeez/core/utils/maximum_width_box.dart';
 import 'package:tarkeez/core/utils/primary_page_margin.dart';
 import 'package:tarkeez/features/report/presentation/sections/projects_pie_chart_section.dart';
 import 'package:tarkeez/features/report/presentation/sections/report_filter_tile.dart';
@@ -48,22 +49,24 @@ class ReportTab extends StatelessWidget {
 
                       SliverList.list(
                         children: [
-                          PrimaryPageMargin(
-                            child: Column(
-                              crossAxisAlignment: .start,
-                              children: [
-                                const SizedBox(height: 12),
-                                //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-                                // Timeline section
-                                //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-                                TimelineSection(),
-                                const SizedBox(height: 16),
-                                //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-                                // Pie chart part
-                                //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-                                ProjectsPieChartSection(),
-                                const SizedBox(height: 64),
-                              ],
+                          MaximumWidthBox(
+                            child: PrimaryPageMargin(
+                              child: Column(
+                                crossAxisAlignment: .start,
+                                children: [
+                                  const SizedBox(height: 12),
+                                  //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+                                  // Timeline section
+                                  //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+                                  TimelineSection(),
+                                  const SizedBox(height: 16),
+                                  //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+                                  // Pie chart part
+                                  //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+                                  ProjectsPieChartSection(),
+                                  const SizedBox(height: 64),
+                                ],
+                              ),
                             ),
                           ),
                         ],
