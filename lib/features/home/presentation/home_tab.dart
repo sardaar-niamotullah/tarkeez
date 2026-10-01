@@ -10,8 +10,8 @@ import 'package:tarkeez/features/home/presentation/sections/recent_project_rollu
 import 'package:tarkeez/features/sessions/presentation/session_log_interface.dart';
 
 class HomeTab extends StatelessWidget {
-  final VoidCallback onMenuTap;
   const new({super.key, required this.onMenuTap});
+  final VoidCallback onMenuTap;
 
   @override
   Widget build(BuildContext context) {

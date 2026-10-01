@@ -7,12 +7,15 @@ import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/bottom_nav_bar_icon.dart';
 
 class MainBottomNavBar extends StatelessWidget {
-  const MainBottomNavBar({super.key});
+  const new({super.key, required this.onMenuTap, required this.isMenuOpen});
+  final VoidCallback onMenuTap;
+  final bool isMenuOpen;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final currentIndex = context.watch<NavigationCubit>().currentIndex;
+    final tabIndex = context.watch<NavigationCubit>().currentIndex;
+    final currentIndex = isMenuOpen ? 4 : tabIndex;
 
     return Material(
       color: scheme.surface,
@@ -36,6 +39,10 @@ class MainBottomNavBar extends StatelessWidget {
               // ────────────────────────────────────────────────────────────
               currentIndex: currentIndex,
               onTap: (index) {
+                if (index == 4) {
+                  onMenuTap();
+                  return;
+                }
                 context.read<NavigationCubit>().navigateTo(
                   NavigationTab.values[index],
                 );

@@ -17,9 +17,9 @@ class MainScaffold extends StatefulWidget {
 
 class _MainScaffoldState extends State<MainScaffold> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  void _openDrawer() {
-    _scaffoldKey.currentState?.openDrawer();
-  }
+  bool _isDrawerOpen = false;
+  void _openDrawer() => _scaffoldKey.currentState?.openDrawer();
+  void _openEndDrawer() => _scaffoldKey.currentState?.openEndDrawer();
 
   late final List<Widget> _tabs;
 
@@ -47,11 +47,16 @@ class _MainScaffoldState extends State<MainScaffold> {
       // App drawer
       // ────────────────────────────────────────────────────────────
       drawer: const AppDrawer(),
+      endDrawer: const AppDrawer(),
+      onEndDrawerChanged: (isOpen) => setState(() => _isDrawerOpen = isOpen),
 
       // ────────────────────────────────────────────────────────────
       // Bottom nav bar
       // ────────────────────────────────────────────────────────────
-      bottomNavigationBar: const MainBottomNavBar(),
+      bottomNavigationBar: MainBottomNavBar(
+        onMenuTap: _openEndDrawer,
+        isMenuOpen: _isDrawerOpen,
+      ),
 
       // ────────────────────────────────────────────────────────────
       // Body
