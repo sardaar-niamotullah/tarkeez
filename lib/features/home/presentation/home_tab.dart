@@ -1,4 +1,4 @@
-import 'package:tarkeez/core/responsive/app_breakpoints.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/shared_files/buttons/go_premium_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
@@ -73,7 +73,7 @@ class HomeTab extends StatelessWidget {
           child: Align(
             alignment: .bottomCenter,
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: AppBreakpoints.xl),
+              constraints: BoxConstraints(maxWidth: Breakpoints.xl),
               child: const Align(
                 alignment: .bottomRight,
                 child: Padding(

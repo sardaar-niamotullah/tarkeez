@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:tarkeez/core/responsive/app_breakpoints.dart';
-import 'package:tarkeez/core/responsive/responsive_context.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
 import 'package:tarkeez/core/shared_files/widgets/custom_app_bar.dart';
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';
@@ -149,7 +148,7 @@ class ProjectsTab extends StatelessWidget {
               child: Align(
                 alignment: .bottomCenter,
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: AppBreakpoints.xl),
+                  constraints: BoxConstraints(maxWidth: Breakpoints.xl),
                   child: const Align(
                     alignment: .bottomRight,
                     child: Padding(

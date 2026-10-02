@@ -39,6 +39,7 @@ dependencies:
   drift_flutter: ^0.3.1
   uuid: ^4.6.0
   flutter_native_splash: ^2.4.8
+  tailwind_breakpoints: ^0.1.0
 
 dev_dependencies:
   flutter_test:

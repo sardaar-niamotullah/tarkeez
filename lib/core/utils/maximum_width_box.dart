@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:tarkeez/core/responsive/app_breakpoints.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 
 class MaximumWidthBox extends StatelessWidget {
   const new({
     super.key,
     required this.child,
-    this.maxWidth = AppBreakpoints.xl,
+    this.maxWidth = Breakpoints.xl,
   });
   final Widget child;
   final double maxWidth;

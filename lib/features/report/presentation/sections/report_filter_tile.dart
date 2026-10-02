@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
-import 'package:tarkeez/core/responsive/app_breakpoints.dart';
 import 'package:tarkeez/core/shared_files/buttons/custom_icon_button.dart';
 import 'package:tarkeez/core/shared_files/cubits/report_period_cubit.dart';
 import 'package:tarkeez/core/shared_files/enums/period_range.dart';
@@ -33,7 +33,7 @@ class ReportFilterTile extends StatelessWidget {
           child: Align(
             alignment: .center,
             child: MaximumWidthBox(
-              maxWidth: AppBreakpoints.xl - 26,
+              maxWidth: Breakpoints.xl - 26,
               child: Row(
                 crossAxisAlignment: .center,
                 mainAxisAlignment: .spaceBetween,
