@@ -74,6 +74,7 @@ class ProjectsPieChartSection extends StatelessWidget {
                   child: Column(
                     children: [
                       Row(
+                        crossAxisAlignment: context.sm ? .start : .center,
                         children: [
                           //–––––––––––––––––––––––––––––––––––––––––––
                           // Total duration — daily rollups, project-agnostic
@@ -139,15 +140,16 @@ class ProjectsPieChartSection extends StatelessWidget {
                               ),
                             ),
                           ),
-                          if (context.sm) ...[
-                            const SizedBox(width: 16),
+                          if (context.sm)
                             Expanded(
                               flex: 2,
-                              child: PieChartProjectDetailsSection(
-                                projectDurations: projectDurations,
+                              child: Container(
+                                margin: .only(top: 32),
+                                child: PieChartProjectDetailsSection(
+                                  projectDurations: projectDurations,
+                                ),
                               ),
                             ),
-                          ],
                         ],
                       ),
                       if (!context.sm) ...[

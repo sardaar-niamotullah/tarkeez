@@ -58,12 +58,12 @@ class ReportTab extends StatelessWidget {
                                   //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
                                   // Timeline section
                                   //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-                                  TimelineSection(),
+                                  const TimelineSection(),
                                   const SizedBox(height: 16),
                                   //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
                                   // Pie chart part
                                   //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-                                  ProjectsPieChartSection(),
+                                  const ProjectsPieChartSection(),
                                   const SizedBox(height: 64),
                                 ],
                               ),
