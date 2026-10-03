@@ -5,12 +5,7 @@ import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/profile/presentation/sections/widgets/emoji_badge.dart';
 
 class PersonalBestCard extends StatelessWidget {
-  final MainAxisAlignment mainAxisAlignment;
-  final CrossAxisAlignment crossAxisAlignment;
-  final String title;
-  final int durationInSeconds;
-  final String emoji;
-  const PersonalBestCard({
+  const new({
     super.key,
     required this.title,
     required this.durationInSeconds,
@@ -18,6 +13,12 @@ class PersonalBestCard extends StatelessWidget {
     this.mainAxisAlignment = .start,
     this.crossAxisAlignment = .start,
   });
+  
+  final String title;
+  final int durationInSeconds;
+  final String emoji;
+  final MainAxisAlignment mainAxisAlignment;
+  final CrossAxisAlignment crossAxisAlignment;
 
   @override
   Widget build(BuildContext context) {

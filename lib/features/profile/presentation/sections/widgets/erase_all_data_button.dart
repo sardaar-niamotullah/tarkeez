@@ -14,7 +14,7 @@ import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
 
 class EraseAllDataButton extends StatefulWidget {
-  const EraseAllDataButton({super.key, required this.isLocked});
+  const new({super.key, required this.isLocked});
 
   final bool isLocked;
 
@@ -33,7 +33,7 @@ class _EraseAllDataButtonState extends State<EraseAllDataButton> {
     try {
       final database = getIt<AppDatabase>();
       // await database.projectsDao.deleteAllProjects();
-      await database.sessionsDao.deleteAllSessions(); 
+      await database.sessionsDao.deleteAllSessions();
       getIt<ProjectBloc>().add(FetchProjectsRequested());
       getIt<SessionBloc>().add(FetchAllSessionsRequested());
       getIt<DailyRollupBloc>().add(FetchDailyRollupRequested());
@@ -55,6 +55,7 @@ class _EraseAllDataButtonState extends State<EraseAllDataButton> {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Container(
+      height: 121,
       padding: const .all(ContainerDesignUtils.padding),
       decoration: BoxDecoration(
         color: scheme.onSurface,

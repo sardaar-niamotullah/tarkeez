@@ -9,6 +9,7 @@ import 'package:tarkeez/core/shared_files/widgets/floating_action_button_wrapper
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/maximum_width_box.dart';
+import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/profile/presentation/sections/heatmap.dart';
 import 'package:tarkeez/features/profile/presentation/sections/personal_bests_section.dart';
 import 'package:tarkeez/features/profile/presentation/sections/streaks.dart';
@@ -91,9 +92,45 @@ class ProfileTab extends StatelessWidget {
                                         SizedBox(height: 16),
                                         PersonalBestsSection(isLocked: false),
                                         SizedBox(height: 16),
-                                        InvestedTimesSection(isLocked: false),
-                                        SizedBox(height: 16),
-                                        EraseAllDataButton(isLocked: false),
+                                        Text(
+                                          'Invested times',
+                                          style: TextUtils.title2(context),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        if (context.lg)
+                                          Row(
+                                            crossAxisAlignment: .start,
+                                            children: [
+                                              InvestedTimesSection(
+                                                isLocked: false,
+                                              ),
+                                              SizedBox(
+                                                width: ContainerDesignUtils
+                                                    .padding,
+                                              ),
+                                              Expanded(
+                                                child: EraseAllDataButton(
+                                                  isLocked: false,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        if (!context.lg)
+                                          Column(
+                                            crossAxisAlignment: .start,
+                                            children: [
+                                              InvestedTimesSection(
+                                                isLocked: false,
+                                              ),
+                                              SizedBox(
+                                                height: ContainerDesignUtils
+                                                    .padding,
+                                              ),
+                                              EraseAllDataButton(
+                                                isLocked: false,
+                                              ),
+                                            ],
+                                          ),
                                         SizedBox(height: 64),
                                       ],
                                     ),

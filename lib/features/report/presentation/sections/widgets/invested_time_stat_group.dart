@@ -31,6 +31,7 @@ class InvestedTimeStatGroup extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return Container(
       width: 100,
+      height: 121,
       padding: const .symmetric(vertical: 8),
       decoration: BoxDecoration(
         color: scheme.onSurface,
