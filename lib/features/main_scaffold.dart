@@ -1,7 +1,9 @@
-import 'package:tarkeez/core/shared_files/cubits/navigation_cubit.dart';
-import 'package:tarkeez/core/shared_files/widgets/main_bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
+import 'package:tarkeez/core/shared_files/cubits/navigation_cubit.dart';
+import 'package:tarkeez/core/shared_files/widgets/main_bottom_nav_bar.dart';
+import 'package:tarkeez/core/shared_files/widgets/main_navigation_rail.dart';
 import 'package:tarkeez/features/home/presentation/home_tab.dart';
 import 'package:tarkeez/features/home/presentation/sections/app_drawer.dart';
 import 'package:tarkeez/features/profile/presentation/profile_tab.dart';
@@ -38,6 +40,7 @@ class _MainScaffoldState extends State<MainScaffold> {
   Widget build(BuildContext context) {
     final currentIndex = context.watch<NavigationCubit>().currentIndex;
     final scheme = Theme.of(context).colorScheme;
+    final useRail = MediaQuery.sizeOf(context).width >= Breakpoints.md;
 
     return Scaffold(
       key: _scaffoldKey,
@@ -51,17 +54,31 @@ class _MainScaffoldState extends State<MainScaffold> {
       onEndDrawerChanged: (isOpen) => setState(() => _isDrawerOpen = isOpen),
 
       // ────────────────────────────────────────────────────────────
-      // Bottom nav bar
+      // Bottom nav bar (narrow screens only)
       // ────────────────────────────────────────────────────────────
-      bottomNavigationBar: MainBottomNavBar(
-        onMenuTap: _openEndDrawer,
-        isMenuOpen: _isDrawerOpen,
-      ),
+      bottomNavigationBar: useRail
+          ? null
+          : MainBottomNavBar(
+              onMenuTap: _openEndDrawer,
+              isMenuOpen: _isDrawerOpen,
+            ),
 
       // ────────────────────────────────────────────────────────────
-      // Body
+      // Body (rail on wide screens + tabs)
       // ────────────────────────────────────────────────────────────
-      body: IndexedStack(index: currentIndex, children: _tabs),
+      body: Row(
+        children: [
+          if (useRail)
+            MainNavigationRail(
+              onMenuTap: _openEndDrawer,
+              isMenuOpen: _isDrawerOpen,
+              showMenu: true,
+            ),
+          Expanded(
+            child: IndexedStack(index: currentIndex, children: _tabs),
+          ),
+        ],
+      ),
     );
   }
 }

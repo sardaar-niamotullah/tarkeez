@@ -23,7 +23,7 @@ class HeroImageBackgroundLayer extends StatelessWidget {
           Container(
             color:
                 fillColor ??
-                Theme.of(context).colorScheme.primary.withValues(alpha: .7),
+                Theme.of(context).colorScheme.primary.withValues(alpha: .9),
           ),
         ],
       ),
