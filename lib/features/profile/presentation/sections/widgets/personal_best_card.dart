@@ -13,7 +13,7 @@ class PersonalBestCard extends StatelessWidget {
     this.mainAxisAlignment = .start,
     this.crossAxisAlignment = .start,
   });
-  
+
   final String title;
   final int durationInSeconds;
   final String emoji;
@@ -24,7 +24,7 @@ class PersonalBestCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Container(
-      padding: const .symmetric(vertical: 4, horizontal: 8),
+      padding: const .symmetric(vertical: 4, horizontal: 12),
       decoration: BoxDecoration(
         color: scheme.onSurface,
         borderRadius: ContainerDesignUtils.allRadius,

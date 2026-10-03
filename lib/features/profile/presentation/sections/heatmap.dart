@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/constants/img_paths.dart';
 import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
 import 'package:tarkeez/core/shared_files/widgets/section_image_lock_overlay.dart';
@@ -54,7 +55,12 @@ class Heatmap extends StatelessWidget {
                 final grid = _resolveGrid(state);
                 return Container(
                   width: .infinity,
-                  padding: const .only(top: 8, bottom: 4, left: 8, right: 12),
+                  padding: .only(
+                    top: 12,
+                    bottom: 6,
+                    left: 12,
+                    right: context.lg ? 20 : 16,
+                  ),
                   decoration: BoxDecoration(
                     color: scheme.onSurface,
                     borderRadius: ContainerDesignUtils.allRadius,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tarkeez/core/utils/container_design_utils.dart';
 
 class EmojiBadge extends StatelessWidget {
   final String emoji;
@@ -9,11 +8,11 @@ class EmojiBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: isPrimary ? null : .infinity,
-      padding: isPrimary ? .symmetric(vertical: 6, horizontal: 8) : null,
+      height: isPrimary ? 40 : 24,
+      width: isPrimary ? 40 : .infinity,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
-        borderRadius: isPrimary ? ContainerDesignUtils.allRadius : null,
+        borderRadius: isPrimary ? .circular(12) : null,
       ),
       child: Center(
         child: Text(emoji, style: TextStyle(fontSize: isPrimary ? 24 : 18)),
