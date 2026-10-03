@@ -58,9 +58,35 @@ class ProfileTab extends StatelessWidget {
                                     child: Column(
                                       crossAxisAlignment: .start,
                                       children: [
-                                        Streaks(),
-                                        SizedBox(height: 16),
-                                        Heatmap(isLocked: false),
+                                        if (context.sm)
+                                          Row(
+                                            crossAxisAlignment: .start,
+                                            children: [
+                                              Expanded(
+                                                flex: 2,
+                                                child: Streaks(),
+                                              ),
+                                              SizedBox(
+                                                width: ContainerDesignUtils
+                                                    .padding,
+                                              ),
+                                              Expanded(
+                                                flex: 5,
+                                                child: Heatmap(isLocked: false),
+                                              ),
+                                            ],
+                                          ),
+                                        if (!context.sm)
+                                          Column(
+                                            children: [
+                                              Streaks(),
+                                              SizedBox(
+                                                height: ContainerDesignUtils
+                                                    .padding,
+                                              ),
+                                              Heatmap(isLocked: false),
+                                            ],
+                                          ),
                                         SizedBox(height: 16),
                                         PersonalBestsSection(isLocked: false),
                                         SizedBox(height: 16),
@@ -88,7 +114,7 @@ class ProfileTab extends StatelessWidget {
           child: Align(
             alignment: .bottomCenter,
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: Breakpoints.xl),
+              constraints: BoxConstraints(maxWidth: Breakpoints.lg),
               child: const Align(
                 alignment: .bottomRight,
                 child: Padding(

@@ -24,7 +24,7 @@ class CustomAppBar extends StatelessWidget {
     final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
     return Container(
       height: isIOS ? 34 : 48,
-      constraints: BoxConstraints(maxWidth: Breakpoints.xl),
+      constraints: BoxConstraints(maxWidth: Breakpoints.lg),
       child: Row(
         crossAxisAlignment: isIOS ? .start : .center,
         children: [

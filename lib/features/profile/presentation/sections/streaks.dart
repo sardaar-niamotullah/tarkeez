@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
@@ -30,24 +31,25 @@ class Streaks extends StatelessWidget {
                 ? state.longestStreak
                 : 0;
 
-            return Row(
+            return GridView.count(
+              shrinkWrap: true,
+              crossAxisCount: context.sm ? 1 : 2,
+              mainAxisExtent: 54,
+              crossAxisSpacing: ContainerDesignUtils.halfPadding,
+              mainAxisSpacing: ContainerDesignUtils.halfPadding,
+              physics: const NeverScrollableScrollPhysics(),
               children: [
-                Expanded(
-                  child: StreakCard(
-                    streak: currentStreak,
-                    title: 'Current streak',
-                    emoji: '🔥',
-                  ),
+                StreakCard(
+                  streak: currentStreak,
+                  title: 'Current streak',
+                  emoji: '🔥',
                 ),
-                const SizedBox(width: ContainerDesignUtils.halfPadding),
-                Expanded(
-                  child: StreakCard(
-                    streak: longestStreak,
-                    title: 'Longest streak',
-                    emoji: '🏆',
-                    mainAxisAlignment: .end,
-                    crossAxisAlignment: .end,
-                  ),
+                StreakCard(
+                  streak: longestStreak,
+                  title: 'Longest streak',
+                  emoji: '🏆',
+                  mainAxisAlignment: context.sm ? .start : .end,
+                  crossAxisAlignment: context.sm ? .start : .end,
                 ),
               ],
             );

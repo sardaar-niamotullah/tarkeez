@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/constants/img_paths.dart';
 import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
 import 'package:tarkeez/core/shared_files/widgets/section_image_lock_overlay.dart';
@@ -52,10 +53,14 @@ class PersonalBestsSection extends StatelessWidget {
 
               return GridView.count(
                 shrinkWrap: true,
-                crossAxisCount: 2,
+                crossAxisCount: context.sm ? 4 : 2,
                 mainAxisExtent: 54,
-                crossAxisSpacing: ContainerDesignUtils.halfPadding,
-                mainAxisSpacing: ContainerDesignUtils.halfPadding,
+                crossAxisSpacing: context.sm
+                    ? ContainerDesignUtils.padding
+                    : ContainerDesignUtils.halfPadding,
+                mainAxisSpacing: context.sm
+                    ? ContainerDesignUtils.padding
+                    : ContainerDesignUtils.halfPadding,
                 physics: const NeverScrollableScrollPhysics(),
                 children: [
                   PersonalBestCard(
@@ -67,8 +72,8 @@ class PersonalBestsSection extends StatelessWidget {
                     emoji: '📅',
                     title: bestWeek.label,
                     durationInSeconds: bestWeek.seconds,
-                    mainAxisAlignment: .end,
-                    crossAxisAlignment: .end,
+                    mainAxisAlignment: context.sm ? .start : .end,
+                    crossAxisAlignment: context.sm ? .start : .end,
                   ),
                   PersonalBestCard(
                     emoji: '🗓️',
@@ -79,8 +84,8 @@ class PersonalBestsSection extends StatelessWidget {
                     emoji: '🌍',
                     title: bestYear.label,
                     durationInSeconds: bestYear.seconds,
-                    mainAxisAlignment: .end,
-                    crossAxisAlignment: .end,
+                    mainAxisAlignment: context.sm ? .start : .end,
+                    crossAxisAlignment: context.sm ? .start : .end,
                   ),
                 ],
               );

@@ -1,3 +1,4 @@
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/app/app_providers.dart';
 import 'package:tarkeez/core/routes/app_router.dart';
 import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
@@ -24,7 +25,7 @@ class App extends StatelessWidget {
             theme: AppTheme.lightTheme(themeState.color),
             darkTheme: AppTheme.darkTheme(themeState.color),
             builder: (context, child) {
-              final size = MediaQuery.sizeOf(context);
+              final size = context.screenSize;
               debugPrint('🟦 Screen size (width, height): $size');
               return child!;
             },

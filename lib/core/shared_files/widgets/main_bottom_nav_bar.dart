@@ -23,7 +23,7 @@ class MainBottomNavBar extends StatelessWidget {
       child: Center(
         heightFactor: 1,
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: 1524),
+          constraints: BoxConstraints(maxWidth: Breakpoints.lg + 160),
           child: Theme(
             data: Theme.of(context).copyWith(
               splashFactory: InkRipple.splashFactory,

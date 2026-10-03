@@ -82,7 +82,7 @@ class ReportTab extends StatelessWidget {
           child: Align(
             alignment: .bottomCenter,
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: Breakpoints.xl),
+              constraints: BoxConstraints(maxWidth: Breakpoints.lg),
               child: const Align(
                 alignment: .bottomRight,
                 child: Padding(
