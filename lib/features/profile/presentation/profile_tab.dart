@@ -27,7 +27,6 @@ class ProfileTab extends StatelessWidget {
         const Positioned.fill(child: HeroImageBackgroundLayer()),
         SafeArea(
           bottom: false,
-          minimum: .only(top: 84),
           child: Column(
             children: [
               CustomAppBar(
