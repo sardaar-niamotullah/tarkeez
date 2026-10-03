@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/cubits/navigation_cubit.dart';
-import 'package:tarkeez/core/utils/text_utils.dart';
-import 'package:tarkeez/features/home/presentation/sections/widgets/bottom_nav_bar_icon.dart';
+import 'package:tarkeez/core/shared_files/widgets/navigation_rail_item.dart';
 
 class MainNavigationRail extends StatelessWidget {
   const MainNavigationRail({
@@ -23,73 +22,54 @@ class MainNavigationRail extends StatelessWidget {
     final tabIndex = context.watch<NavigationCubit>().currentIndex;
     final currentIndex = isMenuOpen ? 4 : tabIndex;
 
-    void onSelect(int index) {
-      if (index == 4) {
-        onMenuTap();
-        return;
-      }
-      context.read<NavigationCubit>().navigateTo(NavigationTab.values[index]);
+    VoidCallback onSelect(int index) {
+      if (index == 4) return onMenuTap;
+      return () => context.read<NavigationCubit>().navigateTo(
+        NavigationTab.values[index],
+      );
     }
 
-    final items = <({String iconPath, String label})>[
-      (iconPath: SvgPaths.home, label: 'Home'),
-      (iconPath: SvgPaths.pieChart, label: 'Reports'),
-      (iconPath: SvgPaths.projects, label: 'Projects'),
-      (iconPath: SvgPaths.user, label: 'Profile'),
-      if (showMenu) (iconPath: SvgPaths.hamburger, label: 'Menu'),
-    ];
-
     return Material(
-      color: scheme.surface,
+      color: scheme.onSurface,
       elevation: 8,
       child: SafeArea(
         child: SizedBox(
           width: 88,
           child: Column(
             children: [
-              const SizedBox(height: 12),
-              for (var i = 0; i < items.length; i++)
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  child: InkWell(
-                    onTap: () => onSelect(i),
-                    mouseCursor: SystemMouseCursors.click,
-                    borderRadius: BorderRadius.circular(12),
-                    splashFactory: InkRipple.splashFactory,
-                    splashColor: scheme.primary.withValues(alpha: .01),
-                    highlightColor: Colors.transparent,
-                    hoverColor: Colors.transparent,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 4,
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          BottomNavBarIcon(
-                            iconPath: items[i].iconPath,
-                            isActive: currentIndex == i,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            items[i].label,
-                            textAlign: TextAlign.center,
-                            style: TextUtils.paragraphSmallBold(
-                              context,
-                              color: currentIndex == i
-                                  ? scheme.primaryContainer
-                                  : scheme.onTertiary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+              const Spacer(),
+              NavigationRailItem(
+                onTap: onSelect(0),
+                isActive: currentIndex == 0,
+                label: 'Home',
+                iconPath: SvgPaths.home,
+              ),
+              NavigationRailItem(
+                onTap: onSelect(1),
+                isActive: currentIndex == 1,
+                label: 'Reports',
+                iconPath: SvgPaths.pieChart,
+              ),
+              NavigationRailItem(
+                onTap: onSelect(2),
+                isActive: currentIndex == 2,
+                label: 'Projects',
+                iconPath: SvgPaths.projects,
+              ),
+              NavigationRailItem(
+                onTap: onSelect(3),
+                isActive: currentIndex == 3,
+                label: 'Profile',
+                iconPath: SvgPaths.user,
+              ),
+              const Spacer(),
+              NavigationRailItem(
+                onTap: onSelect(4),
+                isActive: currentIndex == 4,
+                label: 'Menu',
+                iconPath: SvgPaths.hamburger,
+              ),
+              const SizedBox(height: 16),
             ],
           ),
         ),

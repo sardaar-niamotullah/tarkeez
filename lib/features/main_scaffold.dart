@@ -53,9 +53,9 @@ class _MainScaffoldState extends State<MainScaffold> {
       onEndDrawerChanged: (isOpen) => setState(() => _isDrawerOpen = isOpen),
 
       // ────────────────────────────────────────────────────────────
-      // Bottom nav bar (narrow screens only)
+      // Bottom nav bar (small screens only)
       // ────────────────────────────────────────────────────────────
-      bottomNavigationBar: !context.md
+      bottomNavigationBar: context.md
           ? null
           : MainBottomNavBar(
               onMenuTap: _openEndDrawer,

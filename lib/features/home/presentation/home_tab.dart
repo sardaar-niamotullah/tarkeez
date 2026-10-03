@@ -1,5 +1,5 @@
-import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/shared_files/buttons/go_premium_button.dart';
+import 'package:tarkeez/core/shared_files/widgets/floating_action_button_wrapper.dart';
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:flutter/material.dart';
@@ -69,21 +69,7 @@ class HomeTab extends StatelessWidget {
             ),
           ],
         ),
-        Positioned.fill(
-          child: Align(
-            alignment: .bottomCenter,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: Breakpoints.lg),
-              child: const Align(
-                alignment: .bottomRight,
-                child: Padding(
-                  padding: .only(right: 16, bottom: 16),
-                  child: GoPremiumButton(),
-                ),
-              ),
-            ),
-          ),
-        ),
+        FloatingActionButtonWrapper(actionButton: GoPremiumButton()),
       ],
     );
   }

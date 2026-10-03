@@ -5,6 +5,7 @@ import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/go_premium_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
 import 'package:tarkeez/core/shared_files/widgets/custom_app_bar.dart';
+import 'package:tarkeez/core/shared_files/widgets/floating_action_button_wrapper.dart';
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/maximum_width_box.dart';
@@ -111,21 +112,7 @@ class ProfileTab extends StatelessWidget {
             ],
           ),
         ),
-        Positioned.fill(
-          child: Align(
-            alignment: .bottomCenter,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: Breakpoints.lg),
-              child: const Align(
-                alignment: .bottomRight,
-                child: Padding(
-                  padding: .only(right: 16, bottom: 16),
-                  child: GoPremiumButton(),
-                ),
-              ),
-            ),
-          ),
-        ),
+        FloatingActionButtonWrapper(actionButton: GoPremiumButton()),
       ],
     );
   }
