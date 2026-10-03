@@ -5,12 +5,7 @@ import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class CustomAppBar extends StatelessWidget {
-  final String title;
-  final String? subtitle, avatarLink;
-  final List<Widget> actions;
-  final bool isBackButtonEnabled;
-
-  const CustomAppBar({
+  const new({
     super.key,
     required this.title,
     this.subtitle,
@@ -18,6 +13,11 @@ class CustomAppBar extends StatelessWidget {
     required this.actions,
     this.isBackButtonEnabled = true,
   });
+
+  final String title;
+  final String? subtitle, avatarLink;
+  final List<Widget> actions;
+  final bool isBackButtonEnabled;
 
   @override
   Widget build(BuildContext context) {
