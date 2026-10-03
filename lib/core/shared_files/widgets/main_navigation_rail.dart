@@ -6,7 +6,7 @@ import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/bottom_nav_bar_icon.dart';
 
 class MainNavigationRail extends StatelessWidget {
-  const new({
+  const MainNavigationRail({
     super.key,
     required this.onMenuTap,
     required this.isMenuOpen,
@@ -15,8 +15,6 @@ class MainNavigationRail extends StatelessWidget {
 
   final VoidCallback onMenuTap;
   final bool isMenuOpen;
-
-  /// Show the extra "Menu" destination (index 4), like the bottom bar does on small screens.
   final bool showMenu;
 
   @override
@@ -25,80 +23,72 @@ class MainNavigationRail extends StatelessWidget {
     final tabIndex = context.watch<NavigationCubit>().currentIndex;
     final currentIndex = isMenuOpen ? 4 : tabIndex;
 
+    void onSelect(int index) {
+      if (index == 4) {
+        onMenuTap();
+        return;
+      }
+      context.read<NavigationCubit>().navigateTo(NavigationTab.values[index]);
+    }
+
+    final items = <({String iconPath, String label})>[
+      (iconPath: SvgPaths.home, label: 'Home'),
+      (iconPath: SvgPaths.pieChart, label: 'Reports'),
+      (iconPath: SvgPaths.projects, label: 'Projects'),
+      (iconPath: SvgPaths.user, label: 'Profile'),
+      if (showMenu) (iconPath: SvgPaths.hamburger, label: 'Menu'),
+    ];
+
     return Material(
       color: scheme.surface,
       elevation: 8,
       child: SafeArea(
-        child: Theme(
-          data: Theme.of(context).copyWith(
-            splashFactory: InkRipple.splashFactory,
-            splashColor: scheme.primary.withValues(alpha: .01),
-            highlightColor: Colors.transparent,
-            hoverColor: Colors.transparent,
-          ),
-          child: NavigationRail(
-            backgroundColor: Colors.transparent,
-            // ────────────────────────────────────────────────────────────
-            // Navigation logic
-            // ────────────────────────────────────────────────────────────
-            selectedIndex: currentIndex,
-            onDestinationSelected: (index) {
-              if (index == 4) {
-                onMenuTap();
-                return;
-              }
-              context.read<NavigationCubit>().navigateTo(
-                NavigationTab.values[index],
-              );
-            },
-            labelType: NavigationRailLabelType.all,
-            useIndicator: false,
-            selectedIconTheme: IconThemeData(color: scheme.primary),
-            unselectedIconTheme: IconThemeData(color: scheme.onTertiary),
-            selectedLabelTextStyle: TextUtils.paragraphSmallBold(
-              context,
-              color: scheme.primaryContainer,
-            ),
-            unselectedLabelTextStyle: TextUtils.paragraphSmallBold(
-              context,
-              color: scheme.onTertiary,
-            ),
-            destinations: [
-              NavigationRailDestination(
-                icon: BottomNavBarIcon(
-                  iconPath: SvgPaths.home,
-                  isActive: currentIndex == 0,
-                ),
-                label: const Text('Home'),
-              ),
-              NavigationRailDestination(
-                icon: BottomNavBarIcon(
-                  iconPath: SvgPaths.pieChart,
-                  isActive: currentIndex == 1,
-                ),
-                label: const Text('Reports'),
-              ),
-              NavigationRailDestination(
-                icon: BottomNavBarIcon(
-                  iconPath: SvgPaths.projects,
-                  isActive: currentIndex == 2,
-                ),
-                label: const Text('Projects'),
-              ),
-              NavigationRailDestination(
-                icon: BottomNavBarIcon(
-                  iconPath: SvgPaths.user,
-                  isActive: currentIndex == 3,
-                ),
-                label: const Text('Profile'),
-              ),
-              if (showMenu)
-                NavigationRailDestination(
-                  icon: BottomNavBarIcon(
-                    iconPath: SvgPaths.hamburger,
-                    isActive: currentIndex == 4,
+        child: SizedBox(
+          width: 88,
+          child: Column(
+            children: [
+              const SizedBox(height: 12),
+              for (var i = 0; i < items.length; i++)
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
                   ),
-                  label: const Text('Menu'),
+                  child: InkWell(
+                    onTap: () => onSelect(i),
+                    mouseCursor: SystemMouseCursors.click,
+                    borderRadius: BorderRadius.circular(12),
+                    splashFactory: InkRipple.splashFactory,
+                    splashColor: scheme.primary.withValues(alpha: .01),
+                    highlightColor: Colors.transparent,
+                    hoverColor: Colors.transparent,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 4,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          BottomNavBarIcon(
+                            iconPath: items[i].iconPath,
+                            isActive: currentIndex == i,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            items[i].label,
+                            textAlign: TextAlign.center,
+                            style: TextUtils.paragraphSmallBold(
+                              context,
+                              color: currentIndex == i
+                                  ? scheme.primaryContainer
+                                  : scheme.onTertiary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
             ],
           ),

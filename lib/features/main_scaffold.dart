@@ -40,7 +40,6 @@ class _MainScaffoldState extends State<MainScaffold> {
   Widget build(BuildContext context) {
     final currentIndex = context.watch<NavigationCubit>().currentIndex;
     final scheme = Theme.of(context).colorScheme;
-    final useRail = MediaQuery.sizeOf(context).width >= Breakpoints.md;
 
     return Scaffold(
       key: _scaffoldKey,
@@ -56,7 +55,7 @@ class _MainScaffoldState extends State<MainScaffold> {
       // ────────────────────────────────────────────────────────────
       // Bottom nav bar (narrow screens only)
       // ────────────────────────────────────────────────────────────
-      bottomNavigationBar: useRail
+      bottomNavigationBar: !context.md
           ? null
           : MainBottomNavBar(
               onMenuTap: _openEndDrawer,
@@ -68,7 +67,7 @@ class _MainScaffoldState extends State<MainScaffold> {
       // ────────────────────────────────────────────────────────────
       body: Row(
         children: [
-          if (useRail)
+          if (context.md)
             MainNavigationRail(
               onMenuTap: _openEndDrawer,
               isMenuOpen: _isDrawerOpen,
