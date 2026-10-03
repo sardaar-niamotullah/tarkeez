@@ -22,7 +22,7 @@ class HomeAppBar extends StatelessWidget {
         constraints: BoxConstraints(maxWidth: Breakpoints.lg),
         padding: .only(right: 16, left: 12, bottom: context.md ? 16 : 0),
         child: Align(
-          alignment: context.md ? .bottomStart : .center,
+          alignment: context.md ? .bottomStart : .centerStart,
           child: AppDrawerButton(onTap: onAppMenuTap),
         ),
       ),

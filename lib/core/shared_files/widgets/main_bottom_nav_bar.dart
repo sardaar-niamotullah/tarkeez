@@ -18,7 +18,7 @@ class MainBottomNavBar extends StatelessWidget {
     final currentIndex = isMenuOpen ? 4 : tabIndex;
 
     return Material(
-      color: scheme.surface,
+      color: scheme.onSurface,
       elevation: 8,
       child: Center(
         heightFactor: 1,
