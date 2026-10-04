@@ -21,6 +21,7 @@ class UserInfoLine extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
+          mouseCursor: SystemMouseCursors.click,
           borderRadius: ContainerDesignUtils.allRadius,
           child: Row(
             children: [

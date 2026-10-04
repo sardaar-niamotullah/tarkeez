@@ -19,6 +19,7 @@ class CreateNewProjectButton extends StatelessWidget {
           context: context,
           builder: (_) => const AddOrUpdateProjectDialog(),
         ),
+        mouseCursor: SystemMouseCursors.click,
         borderRadius: ContainerDesignUtils.allRadius,
         child: Ink(
           height: 40,

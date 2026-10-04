@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
@@ -55,6 +56,7 @@ class ThumbnailWidget extends StatelessWidget {
               child: InkWell(
                 onTap: onTap,
                 customBorder: const CircleBorder(),
+                mouseCursor: SystemMouseCursors.click,
                 child: Ink(
                   width: 22,
                   height: 22,

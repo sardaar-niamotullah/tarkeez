@@ -22,6 +22,7 @@ class CustomIconButton extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         customBorder: const CircleBorder(),
+        mouseCursor: SystemMouseCursors.click,
         child: Ink(
           width: (iconSize ?? 24) + 12,
           height: (iconSize ?? 24) + 12,

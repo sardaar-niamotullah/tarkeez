@@ -71,6 +71,7 @@ class SnackBarTile extends StatelessWidget {
             child: InkWell(
               onTap: onClose,
               customBorder: const CircleBorder(),
+              mouseCursor: SystemMouseCursors.click,
               child: Icon(Icons.close, color: textColor, size: 20),
             ),
           ),

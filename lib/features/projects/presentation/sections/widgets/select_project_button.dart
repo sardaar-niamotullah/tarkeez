@@ -44,6 +44,7 @@ class SelectProjectButton extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {},
+          mouseCursor: SystemMouseCursors.click,
           borderRadius: ContainerDesignUtils.allRadius,
           child: Ink(
             width: isProjectSeleted ? 124 : 64,

@@ -24,6 +24,7 @@ class AppDrawerItem extends StatelessWidget {
         context.pop();
         onTap();
       },
+      mouseCursor: SystemMouseCursors.click,
       borderRadius: ContainerDesignUtils.allRadius,
       child: ListTile(
         dense: true,

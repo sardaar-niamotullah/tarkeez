@@ -22,6 +22,7 @@ class ThemeColorSwitchButton extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         customBorder: const CircleBorder(),
+        mouseCursor: SystemMouseCursors.click,
         child: Ink(
           height: 22,
           width: 22,

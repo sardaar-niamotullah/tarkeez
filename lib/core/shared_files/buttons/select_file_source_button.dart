@@ -33,6 +33,7 @@ class SelectFileSourceButton extends StatelessWidget {
                 message: 'You can attach up to 3 images.',
               ),
         borderRadius: ContainerDesignUtils.allRadius,
+        mouseCursor: SystemMouseCursors.click,
         splashColor: scheme.primary.withValues(alpha: 0.1),
         highlightColor: scheme.primary.withValues(alpha: 0.15),
         child: Ink(

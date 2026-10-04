@@ -107,6 +107,7 @@ class CommonTextInput extends StatelessWidget {
                     FocusManager.instance.primaryFocus?.unfocus();
                     onChanged?.call('');
                   },
+                  mouseCursor: SystemMouseCursors.click,
                   customBorder: const CircleBorder(),
                   child: SvgPicture.asset(
                     SvgPaths.closeLarge,

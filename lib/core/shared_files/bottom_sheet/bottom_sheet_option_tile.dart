@@ -28,6 +28,7 @@ class BottomSheetOptionTile extends StatelessWidget {
           child: InkWell(
             onTap: onTap,
             borderRadius: ContainerDesignUtils.allRadius,
+            mouseCursor: SystemMouseCursors.click,
             child: Padding(
               padding: const .symmetric(vertical: 8, horizontal: 16),
               child: Row(

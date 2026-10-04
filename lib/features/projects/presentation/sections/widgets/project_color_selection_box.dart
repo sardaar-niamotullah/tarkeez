@@ -20,6 +20,7 @@ class ProjectColorSelectionBox extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
+        mouseCursor: SystemMouseCursors.click,
         customBorder: const CircleBorder(),
         child: AspectRatio(
           aspectRatio: 1,

@@ -122,6 +122,7 @@ class _CustomDropdownButtonState<T> extends State<CustomDropdownButton<T>> {
               _openMenu(context, position);
             },
             borderRadius: buttonRadius,
+            mouseCursor: SystemMouseCursors.click,
             child: Ink(
               width: widget.buttonWidth,
               padding: const .only(left: 16, right: 12),

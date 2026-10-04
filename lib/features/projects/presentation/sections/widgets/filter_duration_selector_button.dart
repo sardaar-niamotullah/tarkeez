@@ -32,6 +32,7 @@ class FilterDurationSelectorButton extends StatelessWidget {
           }
           onTap();
         },
+        mouseCursor: SystemMouseCursors.click,
         borderRadius: ContainerDesignUtils.allRadius,
         child: Ink(
           height: 34,

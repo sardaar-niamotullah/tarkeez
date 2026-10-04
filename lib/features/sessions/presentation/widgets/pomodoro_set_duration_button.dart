@@ -39,6 +39,7 @@ class _PomodoroSetDurationButtonState extends State<PomodoroSetDurationButton> {
                       }),
                     ),
                   ),
+            mouseCursor: SystemMouseCursors.click,
             borderRadius: ContainerDesignUtils.allRadius,
             child: Ink(
               padding: .symmetric(
@@ -72,6 +73,7 @@ class _PomodoroSetDurationButtonState extends State<PomodoroSetDurationButton> {
                   message: durationText,
                 );
               },
+              mouseCursor: SystemMouseCursors.click,
               borderRadius: ContainerDesignUtils.allRadius,
               child: Ink(
                 padding: .symmetric(

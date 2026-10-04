@@ -37,6 +37,7 @@ class PricingCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
+        mouseCursor: SystemMouseCursors.click,
         borderRadius: ContainerDesignUtils.allRadius,
         child: Ink(
           padding: .all(2),

@@ -21,6 +21,7 @@ class AppBarStatPill extends StatelessWidget {
       borderRadius: ContainerDesignUtils.allRadius,
       child: InkWell(
         onTap: onTap,
+        mouseCursor: SystemMouseCursors.click,
         borderRadius: ContainerDesignUtils.allRadius,
         child: Ink(
           padding: const .only(left: 12, right: 8, top: 6.5, bottom: 6.5),

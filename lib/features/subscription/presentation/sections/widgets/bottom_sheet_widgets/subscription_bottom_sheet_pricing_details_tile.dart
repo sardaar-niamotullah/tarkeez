@@ -28,6 +28,7 @@ class SubscriptionBottomSheetPricingDetailsTile extends StatelessWidget {
               children: [
                 InkWell(
                   onTap: onIconTap,
+                  mouseCursor: SystemMouseCursors.click,
                   child: SvgPicture.asset(
                     iconPath,
                     height: 20,

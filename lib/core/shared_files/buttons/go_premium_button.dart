@@ -18,6 +18,7 @@ class GoPremiumButton extends StatelessWidget {
       child: InkWell(
         onTap: () => context.push(RouteNames.subscriptionPage),
         borderRadius: ContainerDesignUtils.allRadius,
+        mouseCursor: SystemMouseCursors.click,
         child: Ink(
           decoration: BoxDecoration(
             gradient: LinearGradient(

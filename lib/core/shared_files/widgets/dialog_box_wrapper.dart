@@ -65,6 +65,7 @@ class DialogBoxWrapper extends StatelessWidget {
                     InkWell(
                       onTap: () => context.pop(),
                       customBorder: const CircleBorder(),
+                      mouseCursor: SystemMouseCursors.click,
                       child: Icon(
                         Icons.close_rounded,
                         size: 24,

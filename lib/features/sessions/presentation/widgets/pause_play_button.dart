@@ -20,6 +20,7 @@ class PausePlayButton extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         customBorder: const CircleBorder(),
+        mouseCursor: SystemMouseCursors.click,
         child: Ink(
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 320),

@@ -24,6 +24,7 @@ class ActionButton extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         customBorder: const CircleBorder(),
+        mouseCursor: SystemMouseCursors.click,
         child: Ink(
           height: 32,
           width: 32,

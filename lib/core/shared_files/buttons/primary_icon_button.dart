@@ -19,6 +19,7 @@ class PrimaryIconButton extends StatelessWidget {
       child: InkWell(
         onTap: onPressed,
         borderRadius: ContainerDesignUtils.allRadius,
+        mouseCursor: SystemMouseCursors.click,
         child: Ink(
           height: 43,
           decoration: BoxDecoration(

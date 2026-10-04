@@ -24,6 +24,7 @@ class SubscriptionCard extends StatelessWidget {
           if (needToPopAppDrawer) context.pop();
           context.push(RouteNames.subscriptionPage);
         },
+        mouseCursor: SystemMouseCursors.click,
         borderRadius: ContainerDesignUtils.allRadius,
         child: BlocBuilder<ThemeCubit, ThemeState>(
           builder: (context, themeState) {

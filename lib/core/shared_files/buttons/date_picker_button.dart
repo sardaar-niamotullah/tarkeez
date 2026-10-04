@@ -73,7 +73,7 @@ class _DatePickerButtonState extends State<DatePickerButton> {
             },
           ),
         ),
-
+        mouseCursor: SystemMouseCursors.click,
         borderRadius: ContainerDesignUtils.allRadius,
         child: Ink(
           width: 110,

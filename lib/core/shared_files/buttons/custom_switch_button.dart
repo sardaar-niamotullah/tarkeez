@@ -20,6 +20,7 @@ class CustomSwitchButton extends StatelessWidget {
       child: InkWell(
         onTap: () => onChanged(!value),
         borderRadius: ContainerDesignUtils.allRadius,
+        mouseCursor: SystemMouseCursors.click,
         child: Ink(
           width: 58,
           height: 28,

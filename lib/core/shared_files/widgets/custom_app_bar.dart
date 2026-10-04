@@ -45,6 +45,7 @@ class CustomAppBar extends StatelessWidget {
               child: InkWell(
                 onTap: () => context.pop(),
                 customBorder: const CircleBorder(),
+                mouseCursor: SystemMouseCursors.click,
                 child: Ink(
                   padding: .symmetric(horizontal: 8),
                   child: Icon(

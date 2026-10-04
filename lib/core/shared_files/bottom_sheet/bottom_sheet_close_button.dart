@@ -12,6 +12,7 @@ class BottomSheetCloseButton extends StatelessWidget {
       right: 16,
       child: InkWell(
         onTap: () => context.pop(),
+        mouseCursor: SystemMouseCursors.click,
         child: CircleAvatar(
           radius: 16,
           backgroundColor: scheme.tertiary,

@@ -62,6 +62,7 @@ class HeatmapPoint extends StatelessWidget {
                   );
                 }
               },
+              mouseCursor: SystemMouseCursors.click,
               borderRadius: .circular(2),
               child: Ink(
                 padding: const .all(1),

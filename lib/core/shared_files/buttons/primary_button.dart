@@ -3,7 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class PrimaryButton extends StatelessWidget {
-  const PrimaryButton({
+  const new({
     super.key,
     required this.title,
     required this.onPressed,
@@ -53,6 +53,11 @@ class PrimaryButton extends StatelessWidget {
           ).copyWith(
             overlayColor: WidgetStateProperty.all(
               scheme.onTertiary.withValues(alpha: .1),
+            ),
+            mouseCursor: WidgetStateProperty.all(
+              isLoading || !enable
+                  ? SystemMouseCursors.basic
+                  : SystemMouseCursors.click,
             ),
           ),
       child: Ink(

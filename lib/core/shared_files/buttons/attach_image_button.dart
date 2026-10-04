@@ -32,6 +32,7 @@ class AttachImageButton extends StatelessWidget {
             );
           }
         },
+        mouseCursor: SystemMouseCursors.click,
         borderRadius: ContainerDesignUtils.allRadius,
         child: Ink(
           width: width,
@@ -52,10 +53,7 @@ class AttachImageButton extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              Text(
-                'Image',
-                style: TextUtils.paragraph(context),
-              ),
+              Text('Image', style: TextUtils.paragraph(context)),
             ],
           ),
         ),

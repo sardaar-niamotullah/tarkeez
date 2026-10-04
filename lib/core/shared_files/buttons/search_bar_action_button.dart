@@ -24,6 +24,7 @@ class SearchBarActionButton extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         customBorder: const CircleBorder(),
+        mouseCursor: SystemMouseCursors.click,
         child: Ink(
           width: 46,
           height: 46,

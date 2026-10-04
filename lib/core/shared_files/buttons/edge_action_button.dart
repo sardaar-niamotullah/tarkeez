@@ -46,6 +46,7 @@ class EdgeActionButton extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: radius,
+          mouseCursor: SystemMouseCursors.click,
           child: AnimatedBuilder(
             animation: collapseAnimation ?? const AlwaysStoppedAnimation(0),
             builder: (context, _) {

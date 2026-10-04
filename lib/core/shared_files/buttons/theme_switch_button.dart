@@ -20,6 +20,7 @@ class ThemeSwitchButton extends StatelessWidget {
           child: InkWell(
             onTap: () => themeCubit.toggleTheme(),
             borderRadius: ContainerDesignUtils.allRadius,
+            mouseCursor: SystemMouseCursors.click,
             child: Ink(
               width: 60,
               height: 30,

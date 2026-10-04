@@ -21,6 +21,7 @@ class AppDrawerButton extends StatelessWidget {
         child: InkWell(
           onTap: () {},
           borderRadius: .circular(4),
+          mouseCursor: SystemMouseCursors.click,
           child: Row(
             mainAxisSize: .min,
             crossAxisAlignment: .center,
