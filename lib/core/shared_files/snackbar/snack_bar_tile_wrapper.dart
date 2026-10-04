@@ -1,5 +1,7 @@
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:tarkeez/core/utils/maximum_width_box.dart';
 
 class SnackBarTileWrapper extends StatefulWidget {
   final String? title;
@@ -84,7 +86,7 @@ class _SnackBarTileWrapperState extends State<SnackBarTileWrapper>
     return Positioned(
       // ── Sit just below the status bar ──────────────────────────────
       top: widget.topPadding + 8,
-      left: 16,
+      left: context.md ? 16 + 88 : 16,
       right: 16,
       child: SlideTransition(
         position: _slideAnimation,
@@ -100,16 +102,19 @@ class _SnackBarTileWrapperState extends State<SnackBarTileWrapper>
             },
             child: Material(
               color: Colors.transparent,
-              child: SnackBarTile(
-                title: widget.title,
-                message: widget.message,
-                iconPath: widget.iconPath,
-                iconColor: widget.iconColor,
-                backgoundColor: widget.backgroundColor,
-                backgoundColorBright: widget.backgroundColorBright,
-                textColor: widget.textColor,
-                scheme: widget.scheme,
-                onClose: _dismiss,
+              child: MaximumWidthBox(
+                maxWidth: Breakpoints.xs,
+                child: SnackBarTile(
+                  title: widget.title,
+                  message: widget.message,
+                  iconPath: widget.iconPath,
+                  iconColor: widget.iconColor,
+                  backgoundColor: widget.backgroundColor,
+                  backgoundColorBright: widget.backgroundColorBright,
+                  textColor: widget.textColor,
+                  scheme: widget.scheme,
+                  onClose: _dismiss,
+                ),
               ),
             ),
           ),
