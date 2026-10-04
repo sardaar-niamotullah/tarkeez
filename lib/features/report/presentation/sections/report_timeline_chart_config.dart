@@ -1,7 +1,7 @@
 import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/extensions/period_range_extension.dart';
 import 'package:tarkeez/core/shared_files/cubits/report_period_cubit.dart';
 import 'package:tarkeez/features/daily_rollups/data/models/timeline_model.dart';
@@ -21,7 +21,7 @@ class ReportTimelineChartConfig {
   static const double labelTopInset = 16.0;
 
   static const double maxChartBoxHeight = 300;
-  static const double maxChartBoxWidth = 1200;
+  static const double maxChartBoxWidth = Breakpoints.lg;
 
   static double getChartHeight(BuildContext context) => math.min(
     getAvailableWidth(context) / 2.1,
@@ -61,7 +61,7 @@ class ReportTimelineChartConfig {
 
   static double getAvailableWidth(BuildContext context) {
     final boxWidth = math.min(
-      MediaQuery.of(context).size.width - horizontalPageMargin,
+      context.screenWidth - horizontalPageMargin,
       maxChartBoxWidth,
     );
     return boxWidth -
@@ -76,7 +76,6 @@ class ReportTimelineChartConfig {
     required double availableWidth,
   }) {
     final granularity = context.watch<ReportPeriodCubit>().state.granularity;
-    
 
     final dailyWidth = availableWidth / 7;
     final monthlyWidth = availableWidth / 5;
