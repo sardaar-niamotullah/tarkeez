@@ -57,12 +57,12 @@ class ReportTab extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: .start,
                                 children: [
-                                  const SizedBox(height: 12),
                                   //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
                                   // Timeline section
                                   //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+                                  const SizedBox(height: 24),
                                   const TimelineSection(),
-                                  const SizedBox(height: 16),
+                                  const SizedBox(height: 24),
                                   //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
                                   // Pie chart part
                                   //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––

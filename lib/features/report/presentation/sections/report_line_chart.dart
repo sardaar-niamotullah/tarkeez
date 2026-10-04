@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/shared_files/cubits/report_period_cubit.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
@@ -12,7 +13,7 @@ import 'package:tarkeez/features/report/presentation/sections/widgets/chart_y_ax
 import 'package:tarkeez/features/report/presentation/sections/widgets/time_visualizer_bar_label.dart';
 
 class ReportLineChart extends StatelessWidget {
-  const ReportLineChart({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -53,10 +54,15 @@ class ReportLineChart extends StatelessWidget {
         );
         return Container(
           width: .infinity,
-          padding: const .only(top: 16, left: 6, right: 12),
+          padding: .only(
+            left: context.sm ? 12 : 6,
+            right: context.sm ? 18 : 12,
+            top: context.sm ? 6 : 8,
+            bottom: context.sm ? 2 : 0,
+          ),
           decoration: BoxDecoration(
             color: scheme.onSurface,
-            borderRadius: ContainerDesignUtils.allRadius,
+            borderRadius: ContainerDesignUtils.bottomRadius,
           ),
           child: Row(
             crossAxisAlignment: .start,
@@ -65,14 +71,13 @@ class ReportLineChart extends StatelessWidget {
               // Y AXIS LABELS
               // ------------------------------------------------------------
               Transform.translate(
-                offset: const Offset(0, -2.5),
+                offset: context.sm ? const Offset(0, 7) : const Offset(0, 2),
                 child: ChartYAxisLabel(
-                  labelHeight: barAreaHeight + 5,
+                  labelHeight: barAreaHeight - (context.sm ? 3.5 : 0),
                   chartTopHours: chartTopHours,
                   hoursPerStep: hoursPerStep,
                 ),
               ),
-
               // ------------------------------------------------------------
               // CHART
               // ------------------------------------------------------------

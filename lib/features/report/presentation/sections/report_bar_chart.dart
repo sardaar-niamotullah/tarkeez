@@ -14,7 +14,7 @@ import 'package:tarkeez/features/report/presentation/sections/widgets/time_visua
 import 'package:tarkeez/features/report/presentation/sections/widgets/time_visualizer_horizontal_line.dart';
 
 class ReportBarChart extends StatelessWidget {
-  const ReportBarChart({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +61,6 @@ class ReportBarChart extends StatelessWidget {
 
         return Container(
           width: .infinity,
-          // padding: .only(left: 6, right: 12),
           padding: .only(
             left: context.sm ? 12 : 6,
             right: context.sm ? 18 : 12,
@@ -70,7 +69,7 @@ class ReportBarChart extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             color: scheme.onSurface,
-            borderRadius: ContainerDesignUtils.allRadius,
+            borderRadius: ContainerDesignUtils.bottomRadius,
           ),
           constraints: const BoxConstraints(
             maxWidth: ReportTimelineChartConfig.maxChartBoxWidth,
