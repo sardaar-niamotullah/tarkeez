@@ -1,4 +1,5 @@
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
+import 'package:tarkeez/core/constants/widget_measurement_consts.dart';
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/utils/max_width_box.dart';
@@ -86,7 +87,7 @@ class _SnackBarTileWrapperState extends State<SnackBarTileWrapper>
     return Positioned(
       // ── Sit just below the status bar ──────────────────────────────
       top: widget.topPadding + 8,
-      left: context.md ? 16 + 88 : 16,
+      left: context.md ? 16 + WidgetMeasurementConsts.navRailWidth : 16,
       right: 16,
       child: SlideTransition(
         position: _slideAnimation,

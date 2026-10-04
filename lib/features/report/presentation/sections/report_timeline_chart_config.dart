@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
+import 'package:tarkeez/core/constants/widget_measurement_consts.dart';
 import 'package:tarkeez/core/extensions/period_range_extension.dart';
 import 'package:tarkeez/core/shared_files/cubits/report_period_cubit.dart';
 import 'package:tarkeez/features/daily_rollups/data/models/timeline_model.dart';
@@ -68,7 +69,7 @@ class ReportTimelineChartConfig {
   }
 
   static double getAvailableWidth(BuildContext context) {
-    final navRailWidth = context.md ? 88 : 0;
+    final navRailWidth = context.md ? WidgetMeasurementConsts.navRailWidth : 0;
     final boxWidth = math.min(
       context.screenWidth - horizontalPageMargin - navRailWidth,
       maxChartBoxWidth - 32,
