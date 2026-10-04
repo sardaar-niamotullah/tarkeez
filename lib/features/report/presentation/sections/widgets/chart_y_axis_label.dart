@@ -26,10 +26,10 @@ class ChartYAxisLabel extends StatelessWidget {
       height: labelHeight,
       margin: .only(
         right: crossAxisAlignment == null
-            ? ReportTimelineChartConfig.horizontalGapAfterYAxis
+            ? ReportTimelineChartConfig.getHorizontalGapAfterYAxis(context)
             : 0,
         left: crossAxisAlignment != null
-            ? ReportTimelineChartConfig.horizontalGapAfterYAxis
+            ? ReportTimelineChartConfig.getHorizontalGapAfterYAxis(context)
             : 0,
       ),
       width: ReportTimelineChartConfig.getYAxisIndexColumnWidth(context),

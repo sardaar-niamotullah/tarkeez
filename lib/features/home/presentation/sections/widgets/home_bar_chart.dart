@@ -36,7 +36,7 @@ class HomeBarChart extends StatelessWidget {
                 totalWidgetWidth -
                 timelineChartBoxHorizontalPadding -
                 ReportTimelineChartConfig.getYAxisIndexColumnWidth(context) -
-                ReportTimelineChartConfig.horizontalGapAfterYAxis;
+                ReportTimelineChartConfig.getHorizontalGapAfterYAxis(context);
 
             final dataVisualiserBarWidth = availableWidth / 3;
             final chartHeight = availableWidth / 1.85;

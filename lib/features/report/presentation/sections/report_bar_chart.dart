@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/extensions/period_range_extension.dart';
 import 'package:tarkeez/core/shared_files/cubits/report_period_cubit.dart';
 import 'package:tarkeez/core/theme/theme.dart';
@@ -60,7 +61,13 @@ class ReportBarChart extends StatelessWidget {
 
         return Container(
           width: .infinity,
-          padding: const .only(left: 6, right: 12),
+          // padding: .only(left: 6, right: 12),
+          padding: .only(
+            left: context.sm ? 12 : 6,
+            right: context.sm ? 18 : 12,
+            top: context.sm ? 6 : 0,
+            bottom: context.sm ? 2 : 0,
+          ),
           decoration: BoxDecoration(
             color: scheme.onSurface,
             borderRadius: ContainerDesignUtils.allRadius,
