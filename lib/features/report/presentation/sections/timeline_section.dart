@@ -29,8 +29,8 @@ class _TimelineSectionState extends State<TimelineSection> {
           padding: .only(
             right: ContainerDesignUtils.padding,
             left: ContainerDesignUtils.halfPadding,
-            top: ContainerDesignUtils.quarterPadding,
-            bottom: ContainerDesignUtils.quarterPadding,
+            top: ContainerDesignUtils.halfPadding,
+            bottom: ContainerDesignUtils.halfPadding,
           ),
           decoration: BoxDecoration(
             color: scheme.onSurface,

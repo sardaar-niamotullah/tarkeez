@@ -5,6 +5,7 @@ import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/custom_icon_button.dart';
 import 'package:tarkeez/core/shared_files/cubits/report_period_cubit.dart';
 import 'package:tarkeez/core/shared_files/enums/period_range.dart';
+import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/maximum_width_box.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/report/presentation/sections/report_filter_bottom_sheet.dart';
@@ -27,13 +28,19 @@ class ReportFilterTile extends StatelessWidget {
       toolbarHeight: 47,
       expandedHeight: 47,
       flexibleSpace: FlexibleSpaceBar(
-        background: Container(
-          padding: const .only(left: 16, right: 10, top: 8, bottom: 8),
-          decoration: BoxDecoration(color: scheme.onSurface),
-          child: Align(
-            alignment: .center,
-            child: MaximumWidthBox(
-              maxWidth: Breakpoints.xl - 26,
+        background: MaximumWidthBox(
+          maxWidth: Breakpoints.lg,
+          child: Container(
+            margin: .symmetric(
+              horizontal: context.md ? ContainerDesignUtils.margin : 0,
+            ),
+            padding: const .only(left: 16, right: 10, top: 8, bottom: 8),
+            decoration: BoxDecoration(
+              color: scheme.onSurface,
+              borderRadius: context.md ? ContainerDesignUtils.allRadius : null,
+            ),
+            child: Align(
+              alignment: .center,
               child: Row(
                 crossAxisAlignment: .center,
                 mainAxisAlignment: .spaceBetween,

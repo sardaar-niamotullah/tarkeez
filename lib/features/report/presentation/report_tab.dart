@@ -1,3 +1,4 @@
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/shared_files/buttons/go_premium_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/floating_action_button_wrapper.dart';
 import 'package:tarkeez/core/utils/maximum_width_box.dart';
@@ -45,6 +46,8 @@ class ReportTab extends StatelessWidget {
                       //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
                       // Filter
                       //––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+                      if (context.md)
+                        SliverToBoxAdapter(child: const SizedBox(height: 16)),
                       const ReportFilterTile(),
 
                       SliverList.list(
