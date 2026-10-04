@@ -5,18 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:tarkeez/core/utils/max_width_box.dart';
 
 class SnackBarTileWrapper extends StatefulWidget {
-  final String? title;
-  final String message;
-  final String iconPath;
-  final Color backgroundColor;
-  final Color backgroundColorBright;
-  final ColorScheme scheme;
-  final double topPadding;
-  final VoidCallback onDismiss;
-  final Color textColor;
-  final Color iconColor;
-
-  const SnackBarTileWrapper({
+  const new({
     super.key,
     this.title,
     required this.message,
@@ -29,6 +18,17 @@ class SnackBarTileWrapper extends StatefulWidget {
     required this.textColor,
     required this.iconColor,
   });
+  
+  final String? title;
+  final String message;
+  final String iconPath;
+  final Color backgroundColor;
+  final Color backgroundColorBright;
+  final ColorScheme scheme;
+  final double topPadding;
+  final VoidCallback onDismiss;
+  final Color textColor;
+  final Color iconColor;
 
   @override
   State<SnackBarTileWrapper> createState() => _SnackBarTileWrapperState();
