@@ -8,7 +8,7 @@ import 'package:tarkeez/core/shared_files/widgets/custom_app_bar.dart';
 import 'package:tarkeez/core/shared_files/widgets/floating_action_button_wrapper.dart';
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
-import 'package:tarkeez/core/utils/maximum_width_box.dart';
+import 'package:tarkeez/core/utils/max_width_box.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/profile/presentation/sections/heatmap.dart';
 import 'package:tarkeez/features/profile/presentation/sections/personal_bests_section.dart';
@@ -51,7 +51,7 @@ class ProfileTab extends StatelessWidget {
                             child: Column(
                               children: [
                                 const SizedBox(height: 16),
-                                MaximumWidthBox(
+                                MaxWidthBox(
                                   child: Container(
                                     width: .infinity,
                                     padding: const .symmetric(

@@ -6,7 +6,7 @@ import 'package:tarkeez/core/shared_files/buttons/custom_icon_button.dart';
 import 'package:tarkeez/core/shared_files/cubits/report_period_cubit.dart';
 import 'package:tarkeez/core/shared_files/enums/period_range.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
-import 'package:tarkeez/core/utils/maximum_width_box.dart';
+import 'package:tarkeez/core/utils/max_width_box.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/report/presentation/sections/report_filter_bottom_sheet.dart';
 
@@ -28,7 +28,7 @@ class ReportFilterTile extends StatelessWidget {
       toolbarHeight: 47,
       expandedHeight: 47,
       flexibleSpace: FlexibleSpaceBar(
-        background: MaximumWidthBox(
+        background: MaxWidthBox(
           maxWidth: Breakpoints.lg,
           child: Container(
             margin: .symmetric(

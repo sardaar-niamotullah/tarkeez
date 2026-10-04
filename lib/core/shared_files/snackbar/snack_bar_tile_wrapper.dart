@@ -1,7 +1,7 @@
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_tile.dart';
 import 'package:flutter/material.dart';
-import 'package:tarkeez/core/utils/maximum_width_box.dart';
+import 'package:tarkeez/core/utils/max_width_box.dart';
 
 class SnackBarTileWrapper extends StatefulWidget {
   final String? title;
@@ -102,7 +102,7 @@ class _SnackBarTileWrapperState extends State<SnackBarTileWrapper>
             },
             child: Material(
               color: Colors.transparent,
-              child: MaximumWidthBox(
+              child: MaxWidthBox(
                 maxWidth: Breakpoints.xs,
                 child: SnackBarTile(
                   title: widget.title,

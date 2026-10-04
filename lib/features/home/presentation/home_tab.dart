@@ -3,7 +3,7 @@ import 'package:tarkeez/core/shared_files/widgets/floating_action_button_wrapper
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:tarkeez/core/utils/maximum_width_box.dart';
+import 'package:tarkeez/core/utils/max_width_box.dart';
 import 'package:tarkeez/core/utils/primary_page_margin.dart';
 import 'package:tarkeez/features/home/presentation/sections/home_app_bar.dart';
 import 'package:tarkeez/features/home/presentation/sections/home_bar_chart_section.dart';
@@ -41,7 +41,7 @@ class HomeTab extends StatelessWidget {
                         color: scheme.onSurface,
                         borderRadius: ContainerDesignUtils.topRadius,
                       ),
-                      child: MaximumWidthBox(
+                      child: MaxWidthBox(
                         child: Column(
                           children: [
                             const SessionLogInterface(),
