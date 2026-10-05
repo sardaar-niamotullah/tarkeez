@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/theme/theme.dart';
+import 'package:tarkeez/core/utils/app_bar_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class CustomAppBar extends StatelessWidget {
@@ -23,13 +24,7 @@ class CustomAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
     return Container(
-      height: context.lg
-          ? 124
-          : context.md
-          ? 84
-          : isIOS
-          ? 34
-          : 48,
+      height: appBarHeight(context),
       constraints: BoxConstraints(maxWidth: Breakpoints.lg),
       padding: .symmetric(vertical: context.md ? 16 : 0),
       child: Row(
