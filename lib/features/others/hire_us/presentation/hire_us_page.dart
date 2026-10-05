@@ -1,8 +1,10 @@
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
 import 'package:tarkeez/core/shared_files/widgets/stand_alone_page_outer_structure.dart';
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/utils/sliver_scroll_max_width_box.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/others/hire_us/presentation/widgets/hiring_term_tile.dart';
 import 'package:tarkeez/features/others/hire_us/presentation/widgets/tech_platfrom_card.dart';
@@ -25,7 +27,7 @@ class HireUsPage extends StatelessWidget {
       // ──────────────────────────────────────────────────────────
       // Body content.
       // ──────────────────────────────────────────────────────────
-      content: CustomScrollView(
+      content: SliverScrollMaxWidthBox(
         slivers: [
           SliverList.list(
             children: [
@@ -45,9 +47,9 @@ class HireUsPage extends StatelessWidget {
               const SizedBox(height: 24),
               GridView.count(
                 shrinkWrap: true,
-                crossAxisCount: 2,
-                mainAxisExtent: 90,
-                crossAxisSpacing: 8,
+                crossAxisCount: context.md ? 4 : 2,
+                mainAxisExtent: context.md ? 120 : 90,
+                crossAxisSpacing: context.md ? 16 : 8,
                 mainAxisSpacing: 8,
                 physics: const NeverScrollableScrollPhysics(),
                 children: [

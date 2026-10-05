@@ -5,7 +5,6 @@ import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
 import 'package:tarkeez/core/shared_files/widgets/stand_alone_page_outer_structure.dart';
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
-import 'package:tarkeez/core/utils/max_width_box.dart';
 import 'package:tarkeez/core/utils/sliver_scroll_max_width_box.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/subscription/presentation/models/pricing_plan.dart';
@@ -14,7 +13,7 @@ import 'package:tarkeez/features/subscription/presentation/sections/subscription
 import 'package:tarkeez/features/subscription/presentation/sections/widgets/pricing_card.dart';
 
 class SubscriptionPage extends StatefulWidget {
-  const SubscriptionPage({super.key});
+  const new({super.key});
 
   @override
   State<SubscriptionPage> createState() => _SubscriptionPageState();
@@ -40,21 +39,18 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
       bottomNavContent: Column(
         mainAxisSize: .min,
         children: [
-          MaxWidthBox(
-            maxWidth: Breakpoints.sm,
-            child: PrimaryButton(
-              title: 'Next',
-              backgroundColorLeft: selectedPlan.color,
-              backgroundColorRight: selectedPlan.colorBright,
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  backgroundColor: Colors.transparent,
-                  builder: (BuildContext context) =>
-                      SubscriptionBottomSheet(isStorageCostIncluded: true),
-                );
-              },
-            ),
+          PrimaryButton(
+            title: 'Next',
+            backgroundColorLeft: selectedPlan.color,
+            backgroundColorRight: selectedPlan.colorBright,
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                backgroundColor: Colors.transparent,
+                builder: (BuildContext context) =>
+                    SubscriptionBottomSheet(isStorageCostIncluded: true),
+              );
+            },
           ),
           const SizedBox(height: 8),
           const DisclaimerTextButton(),
@@ -71,14 +67,11 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
               padding: .only(top: context.md ? 24 : 16, bottom: 8),
               child: Text(
                 'Choose your premium membership duration',
-                style: TextUtils.paragraph(
-                  context,
-                  color: scheme.onTertiary,
-                ),
+                style: TextUtils.paragraph(context, color: scheme.onTertiary),
               ),
             ),
           ),
-      
+
           // ──────────────────────────────────────────────────────────
           // Subscription plan buttons
           // ──────────────────────────────────────────────────────────
@@ -86,8 +79,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
             crossAxisCount: context.sm ? 4 : 2,
             mainAxisSpacing: context.sm ? 12 : 8,
             crossAxisSpacing: context.sm ? 12 : 8,
-            childAspectRatio:
-                context.between(Breakpoints.sm, Breakpoints.md) ? 1 : 1.4,
+            childAspectRatio: context.between(Breakpoints.sm, Breakpoints.md)
+                ? 1
+                : 1.4,
             children: pricingPlans.map((plan) {
               return PricingCard(
                 dealValue: plan.dealValue,
@@ -103,7 +97,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
               );
             }).toList(),
           ),
-      
+
           // ──────────────────────────────────────────────────────────
           // Perks
           // ──────────────────────────────────────────────────────────

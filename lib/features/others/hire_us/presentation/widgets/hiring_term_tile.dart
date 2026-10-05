@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
@@ -19,7 +20,7 @@ class HiringTermTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Container(
-      margin: const .only(bottom: 8),
+      margin: .only(bottom: context.md ? 12 : 8),
       decoration: BoxDecoration(
         borderRadius: ContainerDesignUtils.allRadius,
         color: scheme.onSurface,
