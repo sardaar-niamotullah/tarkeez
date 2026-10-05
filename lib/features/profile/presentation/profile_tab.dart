@@ -8,7 +8,7 @@ import 'package:tarkeez/core/shared_files/widgets/custom_app_bar.dart';
 import 'package:tarkeez/core/shared_files/widgets/floating_action_button_wrapper.dart';
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
-import 'package:tarkeez/core/utils/max_width_box.dart';
+import 'package:tarkeez/core/utils/sliver_max_width_box.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/profile/presentation/sections/heatmap.dart';
 import 'package:tarkeez/features/profile/presentation/sections/personal_bests_section.dart';
@@ -17,7 +17,7 @@ import 'package:tarkeez/features/profile/presentation/sections/widgets/erase_all
 import 'package:tarkeez/features/report/presentation/sections/invested_times_section.dart';
 
 class ProfileTab extends StatelessWidget {
-  const ProfileTab({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -47,19 +47,19 @@ class ProfileTab extends StatelessWidget {
                     child: Column(
                       children: [
                         Expanded(
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                const SizedBox(height: 16),
-                                MaxWidthBox(
-                                  child: Container(
-                                    width: .infinity,
-                                    padding: const .symmetric(
-                                      horizontal: ContainerDesignUtils.padding,
+                          child: CustomScrollView(
+                            slivers: [
+                              SliverMaxWidthBox(
+                                slivers: [
+                                  SliverPadding(
+                                    padding: .symmetric(
+                                      horizontal: !context.xl
+                                          ? ContainerDesignUtils.padding
+                                          : 0,
                                     ),
-                                    child: Column(
-                                      crossAxisAlignment: .start,
+                                    sliver: SliverList.list(
                                       children: [
+                                        SizedBox(height: 16),
                                         if (context.sm)
                                           Row(
                                             crossAxisAlignment: .start,
@@ -135,9 +135,9 @@ class ProfileTab extends StatelessWidget {
                                       ],
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       ],
