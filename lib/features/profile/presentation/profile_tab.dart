@@ -8,7 +8,7 @@ import 'package:tarkeez/core/shared_files/widgets/custom_app_bar.dart';
 import 'package:tarkeez/core/shared_files/widgets/floating_action_button_wrapper.dart';
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
-import 'package:tarkeez/core/utils/sliver_max_width_box.dart';
+import 'package:tarkeez/core/utils/sliver_scroll_max_width_box.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/profile/presentation/sections/heatmap.dart';
 import 'package:tarkeez/features/profile/presentation/sections/personal_bests_section.dart';
@@ -47,95 +47,91 @@ class ProfileTab extends StatelessWidget {
                     child: Column(
                       children: [
                         Expanded(
-                          child: CustomScrollView(
+                          child: SliverScrollMaxWidthBox(
                             slivers: [
-                              SliverMaxWidthBox(
-                                slivers: [
-                                  SliverPadding(
-                                    padding: .symmetric(
-                                      horizontal: !context.xl
-                                          ? ContainerDesignUtils.padding
-                                          : 0,
+                              SliverPadding(
+                                padding: .symmetric(
+                                  horizontal: !context.xl
+                                      ? ContainerDesignUtils.padding
+                                      : 0,
+                                ),
+                                sliver: SliverList.list(
+                                  children: [
+                                    SizedBox(height: 16),
+                                    if (context.sm)
+                                      Row(
+                                        crossAxisAlignment: .start,
+                                        children: [
+                                          Expanded(
+                                            flex: 2,
+                                            child: Streaks(),
+                                          ),
+                                          SizedBox(
+                                            width: ContainerDesignUtils
+                                                .padding,
+                                          ),
+                                          Expanded(
+                                            flex: 5,
+                                            child: Heatmap(isLocked: false),
+                                          ),
+                                        ],
+                                      ),
+                                    if (!context.sm)
+                                      Column(
+                                        children: [
+                                          Streaks(),
+                                          SizedBox(
+                                            height: ContainerDesignUtils
+                                                .padding,
+                                          ),
+                                          Heatmap(isLocked: false),
+                                        ],
+                                      ),
+                                    SizedBox(height: 16),
+                                    PersonalBestsSection(isLocked: false),
+                                    SizedBox(height: 16),
+                                    Text(
+                                      'Invested times',
+                                      style: TextUtils.title2(context),
                                     ),
-                                    sliver: SliverList.list(
-                                      children: [
-                                        SizedBox(height: 16),
-                                        if (context.sm)
-                                          Row(
-                                            crossAxisAlignment: .start,
-                                            children: [
-                                              Expanded(
-                                                flex: 2,
-                                                child: Streaks(),
-                                              ),
-                                              SizedBox(
-                                                width: ContainerDesignUtils
-                                                    .padding,
-                                              ),
-                                              Expanded(
-                                                flex: 5,
-                                                child: Heatmap(isLocked: false),
-                                              ),
-                                            ],
+                                    const SizedBox(height: 8),
+                                    if (context.lg)
+                                      Row(
+                                        crossAxisAlignment: .start,
+                                        children: [
+                                          InvestedTimesSection(
+                                            isLocked: false,
                                           ),
-                                        if (!context.sm)
-                                          Column(
-                                            children: [
-                                              Streaks(),
-                                              SizedBox(
-                                                height: ContainerDesignUtils
-                                                    .padding,
-                                              ),
-                                              Heatmap(isLocked: false),
-                                            ],
+                                          SizedBox(
+                                            width: ContainerDesignUtils
+                                                .padding,
                                           ),
-                                        SizedBox(height: 16),
-                                        PersonalBestsSection(isLocked: false),
-                                        SizedBox(height: 16),
-                                        Text(
-                                          'Invested times',
-                                          style: TextUtils.title2(context),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        if (context.lg)
-                                          Row(
-                                            crossAxisAlignment: .start,
-                                            children: [
-                                              InvestedTimesSection(
-                                                isLocked: false,
-                                              ),
-                                              SizedBox(
-                                                width: ContainerDesignUtils
-                                                    .padding,
-                                              ),
-                                              Expanded(
-                                                child: EraseAllDataButton(
-                                                  isLocked: false,
-                                                ),
-                                              ),
-                                            ],
+                                          Expanded(
+                                            child: EraseAllDataButton(
+                                              isLocked: false,
+                                            ),
                                           ),
-                                        if (!context.lg)
-                                          Column(
-                                            crossAxisAlignment: .start,
-                                            children: [
-                                              InvestedTimesSection(
-                                                isLocked: false,
-                                              ),
-                                              SizedBox(
-                                                height: ContainerDesignUtils
-                                                    .padding,
-                                              ),
-                                              EraseAllDataButton(
-                                                isLocked: false,
-                                              ),
-                                            ],
+                                        ],
+                                      ),
+                                    if (!context.lg)
+                                      Column(
+                                        crossAxisAlignment: .start,
+                                        children: [
+                                          InvestedTimesSection(
+                                            isLocked: false,
                                           ),
-                                        SizedBox(height: 64),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                                          SizedBox(
+                                            height: ContainerDesignUtils
+                                                .padding,
+                                          ),
+                                          EraseAllDataButton(
+                                            isLocked: false,
+                                          ),
+                                        ],
+                                      ),
+                                    SizedBox(height: 64),
+                                  ],
+                                ),
                               ),
                             ],
                           ),

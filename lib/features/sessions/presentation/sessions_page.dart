@@ -4,7 +4,7 @@ import 'package:tarkeez/core/shared_files/widgets/stand_alone_page_outer_structu
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
-import 'package:tarkeez/core/utils/sliver_max_width_box.dart';
+import 'package:tarkeez/core/utils/sliver_scroll_max_width_box.dart';
 import 'package:tarkeez/features/report/presentation/sections/sessions_section.dart';
 import 'package:tarkeez/features/sessions/presentation/widgets/sessions_filter_tile.dart';
 
@@ -20,18 +20,14 @@ class SessionsPage extends StatelessWidget {
       // ──────────────────────────────────────────────────────────
       // Body content.
       // ──────────────────────────────────────────────────────────
-      content: CustomScrollView(
+      content: SliverScrollMaxWidthBox(
         slivers: [
-          SliverMaxWidthBox(
-            slivers: [
-              const SessionsFilterTile(),
-              SliverPadding(
-                padding: .symmetric(
-                  horizontal: context.lg ? 0 : ContainerDesignUtils.padding,
-                ),
-                sliver: const SessionsSection(isLocked: false),
-              ),
-            ],
+          const SessionsFilterTile(),
+          SliverPadding(
+            padding: .symmetric(
+              horizontal: context.lg ? 0 : ContainerDesignUtils.padding,
+            ),
+            sliver: const SessionsSection(isLocked: false),
           ),
         ],
       ),
