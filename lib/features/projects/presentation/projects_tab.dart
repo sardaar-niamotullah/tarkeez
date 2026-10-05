@@ -60,30 +60,28 @@ class ProjectsTab extends StatelessWidget {
                       child: CustomScrollView(
                         slivers: [
                           SliverMaxWidthBox(
-                            sliver: SliverMainAxisGroup(
-                              slivers: [
-                                SliverList.list(
-                                  children: [
-                                    const SizedBox(height: 16),
-                                    // SimulationPart(),
-                                    const ProjectPageInfoTile(),
-                                    const SizedBox(height: 16),
-                                    Text(
-                                      'Your projects',
-                                      style: TextUtils.title2(context),
-                                    ),
-                                    const SizedBox(height: 8),
-                                  ],
-                                ),
-                                ProjectsList(
-                                  projects: projects,
-                                  isInitialLoading: isInitialLoading,
-                                  errorMessage: state is ProjectFailure
-                                      ? state.errorMessage
-                                      : null,
-                                ),
-                              ],
-                            ),
+                            slivers: [
+                              SliverList.list(
+                                children: [
+                                  const SizedBox(height: 16),
+                                  // SimulationPart(),
+                                  const ProjectPageInfoTile(),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'Your projects',
+                                    style: TextUtils.title2(context),
+                                  ),
+                                  const SizedBox(height: 8),
+                                ],
+                              ),
+                              ProjectsList(
+                                projects: projects,
+                                isInitialLoading: isInitialLoading,
+                                errorMessage: state is ProjectFailure
+                                    ? state.errorMessage
+                                    : null,
+                              ),
+                            ],
                           ),
                         ],
                       ),

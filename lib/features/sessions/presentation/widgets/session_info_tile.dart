@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
@@ -67,7 +68,10 @@ class SessionInfoTile extends StatelessWidget {
               ),
             ],
           ),
-          SessionProjectPill(width: 74, project: resolvedProject),
+          SessionProjectPill(
+            width: context.sm ? 156 : 74,
+            project: resolvedProject,
+          ),
           SizedBox(
             width: 70,
             child: Align(

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/custom_icon_button.dart';
 import 'package:tarkeez/core/shared_files/cubits/session_period_cubit.dart';
 import 'package:tarkeez/core/shared_files/enums/period_range.dart';
+import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/sessions/presentation/widgets/sessions_filter_bottom_sheet.dart';
 
@@ -27,7 +29,10 @@ class SessionsFilterTile extends StatelessWidget {
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
           padding: const .only(left: 16, right: 10, top: 8, bottom: 8),
-          decoration: BoxDecoration(color: scheme.onSurface),
+          decoration: BoxDecoration(
+            color: scheme.onSurface,
+            borderRadius: context.md ? ContainerDesignUtils.allRadius : null,
+          ),
           child: Row(
             crossAxisAlignment: .center,
             mainAxisAlignment: .spaceBetween,

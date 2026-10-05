@@ -6,11 +6,11 @@ import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 class SliverMaxWidthBox extends StatelessWidget {
   const new({
     super.key,
-    required this.sliver,
+    required this.slivers,
     this.maxWidth = Breakpoints.lg - 32,
   });
 
-  final Widget sliver;
+  final List<Widget> slivers;
   final double maxWidth;
 
   @override
@@ -22,8 +22,8 @@ class SliverMaxWidthBox extends StatelessWidget {
           (constraints.crossAxisExtent - maxWidth) / 2,
         );
         return SliverPadding(
-          padding: EdgeInsets.symmetric(horizontal: side),
-          sliver: sliver,
+          padding: .symmetric(horizontal: side),
+          sliver: SliverMainAxisGroup(slivers: slivers),
         );
       },
     );

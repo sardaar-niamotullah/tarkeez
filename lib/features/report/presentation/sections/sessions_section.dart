@@ -27,7 +27,6 @@ class SessionsSection extends StatelessWidget {
         };
         return SliverMainAxisGroup(
           slivers: [
-            const SliverToBoxAdapter(child: SizedBox(height: 8)),
             if (isLocked) ...[
               BlocBuilder<ThemeCubit, ThemeState>(
                 builder: (context, state) {
@@ -50,8 +49,8 @@ class SessionsSection extends StatelessWidget {
                     return SessionInfoTile(
                       session: sessions[index],
                       backgroundColor: index.isEven
-                          ? scheme.onSurface
-                          : scheme.surface,
+                          ? scheme.surface
+                          : scheme.onSurface,
                     );
                   },
                 ),
