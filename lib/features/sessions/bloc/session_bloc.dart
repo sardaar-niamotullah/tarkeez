@@ -1,4 +1,8 @@
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tarkeez/core/error/result.dart';
+import 'package:tarkeez/core/extensions/period_range_extension.dart';
+import 'package:tarkeez/core/shared_files/enums/period_range.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/sessions/data/models/session_model.dart';
 import 'package:tarkeez/features/sessions/data/repositories/session_repository.dart';
@@ -8,10 +12,14 @@ part 'session_state.dart';
 
 class SessionBloc extends Bloc<SessionEvent, SessionState> {
   final SessionRepository _repository;
+  PeriodRange _period = PeriodRange.last7Days;
 
   SessionBloc(this._repository) : super(SessionInitial()) {
     on<EntrySessionRequested>(_onEntrySessionRequested);
-    on<FetchAllSessionsRequested>(_onFetchAllSessionsRequested);
+    on<FetchSessionsForPeriodRequested>(
+      _onFetchSessionsForPeriodRequested,
+      transformer: restartable(),
+    );
     on<DeleteSessionRequested>(_onDeleteSessionRequested);
   }
 
@@ -40,6 +48,16 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     return segments;
   }
 
+  Future<Result<List<SessionModel>>> _fetchForCurrentPeriod() {
+    final range = _period.dateRange();
+    if (range == null) return _repository.fetchAllSessions(); 
+    final (start, end) = range;
+    return _repository.fetchSessionsInDateRange(
+      startedAt: start,
+      endedAt: DateTime(end.year, end.month, end.day + 1), 
+    );
+  }
+
   Future<void> _refreshSessions(
     Emitter<SessionState> emit, {
     bool entered = false,
@@ -51,11 +69,11 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
         : null;
     emit(
       SessionLoading(
-        sessions: previousSessions ?? const [],
+        sessions: isInitialLoad ? const [] : (previousSessions ?? const []),
         isInitialLoad: isInitialLoad,
       ),
     );
-    final result = await _repository.fetchAllSessions();
+    final result = await _fetchForCurrentPeriod();
     result.fold(
       onSuccess: (sessions) =>
           emit(SessionLoaded(sessions, isEntered: entered, isDeleted: deleted)),
@@ -93,10 +111,13 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     await _refreshSessions(emit, entered: true);
   }
 
-  Future<void> _onFetchAllSessionsRequested(
-    FetchAllSessionsRequested event,
+  Future<void> _onFetchSessionsForPeriodRequested(
+    FetchSessionsForPeriodRequested event,
     Emitter<SessionState> emit,
-  ) async => await _refreshSessions(emit, isInitialLoad: true);
+  ) async {
+    _period = event.period;
+    await _refreshSessions(emit, isInitialLoad: true);
+  }
 
   Future<void> _onDeleteSessionRequested(
     DeleteSessionRequested event,

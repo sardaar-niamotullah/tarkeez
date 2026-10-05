@@ -16,12 +16,9 @@ final class EntrySessionRequested extends SessionEvent {
 
 final class FetchAllSessionsRequested extends SessionEvent {}
 
-final class FetchSessionsInDateRangeRequested extends SessionEvent {
-  const FetchSessionsInDateRangeRequested({
-    required this.startedAt,
-    required this.endedAt,
-  });
-  final DateTime startedAt, endedAt;
+final class FetchSessionsForPeriodRequested extends SessionEvent {
+  const FetchSessionsForPeriodRequested(this.period);
+  final PeriodRange period;
 }
 
 final class DeleteSessionRequested extends SessionEvent {

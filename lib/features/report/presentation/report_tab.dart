@@ -14,7 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:tarkeez/features/report/presentation/sections/timeline_section.dart';
 
 class ReportTab extends StatelessWidget {
-  const ReportTab({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {

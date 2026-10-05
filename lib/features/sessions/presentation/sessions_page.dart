@@ -15,7 +15,6 @@ class SessionsPage extends StatelessWidget {
       title: 'Sessions',
       actions: [ActionPageIcon(iconPath: SvgPaths.sessions)],
       horizontalPadding: 0,
-
       // ──────────────────────────────────────────────────────────
       // Body content.
       // ──────────────────────────────────────────────────────────
