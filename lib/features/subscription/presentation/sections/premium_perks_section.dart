@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/subscription/presentation/sections/widgets/perk_tile.dart';
@@ -12,7 +13,7 @@ class PremiumPerksSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return SliverPadding(
-      padding: const .symmetric(vertical: 16),
+      padding: .only(top: context.md ? 24 : 16, bottom: 8),
       sliver: SliverList.list(
         children: [
           Text(

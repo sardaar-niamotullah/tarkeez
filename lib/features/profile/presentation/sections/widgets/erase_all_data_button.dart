@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/database/app_database.dart';
 import 'package:tarkeez/core/dependency_injection/di.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
@@ -55,7 +56,7 @@ class _EraseAllDataButtonState extends State<EraseAllDataButton> {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Container(
-      height: 121,
+      height: context.md ? 121 : null,
       padding: const .all(ContainerDesignUtils.padding),
       decoration: BoxDecoration(
         color: scheme.onSurface,

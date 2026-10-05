@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
+import 'package:tarkeez/core/utils/max_width_box.dart';
 import 'package:tarkeez/core/utils/primary_page_margin.dart';
 
 class BottomNavigationAnimatedWrapper extends StatelessWidget {
@@ -9,6 +10,10 @@ class BottomNavigationAnimatedWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final isSafeAreaDevice = {
+      TargetPlatform.iOS,
+      TargetPlatform.android,
+    }.contains(Theme.of(context).platform);
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -24,7 +29,11 @@ class BottomNavigationAnimatedWrapper extends StatelessWidget {
           child: PrimaryPageMargin(
             child: Column(
               mainAxisSize: .min,
-              children: [const SizedBox(height: 8), child],
+              children: [
+                const SizedBox(height: 8),
+                MaxWidthBox(child: child),
+                SizedBox(height: !isSafeAreaDevice ? 24 : 0),
+              ],
             ),
           ),
         ),
