@@ -28,6 +28,7 @@ class CancelButton extends StatelessWidget {
             onPressed: onPressed ?? () => context.pop(),
           )
         : CupertinoButton(
+            mouseCursor: SystemMouseCursors.click,
             onPressed: onPressed ?? () => context.pop(),
             child: Text(
               'Cancel',

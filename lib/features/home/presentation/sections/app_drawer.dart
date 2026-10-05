@@ -110,9 +110,10 @@ class AppDrawer extends StatelessWidget {
                   CupertinoButton(
                     onPressed: () =>
                         context.push(RouteNames.termsAndConditionsPage),
+                    padding: .zero,
                     sizeStyle: .small,
                     alignment: .centerLeft,
-                    padding: .zero,
+                    mouseCursor: SystemMouseCursors.click,
                     child: Text(
                       'Terms and conditions',
                       style: TextUtils.paragraphSmallBold(
