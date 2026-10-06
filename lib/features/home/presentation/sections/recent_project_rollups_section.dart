@@ -14,6 +14,7 @@ class RecentProjectRollupsSection extends StatelessWidget {
       padding: .symmetric(
         horizontal: context.md ? 0 : ContainerDesignUtils.padding,
       ),
+
       child: Column(
         children: [
           Row(
@@ -29,6 +30,7 @@ class RecentProjectRollupsSection extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           const ProjectDurationTile(isActive: true),
+          const ProjectDurationTile(isActive: false),
         ],
       ),
     );
