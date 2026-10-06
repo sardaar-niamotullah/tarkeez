@@ -63,43 +63,47 @@ class _EraseAllDataButtonState extends State<EraseAllDataButton> {
         borderRadius: ContainerDesignUtils.allRadius,
       ),
       child: Row(
+        crossAxisAlignment: .center,
         mainAxisAlignment: .spaceBetween,
         children: [
           Text(
             'Erase all data, and start fresh.',
             style: TextUtils.paragraphBold(context),
           ),
-          SizedBox(
-            width: 96,
-            child: PrimaryButton(
-              title: 'Erase',
-              isLoading: _isLoading,
-              onPressed: () {
-                if (_isLoading) return;
-                if (widget.isLocked) {
+          Column(
+            mainAxisAlignment: .center,
+            children: [
+              PrimaryButton(
+                title: 'Erase',
+                width: 96,
+                isLoading: _isLoading,
+                backgroundColorRight: scheme.error,
+                backgroundColorLeft: AppTheme.errorBright,
+                onPressed: () {
+                  if (_isLoading) return;
+                  if (widget.isLocked) {
+                    showDialog(
+                      context: context,
+                      builder: (_) => GoPremiumDialog(),
+                    );
+                    return;
+                  }
                   showDialog(
                     context: context,
-                    builder: (_) => GoPremiumDialog(),
-                  );
-                  return;
-                }
-                showDialog(
-                  context: context,
-                  barrierDismissible: !_isLoading,
-                  builder: (_) => StatefulBuilder(
-                    builder: (dialogContext, setDialogState) => DeleteDialog(
-                      isLoading: _isLoading,
-                      onDeleteTap: () => _eraseAllData(setDialogState),
-                      message:
-                          'This will permanently delete all your Tarkeez data, including projects, sessions, and stats.\n\n'
-                          'If you have a Premium subscription, it will remain active, so you can start fresh as a Premium member.',
+                    barrierDismissible: !_isLoading,
+                    builder: (_) => StatefulBuilder(
+                      builder: (dialogContext, setDialogState) => DeleteDialog(
+                        isLoading: _isLoading,
+                        onDeleteTap: () => _eraseAllData(setDialogState),
+                        message:
+                            'This will permanently delete all your Tarkeez data, including projects, sessions, and stats.\n\n'
+                            'If you have a Premium subscription, it will remain active, so you can start fresh as a Premium member.',
+                      ),
                     ),
-                  ),
-                );
-              },
-              backgroundColorLeft: AppTheme.errorBright,
-              backgroundColorRight: scheme.error,
-            ),
+                  );
+                },
+              ),
+            ],
           ),
         ],
       ),
