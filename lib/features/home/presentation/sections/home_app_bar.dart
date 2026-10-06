@@ -20,14 +20,14 @@ class HomeAppBar extends StatelessWidget {
         padding: .only(
           right: 16,
           left: context.md ? 20 : 12,
-          bottom: context.md ? 16 : 0,
+          bottom: context.md ? 12 : 0,
         ),
         child: Row(
-          crossAxisAlignment: context.md ? .end : .center,
           mainAxisAlignment: .spaceBetween,
+          crossAxisAlignment: context.md ? .end : .center,
           children: [
             AppDrawerButton(onTap: onAppMenuTap),
-            ActionPageIcon(iconPath: SvgPaths.iconTransparent),
+            ActionPageIcon(iconPath: SvgPaths.iconTransparent, size: 28),
           ],
         ),
       ),

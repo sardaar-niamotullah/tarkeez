@@ -42,7 +42,7 @@ class PrimaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return MaxWidthBox(
-      maxWidth: Breakpoints.sm,
+      maxWidth: Breakpoints.xs,
       child: ElevatedButton(
         onPressed: isLoading || !enable ? onDisabled : onPressed,
         style:

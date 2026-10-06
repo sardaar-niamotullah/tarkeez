@@ -6,20 +6,7 @@ import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class StandAlonePageOuterStructure extends StatelessWidget {
-  final String title;
-  final List<Widget> actions;
-  final Widget content;
-  final Widget? bottomNavContent;
-  final double? horizontalPadding;
-  final Color? bgFillColor;
-  final String? avatarLink, subtitle;
-  final bool isBackButtonEnabled;
-  final List<Widget> stackOverlays;
-  final bool isLoading;
-  final bool hasAvatarInAppBar;
-  final Color? avatarCircleColor;
-
-  const StandAlonePageOuterStructure({
+  const new({
     super.key,
     required this.title,
     required this.actions,
@@ -35,6 +22,19 @@ class StandAlonePageOuterStructure extends StatelessWidget {
     this.hasAvatarInAppBar = false,
     this.isBackButtonEnabled = true,
   });
+  
+  final String title;
+  final List<Widget> actions;
+  final Widget content;
+  final Widget? bottomNavContent;
+  final double? horizontalPadding;
+  final Color? bgFillColor;
+  final String? avatarLink, subtitle;
+  final bool isBackButtonEnabled;
+  final List<Widget> stackOverlays;
+  final bool isLoading;
+  final bool hasAvatarInAppBar;
+  final Color? avatarCircleColor;
 
   @override
   Widget build(BuildContext context) {

@@ -50,22 +50,18 @@ class HomeTab extends StatelessWidget {
                                     ? ContainerDesignUtils.padding
                                     : 0,
                               ),
-                              Container(
-                                color: Colors.amber,
-                                child: GridView.count(
-                                  shrinkWrap: true,
-                                  padding: .zero,
-                                  mainAxisExtent: context.md ? 248 : 264,
-                                  crossAxisCount: context.md ? 2 : 1,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  mainAxisSpacing: ContainerDesignUtils.padding,
-                                  crossAxisSpacing:
-                                      ContainerDesignUtils.padding,
-                                  children: [
-                                    const SessionLogInterface(),
-                                    const HomeBarChartSection(),
-                                  ],
-                                ),
+                              GridView.count(
+                                shrinkWrap: true,
+                                padding: .zero,
+                                mainAxisExtent: context.md ? 248 : 264,
+                                crossAxisCount: context.md ? 2 : 1,
+                                physics: NeverScrollableScrollPhysics(),
+                                mainAxisSpacing: ContainerDesignUtils.padding,
+                                crossAxisSpacing: ContainerDesignUtils.padding,
+                                children: [
+                                  const SessionLogInterface(),
+                                  const HomeBarChartSection(),
+                                ],
                               ),
                               const SizedBox(height: 16),
                               const RecentProjectRollupsSection(),
