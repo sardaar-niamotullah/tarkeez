@@ -3,8 +3,7 @@ import 'package:tarkeez/core/shared_files/widgets/floating_action_button_wrapper
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:tarkeez/core/utils/max_width_box.dart';
-import 'package:tarkeez/core/utils/primary_page_margin.dart';
+import 'package:tarkeez/core/utils/sliver_scroll_max_width_box.dart';
 import 'package:tarkeez/features/home/presentation/sections/home_app_bar.dart';
 import 'package:tarkeez/features/home/presentation/sections/home_bar_chart_section.dart';
 import 'package:tarkeez/features/home/presentation/sections/recent_project_rollups_section.dart';
@@ -19,15 +18,9 @@ class HomeTab extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return Stack(
       children: [
-        // ──────────────────────────────────────────────
-        // Home App Bar bg layer
-        // ──────────────────────────────────────────────
         const Positioned.fill(child: HeroImageBackgroundLayer()),
         Column(
           children: [
-            // ──────────────────────────────────────────────
-            // Home App Bar
-            // ──────────────────────────────────────────────
             HomeAppBar(onAppMenuTap: onMenuTap),
             // ──────────────────────────────────────────────
             // Homepage content
@@ -38,29 +31,26 @@ class HomeTab extends StatelessWidget {
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: scheme.onSurface,
+                        color: scheme.surface,
                         borderRadius: ContainerDesignUtils.topRadius,
                       ),
-                      child: MaxWidthBox(
-                        child: Column(
-                          children: [
-                            const SessionLogInterface(),
-                            Expanded(
-                              child: SingleChildScrollView(
-                                child: PrimaryPageMargin(
-                                  child: Column(
-                                    children: [
-                                      const SizedBox(height: 24),
-                                      const HomeBarChartSection(),
-                                      const SizedBox(height: 24),
-                                      const RecentProjectRollupsSection(),
-                                    ],
-                                  ),
-                                ),
+                      child: SliverScrollMaxWidthBox(
+                        slivers: [
+                          SliverList.list(
+                            children: [
+                              SizedBox(height: ContainerDesignUtils.padding),
+                              Row(
+                                children: [
+                                  Expanded(child: const SessionLogInterface()),
+                                  const SizedBox(width: 24),
+                                  Expanded(child: const HomeBarChartSection()),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
+                              const SizedBox(height: 24),
+                              const RecentProjectRollupsSection(),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ),

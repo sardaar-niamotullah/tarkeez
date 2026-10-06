@@ -39,7 +39,7 @@ class HomeBarChart extends StatelessWidget {
                 ReportTimelineChartConfig.getHorizontalGapAfterYAxis(context);
 
             final dataVisualiserBarWidth = availableWidth / 3;
-            final chartHeight = availableWidth / 1.85;
+            final chartHeight = 120; //availableWidth / 1.85;
             final barAreaHeight = chartHeight - labelAreaHeight - labelGap;
             final chartTopHours = ReportTimelineChartConfig.getChartTopHours(
               entries,

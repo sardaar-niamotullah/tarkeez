@@ -91,7 +91,7 @@ class _SessionLogInterfaceState extends State<SessionLogInterface> {
     return Container(
       width: .infinity,
       decoration: BoxDecoration(
-        color: scheme.surface,
+        color: scheme.onSurface,
         borderRadius: ContainerDesignUtils.allRadius,
       ),
       child: Column(

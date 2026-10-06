@@ -16,13 +16,9 @@ import 'package:tarkeez/features/sessions/data/models/session_model.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/session_project_pill.dart';
 
 class SessionInfoTile extends StatelessWidget {
+  const new({super.key, required this.session, required this.backgroundColor});
   final SessionModel session;
   final Color backgroundColor;
-  const SessionInfoTile({
-    super.key,
-    required this.session,
-    required this.backgroundColor,
-  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +30,7 @@ class SessionInfoTile extends StatelessWidget {
     final resolvedProject = projects?.firstWhereOrNull(
       (p) => p.id == session.projectId,
     );
+
     return Container(
       padding: .symmetric(
         horizontal: ContainerDesignUtils.padding,

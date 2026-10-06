@@ -13,44 +13,47 @@ class HomeBarChartSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return Column(
-      crossAxisAlignment: .start,
-      children: [
-        Text('Last 3 days', style: TextUtils.title2(context)),
-        Row(
-          children: [
-            Expanded(
-              flex: 2,
-              child: Center(
-                child: Container(
-                  padding: .symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: ContainerDesignUtils.allRadius,
-                  ),
-                  child: BlocBuilder<DailyRollupBloc, DailyRollupState>(
-                    builder: (context, state) {
-                      final totalSeconds = state is DailyRollupLoaded
-                          ? state.totalSecondsForPeriod(PeriodRange.last3Days)
-                          : 0;
-                      return DurationTextUtils(
-                        durationInSeconds: totalSeconds,
-                        fontSizePrimary: 24,
-                        fontSizeSeconday: 14,
-                        fontColorPrimary: scheme.primary,
-                        fontColorSecondary: scheme.primary.withValues(
-                          alpha: .75,
-                        ),
-                      );
-                    },
+    return Container(
+      color: scheme.onSurface,
+      child: Column(
+        crossAxisAlignment: .start,
+        children: [
+          Text('Last 3 days', style: TextUtils.title2(context)),
+          Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Center(
+                  child: Container(
+                    padding: .symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: ContainerDesignUtils.allRadius,
+                    ),
+                    child: BlocBuilder<DailyRollupBloc, DailyRollupState>(
+                      builder: (context, state) {
+                        final totalSeconds = state is DailyRollupLoaded
+                            ? state.totalSecondsForPeriod(PeriodRange.last3Days)
+                            : 0;
+                        return DurationTextUtils(
+                          durationInSeconds: totalSeconds,
+                          fontSizePrimary: 24,
+                          fontSizeSeconday: 14,
+                          fontColorPrimary: scheme.primary,
+                          fontColorSecondary: scheme.primary.withValues(
+                            alpha: .75,
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
-            ),
-            const Expanded(flex: 3, child: HomeBarChart()),
-          ],
-        ),
-      ],
+              const Expanded(flex: 3, child: HomeBarChart()),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
