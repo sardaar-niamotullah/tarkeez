@@ -14,44 +14,34 @@ class HomeBarChartSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Container(
-      color: scheme.onSurface,
+      height: 248,
+      padding: .all(ContainerDesignUtils.padding),
+      decoration: BoxDecoration(
+        color: scheme.onSurface,
+        borderRadius: ContainerDesignUtils.allRadius,
+      ),
       child: Column(
-        crossAxisAlignment: .start,
+        mainAxisAlignment: .spaceBetween,
         children: [
-          Text('Last 3 days', style: TextUtils.title2(context)),
           Row(
+            mainAxisAlignment: .spaceBetween,
             children: [
-              Expanded(
-                flex: 2,
-                child: Center(
-                  child: Container(
-                    padding: .symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface,
-                      borderRadius: ContainerDesignUtils.allRadius,
-                    ),
-                    child: BlocBuilder<DailyRollupBloc, DailyRollupState>(
-                      builder: (context, state) {
-                        final totalSeconds = state is DailyRollupLoaded
-                            ? state.totalSecondsForPeriod(PeriodRange.last3Days)
-                            : 0;
-                        return DurationTextUtils(
-                          durationInSeconds: totalSeconds,
-                          fontSizePrimary: 24,
-                          fontSizeSeconday: 14,
-                          fontColorPrimary: scheme.primary,
-                          fontColorSecondary: scheme.primary.withValues(
-                            alpha: .75,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
+              Text('Last 5 days', style: TextUtils.title2(context)),
+              BlocBuilder<DailyRollupBloc, DailyRollupState>(
+                builder: (context, state) {
+                  final totalSeconds = state is DailyRollupLoaded
+                      ? state.totalSecondsForPeriod(PeriodRange.last5Days)
+                      : 0;
+                  return DurationTextUtils(
+                    durationInSeconds: totalSeconds,
+                    fontSizePrimary: 18,
+                    fontSizeSeconday: 14,
+                  );
+                },
               ),
-              const Expanded(flex: 3, child: HomeBarChart()),
             ],
           ),
+          HomeBarChart(),
         ],
       ),
     );

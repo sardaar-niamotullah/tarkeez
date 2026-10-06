@@ -14,7 +14,6 @@ import 'package:tarkeez/features/report/presentation/sections/widgets/time_visua
 class HomeBarChart extends StatelessWidget {
   const HomeBarChart({super.key});
 
-  static const double timelineChartBoxHorizontalPadding = 6 + 12;
   static const double labelAreaHeight = 12;
   static const double labelGap = 4;
 
@@ -25,7 +24,7 @@ class HomeBarChart extends StatelessWidget {
     return BlocBuilder<DailyRollupBloc, DailyRollupState>(
       builder: (context, state) {
         final entries = state is DailyRollupLoaded
-            ? state.timelineForPeriod(PeriodRange.last3Days)
+            ? state.timelineForPeriod(PeriodRange.last5Days)
             : const <TimelineModel>[];
 
         return LayoutBuilder(
@@ -34,12 +33,11 @@ class HomeBarChart extends StatelessWidget {
 
             final availableWidth =
                 totalWidgetWidth -
-                timelineChartBoxHorizontalPadding -
                 ReportTimelineChartConfig.getYAxisIndexColumnWidth(context) -
                 ReportTimelineChartConfig.getHorizontalGapAfterYAxis(context);
 
-            final dataVisualiserBarWidth = availableWidth / 3;
-            final chartHeight = 120; //availableWidth / 1.85;
+            final dataVisualiserBarWidth = availableWidth / 5;
+            final chartHeight = 164; //availableWidth / 1.85;
             final barAreaHeight = chartHeight - labelAreaHeight - labelGap;
             final chartTopHours = ReportTimelineChartConfig.getChartTopHours(
               entries,
@@ -61,7 +59,6 @@ class HomeBarChart extends StatelessWidget {
 
             return Container(
               width: .infinity,
-              padding: const .only(left: 12, right: 6),
               decoration: BoxDecoration(
                 color: scheme.onSurface,
                 borderRadius: ContainerDesignUtils.allRadius,

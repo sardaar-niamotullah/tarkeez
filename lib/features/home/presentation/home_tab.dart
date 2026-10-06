@@ -47,6 +47,7 @@ class HomeTab extends StatelessWidget {
                                 ],
                               ),
                               const SizedBox(height: 24),
+                              // HomeBarChartSection(),
                               const RecentProjectRollupsSection(),
                               const SizedBox(height: 24),
                             ],
