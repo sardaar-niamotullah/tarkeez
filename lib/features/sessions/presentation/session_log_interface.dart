@@ -107,7 +107,7 @@ class _SessionLogInterfaceState extends State<SessionLogInterface> {
             colonVisible: _colonVisible,
             startedAt: _startedAt,
           ),
-          const PomodoroSetDurationButton(isPomodoroModeOn: false),
+          const PomodoroSetDurationButton(isPomodoroModeOn: true),
           const SizedBox(height: 16),
 
           SizedBox(

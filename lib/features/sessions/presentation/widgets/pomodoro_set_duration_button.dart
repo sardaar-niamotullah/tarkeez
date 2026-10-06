@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
@@ -8,7 +9,7 @@ import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/set_pomodoro_duration_bottom_sheet.dart';
 
 class PomodoroSetDurationButton extends StatefulWidget {
-  const PomodoroSetDurationButton({super.key, this.isPomodoroModeOn = false});
+  const new({super.key, required this.isPomodoroModeOn});
   final bool isPomodoroModeOn;
 
   @override
@@ -47,7 +48,7 @@ class _PomodoroSetDurationButtonState extends State<PomodoroSetDurationButton> {
                 vertical: ContainerDesignUtils.quarterPadding,
               ),
               decoration: BoxDecoration(
-                color: scheme.onSurface,
+                color: context.md ? scheme.surface : scheme.onSurface,
                 borderRadius: ContainerDesignUtils.allRadius,
               ),
               child: Text(
@@ -69,8 +70,8 @@ class _PomodoroSetDurationButtonState extends State<PomodoroSetDurationButton> {
                 );
                 showInfoSnackBar(
                   context,
-                  iconPath: SvgPaths.exclamation,
-                  message: durationText,
+                  message: 'Today\'s total invested time: $durationText',
+                  iconPath: SvgPaths.stopwatch,
                 );
               },
               mouseCursor: SystemMouseCursors.click,
@@ -81,11 +82,11 @@ class _PomodoroSetDurationButtonState extends State<PomodoroSetDurationButton> {
                   vertical: ContainerDesignUtils.quarterPadding,
                 ),
                 decoration: BoxDecoration(
-                  color: scheme.onSurface,
+                  color: context.md ? scheme.surface : scheme.onSurface,
                   borderRadius: ContainerDesignUtils.allRadius,
                 ),
                 child: DurationTextUtils(
-                  durationInSeconds: 0,
+                  durationInSeconds: 1234,
                   fontSizePrimary: 12,
                   fontSizeSeconday: 10,
                 ),
