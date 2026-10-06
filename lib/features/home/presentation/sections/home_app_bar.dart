@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
+import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/app_drawer_button.dart';
 import 'package:tarkeez/core/utils/app_bar_utils.dart';
 
@@ -15,10 +17,18 @@ class HomeAppBar extends StatelessWidget {
       child: Container(
         height: appBarHeight(context),
         constraints: BoxConstraints(maxWidth: Breakpoints.lg),
-        padding: .only(right: 16, left: 12, bottom: context.md ? 16 : 0),
-        child: Align(
-          alignment: context.md ? .bottomStart : .centerStart,
-          child: AppDrawerButton(onTap: onAppMenuTap),
+        padding: .only(
+          right: 16,
+          left: context.md ? 24 : 12,
+          bottom: context.md ? 16 : 0,
+        ),
+        child: Row(
+          crossAxisAlignment: context.md ? .end : .center,
+          mainAxisAlignment: .spaceBetween,
+          children: [
+            AppDrawerButton(onTap: onAppMenuTap),
+            SvgPicture.asset(SvgPaths.iconTransparent, height: 36),
+          ],
         ),
       ),
     );

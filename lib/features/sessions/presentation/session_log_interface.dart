@@ -6,7 +6,6 @@ import 'package:get_it/get_it.dart';
 import 'package:tarkeez/core/services/sound_service.dart';
 import 'package:tarkeez/core/utils/app_clock.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
-import 'package:tarkeez/core/utils/session_log_interface_bottom_clipper.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/select_project_button.dart';
 import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
@@ -123,7 +122,7 @@ class _SessionLogInterfaceState extends State<SessionLogInterface> {
                     height: 54,
                     padding: .symmetric(horizontal: 16),
                     decoration: BoxDecoration(
-                      color: scheme.onSurface,
+                      color: scheme.surface,
                       borderRadius: ContainerDesignUtils.allRadius,
                     ),
                     child: Align(
@@ -153,19 +152,19 @@ class _SessionLogInterfaceState extends State<SessionLogInterface> {
                 // ──────────────────────────────────────────────
                 // SessionLogInterfaceBottomClipper
                 // ──────────────────────────────────────────────
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  top: 12,
-                  child: ClipPath(
-                    clipper: SessionLogInterfaceBottomClipper(),
-                    child: Container(
-                      height: 65,
-                      width: .infinity,
-                      decoration: BoxDecoration(color: scheme.onSurface),
-                    ),
-                  ),
-                ),
+                // Positioned(
+                //   left: 0,
+                //   right: 0,
+                //   top: 12,
+                //   child: ClipPath(
+                //     clipper: SessionLogInterfaceBottomClipper(),
+                //     child: Container(
+                //       height: 65,
+                //       width: .infinity,
+                //       decoration: BoxDecoration(color: scheme.onSurface),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),

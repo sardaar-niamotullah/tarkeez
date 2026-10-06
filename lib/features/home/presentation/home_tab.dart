@@ -41,21 +41,13 @@ class HomeTab extends StatelessWidget {
                               SizedBox(height: ContainerDesignUtils.padding),
                               Row(
                                 children: [
-                                  Expanded(
-                                    child: Column(
-                                      children: [
-                                        const SessionLogInterface(),
-                                        const SizedBox(height: 16),
-                                        const HomeBarChartSection(),
-                                      ],
-                                    ),
-                                  ),
+                                  Expanded(child: const SessionLogInterface()),
                                   const SizedBox(width: 16),
-                                  Expanded(
-                                    child: const RecentProjectRollupsSection(),
-                                  ),
+                                  Expanded(child: const HomeBarChartSection()),
                                 ],
                               ),
+                              const SizedBox(height: 24),
+                              const RecentProjectRollupsSection(),
                               const SizedBox(height: 24),
                             ],
                           ),

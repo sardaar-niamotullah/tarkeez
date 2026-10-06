@@ -26,7 +26,7 @@ class SelectProjectButton extends StatelessWidget {
 
     final resolvedColor = selectedProject != null
         ? projectColors[selectedProject!.colorId]
-        : scheme.surface;
+        : scheme.onSurface;
 
     return Listener(
       behavior: .opaque,
