@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/services/sound_service.dart';
 import 'package:tarkeez/core/utils/app_clock.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
+import 'package:tarkeez/core/utils/session_log_interface_bottom_clipper.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/select_project_button.dart';
 import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
@@ -90,12 +92,12 @@ class _SessionLogInterfaceState extends State<SessionLogInterface> {
     return Container(
       width: .infinity,
       decoration: BoxDecoration(
-        color: scheme.onSurface,
+        color: context.md ? scheme.onSurface : scheme.surface,
         borderRadius: ContainerDesignUtils.allRadius,
       ),
       child: Column(
         children: [
-          const SizedBox(height: 32),
+          SizedBox(height: context.md ? 32 : 48),
           // ──────────────────────────────────────────────
           // Timer
           // ──────────────────────────────────────────────
@@ -117,12 +119,12 @@ class _SessionLogInterfaceState extends State<SessionLogInterface> {
                 // Project section
                 // ──────────────────────────────────────────────
                 Padding(
-                  padding: const .only(left: 24, right: 48),
+                  padding: .only(left: 24, right: context.md ? 24 : 48),
                   child: Container(
                     height: 54,
                     padding: .symmetric(horizontal: 16),
                     decoration: BoxDecoration(
-                      color: scheme.surface,
+                      color: context.md ? scheme.surface : scheme.onSurface,
                       borderRadius: ContainerDesignUtils.allRadius,
                     ),
                     child: Align(
@@ -141,7 +143,7 @@ class _SessionLogInterfaceState extends State<SessionLogInterface> {
                 // Pause play button
                 // ──────────────────────────────────────────────
                 Positioned(
-                  right: 36,
+                  right: context.md ? 24 : 36,
                   top: -10,
                   child: PausePlayButton(
                     isRunning: _isRunning,
@@ -152,19 +154,20 @@ class _SessionLogInterfaceState extends State<SessionLogInterface> {
                 // ──────────────────────────────────────────────
                 // SessionLogInterfaceBottomClipper
                 // ──────────────────────────────────────────────
-                // Positioned(
-                //   left: 0,
-                //   right: 0,
-                //   top: 12,
-                //   child: ClipPath(
-                //     clipper: SessionLogInterfaceBottomClipper(),
-                //     child: Container(
-                //       height: 65,
-                //       width: .infinity,
-                //       decoration: BoxDecoration(color: scheme.onSurface),
-                //     ),
-                //   ),
-                // ),
+                if (!context.md)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    top: 12,
+                    child: ClipPath(
+                      clipper: SessionLogInterfaceBottomClipper(),
+                      child: Container(
+                        height: 65,
+                        width: .infinity,
+                        decoration: BoxDecoration(color: scheme.onSurface),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/constants/project_colors.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/theme/theme.dart';
@@ -26,7 +27,9 @@ class SelectProjectButton extends StatelessWidget {
 
     final resolvedColor = selectedProject != null
         ? projectColors[selectedProject!.colorId]
-        : scheme.onSurface;
+        : context.md
+        ? scheme.onSurface
+        : scheme.surface;
 
     return Listener(
       behavior: .opaque,

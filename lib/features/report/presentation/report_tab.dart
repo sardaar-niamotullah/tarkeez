@@ -26,9 +26,6 @@ class ReportTab extends StatelessWidget {
           bottom: false,
           child: Column(
             children: [
-              // ──────────────────────────────────────────────────────────
-              // App bar
-              // ──────────────────────────────────────────────────────────
               CustomAppBar(
                 title: 'Reports',
                 isBackButtonEnabled: false,

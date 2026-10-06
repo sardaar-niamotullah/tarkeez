@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/theme/app_fonts.dart';
 import 'package:tarkeez/core/utils/app_clock.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
@@ -78,18 +79,27 @@ class TodayTotalDurationDisplay extends StatelessWidget {
           children: [
             Text(
               parts.$1,
-              style: TextUtils.title1(
-                context,
-                fontFamily: AppFontFamily.poppins,
-              ).copyWith(fontSize: 84),
+              style:
+                  TextUtils.title1(
+                    context,
+                    fontFamily: AppFontFamily.poppins,
+                  ).copyWith(
+                    fontSize: context.between(Breakpoints.md, Breakpoints.lg)
+                        ? 64
+                        : 84,
+                  ),
             ),
             Container(
               margin: .symmetric(horizontal: 3.5),
               child: Column(
                 children: [
                   Container(
-                    height: 14,
-                    width: 14,
+                    height: context.between(Breakpoints.md, Breakpoints.lg)
+                        ? 12
+                        : 14,
+                    width: context.between(Breakpoints.md, Breakpoints.lg)
+                        ? 12
+                        : 14,
                     decoration: BoxDecoration(
                       color: scheme.onTertiary.withValues(
                         alpha: (isRunning && !colonVisible) ? 0 : .9,
@@ -97,10 +107,18 @@ class TodayTotalDurationDisplay extends StatelessWidget {
                       shape: .circle,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: context.between(Breakpoints.md, Breakpoints.lg)
+                        ? 10
+                        : 12,
+                  ),
                   Container(
-                    height: 14,
-                    width: 14,
+                    height: context.between(Breakpoints.md, Breakpoints.lg)
+                        ? 12
+                        : 14,
+                    width: context.between(Breakpoints.md, Breakpoints.lg)
+                        ? 12
+                        : 14,
                     decoration: BoxDecoration(
                       color: scheme.onTertiary.withValues(
                         alpha: (isRunning && !colonVisible) ? 0 : .9,
@@ -113,10 +131,15 @@ class TodayTotalDurationDisplay extends StatelessWidget {
             ),
             Text(
               parts.$2,
-              style: TextUtils.title1(
-                context,
-                fontFamily: AppFontFamily.poppins,
-              ).copyWith(fontSize: 84),
+              style:
+                  TextUtils.title1(
+                    context,
+                    fontFamily: AppFontFamily.poppins,
+                  ).copyWith(
+                    fontSize: context.between(Breakpoints.md, Breakpoints.lg)
+                        ? 64
+                        : 84,
+                  ),
             ),
           ],
         );

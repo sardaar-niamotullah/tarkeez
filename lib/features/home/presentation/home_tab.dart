@@ -1,3 +1,4 @@
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/shared_files/buttons/go_premium_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/floating_action_button_wrapper.dart';
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';
@@ -30,31 +31,38 @@ class HomeTab extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Container(
+                      clipBehavior: .hardEdge,
                       padding: .symmetric(
-                        horizontal: ContainerDesignUtils.padding,
+                        horizontal: context.md
+                            ? ContainerDesignUtils.padding
+                            : 0,
                       ),
                       decoration: BoxDecoration(
-                        color: scheme.surface,
+                        color: context.md ? scheme.surface : scheme.onSurface,
                         borderRadius: ContainerDesignUtils.topRadius,
                       ),
                       child: SliverScrollMaxWidthBox(
                         slivers: [
                           SliverList.list(
                             children: [
-                              SizedBox(height: ContainerDesignUtils.padding),
+                              SizedBox(
+                                height: context.md
+                                    ? ContainerDesignUtils.padding
+                                    : 0,
+                              ),
                               GridView.count(
                                 shrinkWrap: true,
-                                crossAxisCount: 2,
-                                mainAxisExtent: 248,
-                                crossAxisSpacing: ContainerDesignUtils.padding,
+                                mainAxisExtent: context.md ? 248 : 264,
+                                crossAxisCount: context.md ? 2 : 1,
                                 physics: NeverScrollableScrollPhysics(),
+                                mainAxisSpacing: ContainerDesignUtils.padding,
+                                crossAxisSpacing: ContainerDesignUtils.padding,
                                 children: [
                                   const SessionLogInterface(),
                                   const HomeBarChartSection(),
                                 ],
                               ),
-                              const SizedBox(height: 24),
-                              // HomeBarChartSection(),
+                              const SizedBox(height: 16),
                               const RecentProjectRollupsSection(),
                               const SizedBox(height: 24),
                             ],
