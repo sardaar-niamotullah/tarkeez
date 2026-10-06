@@ -7,24 +7,7 @@ import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class CommonTextInput extends StatelessWidget {
-  final String label;
-  final String? hintText;
-  final String? errorText;
-  final Color? backgroundColor;
-  final int maxLines;
-  final double borderRadius;
-  final double borderWidth;
-  final FloatingLabelBehavior labelBehavior;
-  final String prefixIconPath;
-  final bool readOnly;
-  final VoidCallback? onTap;
-  final TextEditingController? controller;
-  final ValueChanged<String>? onChanged;
-  final List<TextInputFormatter>? inputFormatters;
-  final TextInputType? keyboardType;
-  final bool isResetEnable;
-
-  const CommonTextInput({
+  const new({
     super.key,
     required this.label,
     this.hintText,
@@ -44,10 +27,26 @@ class CommonTextInput extends StatelessWidget {
     this.isResetEnable = false,
   });
 
+  final String label;
+  final String? hintText;
+  final String? errorText;
+  final Color? backgroundColor;
+  final int maxLines;
+  final double borderRadius;
+  final double borderWidth;
+  final FloatingLabelBehavior labelBehavior;
+  final String prefixIconPath;
+  final bool readOnly;
+  final VoidCallback? onTap;
+  final TextEditingController? controller;
+  final ValueChanged<String>? onChanged;
+  final List<TextInputFormatter>? inputFormatters;
+  final TextInputType? keyboardType;
+  final bool isResetEnable;
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-
     return TextField(
       onTap: onTap,
       readOnly: readOnly,
@@ -63,8 +62,9 @@ class CommonTextInput extends StatelessWidget {
       decoration: InputDecoration(
         isDense: true,
         filled: true,
-        fillColor: backgroundColor ?? scheme.onSurface,
+        hoverColor: scheme.onSurface,
         floatingLabelBehavior: labelBehavior,
+        fillColor: backgroundColor ?? scheme.onSurface,
 
         contentPadding: const .symmetric(horizontal: 16, vertical: 16),
 

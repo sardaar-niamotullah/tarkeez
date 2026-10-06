@@ -8,28 +8,32 @@ class SliverScrollMaxWidthBox extends StatelessWidget {
     super.key,
     required this.slivers,
     this.maxWidth = Breakpoints.lg - 32,
+    this.margin = 32,
   });
 
   final List<Widget> slivers;
-  final double maxWidth;
+  final double maxWidth, margin;
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        SliverLayoutBuilder(
-          builder: (context, constraints) {
-            final side = math.max(
-              0.0,
-              (constraints.crossAxisExtent - maxWidth) / 2,
-            );
-            return SliverPadding(
-              padding: .symmetric(horizontal: side),
-              sliver: SliverMainAxisGroup(slivers: slivers),
-            );
-          },
-        ),
-      ],
+    return Container(
+      padding: .symmetric(horizontal: margin),
+      child: CustomScrollView(
+        slivers: [
+          SliverLayoutBuilder(
+            builder: (context, constraints) {
+              final side = math.max(
+                0.0,
+                (constraints.crossAxisExtent - maxWidth) / 2,
+              );
+              return SliverPadding(
+                padding: .symmetric(horizontal: side),
+                sliver: SliverMainAxisGroup(slivers: slivers),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }

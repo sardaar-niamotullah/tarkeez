@@ -4,6 +4,7 @@ import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/database/app_database.dart';
 import 'package:tarkeez/core/dependency_injection/di.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
+import 'package:tarkeez/core/shared_files/cubits/session_period_cubit.dart';
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
 import 'package:tarkeez/core/shared_files/widgets/delete_dialog.dart';
 import 'package:tarkeez/core/shared_files/widgets/go_premium_dialog.dart';
@@ -36,7 +37,9 @@ class _EraseAllDataButtonState extends State<EraseAllDataButton> {
       // await database.projectsDao.deleteAllProjects();
       await database.sessionsDao.deleteAllSessions();
       getIt<ProjectBloc>().add(FetchProjectsRequested());
-      getIt<SessionBloc>().add(FetchAllSessionsRequested());
+      getIt<SessionBloc>().add(
+        FetchSessionsForPeriodRequested(getIt<SessionPeriodCubit>().state),
+      );
       getIt<DailyRollupBloc>().add(FetchDailyRollupRequested());
       if (!mounted) return;
       context.pop();
@@ -46,6 +49,7 @@ class _EraseAllDataButtonState extends State<EraseAllDataButton> {
       );
     } catch (e) {
       if (!mounted) return;
+      debugPrint('🎨 ${e.toString()}');
       showErrorSnackBar(context, message: e.toString());
     } finally {
       if (mounted) setState(() => _isLoading = false);

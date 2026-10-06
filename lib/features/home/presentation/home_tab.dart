@@ -39,11 +39,15 @@ class HomeTab extends StatelessWidget {
                           SliverList.list(
                             children: [
                               SizedBox(height: ContainerDesignUtils.padding),
-                              Row(
+                              GridView.count(
+                                shrinkWrap: true,
+                                crossAxisCount: 2,
+                                mainAxisExtent: 248,
+                                crossAxisSpacing: ContainerDesignUtils.padding,
+                                physics: NeverScrollableScrollPhysics(),
                                 children: [
-                                  Expanded(child: const SessionLogInterface()),
-                                  const SizedBox(width: 16),
-                                  Expanded(child: const HomeBarChartSection()),
+                                  const SessionLogInterface(),
+                                  const HomeBarChartSection(),
                                 ],
                               ),
                               const SizedBox(height: 24),

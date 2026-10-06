@@ -14,8 +14,6 @@ final class EntrySessionRequested extends SessionEvent {
   final ProjectModel? project;
 }
 
-final class FetchAllSessionsRequested extends SessionEvent {}
-
 final class FetchSessionsForPeriodRequested extends SessionEvent {
   const FetchSessionsForPeriodRequested(this.period);
   final PeriodRange period;
