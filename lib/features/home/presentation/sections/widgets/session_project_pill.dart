@@ -6,9 +6,9 @@ import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 
 class SessionProjectPill extends StatelessWidget {
+  const new({super.key, this.project, this.width = 116});
   final ProjectModel? project;
   final double width;
-  const SessionProjectPill({super.key, this.project, this.width = 116});
 
   @override
   Widget build(BuildContext context) {

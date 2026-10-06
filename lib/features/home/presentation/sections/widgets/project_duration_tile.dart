@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
+import 'package:tarkeez/features/home/presentation/sections/widgets/project_duration_percentage_line.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/session_project_pill.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 
@@ -9,7 +10,6 @@ class ProjectDurationTile extends StatelessWidget {
 
   final ProjectModel? project;
   final bool isActive;
-
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +31,7 @@ class ProjectDurationTile extends StatelessWidget {
         mainAxisAlignment: .spaceBetween,
         children: [
           SessionProjectPill(project: project),
+          ProjectDurationPercentageLine(),
           DurationTextUtils(durationInSeconds: 6532),
         ],
       ),
