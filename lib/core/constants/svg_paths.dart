@@ -1,6 +1,6 @@
 class SvgPaths {
   static const String icon = 'assets/icon/tarkeez.svg';
-  static const String iconTransparent = 'assets/icon/tarkeez_transparent.svg';
+  static const String iconTransparent = 'assets/icon/tarkeez_white.svg';
   static const String iconTransparentSmall =
       'assets/icon/tarkeez_transparent_small.svg';
 

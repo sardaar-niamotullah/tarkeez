@@ -45,7 +45,7 @@ class NavigationRailItem extends StatelessWidget {
                 textAlign: .center,
                 style: TextUtils.paragraphSmallBold(
                   context,
-                  color: isActive ? scheme.primaryContainer : scheme.onTertiary,
+                  color: isActive ? scheme.primary : scheme.onTertiary,
                 ),
               ),
             ],

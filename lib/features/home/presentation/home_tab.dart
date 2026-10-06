@@ -30,6 +30,9 @@ class HomeTab extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Container(
+                      padding: .symmetric(
+                        horizontal: ContainerDesignUtils.padding,
+                      ),
                       decoration: BoxDecoration(
                         color: scheme.surface,
                         borderRadius: ContainerDesignUtils.topRadius,

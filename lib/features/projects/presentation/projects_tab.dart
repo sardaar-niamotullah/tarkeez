@@ -14,7 +14,6 @@ import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/projects/presentation/sections/projects_list.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/create_new_project_button.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/project_page_info_tile.dart';
-import 'package:tarkeez/simulation_part.dart';
 
 class ProjectsTab extends StatelessWidget {
   const new({super.key});
@@ -63,7 +62,7 @@ class ProjectsTab extends StatelessWidget {
                           SliverList.list(
                             children: [
                               const SizedBox(height: 16),
-                              SimulationPart(),
+                              // SimulationPart(),
                               const ProjectPageInfoTile(),
                               const SizedBox(height: 16),
                               Text(
