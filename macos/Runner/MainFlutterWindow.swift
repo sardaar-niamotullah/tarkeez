@@ -4,10 +4,12 @@ import FlutterMacOS
 class MainFlutterWindow: NSWindow {
   override func awakeFromNib() {
     let flutterViewController = FlutterViewController()
-    let windowFrame = self.frame
     self.contentViewController = flutterViewController
-    self.setFrame(windowFrame, display: true)
-    self.contentMinSize = NSSize(width: 450, height: 800)
+
+    let size = NSSize(width: 450, height: 800)
+    self.contentMinSize = size
+    self.setContentSize(size)
+    self.center()
 
     RegisterGeneratedPlugins(registry: flutterViewController)
 
