@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/shared_files/enums/period_range.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
@@ -14,8 +15,11 @@ class HomeBarChartSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Container(
-      height: 248,
-      padding: .all(ContainerDesignUtils.padding),
+      height: context.xs ? 248 : 224,
+      padding: .symmetric(
+        horizontal: ContainerDesignUtils.padding,
+        vertical: context.md ? ContainerDesignUtils.padding : 16,
+      ),
       decoration: BoxDecoration(
         color: scheme.onSurface,
         borderRadius: ContainerDesignUtils.allRadius,
@@ -41,7 +45,7 @@ class HomeBarChartSection extends StatelessWidget {
               ),
             ],
           ),
-          HomeBarChart(),
+          const HomeBarChart(),
         ],
       ),
     );

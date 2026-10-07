@@ -90,6 +90,7 @@ class _SessionLogInterfaceState extends State<SessionLogInterface> {
     final scheme = Theme.of(context).colorScheme;
 
     return Container(
+      height: context.md ? 248 : 264,
       width: .infinity,
       decoration: BoxDecoration(
         color: context.md ? scheme.onSurface : scheme.surface,

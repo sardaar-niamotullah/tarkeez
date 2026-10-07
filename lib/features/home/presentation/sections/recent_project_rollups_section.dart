@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
@@ -11,7 +12,10 @@ class RecentProjectRollupsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Container(
-      padding: .all(ContainerDesignUtils.padding),
+      padding: .symmetric(
+        horizontal: ContainerDesignUtils.padding,
+        vertical: context.md ? ContainerDesignUtils.padding : 0,
+      ),
       decoration: BoxDecoration(
         color: scheme.onSurface,
         borderRadius: ContainerDesignUtils.allRadius,
@@ -26,6 +30,36 @@ class RecentProjectRollupsSection extends StatelessWidget {
                 durationInSeconds: 65321,
                 fontSizePrimary: 18,
                 fontSizeSeconday: 14,
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              Container(
+                height: 4,
+                width: 200,
+                decoration: BoxDecoration(
+                  color: scheme.primary,
+                  borderRadius: ContainerDesignUtils.allRadius,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Container(
+                height: 4,
+                width: 100,
+                decoration: BoxDecoration(
+                  color: scheme.secondary,
+                  borderRadius: ContainerDesignUtils.allRadius,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Container(
+                height: 4,
+                width: 71,
+                decoration: BoxDecoration(
+                  color: scheme.error,
+                  borderRadius: ContainerDesignUtils.allRadius,
+                ),
               ),
             ],
           ),

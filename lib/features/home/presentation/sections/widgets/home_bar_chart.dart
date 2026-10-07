@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/shared_files/enums/period_range.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
@@ -37,7 +38,7 @@ class HomeBarChart extends StatelessWidget {
                 ReportTimelineChartConfig.getHorizontalGapAfterYAxis(context);
 
             final dataVisualiserBarWidth = availableWidth / 5;
-            final chartHeight = 164; //availableWidth / 1.85;
+            final chartHeight = context.xs ? 164 : 140; //availableWidth / 1.85;
             final barAreaHeight = chartHeight - labelAreaHeight - labelGap;
             final chartTopHours = ReportTimelineChartConfig.getChartTopHours(
               entries,

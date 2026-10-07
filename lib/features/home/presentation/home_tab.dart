@@ -50,19 +50,24 @@ class HomeTab extends StatelessWidget {
                                     ? ContainerDesignUtils.padding
                                     : 0,
                               ),
-                              GridView.count(
-                                shrinkWrap: true,
-                                padding: .zero,
-                                mainAxisExtent: context.md ? 248 : 264,
-                                crossAxisCount: context.md ? 2 : 1,
-                                physics: NeverScrollableScrollPhysics(),
-                                mainAxisSpacing: ContainerDesignUtils.padding,
-                                crossAxisSpacing: ContainerDesignUtils.padding,
-                                children: [
-                                  const SessionLogInterface(),
-                                  const HomeBarChartSection(),
-                                ],
-                              ),
+                              if (context.md) ...[
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: const SessionLogInterface(),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: const HomeBarChartSection(),
+                                    ),
+                                  ],
+                                ),
+                              ] else ...[
+                                const SessionLogInterface(),
+                                const HomeBarChartSection(),
+                              ],
+                              const SizedBox(height: 16),
+                              const RecentProjectRollupsSection(),
                               const SizedBox(height: 16),
                               const RecentProjectRollupsSection(),
                               const SizedBox(height: 24),
