@@ -59,7 +59,6 @@ flutter:
     - assets/images/
     - assets/images/locked_backdrops/
     - assets/svgs/
-    - assets/svgs/platforms/
     - assets/icon/
     - assets/sounds/
 

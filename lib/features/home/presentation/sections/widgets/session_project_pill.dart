@@ -6,9 +6,10 @@ import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 
 class SessionProjectPill extends StatelessWidget {
-  const new({super.key, this.project, this.width = 116});
+  const new({super.key, this.project, this.width = 116, this.alignment = .center});
   final ProjectModel? project;
   final double width;
+  final Alignment alignment;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class SessionProjectPill extends StatelessWidget {
     final resolvedColor = project != null
         ? projectColors[project!.colorId]
         : scheme.onTertiary;
-        
+
     return Container(
       width: width,
       padding: .symmetric(
@@ -29,7 +30,8 @@ class SessionProjectPill extends StatelessWidget {
         color: resolvedColor,
         borderRadius: ContainerDesignUtils.allQuarterRadius,
       ),
-      child: Center(
+      child: Align(
+        alignment: alignment,
         child: Text(
           project?.name ?? 'No project',
           style: TextUtils.paragraphBold(

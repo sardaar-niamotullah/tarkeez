@@ -12,14 +12,14 @@ class ProjectDurationPercentageLine extends StatelessWidget {
   final double fraction;
 
   double _barWidth(BuildContext context) => context.lg
-      ? 320
+      ? 280
       : context.md
-      ? 240
-      : context.sm
       ? 180
+      : context.sm
+      ? 160
       : context.xs
-      ? 120
-      : 100;
+      ? 100
+      : 80;
 
   @override
   Widget build(BuildContext context) {
