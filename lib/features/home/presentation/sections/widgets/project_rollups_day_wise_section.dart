@@ -29,7 +29,6 @@ class ProjectRollupsDayWiseSection extends StatelessWidget {
     final total = day.totalSeconds;
 
     return Container(
-      height: 200,
       margin: .only(bottom: ContainerDesignUtils.margin),
       padding: .symmetric(
         horizontal: ContainerDesignUtils.padding,
@@ -40,6 +39,7 @@ class ProjectRollupsDayWiseSection extends StatelessWidget {
         borderRadius: ContainerDesignUtils.allRadius,
       ),
       child: Row(
+        crossAxisAlignment: .start,
         children: [
           Expanded(
             child: Column(
@@ -61,17 +61,16 @@ class ProjectRollupsDayWiseSection extends StatelessWidget {
           Expanded(
             flex: 4,
             child: Column(
+              mainAxisSize: .min,
               children: [
                 for (final item in day.projects)
-                  Expanded(
-                    child: ProjectDurationTile(
-                      project: item.project,
-                      durationInSeconds: item.durationInSeconds,
-                      fraction: total == 0 ? 0 : item.durationInSeconds / total,
-                      isActive:
-                          activeProjectId != null &&
-                          item.project?.id == activeProjectId,
-                    ),
+                  ProjectDurationTile(
+                    project: item.project,
+                    durationInSeconds: item.durationInSeconds,
+                    fraction: total == 0 ? 0 : item.durationInSeconds / total,
+                    isActive:
+                        activeProjectId != null &&
+                        item.project?.id == activeProjectId,
                   ),
               ],
             ),
