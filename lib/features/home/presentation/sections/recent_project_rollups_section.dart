@@ -44,7 +44,7 @@ class RecentProjectRollupsSection extends StatelessWidget {
 
             if (recentDays.isEmpty) {
               return const Padding(
-                padding: EdgeInsets.symmetric(vertical: 24),
+                padding: .symmetric(vertical: 64),
                 child: Center(child: Text('No sessions in the last 5 days')),
               );
             }

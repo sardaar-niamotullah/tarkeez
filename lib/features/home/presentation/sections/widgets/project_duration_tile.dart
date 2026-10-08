@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/project_duration_percentage_line.dart';
@@ -24,7 +25,7 @@ class ProjectDurationTile extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return Container(
       margin: .only(bottom: 8),
-      padding: .only(left: 8, top: 2, bottom: 2, right: 8),
+      padding: .only(left: 8, top: 2, bottom: 2, right: 4),
       decoration: BoxDecoration(
         color: isActive ? scheme.primary.withValues(alpha: .1) : null,
         borderRadius: ContainerDesignUtils.rightQuarterRadius,
@@ -36,10 +37,19 @@ class ProjectDurationTile extends StatelessWidget {
         ),
       ),
       child: Row(
-        mainAxisAlignment: .spaceBetween,
         children: [
           SessionProjectPill(project: project),
-          ProjectDurationPercentageLine(),
+          SizedBox(
+            width: context.sm
+                ? context.md
+                      ? context.lg
+                            ? 128
+                            : 86
+                      : 64
+                : 32,
+          ),
+          ProjectDurationPercentageLine(project: project, fraction: fraction),
+          const Spacer(),
           DurationTextUtils(durationInSeconds: durationInSeconds),
         ],
       ),

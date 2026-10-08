@@ -28,9 +28,9 @@ class HomeBarChartSection extends StatelessWidget {
         mainAxisAlignment: .spaceBetween,
         children: [
           Row(
-            mainAxisAlignment: .spaceBetween,
             children: [
               Text('Last 5 days', style: TextUtils.title2(context)),
+              const Spacer(),
               BlocBuilder<DailyRollupBloc, DailyRollupState>(
                 builder: (context, state) {
                   final totalSeconds = state is DailyRollupLoaded
@@ -43,6 +43,7 @@ class HomeBarChartSection extends StatelessWidget {
                   );
                 },
               ),
+              const SizedBox(width: 4),
             ],
           ),
           const HomeBarChart(),
