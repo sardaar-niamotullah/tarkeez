@@ -19,7 +19,7 @@ class ProjectDurationPercentageLine extends StatelessWidget {
       ? 160
       : context.xs
       ? 100
-      : 80;
+      : 70;
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +55,7 @@ class ProjectDurationPercentageLine extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: context.xs ? 16 : 8),
         Text(
           '${(clamped * 100).round()}%',
           style: TextUtils.paragraphXs(

@@ -40,7 +40,7 @@ class ProjectDurationTile extends StatelessWidget {
         children: [
           SessionProjectPill(
             project: project,
-            width: context.sm ? 120 : 96,
+            width: context.sm ? 120 : 92,
             alignment: context.sm ? .center : .centerLeft,
           ),
           SizedBox(
@@ -50,7 +50,7 @@ class ProjectDurationTile extends StatelessWidget {
                             ? 128
                             : 86
                       : 48
-                : 24,
+                : 20,
           ),
           ProjectDurationPercentageLine(project: project, fraction: fraction),
           const Spacer(),
