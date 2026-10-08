@@ -27,9 +27,20 @@ class PausePlayButton extends StatelessWidget {
             curve: Curves.easeOutCubic,
             height: 72,
             width: 72,
+            // decoration: BoxDecoration(
+            //   color: isRunning ? AppTheme.crimsonTab : scheme.primary,
+            //   shape: .circle,
+            // ),
             decoration: BoxDecoration(
-              color: isRunning ? AppTheme.crimsonTab : scheme.primary,
-              shape: .circle,
+              gradient: LinearGradient(
+                colors: [
+                  isRunning ? AppTheme.crimsonTab : scheme.primaryContainer,
+                  isRunning ? AppTheme.error : scheme.primary,
+                ],
+                begin: .topLeft,
+                end: .bottomRight,
+              ),
+              shape: BoxShape.circle,
             ),
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 280),
