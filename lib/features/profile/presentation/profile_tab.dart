@@ -62,13 +62,9 @@ class ProfileTab extends StatelessWidget {
                                       Row(
                                         crossAxisAlignment: .start,
                                         children: [
-                                          Expanded(
-                                            flex: 2,
-                                            child: Streaks(),
-                                          ),
+                                          Expanded(flex: 2, child: Streaks()),
                                           SizedBox(
-                                            width: ContainerDesignUtils
-                                                .padding,
+                                            width: ContainerDesignUtils.padding,
                                           ),
                                           Expanded(
                                             flex: 5,
@@ -81,8 +77,8 @@ class ProfileTab extends StatelessWidget {
                                         children: [
                                           Streaks(),
                                           SizedBox(
-                                            height: ContainerDesignUtils
-                                                .padding,
+                                            height:
+                                                ContainerDesignUtils.padding,
                                           ),
                                           Heatmap(isLocked: false),
                                         ],
@@ -99,12 +95,9 @@ class ProfileTab extends StatelessWidget {
                                       Row(
                                         crossAxisAlignment: .start,
                                         children: [
-                                          InvestedTimesSection(
-                                            isLocked: false,
-                                          ),
+                                          InvestedTimesSection(isLocked: false),
                                           SizedBox(
-                                            width: ContainerDesignUtils
-                                                .padding,
+                                            width: ContainerDesignUtils.padding,
                                           ),
                                           Expanded(
                                             child: EraseAllDataButton(
@@ -117,16 +110,12 @@ class ProfileTab extends StatelessWidget {
                                       Column(
                                         crossAxisAlignment: .start,
                                         children: [
-                                          InvestedTimesSection(
-                                            isLocked: false,
-                                          ),
+                                          InvestedTimesSection(isLocked: false),
                                           SizedBox(
-                                            height: ContainerDesignUtils
-                                                .padding,
+                                            height:
+                                                ContainerDesignUtils.padding,
                                           ),
-                                          EraseAllDataButton(
-                                            isLocked: false,
-                                          ),
+                                          EraseAllDataButton(isLocked: false),
                                         ],
                                       ),
                                     SizedBox(height: 64),

@@ -51,7 +51,6 @@ class PremiumPerksSection extends StatelessWidget {
             iconPath: SvgPaths.delete,
             iconColor: iconColor,
           ),
-          const SizedBox(height: 24),
         ],
       ),
     );
