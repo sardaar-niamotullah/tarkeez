@@ -6,9 +6,17 @@ import 'package:tarkeez/features/home/presentation/sections/widgets/session_proj
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 
 class ProjectDurationTile extends StatelessWidget {
-  const new({super.key, this.project, this.isActive = false});
+  const new({
+    super.key,
+    this.project,
+    required this.durationInSeconds,
+    required this.fraction,
+    this.isActive = false,
+  });
 
   final ProjectModel? project;
+  final int durationInSeconds;
+  final double fraction;
   final bool isActive;
 
   @override
@@ -32,7 +40,7 @@ class ProjectDurationTile extends StatelessWidget {
         children: [
           SessionProjectPill(project: project),
           ProjectDurationPercentageLine(),
-          DurationTextUtils(durationInSeconds: 6532),
+          DurationTextUtils(durationInSeconds: durationInSeconds),
         ],
       ),
     );
