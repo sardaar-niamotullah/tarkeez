@@ -5,16 +5,7 @@ import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/profile/presentation/sections/widgets/emoji_badge.dart';
 
 class InvestedTimeStatGroup extends StatelessWidget {
-  final String emoji;
-  final Color accentColor;
-  final String topLabel;
-  final int topSeconds;
-  final String bottomLabel;
-  final int bottomSeconds;
-  final String? middleLabel;
-  final int? middleSeconds;
-
-  const InvestedTimeStatGroup({
+  const new({
     super.key,
     required this.emoji,
     required this.accentColor,
@@ -25,6 +16,15 @@ class InvestedTimeStatGroup extends StatelessWidget {
     this.middleLabel,
     this.middleSeconds,
   });
+
+  final String emoji;
+  final Color accentColor;
+  final String topLabel;
+  final int topSeconds;
+  final String bottomLabel;
+  final int bottomSeconds;
+  final String? middleLabel;
+  final int? middleSeconds;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,8 @@ class InvestedTimeStatGroup extends StatelessWidget {
         borderRadius: ContainerDesignUtils.allRadius,
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: .center,
+        crossAxisAlignment: .center,
         children: [
           _ValueRow(label: topLabel, seconds: topSeconds),
           const SizedBox(height: 6),
@@ -63,7 +64,7 @@ class _ValueRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: .center,
       children: [
         DurationTextUtils(
           durationInSeconds: seconds,

@@ -131,8 +131,8 @@ class ProjectsPieChartSection extends StatelessWidget {
                                             : 0;
                                         return DurationTextUtils(
                                           durationInSeconds: totalSeconds,
-                                          fontSizePrimary: 24,
-                                          fontSizeSeconday: 18,
+                                          fontSizePrimary: 22,
+                                          fontSizeSeconday: 16,
                                         );
                                       },
                                     ),
