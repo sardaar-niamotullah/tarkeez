@@ -60,6 +60,7 @@ flutter:
     - assets/images/locked_backdrops/
     - assets/svgs/
     - assets/icon/
+    - assets/logos/
     - assets/sounds/
 
   fonts:

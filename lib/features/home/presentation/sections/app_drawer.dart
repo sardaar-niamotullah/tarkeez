@@ -44,8 +44,8 @@ class AppDrawer extends StatelessWidget {
                           ),
                           child: Center(
                             child: SvgPicture.asset(
-                              SvgPaths.iconTransparent,
-                              height: 36,
+                              SvgPaths.logoOriginal,
+                              height: 28,
                             ),
                           ),
                         ),

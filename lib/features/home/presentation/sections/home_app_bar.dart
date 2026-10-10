@@ -27,7 +27,7 @@ class HomeAppBar extends StatelessWidget {
           crossAxisAlignment: context.md ? .end : .center,
           children: [
             AppDrawerButton(onTap: onAppMenuTap),
-            ActionPageIcon(iconPath: SvgPaths.iconTransparent, size: 28),
+            ActionPageIcon(iconPath: SvgPaths.logoOriginal, size: 28),
           ],
         ),
       ),

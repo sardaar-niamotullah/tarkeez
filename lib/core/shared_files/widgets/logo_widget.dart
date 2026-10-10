@@ -12,7 +12,7 @@ class LogoWidget extends StatelessWidget {
     return Stack(
       clipBehavior: .none,
       children: [
-        Center(child: SvgPicture.asset(SvgPaths.iconTransparent, height: 180)),
+        Center(child: SvgPicture.asset(SvgPaths.logoOriginal, height: 180)),
         Positioned(
           left: 0,
           right: 0,

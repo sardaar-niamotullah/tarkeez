@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
@@ -13,7 +14,7 @@ class SimulationPart extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(height: 16),
+        SizedBox(height: 8),
         const SimulateSessions(),
         SizedBox(height: 8),
         Row(
