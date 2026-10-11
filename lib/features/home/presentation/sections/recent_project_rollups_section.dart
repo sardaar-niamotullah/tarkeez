@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/project_rollups_day_wise_section.dart';
 import 'package:tarkeez/features/project_rollups/bloc/project_rollup_bloc.dart';
 import 'package:tarkeez/features/project_rollups/data/models/project_rollup_model.dart';
-import 'package:tarkeez/features/project_rollups/stats/day_wise_stats.dart';
+import 'package:tarkeez/features/project_rollups/stats/day_wise_projects_rollup_stats.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 
@@ -36,7 +36,7 @@ class RecentProjectRollupsSection extends StatelessWidget {
                   : const SizedBox.shrink();
             }
 
-            final recentDays = DayWiseStats.recentDays(
+            final recentDays = DayWiseProjectsRollupStats.recentDays(
               rollups: rollups,
               projects: projects,
               days: _days,

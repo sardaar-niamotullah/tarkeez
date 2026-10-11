@@ -4,12 +4,12 @@ import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/project_duration_tile.dart';
-import 'package:tarkeez/features/project_rollups/stats/day_wise_stats.dart';
+import 'package:tarkeez/features/project_rollups/data/models/day_wise_projects_rollup_model.dart';
 
 class ProjectRollupsDayWiseSection extends StatelessWidget {
   const new({super.key, required this.day, this.activeProjectId});
 
-  final DayRollupModel day;
+  final DayWiseProjectsRollupModel day;
 
   /// Project of the currently running session (only meaningful for today).
   final String? activeProjectId;

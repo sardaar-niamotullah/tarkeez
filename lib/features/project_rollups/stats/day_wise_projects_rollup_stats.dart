@@ -1,25 +1,15 @@
 import 'package:tarkeez/core/utils/rollup_date_utils.dart';
+import 'package:tarkeez/features/project_rollups/data/models/day_wise_projects_rollup_model.dart';
 import 'package:tarkeez/features/project_rollups/data/models/project_duration_model.dart';
 import 'package:tarkeez/features/project_rollups/data/models/project_rollup_model.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 
-class DayRollupModel {
-  const new({required this.date, required this.projects});
-  final DateTime date;
+class DayWiseProjectsRollupStats {
+  DayWiseProjectsRollupStats._();
 
-  /// Sorted by duration, descending.
-  final List<ProjectDurationModel> projects;
-
-  int get totalSeconds =>
-      projects.fold(0, (sum, p) => sum + p.durationInSeconds);
-}
-
-class DayWiseStats {
-  DayWiseStats._();
-
-  /// Groups rollups by day for the last [days] calendar days (today included).
+  /// Groups rollups by day for the last days calendar days (today included).
   /// Days with no tracked time are skipped. Newest day first.
-  static List<DayRollupModel> recentDays({
+  static List<DayWiseProjectsRollupModel> recentDays({
     required List<ProjectRollupModel> rollups,
     required List<ProjectModel> projects,
     int days = 5,
@@ -46,7 +36,6 @@ class DayWiseStats {
         continue;
       }
 
-      // Same rule as PieChartStats: no project / deleted project -> null bucket.
       final key =
           rollup.projectId != null && projectsById.containsKey(rollup.projectId)
           ? rollup.projectId
@@ -65,7 +54,7 @@ class DayWiseStats {
 
     return [
       for (final dateKey in dateKeys)
-        DayRollupModel(
+        DayWiseProjectsRollupModel(
           date: DateTime.parse(dateKey), // 'YYYY-MM-DD' -> local midnight
           projects:
               byDate[dateKey]!.entries
