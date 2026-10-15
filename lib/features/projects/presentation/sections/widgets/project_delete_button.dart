@@ -8,8 +8,8 @@ import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 
 class ProjectDeleteButton extends StatelessWidget {
+  const new({super.key, required this.project});
   final ProjectModel project;
-  const ProjectDeleteButton({super.key, required this.project});
 
   @override
   Widget build(BuildContext context) {

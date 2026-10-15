@@ -12,9 +12,9 @@ import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/projects/presentation/sections/project_color_options_section.dart';
 
 class AddOrUpdateProjectDialog extends StatelessWidget {
-  final ProjectModel? project;
+  const new({super.key, this.project});
 
-  const AddOrUpdateProjectDialog({super.key, this.project});
+  final ProjectModel? project;
 
   @override
   Widget build(BuildContext context) {

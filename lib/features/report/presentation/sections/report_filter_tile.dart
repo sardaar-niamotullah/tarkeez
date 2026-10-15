@@ -11,7 +11,7 @@ import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/report/presentation/sections/report_filter_bottom_sheet.dart';
 
 class ReportFilterTile extends StatelessWidget {
-  const ReportFilterTile({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {

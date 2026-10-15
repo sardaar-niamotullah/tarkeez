@@ -10,9 +10,9 @@ import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
 import 'package:tarkeez/features/report/presentation/sections/widgets/invested_time_stat_group.dart';
 
 class InvestedTimesSection extends StatelessWidget {
-  final bool isLocked;
+  const new({super.key, required this.isLocked});
 
-  const InvestedTimesSection({super.key, required this.isLocked});
+  final bool isLocked;
 
   @override
   Widget build(BuildContext context) {

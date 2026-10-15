@@ -7,7 +7,7 @@ import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/projects/presentation/sections/add_or_update_project_dialog.dart';
 
 class CreateNewProjectButton extends StatelessWidget {
-  const CreateNewProjectButton({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {

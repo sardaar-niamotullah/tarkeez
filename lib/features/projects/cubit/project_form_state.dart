@@ -1,14 +1,7 @@
 part of 'project_form_cubit.dart';
 
 class ProjectFormState extends Equatable {
-  final ProjectModel? savedProject;
-  final int? selectedColorId;
-  final String? nameError;
-  final Set<String> touched;
-  final bool canSubmit;
-  final bool hasChanges;
-
-  const ProjectFormState({
+  const new({
     this.savedProject,
     this.selectedColorId,
     this.nameError,
@@ -16,6 +9,13 @@ class ProjectFormState extends Equatable {
     this.canSubmit = false,
     this.hasChanges = false,
   });
+  
+  final ProjectModel? savedProject;
+  final int? selectedColorId;
+  final String? nameError;
+  final Set<String> touched;
+  final bool canSubmit;
+  final bool hasChanges;
 
   @override
   List<Object?> get props => [
