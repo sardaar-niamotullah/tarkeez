@@ -53,18 +53,18 @@ The leaderboard is the only screen that talks to the cloud directly. It asks `ge
 flowchart TB
   subgraph APP["Frontend: Flutter · offline-first"]
     direction LR
-    UI["UI Screens<br/>Home · Timer · Projects · Reports · Leaderboard · Accounts"] --> BLOC["BLoC"] --> REPO["Repositories<br/>(scoped by active user_email)"] --> DAO["Drift DAOs"] --> LDB[("LOCAL DATABASE: SQLite<br/>users · projects<br/>sessions (last 7 days)<br/>daily_rollups · project_rollups (lifetime)<br/>sync_queue · sync_state · app_meta<br/>──────<br/>triggers: session to rollups, split at local midnight")]
+    UI["UI Screens"] --> BLOC["BLoC"] --> REPO["Repositories<br/>(scoped by user_email)"] --> DAO["DAOs"] --> LDB[("SQLite<br/>users · projects<br/>sessions (last 7 days)<br/>daily_rollups · project_rollups<br/>sync_queue · sync_state · app_meta<br/>──────<br/>triggers: session to rollups, split at local midnight")]
     REPO -.->|"every 30 min · app start"| SYNC["Sync Service<br/>push · prune · pull"]
     SYNC <-->|"reads sync_queue, writes pulled data"| LDB
   end
 
   subgraph CLOUD["Backend: Supabase"]
     direction LR
-    AUTH["Auth<br/>JWT + RLS by user_email"] --> RPC["RPC functions<br/>push_changes · check_remote_changes · pull_changes · get_leaderboard"] --> CDB[("CLOUD DATABASE: PostgreSQL<br/>users · projects<br/>sessions (last 8 days)<br/>daily_rollups · project_rollups · utc_daily_rollups (lifetime)<br/>sync_state<br/>──────<br/>triggers: session to 3 rollup tables, split at local and UTC midnight")]
+    AUTH["Supabase Auth<br/>OAuth sign-in issues the JWT<br/>RLS by user_email"] --> RPC["RPC functions<br/>push_changes · check_remote_changes · pull_changes · get_leaderboard"] --> CDB[("PostgreSQL<br/>users · projects<br/>sessions (last 8 days)<br/>daily_rollups · project_rollups · utc_daily_rollups (lifetime)<br/>sync_state<br/>──────<br/>triggers: session to 3 rollup tables, split at local and UTC midnight")]
     CRON["pg_cron daily<br/>delete sessions older than 8 days"] --> CDB
   end
 
-  APP -->|"Sync Service → Auth<br/>HTTPS + JWT<br/>① every 30 min: push sync_queue<br/>② app start: check version, pull changes only if needed"| CLOUD
+  APP -->|"Sync Service → Auth<br/>HTTPS + JWT (access token from OAuth login)<br/>① every 30 min: push sync_queue<br/>② app start: check version, pull changes only if needed"| CLOUD
   APP -.->|"Leaderboard screen → get_leaderboard<br/>(online only, nothing stored locally)"| CLOUD
 ```
 
