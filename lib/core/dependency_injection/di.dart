@@ -1,9 +1,13 @@
 import 'dart:async';
 
 import 'package:get_it/get_it.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tarkeez/core/database/app_database.dart';
+import 'package:tarkeez/core/services/auth_session_service.dart';
 import 'package:tarkeez/core/services/sound_service.dart';
 import 'package:tarkeez/core/shared_files/cubits/session_period_cubit.dart';
+import 'package:tarkeez/features/auth/bloc/auth_bloc.dart';
+import 'package:tarkeez/features/auth/data/repositories/auth_repository.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
 import 'package:tarkeez/features/daily_rollups/data/repositories/daily_rollup_repository.dart';
 import 'package:tarkeez/features/project_rollups/bloc/project_rollup_bloc.dart';
@@ -20,11 +24,21 @@ Future<void> injectDependencies() async {
   final database = AppDatabase();
   await database.connect();
   getIt.registerSingleton<AppDatabase>(database);
+  getIt.registerLazySingleton<SupabaseClient>(() => Supabase.instance.client);
+  getIt.registerLazySingleton<AuthSessionService>(
+    () => AuthSessionService(getIt<SupabaseClient>()),
+  );
 
   // ── Sound ────────────────────────────────────────────────────────────
   final soundService = SoundService();
   unawaited(soundService.init());
   getIt.registerSingleton<SoundService>(soundService);
+
+  // ── Auth ────────────────────────────────────────────────────────────────
+  getIt.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(getIt<SupabaseClient>()),
+  );
+  getIt.registerFactory(() => AuthBloc(getIt<AuthRepository>()));
 
   // ── Projects ─────────────────────────────────────────────────────────
   getIt.registerLazySingleton<ProjectRepository>(

@@ -5,18 +5,18 @@ import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class LogoWidget extends StatelessWidget {
-  const LogoWidget({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       clipBehavior: .none,
       children: [
-        Center(child: SvgPicture.asset(SvgPaths.logoOriginal, height: 180)),
+        Center(child: SvgPicture.asset(SvgPaths.logoOriginal, height: 128)),
         Positioned(
           left: 0,
           right: 0,
-          bottom: -16,
+          bottom: -36,
           child: Text(
             'Tarkeez',
             style: TextUtils.title1(

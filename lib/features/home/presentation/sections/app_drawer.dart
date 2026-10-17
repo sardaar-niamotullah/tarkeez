@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tarkeez/core/shared_files/buttons/theme_switch_button.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
@@ -7,12 +8,13 @@ import 'package:go_router/go_router.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/routes/route_names.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
+import 'package:tarkeez/features/auth/bloc/auth_bloc.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/app_drawer_item.dart';
 import 'package:tarkeez/features/settings/presentation/settings_bottom_sheet.dart';
 import 'package:tarkeez/features/subscription/presentation/sections/subscription_card.dart';
 
 class AppDrawer extends StatelessWidget {
-  const AppDrawer({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +62,9 @@ class AppDrawer extends StatelessWidget {
                   const ThemeSwitchButton(),
                 ],
               ),
-              const SizedBox(height: 164),
+              const SizedBox(height: 40),
+              const SubscriptionCard(),
+              const SizedBox(height: 80),
 
               // ──────────────────────────────────────────────
               // Drawer items
@@ -102,8 +106,12 @@ class AppDrawer extends StatelessWidget {
                   ),
                 ),
               ),
-              const SubscriptionCard(),
-              const SizedBox(height: 40),
+              AppDrawerItem(
+                title: 'Log out',
+                iconPath: SvgPaths.logOut,
+                onTap: () => context.read<AuthBloc>().add(SignOutRequested()),
+              ),
+              const SizedBox(height: 24),
               Row(
                 mainAxisAlignment: .spaceBetween,
                 children: [
