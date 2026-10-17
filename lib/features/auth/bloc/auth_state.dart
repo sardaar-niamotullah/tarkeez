@@ -1,20 +1,27 @@
 part of 'auth_bloc.dart';
 
 sealed class AuthState {
-  const AuthState();
+  const new();
 }
 
 class AuthInitial extends AuthState {
-  const AuthInitial();
+  const new();
 }
+
 class AuthLoading extends AuthState {
-  const AuthLoading();
+  const new();
 }
+
 class AuthSuccess extends AuthState {
+  const new(this.user);
   final UserModel user;
-  const AuthSuccess(this.user);
 }
+
 class AuthFailure extends AuthState {
+  const new(this.message);
   final String message;
-  const AuthFailure(this.message);
+}
+
+final class AuthSignOut extends AuthState {
+  const new();
 }

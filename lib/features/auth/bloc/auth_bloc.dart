@@ -6,14 +6,14 @@ part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final AuthRepository _repository;
-
   new(AuthRepository repository)
     : _repository = repository,
       super(const AuthInitial()) {
     on<GoogleSignInRequested>(_onGoogleSignIn);
     on<SignOutRequested>(_onSignOut);
   }
+
+  final AuthRepository _repository;
 
   Future<void> _onGoogleSignIn(
     GoogleSignInRequested event,
@@ -34,7 +34,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(const AuthLoading());
     final result = await _repository.signOut();
     result.fold(
-      onSuccess: (_) => emit(const AuthInitial()),
+      onSuccess: (_) => emit(const AuthSignOut()),
       onFailure: (error) => emit(AuthFailure(error.message)),
     );
   }

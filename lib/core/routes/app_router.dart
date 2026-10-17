@@ -1,4 +1,6 @@
 import 'package:go_router/go_router.dart';
+import 'package:tarkeez/core/dependency_injection/di.dart';
+import 'package:tarkeez/features/auth/bloc/auth_bloc.dart';
 import 'package:tarkeez/features/auth/presentation/auth_page.dart';
 import 'package:tarkeez/features/others/feedback/presentation/feedback_page.dart';
 import 'package:tarkeez/features/main_scaffold.dart';
@@ -11,13 +13,10 @@ import 'package:tarkeez/features/others/terms_and_conditions/presentation/terms_
 
 final GoRouter router = GoRouter(
   debugLogDiagnostics: false,
-  initialLocation: RouteNames.authPage,
-  
-  // getIt<AuthBloc>().state is AuthSuccess
-  //     ? RouteNames.home
-  //     : RouteNames.authPage,
+  initialLocation: getIt<AuthBloc>().state is AuthSuccess
+      ? RouteNames.home
+      : RouteNames.authPage,
 
-  
   routes: [
     GoRoute(
       path: RouteNames.authPage,
