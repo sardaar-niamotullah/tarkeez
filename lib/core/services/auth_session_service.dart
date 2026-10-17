@@ -1,6 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-
 class AuthSessionService {
   const new(this._supabaseClient);
   

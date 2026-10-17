@@ -15,7 +15,6 @@ Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
-  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Supabase.initialize(
     url: dotenv.get(SecretKeys.supabaseURL),
     // ignore: deprecated_member_use

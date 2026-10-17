@@ -8,6 +8,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract interface class AuthRepository {
+  UserModel? get currentUser;
+  Stream<void> get sessionEnded;
+
   Future<Result<void>> signOut();
   Future<Result<UserModel>> signInWithGoogle();
   Future<Result<UserModel>> signInWithGoogleLegacy();
@@ -16,6 +19,16 @@ abstract interface class AuthRepository {
 class AuthRepositoryImpl implements AuthRepository {
   final SupabaseClient _supabase;
   const AuthRepositoryImpl(this._supabase);
+
+  @override
+  UserModel? get currentUser {
+    final user = _supabase.auth.currentUser;
+    return user == null ? null : UserModel.fromSupabaseUser(user);
+  }
+
+  @override
+  Stream<void> get sessionEnded => _supabase.auth.onAuthStateChange
+      .where((data) => data.event == AuthChangeEvent.signedOut);
 
   @override
   Future<Result<UserModel>> signInWithGoogle() {
@@ -44,7 +57,7 @@ class AuthRepositoryImpl implements AuthRepository {
           await googleUser.authorizationClient.authorizeScopes(scopes);
       final idToken = googleUser.authentication.idToken;
       if (idToken == null) {
-        throw AppAuthException('No ID Token found.');
+        throw const AppAuthException('No ID Token found.');
       }
 
       final response = await _supabase.auth.signInWithIdToken(

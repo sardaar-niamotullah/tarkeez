@@ -38,7 +38,9 @@ Future<void> injectDependencies() async {
   getIt.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(getIt<SupabaseClient>()),
   );
-  getIt.registerFactory(() => AuthBloc(getIt<AuthRepository>()));
+  getIt.registerLazySingleton<AuthBloc>(
+    () => AuthBloc(getIt<AuthRepository>()),
+  );
 
   // ── Projects ─────────────────────────────────────────────────────────
   getIt.registerLazySingleton<ProjectRepository>(
