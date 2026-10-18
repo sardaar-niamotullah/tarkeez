@@ -16,6 +16,10 @@ class AuthBottomCTASection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final isSafeAreaDevice = {
+      TargetPlatform.iOS,
+      TargetPlatform.android,
+    }.contains(Theme.of(context).platform);
     return Container(
       height: 350,
       decoration: BoxDecoration(
@@ -95,6 +99,7 @@ class AuthBottomCTASection extends StatelessWidget {
                   ),
                 ],
               ),
+              SizedBox(height: !isSafeAreaDevice ? 16 : 0),
             ],
           ),
         ),

@@ -10,7 +10,7 @@ import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:flutter/material.dart';
 
 class FeedbackPage extends StatelessWidget {
-  const FeedbackPage({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class App extends StatelessWidget {
-  final ThemeState initialTheme;
+  const new({super.key, required this.initialTheme});
 
-  const App({super.key, required this.initialTheme});
+  final ThemeState initialTheme;
 
   @override
   Widget build(BuildContext context) {

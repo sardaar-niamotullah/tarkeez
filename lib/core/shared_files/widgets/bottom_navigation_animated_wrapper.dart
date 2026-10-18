@@ -4,8 +4,8 @@ import 'package:tarkeez/core/utils/max_width_box.dart';
 import 'package:tarkeez/core/utils/primary_page_margin.dart';
 
 class BottomNavigationAnimatedWrapper extends StatelessWidget {
+  const new({super.key, required this.child});
   final Widget child;
-  const BottomNavigationAnimatedWrapper({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
