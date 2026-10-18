@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart';
-import 'package:tarkeez/core/database/app_database.dart';
+import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/error/result.dart';
 import 'package:tarkeez/core/error/result_guard.dart';
 import 'package:tarkeez/features/auth/data/models/user_model.dart';
@@ -19,8 +19,8 @@ abstract interface class AuthRepository {
 
 class AuthRepositoryImpl implements AuthRepository {
   final SupabaseClient _supabase;
-  final AppDatabase _db;
-  const AuthRepositoryImpl(this._supabase, this._db);
+  final LocalDatabase _localDatabase;
+  const AuthRepositoryImpl(this._supabase, this._localDatabase);
 
   @override
   UserModel? get currentUser {
@@ -96,7 +96,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
     final model = UserModel.fromRow(row);
 
-    await _db.localUsersDao.upsertUser(
+    await _localDatabase.localUsersDao.upsertUser(
       LocalUsersCompanion(
         id: Value(model.id),
         email: Value(model.email),

@@ -3,7 +3,7 @@
 part of 'projects_dao.dart';
 
 // ignore_for_file: type=lint
-mixin _$ProjectsDaoMixin on DatabaseAccessor<AppDatabase> {
+mixin _$ProjectsDaoMixin on DatabaseAccessor<LocalDatabase> {
   $ProjectsTable get projects => attachedDatabase.projects;
   ProjectsDaoManager get managers => ProjectsDaoManager(this);
 }

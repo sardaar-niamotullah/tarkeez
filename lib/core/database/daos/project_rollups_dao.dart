@@ -1,11 +1,11 @@
 import 'package:drift/drift.dart';
 import 'package:tarkeez/core/database/tables/project_rollups.dart';
-import 'package:tarkeez/core/database/app_database.dart';
+import 'package:tarkeez/core/database/local_database.dart';
 
 part 'project_rollups_dao.g.dart';
 
 @DriftAccessor(tables: [ProjectRollups])
-class ProjectRollupsDao extends DatabaseAccessor<AppDatabase>
+class ProjectRollupsDao extends DatabaseAccessor<LocalDatabase>
     with _$ProjectRollupsDaoMixin {
   ProjectRollupsDao(super.db);
 
@@ -90,6 +90,7 @@ class ProjectRollupsDao extends DatabaseAccessor<AppDatabase>
       )
       ..groupBy([projectRollups.projectId]);
   }
+
   Map<String?, int> _mapTotals(List<TypedResult> rows, Expression<int> total) {
     return {
       for (final r in rows)
@@ -107,6 +108,7 @@ class ProjectRollupsDao extends DatabaseAccessor<AppDatabase>
     final rows = await _totalsByProjectQuery(start, end, total).get();
     return _mapTotals(rows, total);
   }
+
   Stream<Map<String?, int>> watchTotalsByProjectInRange(
     String start,
     String end,

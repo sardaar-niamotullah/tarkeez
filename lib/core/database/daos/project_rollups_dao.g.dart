@@ -3,7 +3,7 @@
 part of 'project_rollups_dao.dart';
 
 // ignore_for_file: type=lint
-mixin _$ProjectRollupsDaoMixin on DatabaseAccessor<AppDatabase> {
+mixin _$ProjectRollupsDaoMixin on DatabaseAccessor<LocalDatabase> {
   $ProjectRollupsTable get projectRollups => attachedDatabase.projectRollups;
   ProjectRollupsDaoManager get managers => ProjectRollupsDaoManager(this);
 }

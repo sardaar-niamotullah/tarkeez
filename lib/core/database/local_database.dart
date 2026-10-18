@@ -15,15 +15,15 @@ import 'daos/sessions_dao.dart';
 import 'daos/daily_rollups_dao.dart';
 import 'daos/project_rollups_dao.dart';
 
-part 'app_database.g.dart';
+part 'local_database.g.dart';
 
 // dart run build_runner build --delete-conflicting-outputs
 @DriftDatabase(
   tables: [Projects, Sessions, DailyRollups, ProjectRollups, LocalUsers],
   daos: [ProjectsDao, SessionsDao, DailyRollupsDao, ProjectRollupsDao,  LocalUsersDao],
 )
-class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(_openConnection());
+class LocalDatabase extends _$LocalDatabase {
+  LocalDatabase() : super(_openConnection());
 
   @override
   int get schemaVersion => 5;

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:tarkeez/core/database/app_database.dart';
+import 'package:tarkeez/core/database/local_database.dart';
 
 class SessionModel extends Equatable {
   final String? id;
@@ -35,7 +35,7 @@ class SessionModel extends Equatable {
       id: row.id,
       projectId: row.projectId,
       startedAt: row.startedAt,
-      endedAt: row.endedAt
+      endedAt: row.endedAt,
     );
   }
 }

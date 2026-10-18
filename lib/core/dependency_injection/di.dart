@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:tarkeez/core/database/app_database.dart';
+import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/services/auth_session_service.dart';
 import 'package:tarkeez/core/services/sound_service.dart';
 import 'package:tarkeez/core/shared_files/cubits/session_period_cubit.dart';
@@ -21,9 +21,9 @@ final getIt = GetIt.instance;
 
 Future<void> injectDependencies() async {
   // ── Database ─────────────────────────────────────────────────────────
-  final database = AppDatabase();
+  final database = LocalDatabase();
   await database.connect();
-  getIt.registerSingleton<AppDatabase>(database);
+  getIt.registerSingleton<LocalDatabase>(database);
   getIt.registerLazySingleton<SupabaseClient>(() => Supabase.instance.client);
   getIt.registerLazySingleton<AuthSessionService>(
     () => AuthSessionService(getIt<SupabaseClient>()),
@@ -36,7 +36,7 @@ Future<void> injectDependencies() async {
 
   // ── Auth ────────────────────────────────────────────────────────────────
   getIt.registerLazySingleton<AuthRepository>(
-    () => AuthRepositoryImpl(getIt<SupabaseClient>(), getIt<AppDatabase>()),
+    () => AuthRepositoryImpl(getIt<SupabaseClient>(), getIt<LocalDatabase>()),
   );
   getIt.registerLazySingleton<AuthBloc>(
     () => AuthBloc(getIt<AuthRepository>()),
@@ -44,7 +44,7 @@ Future<void> injectDependencies() async {
 
   // ── Projects ─────────────────────────────────────────────────────────
   getIt.registerLazySingleton<ProjectRepository>(
-    () => ProjectRepositoryImpl(getIt<AppDatabase>()),
+    () => ProjectRepositoryImpl(getIt<LocalDatabase>()),
   );
   getIt.registerLazySingleton<ProjectBloc>(
     () => ProjectBloc(getIt<ProjectRepository>()),
@@ -52,7 +52,7 @@ Future<void> injectDependencies() async {
 
   // ── Sessions ─────────────────────────────────────────────────────────
   getIt.registerLazySingleton<SessionRepository>(
-    () => SessionRepositoryImpl(getIt<AppDatabase>()),
+    () => SessionRepositoryImpl(getIt<LocalDatabase>()),
   );
   getIt.registerLazySingleton<SessionBloc>(
     () => SessionBloc(getIt<SessionRepository>()),
@@ -61,7 +61,7 @@ Future<void> injectDependencies() async {
 
   // ── Daily Rollups ────────────────────────────────────────────────────
   getIt.registerLazySingleton<DailyRollupRepository>(
-    () => DailyRollupRepositoryImpl(getIt<AppDatabase>()),
+    () => DailyRollupRepositoryImpl(getIt<LocalDatabase>()),
   );
   getIt.registerLazySingleton<DailyRollupBloc>(
     () => DailyRollupBloc(getIt<DailyRollupRepository>()),
@@ -69,7 +69,7 @@ Future<void> injectDependencies() async {
 
   // ── Project Rollups ────────────────────────────────────────────────────
   getIt.registerLazySingleton<ProjectRollupRepository>(
-    () => ProjectRollupRepositoryImpl(getIt<AppDatabase>()),
+    () => ProjectRollupRepositoryImpl(getIt<LocalDatabase>()),
   );
   getIt.registerLazySingleton<ProjectRollupBloc>(
     () => ProjectRollupBloc(getIt<ProjectRollupRepository>()),

@@ -1,6 +1,6 @@
 import 'package:tarkeez/core/error/result.dart';
 import 'package:tarkeez/core/error/result_guard.dart';
-import 'package:tarkeez/core/database/app_database.dart';
+import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/utils/rollup_date_utils.dart';
 import 'package:tarkeez/features/project_rollups/data/models/project_rollup_model.dart';
 
@@ -15,7 +15,7 @@ abstract interface class ProjectRollupRepository {
 
 class ProjectRollupRepositoryImpl implements ProjectRollupRepository {
   const ProjectRollupRepositoryImpl(this._database);
-  final AppDatabase _database;
+  final LocalDatabase _database;
 
   @override
   Future<Result<List<ProjectRollupModel>>> fetchAllRollups() {

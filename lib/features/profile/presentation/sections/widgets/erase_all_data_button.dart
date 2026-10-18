@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
-import 'package:tarkeez/core/database/app_database.dart';
+import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/dependency_injection/di.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:tarkeez/core/shared_files/cubits/session_period_cubit.dart';
@@ -33,7 +33,7 @@ class _EraseAllDataButtonState extends State<EraseAllDataButton> {
     setDialogState(() {});
 
     try {
-      final database = getIt<AppDatabase>();
+      final database = getIt<LocalDatabase>();
       // await database.projectsDao.deleteAllProjects();
       await database.sessionsDao.deleteAllSessions();
       getIt<ProjectBloc>().add(FetchProjectsRequested());

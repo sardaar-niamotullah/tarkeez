@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:tarkeez/core/database/app_database.dart';
+import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/database/tables/project_rollups.dart'
     show noProjectKey;
 

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'app_database.dart';
+part of 'local_database.dart';
 
 // ignore_for_file: type=lint
 class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
@@ -1418,23 +1418,23 @@ class LocalUsersCompanion extends UpdateCompanion<LocalUser> {
   }
 }
 
-abstract class _$AppDatabase extends GeneratedDatabase {
-  _$AppDatabase(QueryExecutor e) : super(e);
-  $AppDatabaseManager get managers => $AppDatabaseManager(this);
+abstract class _$LocalDatabase extends GeneratedDatabase {
+  _$LocalDatabase(QueryExecutor e) : super(e);
+  $LocalDatabaseManager get managers => $LocalDatabaseManager(this);
   late final $ProjectsTable projects = $ProjectsTable(this);
   late final $SessionsTable sessions = $SessionsTable(this);
   late final $DailyRollupsTable dailyRollups = $DailyRollupsTable(this);
   late final $ProjectRollupsTable projectRollups = $ProjectRollupsTable(this);
   late final $LocalUsersTable localUsers = $LocalUsersTable(this);
-  late final ProjectsDao projectsDao = ProjectsDao(this as AppDatabase);
-  late final SessionsDao sessionsDao = SessionsDao(this as AppDatabase);
+  late final ProjectsDao projectsDao = ProjectsDao(this as LocalDatabase);
+  late final SessionsDao sessionsDao = SessionsDao(this as LocalDatabase);
   late final DailyRollupsDao dailyRollupsDao = DailyRollupsDao(
-    this as AppDatabase,
+    this as LocalDatabase,
   );
   late final ProjectRollupsDao projectRollupsDao = ProjectRollupsDao(
-    this as AppDatabase,
+    this as LocalDatabase,
   );
-  late final LocalUsersDao localUsersDao = LocalUsersDao(this as AppDatabase);
+  late final LocalUsersDao localUsersDao = LocalUsersDao(this as LocalDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1484,11 +1484,11 @@ typedef $$ProjectsTableUpdateCompanionBuilder = ProjectsCompanion Function({
 });
 
 final class $$ProjectsTableReferences
-    extends BaseReferences<_$AppDatabase, $ProjectsTable, Project> {
+    extends BaseReferences<_$LocalDatabase, $ProjectsTable, Project> {
   $$ProjectsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static MultiTypedResultKey<$SessionsTable, List<Session>> _sessionsRefsTable(
-    _$AppDatabase db,
+    _$LocalDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.sessions,
     aliasName: 'projects__id__sessions__project_id',
@@ -1508,7 +1508,7 @@ final class $$ProjectsTableReferences
 }
 
 class $$ProjectsTableFilterComposer
-    extends Composer<_$AppDatabase, $ProjectsTable> {
+    extends Composer<_$LocalDatabase, $ProjectsTable> {
   $$ProjectsTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -1563,7 +1563,7 @@ class $$ProjectsTableFilterComposer
 }
 
 class $$ProjectsTableOrderingComposer
-    extends Composer<_$AppDatabase, $ProjectsTable> {
+    extends Composer<_$LocalDatabase, $ProjectsTable> {
   $$ProjectsTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -1593,7 +1593,7 @@ class $$ProjectsTableOrderingComposer
 }
 
 class $$ProjectsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $ProjectsTable> {
+    extends Composer<_$LocalDatabase, $ProjectsTable> {
   $$ProjectsTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -1642,7 +1642,7 @@ class $$ProjectsTableAnnotationComposer
 class $$ProjectsTableTableManager
     extends
         RootTableManager<
-          _$AppDatabase,
+          _$LocalDatabase,
           $ProjectsTable,
           Project,
           $$ProjectsTableFilterComposer,
@@ -1654,7 +1654,7 @@ class $$ProjectsTableTableManager
           Project,
           PrefetchHooks Function({bool sessionsRefs})
         > {
-  $$ProjectsTableTableManager(_$AppDatabase db, $ProjectsTable table)
+  $$ProjectsTableTableManager(_$LocalDatabase db, $ProjectsTable table)
     : super(
         TableManagerState(
           db: db,
@@ -1729,7 +1729,7 @@ class $$ProjectsTableTableManager
 
 typedef $$ProjectsTableProcessedTableManager =
     ProcessedTableManager<
-      _$AppDatabase,
+      _$LocalDatabase,
       $ProjectsTable,
       Project,
       $$ProjectsTableFilterComposer,
@@ -1757,10 +1757,10 @@ typedef $$SessionsTableUpdateCompanionBuilder = SessionsCompanion Function({
 });
 
 final class $$SessionsTableReferences
-    extends BaseReferences<_$AppDatabase, $SessionsTable, Session> {
+    extends BaseReferences<_$LocalDatabase, $SessionsTable, Session> {
   $$SessionsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static $ProjectsTable _projectIdTable(_$AppDatabase db) =>
+  static $ProjectsTable _projectIdTable(_$LocalDatabase db) =>
       db.projects.createAlias('sessions__project_id__projects__id');
 
   $$ProjectsTableProcessedTableManager? get projectId {
@@ -1779,7 +1779,7 @@ final class $$SessionsTableReferences
 }
 
 class $$SessionsTableFilterComposer
-    extends Composer<_$AppDatabase, $SessionsTable> {
+    extends Composer<_$LocalDatabase, $SessionsTable> {
   $$SessionsTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -1827,7 +1827,7 @@ class $$SessionsTableFilterComposer
 }
 
 class $$SessionsTableOrderingComposer
-    extends Composer<_$AppDatabase, $SessionsTable> {
+    extends Composer<_$LocalDatabase, $SessionsTable> {
   $$SessionsTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -1875,7 +1875,7 @@ class $$SessionsTableOrderingComposer
 }
 
 class $$SessionsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $SessionsTable> {
+    extends Composer<_$LocalDatabase, $SessionsTable> {
   $$SessionsTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -1919,7 +1919,7 @@ class $$SessionsTableAnnotationComposer
 class $$SessionsTableTableManager
     extends
         RootTableManager<
-          _$AppDatabase,
+          _$LocalDatabase,
           $SessionsTable,
           Session,
           $$SessionsTableFilterComposer,
@@ -1931,7 +1931,7 @@ class $$SessionsTableTableManager
           Session,
           PrefetchHooks Function({bool projectId})
         > {
-  $$SessionsTableTableManager(_$AppDatabase db, $SessionsTable table)
+  $$SessionsTableTableManager(_$LocalDatabase db, $SessionsTable table)
     : super(
         TableManagerState(
           db: db,
@@ -2023,7 +2023,7 @@ class $$SessionsTableTableManager
 
 typedef $$SessionsTableProcessedTableManager =
     ProcessedTableManager<
-      _$AppDatabase,
+      _$LocalDatabase,
       $SessionsTable,
       Session,
       $$SessionsTableFilterComposer,
@@ -2049,7 +2049,7 @@ typedef $$DailyRollupsTableUpdateCompanionBuilder =
     });
 
 class $$DailyRollupsTableFilterComposer
-    extends Composer<_$AppDatabase, $DailyRollupsTable> {
+    extends Composer<_$LocalDatabase, $DailyRollupsTable> {
   $$DailyRollupsTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -2069,7 +2069,7 @@ class $$DailyRollupsTableFilterComposer
 }
 
 class $$DailyRollupsTableOrderingComposer
-    extends Composer<_$AppDatabase, $DailyRollupsTable> {
+    extends Composer<_$LocalDatabase, $DailyRollupsTable> {
   $$DailyRollupsTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -2089,7 +2089,7 @@ class $$DailyRollupsTableOrderingComposer
 }
 
 class $$DailyRollupsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $DailyRollupsTable> {
+    extends Composer<_$LocalDatabase, $DailyRollupsTable> {
   $$DailyRollupsTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -2109,7 +2109,7 @@ class $$DailyRollupsTableAnnotationComposer
 class $$DailyRollupsTableTableManager
     extends
         RootTableManager<
-          _$AppDatabase,
+          _$LocalDatabase,
           $DailyRollupsTable,
           DailyRollup,
           $$DailyRollupsTableFilterComposer,
@@ -2119,12 +2119,12 @@ class $$DailyRollupsTableTableManager
           $$DailyRollupsTableUpdateCompanionBuilder,
           (
             DailyRollup,
-            BaseReferences<_$AppDatabase, $DailyRollupsTable, DailyRollup>,
+            BaseReferences<_$LocalDatabase, $DailyRollupsTable, DailyRollup>,
           ),
           DailyRollup,
           PrefetchHooks Function()
         > {
-  $$DailyRollupsTableTableManager(_$AppDatabase db, $DailyRollupsTable table)
+  $$DailyRollupsTableTableManager(_$LocalDatabase db, $DailyRollupsTable table)
     : super(
         TableManagerState(
           db: db,
@@ -2160,7 +2160,7 @@ class $$DailyRollupsTableTableManager
                 (e) => (
                   e.readTable<$DailyRollupsTable, DailyRollup>(table),
                   BaseReferences<
-                    _$AppDatabase,
+                    _$LocalDatabase,
                     $DailyRollupsTable,
                     DailyRollup
                   >(db, table, e),
@@ -2174,7 +2174,7 @@ class $$DailyRollupsTableTableManager
 
 typedef $$DailyRollupsTableProcessedTableManager =
     ProcessedTableManager<
-      _$AppDatabase,
+      _$LocalDatabase,
       $DailyRollupsTable,
       DailyRollup,
       $$DailyRollupsTableFilterComposer,
@@ -2184,7 +2184,7 @@ typedef $$DailyRollupsTableProcessedTableManager =
       $$DailyRollupsTableUpdateCompanionBuilder,
       (
         DailyRollup,
-        BaseReferences<_$AppDatabase, $DailyRollupsTable, DailyRollup>,
+        BaseReferences<_$LocalDatabase, $DailyRollupsTable, DailyRollup>,
       ),
       DailyRollup,
       PrefetchHooks Function()
@@ -2205,7 +2205,7 @@ typedef $$ProjectRollupsTableUpdateCompanionBuilder =
     });
 
 class $$ProjectRollupsTableFilterComposer
-    extends Composer<_$AppDatabase, $ProjectRollupsTable> {
+    extends Composer<_$LocalDatabase, $ProjectRollupsTable> {
   $$ProjectRollupsTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -2230,7 +2230,7 @@ class $$ProjectRollupsTableFilterComposer
 }
 
 class $$ProjectRollupsTableOrderingComposer
-    extends Composer<_$AppDatabase, $ProjectRollupsTable> {
+    extends Composer<_$LocalDatabase, $ProjectRollupsTable> {
   $$ProjectRollupsTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -2255,7 +2255,7 @@ class $$ProjectRollupsTableOrderingComposer
 }
 
 class $$ProjectRollupsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $ProjectRollupsTable> {
+    extends Composer<_$LocalDatabase, $ProjectRollupsTable> {
   $$ProjectRollupsTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -2278,7 +2278,7 @@ class $$ProjectRollupsTableAnnotationComposer
 class $$ProjectRollupsTableTableManager
     extends
         RootTableManager<
-          _$AppDatabase,
+          _$LocalDatabase,
           $ProjectRollupsTable,
           ProjectRollup,
           $$ProjectRollupsTableFilterComposer,
@@ -2288,13 +2288,17 @@ class $$ProjectRollupsTableTableManager
           $$ProjectRollupsTableUpdateCompanionBuilder,
           (
             ProjectRollup,
-            BaseReferences<_$AppDatabase, $ProjectRollupsTable, ProjectRollup>,
+            BaseReferences<
+              _$LocalDatabase,
+              $ProjectRollupsTable,
+              ProjectRollup
+            >,
           ),
           ProjectRollup,
           PrefetchHooks Function()
         > {
   $$ProjectRollupsTableTableManager(
-    _$AppDatabase db,
+    _$LocalDatabase db,
     $ProjectRollupsTable table,
   ) : super(
         TableManagerState(
@@ -2335,7 +2339,7 @@ class $$ProjectRollupsTableTableManager
                 (e) => (
                   e.readTable<$ProjectRollupsTable, ProjectRollup>(table),
                   BaseReferences<
-                    _$AppDatabase,
+                    _$LocalDatabase,
                     $ProjectRollupsTable,
                     ProjectRollup
                   >(db, table, e),
@@ -2349,7 +2353,7 @@ class $$ProjectRollupsTableTableManager
 
 typedef $$ProjectRollupsTableProcessedTableManager =
     ProcessedTableManager<
-      _$AppDatabase,
+      _$LocalDatabase,
       $ProjectRollupsTable,
       ProjectRollup,
       $$ProjectRollupsTableFilterComposer,
@@ -2359,7 +2363,7 @@ typedef $$ProjectRollupsTableProcessedTableManager =
       $$ProjectRollupsTableUpdateCompanionBuilder,
       (
         ProjectRollup,
-        BaseReferences<_$AppDatabase, $ProjectRollupsTable, ProjectRollup>,
+        BaseReferences<_$LocalDatabase, $ProjectRollupsTable, ProjectRollup>,
       ),
       ProjectRollup,
       PrefetchHooks Function()
@@ -2380,7 +2384,7 @@ typedef $$LocalUsersTableUpdateCompanionBuilder = LocalUsersCompanion Function({
 });
 
 class $$LocalUsersTableFilterComposer
-    extends Composer<_$AppDatabase, $LocalUsersTable> {
+    extends Composer<_$LocalDatabase, $LocalUsersTable> {
   $$LocalUsersTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -2410,7 +2414,7 @@ class $$LocalUsersTableFilterComposer
 }
 
 class $$LocalUsersTableOrderingComposer
-    extends Composer<_$AppDatabase, $LocalUsersTable> {
+    extends Composer<_$LocalDatabase, $LocalUsersTable> {
   $$LocalUsersTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -2440,7 +2444,7 @@ class $$LocalUsersTableOrderingComposer
 }
 
 class $$LocalUsersTableAnnotationComposer
-    extends Composer<_$AppDatabase, $LocalUsersTable> {
+    extends Composer<_$LocalDatabase, $LocalUsersTable> {
   $$LocalUsersTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -2464,7 +2468,7 @@ class $$LocalUsersTableAnnotationComposer
 class $$LocalUsersTableTableManager
     extends
         RootTableManager<
-          _$AppDatabase,
+          _$LocalDatabase,
           $LocalUsersTable,
           LocalUser,
           $$LocalUsersTableFilterComposer,
@@ -2474,12 +2478,12 @@ class $$LocalUsersTableTableManager
           $$LocalUsersTableUpdateCompanionBuilder,
           (
             LocalUser,
-            BaseReferences<_$AppDatabase, $LocalUsersTable, LocalUser>,
+            BaseReferences<_$LocalDatabase, $LocalUsersTable, LocalUser>,
           ),
           LocalUser,
           PrefetchHooks Function()
         > {
-  $$LocalUsersTableTableManager(_$AppDatabase db, $LocalUsersTable table)
+  $$LocalUsersTableTableManager(_$LocalDatabase db, $LocalUsersTable table)
     : super(
         TableManagerState(
           db: db,
@@ -2522,7 +2526,7 @@ class $$LocalUsersTableTableManager
               .map(
                 (e) => (
                   e.readTable<$LocalUsersTable, LocalUser>(table),
-                  BaseReferences<_$AppDatabase, $LocalUsersTable, LocalUser>(
+                  BaseReferences<_$LocalDatabase, $LocalUsersTable, LocalUser>(
                     db,
                     table,
                     e,
@@ -2537,7 +2541,7 @@ class $$LocalUsersTableTableManager
 
 typedef $$LocalUsersTableProcessedTableManager =
     ProcessedTableManager<
-      _$AppDatabase,
+      _$LocalDatabase,
       $LocalUsersTable,
       LocalUser,
       $$LocalUsersTableFilterComposer,
@@ -2545,14 +2549,14 @@ typedef $$LocalUsersTableProcessedTableManager =
       $$LocalUsersTableAnnotationComposer,
       $$LocalUsersTableCreateCompanionBuilder,
       $$LocalUsersTableUpdateCompanionBuilder,
-      (LocalUser, BaseReferences<_$AppDatabase, $LocalUsersTable, LocalUser>),
+      (LocalUser, BaseReferences<_$LocalDatabase, $LocalUsersTable, LocalUser>),
       LocalUser,
       PrefetchHooks Function()
     >;
 
-class $AppDatabaseManager {
-  final _$AppDatabase _db;
-  $AppDatabaseManager(this._db);
+class $LocalDatabaseManager {
+  final _$LocalDatabase _db;
+  $LocalDatabaseManager(this._db);
   $$ProjectsTableTableManager get projects =>
       $$ProjectsTableTableManager(_db, _db.projects);
   $$SessionsTableTableManager get sessions =>

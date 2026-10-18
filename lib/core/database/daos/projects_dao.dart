@@ -1,11 +1,11 @@
 import 'package:drift/drift.dart';
 import 'package:tarkeez/core/database/tables/projects.dart';
-import 'package:tarkeez/core/database/app_database.dart';
+import 'package:tarkeez/core/database/local_database.dart';
 
 part 'projects_dao.g.dart';
 
 @DriftAccessor(tables: [Projects])
-class ProjectsDao extends DatabaseAccessor<AppDatabase>
+class ProjectsDao extends DatabaseAccessor<LocalDatabase>
     with _$ProjectsDaoMixin {
   ProjectsDao(super.db);
   // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––

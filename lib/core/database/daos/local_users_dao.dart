@@ -1,11 +1,11 @@
 import 'package:drift/drift.dart';
 import 'package:tarkeez/core/database/tables/local_users.dart';
-import 'package:tarkeez/core/database/app_database.dart';
+import 'package:tarkeez/core/database/local_database.dart';
 
 part 'local_users_dao.g.dart';
 
 @DriftAccessor(tables: [LocalUsers])
-class LocalUsersDao extends DatabaseAccessor<AppDatabase>
+class LocalUsersDao extends DatabaseAccessor<LocalDatabase>
     with _$LocalUsersDaoMixin {
   LocalUsersDao(super.db);
 

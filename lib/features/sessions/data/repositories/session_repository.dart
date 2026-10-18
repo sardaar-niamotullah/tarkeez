@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart';
-import 'package:tarkeez/core/database/app_database.dart';
+import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/error/result.dart';
 import 'package:tarkeez/core/error/result_guard.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
@@ -21,7 +21,7 @@ abstract interface class SessionRepository {
 
 class SessionRepositoryImpl implements SessionRepository {
   const SessionRepositoryImpl(this._database);
-  final AppDatabase _database;
+  final LocalDatabase _database;
 
   @override
   Future<Result<SessionModel>> entrySession({

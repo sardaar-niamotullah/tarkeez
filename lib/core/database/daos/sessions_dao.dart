@@ -1,11 +1,11 @@
 import 'package:drift/drift.dart';
 import 'package:tarkeez/core/database/tables/sessions.dart';
-import 'package:tarkeez/core/database/app_database.dart';
+import 'package:tarkeez/core/database/local_database.dart';
 
 part 'sessions_dao.g.dart';
 
 @DriftAccessor(tables: [Sessions])
-class SessionsDao extends DatabaseAccessor<AppDatabase>
+class SessionsDao extends DatabaseAccessor<LocalDatabase>
     with _$SessionsDaoMixin {
   SessionsDao(super.db);
 
@@ -26,6 +26,7 @@ class SessionsDao extends DatabaseAccessor<AppDatabase>
       sessions,
     )..orderBy([(t) => OrderingTerm.desc(t.startedAt)])).get();
   }
+
   Future<List<Session>> getAllSessionsInDateRange({
     required DateTime startedAt,
     required DateTime endedAt,
@@ -36,6 +37,7 @@ class SessionsDao extends DatabaseAccessor<AppDatabase>
           ..orderBy([(t) => OrderingTerm.desc(t.startedAt)]))
         .get();
   }
+
   // Read by id
   Future<Session?> getSessionById(String id) =>
       (select(sessions)..where((t) => t.id.equals(id))).getSingleOrNull();
@@ -46,6 +48,7 @@ class SessionsDao extends DatabaseAccessor<AppDatabase>
           ..orderBy([(t) => OrderingTerm.desc(t.startedAt)]))
         .get();
   }
+
   // Read: reactive stream — auto-updates on any write
   Stream<List<Session>> watchAllSessions() {
     return (select(

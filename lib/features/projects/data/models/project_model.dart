@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:tarkeez/core/database/app_database.dart';
+import 'package:tarkeez/core/database/local_database.dart';
 
 class ProjectModel extends Equatable {
   const ProjectModel({
@@ -8,7 +8,7 @@ class ProjectModel extends Equatable {
     required this.colorId,
     required this.createdAt,
   });
-  
+
   final String? id;
   final String name;
   final int colorId;

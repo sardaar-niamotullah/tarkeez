@@ -4,7 +4,7 @@ import 'package:drift/drift.dart' show Value;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:tarkeez/core/database/app_database.dart';
+import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 
@@ -81,7 +81,7 @@ class _SimulateSessionsState extends State<SimulateSessions> {
 
     debugPrint('🟨 📀 Simulate session insert started');
     final stopwatch = Stopwatch()..start();
-    final db = GetIt.I<AppDatabase>();
+    final db = GetIt.I<LocalDatabase>();
     final random = Random();
 
     final now = DateTime.now();

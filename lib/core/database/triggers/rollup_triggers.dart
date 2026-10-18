@@ -6,7 +6,7 @@ import 'package:drift/drift.dart';
 // Drift only knows about the tables IT wrote to. The rollup tables are
 // written by SQLite triggers, so without these rules any `.watch()` on
 // daily_rollups / project_rollups would never re-emit.
-// AppDatabase spreads this list after the generated rules.
+// LocalDatabase spreads this list after the generated rules.
 const rollupStreamRules = <WritePropagation>[
   WritePropagation(
     on: TableUpdateQuery.onTableName('sessions'),

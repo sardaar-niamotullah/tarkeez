@@ -3,7 +3,7 @@
 part of 'local_users_dao.dart';
 
 // ignore_for_file: type=lint
-mixin _$LocalUsersDaoMixin on DatabaseAccessor<AppDatabase> {
+mixin _$LocalUsersDaoMixin on DatabaseAccessor<LocalDatabase> {
   $LocalUsersTable get localUsers => attachedDatabase.localUsers;
   LocalUsersDaoManager get managers => LocalUsersDaoManager(this);
 }

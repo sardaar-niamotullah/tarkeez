@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:tarkeez/core/database/app_database.dart';
+import 'package:tarkeez/core/database/local_database.dart';
 
 class DailyRollupModel extends Equatable {
   const DailyRollupModel({required this.date, required this.durationSeconds});

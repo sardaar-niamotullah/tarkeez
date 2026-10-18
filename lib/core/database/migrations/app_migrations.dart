@@ -1,8 +1,8 @@
 import 'package:drift/drift.dart';
-import 'package:tarkeez/core/database/app_database.dart';
+import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/database/triggers/rollup_triggers.dart';
 
-MigrationStrategy buildMigrationStrategy(AppDatabase db) {
+MigrationStrategy buildMigrationStrategy(LocalDatabase db) {
   return MigrationStrategy(
     onCreate: (m) async {
       await m.createAll();

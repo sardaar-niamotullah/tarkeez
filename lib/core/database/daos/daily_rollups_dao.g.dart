@@ -3,7 +3,7 @@
 part of 'daily_rollups_dao.dart';
 
 // ignore_for_file: type=lint
-mixin _$DailyRollupsDaoMixin on DatabaseAccessor<AppDatabase> {
+mixin _$DailyRollupsDaoMixin on DatabaseAccessor<LocalDatabase> {
   $DailyRollupsTable get dailyRollups => attachedDatabase.dailyRollups;
   DailyRollupsDaoManager get managers => DailyRollupsDaoManager(this);
 }
