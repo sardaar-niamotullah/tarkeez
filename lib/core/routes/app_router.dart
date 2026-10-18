@@ -14,7 +14,7 @@ import 'package:tarkeez/features/subscription/presentation/subscription_page.dar
 
 const _publicRoutes = {
   RouteNames.termsAndConditionsPage,
-  RouteNames.userManualPage,
+  RouteNames.feedbackPage,
 };
 
 final GoRouter router = _buildRouter();
