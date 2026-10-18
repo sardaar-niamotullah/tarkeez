@@ -36,7 +36,7 @@ Future<void> injectDependencies() async {
 
   // ── Auth ────────────────────────────────────────────────────────────────
   getIt.registerLazySingleton<AuthRepository>(
-    () => AuthRepositoryImpl(getIt<SupabaseClient>()),
+    () => AuthRepositoryImpl(getIt<SupabaseClient>(), getIt<AppDatabase>()),
   );
   getIt.registerLazySingleton<AuthBloc>(
     () => AuthBloc(getIt<AuthRepository>()),

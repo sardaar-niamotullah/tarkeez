@@ -24,6 +24,9 @@ MigrationStrategy buildMigrationStrategy(AppDatabase db) {
         await rebuildRollupData(db);
         await createProjectRollupTriggers(db);
       }
+      if (from < 5) {
+        await m.createTable(db.localUsers);
+      }
     },
     beforeOpen: (details) async {
       await db.customStatement('PRAGMA foreign_keys = ON');

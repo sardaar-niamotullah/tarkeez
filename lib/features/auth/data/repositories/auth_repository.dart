@@ -1,3 +1,5 @@
+import 'package:drift/drift.dart';
+import 'package:tarkeez/core/database/app_database.dart';
 import 'package:tarkeez/core/error/result.dart';
 import 'package:tarkeez/core/error/result_guard.dart';
 import 'package:tarkeez/features/auth/data/models/user_model.dart';
@@ -13,12 +15,12 @@ abstract interface class AuthRepository {
 
   Future<Result<void>> signOut();
   Future<Result<UserModel>> signInWithGoogle();
-  Future<Result<UserModel>> signInWithGoogleLegacy();
 }
 
 class AuthRepositoryImpl implements AuthRepository {
   final SupabaseClient _supabase;
-  const AuthRepositoryImpl(this._supabase);
+  final AppDatabase _db;
+  const AuthRepositoryImpl(this._supabase, this._db);
 
   @override
   UserModel? get currentUser {
@@ -27,8 +29,9 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Stream<void> get sessionEnded => _supabase.auth.onAuthStateChange
-      .where((data) => data.event == AuthChangeEvent.signedOut);
+  Stream<void> get sessionEnded => _supabase.auth.onAuthStateChange.where(
+    (data) => data.event == AuthChangeEvent.signedOut,
+  );
 
   @override
   Future<Result<UserModel>> signInWithGoogle() {
@@ -70,54 +73,8 @@ class AuthRepositoryImpl implements AuthRepository {
       if (user == null) {
         throw const AppAuthException('Supabase returned no user.');
       }
-      return UserModel.fromSupabaseUser(user);
-    });
-  }
-
-  @override
-  Future<Result<UserModel>> signInWithGoogleLegacy() {
-    return resultGuard(() async {
-      final webClientId = dotenv.get(SecretKeys.webClientId);
-      final iosClientId = dotenv.get(SecretKeys.iosClientId);
-      final googleSignIn = GoogleSignIn.instance;
-
-      await googleSignIn.initialize(
-        serverClientId: webClientId,
-        clientId: iosClientId,
-      );
-
-      try {
-        final googleUser = await googleSignIn.authenticate();
-        const scopes = ['email', 'profile'];
-        final authorization =
-            await googleUser.authorizationClient.authorizationForScopes(
-              scopes,
-            ) ??
-            await googleUser.authorizationClient.authorizeScopes(scopes);
-
-        final idToken = googleUser.authentication.idToken;
-        if (idToken == null) {
-          throw const AppAuthException('No ID token received from Google.');
-        }
-
-        final response = await _supabase.auth.signInWithIdToken(
-          provider: OAuthProvider.google,
-          idToken: idToken,
-          accessToken: authorization.accessToken,
-        );
-
-        final user = response.user;
-        if (user == null) {
-          throw const AppAuthException('Supabase returned no user.');
-        }
-
-        return UserModel.fromSupabaseUser(user);
-      } on GoogleSignInException catch (e) {
-        if (e.code == GoogleSignInExceptionCode.canceled) {
-          throw const AppAuthException('Google sign-in was cancelled.');
-        }
-        rethrow;
-      }
+      // return UserModel.fromSupabaseUser(user);
+      return _mirrorUserLocally(user);
     });
   }
 
@@ -128,5 +85,25 @@ class AuthRepositoryImpl implements AuthRepository {
       await GoogleSignIn.instance.signOut();
       await GoogleSignIn.instance.disconnect();
     });
+  }
+
+  Future<UserModel> _mirrorUserLocally(User authUser) async {
+    final row = await _supabase
+        .from('users')
+        .select('*')
+        .eq('id', authUser.id)
+        .single();
+
+    final model = UserModel.fromRow(row);
+
+    await _db.localUsersDao.upsertUser(
+      LocalUsersCompanion(
+        id: Value(model.id),
+        email: Value(model.email),
+        fullName: Value(model.name),
+        avatarUrl: Value(model.avatarUrl),
+      ),
+    );
+    return model;
   }
 }

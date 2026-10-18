@@ -1,5 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+import 'package:tarkeez/core/database/daos/local_users_dao.dart';
+import 'package:tarkeez/core/database/tables/local_users.dart';
 import 'package:tarkeez/core/database/tables/projects.dart';
 import 'package:tarkeez/core/database/tables/sessions.dart';
 import 'package:tarkeez/core/database/tables/daily_rollups.dart';
@@ -17,14 +19,14 @@ part 'app_database.g.dart';
 
 // dart run build_runner build --delete-conflicting-outputs
 @DriftDatabase(
-  tables: [Projects, Sessions, DailyRollups, ProjectRollups],
-  daos: [ProjectsDao, SessionsDao, DailyRollupsDao, ProjectRollupsDao],
+  tables: [Projects, Sessions, DailyRollups, ProjectRollups, LocalUsers],
+  daos: [ProjectsDao, SessionsDao, DailyRollupsDao, ProjectRollupsDao,  LocalUsersDao],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => buildMigrationStrategy(this);
