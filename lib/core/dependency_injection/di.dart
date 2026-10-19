@@ -22,7 +22,8 @@ final getIt = GetIt.instance;
 
 Future<void> injectDependencies() async {
   // ── Database ─────────────────────────────────────────────────────────
-  final database = LocalDatabase();
+  getIt.registerLazySingleton<CurrentUser>(SupabaseCurrentUser.new);
+  final database = LocalDatabase(getIt<CurrentUser>());
   await database.connect();
   getIt.registerSingleton<LocalDatabase>(database);
   getIt.registerLazySingleton<SupabaseClient>(() => Supabase.instance.client);
@@ -42,11 +43,10 @@ Future<void> injectDependencies() async {
   getIt.registerLazySingleton<AuthBloc>(
     () => AuthBloc(getIt<AuthRepository>()),
   );
-  getIt.registerLazySingleton<CurrentUser>(SupabaseCurrentUser.new);
 
   // ── Projects ─────────────────────────────────────────────────────────
   getIt.registerLazySingleton<ProjectRepository>(
-    () => ProjectRepositoryImpl(getIt<LocalDatabase>(), getIt<CurrentUser>()),
+    () => ProjectRepositoryImpl(getIt<LocalDatabase>()),
   );
   getIt.registerLazySingleton<ProjectBloc>(
     () => ProjectBloc(getIt<ProjectRepository>()),
@@ -54,7 +54,7 @@ Future<void> injectDependencies() async {
 
   // ── Sessions ─────────────────────────────────────────────────────────
   getIt.registerLazySingleton<SessionRepository>(
-    () => SessionRepositoryImpl(getIt<LocalDatabase>(), getIt<CurrentUser>()),
+    () => SessionRepositoryImpl(getIt<LocalDatabase>()),
   );
   getIt.registerLazySingleton<SessionBloc>(
     () => SessionBloc(getIt<SessionRepository>()),

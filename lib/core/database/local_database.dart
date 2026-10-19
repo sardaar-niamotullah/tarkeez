@@ -9,6 +9,7 @@ import 'package:tarkeez/core/database/tables/daily_rollups.dart';
 import 'package:tarkeez/core/database/tables/project_rollups.dart';
 import 'package:tarkeez/core/database/migrations/app_migrations.dart';
 import 'package:tarkeez/core/database/triggers/rollup_triggers.dart';
+import 'package:tarkeez/features/auth/current_user.dart';
 import 'package:uuid/uuid.dart';
 
 import 'daos/sessions_dao.dart';
@@ -19,12 +20,21 @@ part 'local_database.g.dart';
 
 // dart run build_runner build --delete-conflicting-outputs
 @DriftDatabase(
-  tables: [LocalProjects, Sessions, DailyRollups, ProjectRollups, LocalUsers],
-  daos: [LocalProjectsDao, SessionsDao, DailyRollupsDao, ProjectRollupsDao,  LocalUsersDao],
+  tables: [LocalUsers, LocalProjects, Sessions, DailyRollups, ProjectRollups],
+  daos: [
+    LocalUsersDao,
+    LocalProjectsDao,
+    SessionsDao,
+    DailyRollupsDao,
+    ProjectRollupsDao,
+  ],
 )
 class LocalDatabase extends _$LocalDatabase {
-  LocalDatabase() : super(_openConnection());
+  new(this._currentUser) : super(_openConnection());
+  final CurrentUser _currentUser;
 
+  String get currentUserId => _currentUser.id;
+  
   @override
   int get schemaVersion => 5;
 

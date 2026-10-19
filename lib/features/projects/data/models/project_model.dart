@@ -16,16 +16,18 @@ class ProjectModel extends Equatable {
   final DateTime createdAt;
 
   @override
-  List<Object?> get props => [id, name, colorId, createdAt];
+  List<Object?> get props => [id, userId, name, colorId, createdAt];
 
   ProjectModel copyWith({
     String? id,
+    String? userId,
     String? name,
     int? colorId,
     DateTime? createdAt,
   }) {
     return ProjectModel(
       id: id ?? this.id,
+      userId: userId ?? this.userId,
       name: name ?? this.name,
       colorId: colorId ?? this.colorId,
       createdAt: createdAt ?? this.createdAt,
@@ -35,6 +37,7 @@ class ProjectModel extends Equatable {
   factory ProjectModel.fromRow(LocalProject row) {
     return ProjectModel(
       id: row.id,
+      userId: row.userId,
       colorId: row.colorId,
       name: row.name,
       createdAt: row.createdAt,

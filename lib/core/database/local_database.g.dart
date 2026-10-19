@@ -363,7 +363,6 @@ class $LocalProjectsTable extends LocalProjects
     'color_id',
     aliasedName,
     false,
-    check: () => ComparableExpr(colorId).isBetweenValues(0, 20),
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
@@ -1528,6 +1527,7 @@ abstract class _$LocalDatabase extends GeneratedDatabase {
   late final $SessionsTable sessions = $SessionsTable(this);
   late final $DailyRollupsTable dailyRollups = $DailyRollupsTable(this);
   late final $ProjectRollupsTable projectRollups = $ProjectRollupsTable(this);
+  late final LocalUsersDao localUsersDao = LocalUsersDao(this as LocalDatabase);
   late final LocalProjectsDao localProjectsDao = LocalProjectsDao(
     this as LocalDatabase,
   );
@@ -1538,7 +1538,6 @@ abstract class _$LocalDatabase extends GeneratedDatabase {
   late final ProjectRollupsDao projectRollupsDao = ProjectRollupsDao(
     this as LocalDatabase,
   );
-  late final LocalUsersDao localUsersDao = LocalUsersDao(this as LocalDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
