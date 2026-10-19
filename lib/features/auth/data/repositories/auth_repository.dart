@@ -18,9 +18,10 @@ abstract interface class AuthRepository {
 }
 
 class AuthRepositoryImpl implements AuthRepository {
+  const new(this._supabase, this._localDatabase);
+  
   final SupabaseClient _supabase;
   final LocalDatabase _localDatabase;
-  const AuthRepositoryImpl(this._supabase, this._localDatabase);
 
   @override
   UserModel? get currentUser {

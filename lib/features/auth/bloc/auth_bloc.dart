@@ -8,7 +8,7 @@ part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc(AuthRepository repository)
+  new(AuthRepository repository)
     : _repository = repository,
       super(
         repository.currentUser != null

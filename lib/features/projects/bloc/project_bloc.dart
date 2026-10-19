@@ -6,14 +6,13 @@ part 'project_event.dart';
 part 'project_state.dart';
 
 class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
-  final ProjectRepository _repository;
-
-  ProjectBloc(this._repository) : super(ProjectInitial()) {
+  new(this._repository) : super(ProjectInitial()) {
     on<CreateProjectsRequested>(_onCreateProjectsRequested);
     on<FetchProjectsRequested>(_onFetchProjectsRequested);
     on<UpdateProjectsRequested>(_onUpdateProjectsRequested);
     on<DeleteProjectsRequested>(_onDeleteProjectsRequested);
   }
+  final ProjectRepository _repository;
 
   // ── Private helpers ─────────────────────────────────────────────────────
   Future<void> _refreshProjects(
