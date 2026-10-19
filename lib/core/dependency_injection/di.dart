@@ -7,6 +7,7 @@ import 'package:tarkeez/core/services/auth_session_service.dart';
 import 'package:tarkeez/core/services/sound_service.dart';
 import 'package:tarkeez/core/shared_files/cubits/session_period_cubit.dart';
 import 'package:tarkeez/features/auth/bloc/auth_bloc.dart';
+import 'package:tarkeez/features/auth/current_user.dart';
 import 'package:tarkeez/features/auth/data/repositories/auth_repository.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
 import 'package:tarkeez/features/daily_rollups/data/repositories/daily_rollup_repository.dart';
@@ -41,10 +42,11 @@ Future<void> injectDependencies() async {
   getIt.registerLazySingleton<AuthBloc>(
     () => AuthBloc(getIt<AuthRepository>()),
   );
+  getIt.registerLazySingleton<CurrentUser>(SupabaseCurrentUser.new);
 
   // ── Projects ─────────────────────────────────────────────────────────
   getIt.registerLazySingleton<ProjectRepository>(
-    () => ProjectRepositoryImpl(getIt<LocalDatabase>()),
+    () => ProjectRepositoryImpl(getIt<LocalDatabase>(), getIt<CurrentUser>()),
   );
   getIt.registerLazySingleton<ProjectBloc>(
     () => ProjectBloc(getIt<ProjectRepository>()),
@@ -52,7 +54,7 @@ Future<void> injectDependencies() async {
 
   // ── Sessions ─────────────────────────────────────────────────────────
   getIt.registerLazySingleton<SessionRepository>(
-    () => SessionRepositoryImpl(getIt<LocalDatabase>()),
+    () => SessionRepositoryImpl(getIt<LocalDatabase>(), getIt<CurrentUser>()),
   );
   getIt.registerLazySingleton<SessionBloc>(
     () => SessionBloc(getIt<SessionRepository>()),

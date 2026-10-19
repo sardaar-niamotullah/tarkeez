@@ -1,8 +1,9 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+import 'package:tarkeez/core/database/daos/local_projects_dao.dart';
 import 'package:tarkeez/core/database/daos/local_users_dao.dart';
+import 'package:tarkeez/core/database/tables/local_projects.dart';
 import 'package:tarkeez/core/database/tables/local_users.dart';
-import 'package:tarkeez/core/database/tables/projects.dart';
 import 'package:tarkeez/core/database/tables/sessions.dart';
 import 'package:tarkeez/core/database/tables/daily_rollups.dart';
 import 'package:tarkeez/core/database/tables/project_rollups.dart';
@@ -10,7 +11,6 @@ import 'package:tarkeez/core/database/migrations/app_migrations.dart';
 import 'package:tarkeez/core/database/triggers/rollup_triggers.dart';
 import 'package:uuid/uuid.dart';
 
-import 'daos/projects_dao.dart';
 import 'daos/sessions_dao.dart';
 import 'daos/daily_rollups_dao.dart';
 import 'daos/project_rollups_dao.dart';
@@ -19,8 +19,8 @@ part 'local_database.g.dart';
 
 // dart run build_runner build --delete-conflicting-outputs
 @DriftDatabase(
-  tables: [Projects, Sessions, DailyRollups, ProjectRollups, LocalUsers],
-  daos: [ProjectsDao, SessionsDao, DailyRollupsDao, ProjectRollupsDao,  LocalUsersDao],
+  tables: [LocalProjects, Sessions, DailyRollups, ProjectRollups, LocalUsers],
+  daos: [LocalProjectsDao, SessionsDao, DailyRollupsDao, ProjectRollupsDao,  LocalUsersDao],
 )
 class LocalDatabase extends _$LocalDatabase {
   LocalDatabase() : super(_openConnection());

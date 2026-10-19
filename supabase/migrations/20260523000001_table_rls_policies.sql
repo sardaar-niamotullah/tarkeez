@@ -50,23 +50,3 @@ on public.projects
 for delete
 to authenticated
 using (user_id = auth.uid());
-
-
--- =================================================================
--- DAILY ACTIVITY LOG TABLE
--- =================================================================
-alter table public.daily_activity_log enable row level security;
-
--- SELECT
-create policy "allow_select_own_daily_activity_log"
-on public.daily_activity_log
-for select
-to authenticated
-using (user_id = auth.uid());
-
--- INSERT
-create policy "allow_insert_own_daily_activity_log"
-on public.daily_activity_log
-for insert
-to authenticated
-with check (user_id = auth.uid());

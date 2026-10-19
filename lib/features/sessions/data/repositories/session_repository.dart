@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/error/result.dart';
 import 'package:tarkeez/core/error/result_guard.dart';
+import 'package:tarkeez/features/auth/current_user.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/sessions/data/models/session_model.dart';
 
@@ -20,8 +21,9 @@ abstract interface class SessionRepository {
 }
 
 class SessionRepositoryImpl implements SessionRepository {
-  const SessionRepositoryImpl(this._database);
+  const new(this._database, this._currentUser);
   final LocalDatabase _database;
+  final CurrentUser _currentUser;
 
   @override
   Future<Result<SessionModel>> entrySession({
@@ -31,6 +33,7 @@ class SessionRepositoryImpl implements SessionRepository {
   }) async {
     return resultGuard(() async {
       final companion = SessionsCompanion.insert(
+        userId: _currentUser.id,
         startedAt: startedAt.toUtc(),
         endedAt: endedAt.toUtc(),
         projectId: Value(project?.id),

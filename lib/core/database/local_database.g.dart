@@ -3,11 +3,323 @@
 part of 'local_database.dart';
 
 // ignore_for_file: type=lint
-class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
+class $LocalUsersTable extends LocalUsers
+    with TableInfo<$LocalUsersTable, LocalUser> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $ProjectsTable(this.attachedDatabase, [this._alias]);
+  $LocalUsersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _emailMeta = const VerificationMeta('email');
+  @override
+  late final GeneratedColumn<String> email = GeneratedColumn<String>(
+    'email',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _fullNameMeta = const VerificationMeta(
+    'fullName',
+  );
+  @override
+  late final GeneratedColumn<String> fullName = GeneratedColumn<String>(
+    'full_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _avatarUrlMeta = const VerificationMeta(
+    'avatarUrl',
+  );
+  @override
+  late final GeneratedColumn<String> avatarUrl = GeneratedColumn<String>(
+    'avatar_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, email, fullName, avatarUrl];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'local_users';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LocalUser> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('email')) {
+      context.handle(
+        _emailMeta,
+        email.isAcceptableOrUnknown(data['email']!, _emailMeta),
+      );
+    }
+    if (data.containsKey('full_name')) {
+      context.handle(
+        _fullNameMeta,
+        fullName.isAcceptableOrUnknown(data['full_name']!, _fullNameMeta),
+      );
+    }
+    if (data.containsKey('avatar_url')) {
+      context.handle(
+        _avatarUrlMeta,
+        avatarUrl.isAcceptableOrUnknown(data['avatar_url']!, _avatarUrlMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  LocalUser map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LocalUser(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      email: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}email'],
+      ),
+      fullName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}full_name'],
+      ),
+      avatarUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}avatar_url'],
+      ),
+    );
+  }
+
+  @override
+  $LocalUsersTable createAlias(String alias) {
+    return $LocalUsersTable(attachedDatabase, alias);
+  }
+}
+
+class LocalUser extends DataClass implements Insertable<LocalUser> {
+  final String id;
+  final String? email;
+  final String? fullName;
+  final String? avatarUrl;
+  const LocalUser({
+    required this.id,
+    this.email,
+    this.fullName,
+    this.avatarUrl,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    if (!nullToAbsent || email != null) {
+      map['email'] = Variable<String>(email);
+    }
+    if (!nullToAbsent || fullName != null) {
+      map['full_name'] = Variable<String>(fullName);
+    }
+    if (!nullToAbsent || avatarUrl != null) {
+      map['avatar_url'] = Variable<String>(avatarUrl);
+    }
+    return map;
+  }
+
+  LocalUsersCompanion toCompanion(bool nullToAbsent) {
+    return LocalUsersCompanion(
+      id: Value(id),
+      email: email == null && nullToAbsent
+          ? const Value.absent()
+          : Value(email),
+      fullName: fullName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fullName),
+      avatarUrl: avatarUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(avatarUrl),
+    );
+  }
+
+  factory LocalUser.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LocalUser(
+      id: serializer.fromJson<String>(json['id']),
+      email: serializer.fromJson<String?>(json['email']),
+      fullName: serializer.fromJson<String?>(json['fullName']),
+      avatarUrl: serializer.fromJson<String?>(json['avatarUrl']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'email': serializer.toJson<String?>(email),
+      'fullName': serializer.toJson<String?>(fullName),
+      'avatarUrl': serializer.toJson<String?>(avatarUrl),
+    };
+  }
+
+  LocalUser copyWith({
+    String? id,
+    Value<String?> email = const Value.absent(),
+    Value<String?> fullName = const Value.absent(),
+    Value<String?> avatarUrl = const Value.absent(),
+  }) => LocalUser(
+    id: id ?? this.id,
+    email: email.present ? email.value : this.email,
+    fullName: fullName.present ? fullName.value : this.fullName,
+    avatarUrl: avatarUrl.present ? avatarUrl.value : this.avatarUrl,
+  );
+  LocalUser copyWithCompanion(LocalUsersCompanion data) {
+    return LocalUser(
+      id: data.id.present ? data.id.value : this.id,
+      email: data.email.present ? data.email.value : this.email,
+      fullName: data.fullName.present ? data.fullName.value : this.fullName,
+      avatarUrl: data.avatarUrl.present ? data.avatarUrl.value : this.avatarUrl,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalUser(')
+          ..write('id: $id, ')
+          ..write('email: $email, ')
+          ..write('fullName: $fullName, ')
+          ..write('avatarUrl: $avatarUrl')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, email, fullName, avatarUrl);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LocalUser &&
+          other.id == this.id &&
+          other.email == this.email &&
+          other.fullName == this.fullName &&
+          other.avatarUrl == this.avatarUrl);
+}
+
+class LocalUsersCompanion extends UpdateCompanion<LocalUser> {
+  final Value<String> id;
+  final Value<String?> email;
+  final Value<String?> fullName;
+  final Value<String?> avatarUrl;
+  final Value<int> rowid;
+  const LocalUsersCompanion({
+    this.id = const Value.absent(),
+    this.email = const Value.absent(),
+    this.fullName = const Value.absent(),
+    this.avatarUrl = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LocalUsersCompanion.insert({
+    required String id,
+    this.email = const Value.absent(),
+    this.fullName = const Value.absent(),
+    this.avatarUrl = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id);
+  static Insertable<LocalUser> custom({
+    Expression<String>? id,
+    Expression<String>? email,
+    Expression<String>? fullName,
+    Expression<String>? avatarUrl,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (email != null) 'email': email,
+      if (fullName != null) 'full_name': fullName,
+      if (avatarUrl != null) 'avatar_url': avatarUrl,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LocalUsersCompanion copyWith({
+    Value<String>? id,
+    Value<String?>? email,
+    Value<String?>? fullName,
+    Value<String?>? avatarUrl,
+    Value<int>? rowid,
+  }) {
+    return LocalUsersCompanion(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      fullName: fullName ?? this.fullName,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (email.present) {
+      map['email'] = Variable<String>(email.value);
+    }
+    if (fullName.present) {
+      map['full_name'] = Variable<String>(fullName.value);
+    }
+    if (avatarUrl.present) {
+      map['avatar_url'] = Variable<String>(avatarUrl.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LocalUsersCompanion(')
+          ..write('id: $id, ')
+          ..write('email: $email, ')
+          ..write('fullName: $fullName, ')
+          ..write('avatarUrl: $avatarUrl, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $LocalProjectsTable extends LocalProjects
+    with TableInfo<$LocalProjectsTable, LocalProject> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LocalProjectsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -16,7 +328,19 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
-    clientDefault: () => const Uuid().v4(),
+    clientDefault: () => const Uuid().v7(),
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES local_users (id) ON UPDATE CASCADE ON DELETE CASCADE',
+    ),
   );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
@@ -25,7 +349,7 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
     aliasedName,
     false,
     additionalChecks: GeneratedColumn.checkTextLength(
-      minTextLength: 1,
+      minTextLength: 3,
       maxTextLength: 20,
     ),
     type: DriftSqlType.string,
@@ -39,6 +363,7 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
     'color_id',
     aliasedName,
     false,
+    check: () => ComparableExpr(colorId).isBetweenValues(0, 20),
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
@@ -55,21 +380,29 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
     clientDefault: () => DateTime.now().toUtc(),
   );
   @override
-  List<GeneratedColumn> get $columns => [id, name, colorId, createdAt];
+  List<GeneratedColumn> get $columns => [id, userId, name, colorId, createdAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'projects';
+  static const String $name = 'local_projects';
   @override
   VerificationContext validateIntegrity(
-    Insertable<Project> instance, {
+    Insertable<LocalProject> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -99,12 +432,16 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Project map(Map<String, dynamic> data, {String? tablePrefix}) {
+  LocalProject map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Project(
+    return LocalProject(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
       )!,
       name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -122,18 +459,20 @@ class $ProjectsTable extends Projects with TableInfo<$ProjectsTable, Project> {
   }
 
   @override
-  $ProjectsTable createAlias(String alias) {
-    return $ProjectsTable(attachedDatabase, alias);
+  $LocalProjectsTable createAlias(String alias) {
+    return $LocalProjectsTable(attachedDatabase, alias);
   }
 }
 
-class Project extends DataClass implements Insertable<Project> {
+class LocalProject extends DataClass implements Insertable<LocalProject> {
   final String id;
+  final String userId;
   final String name;
   final int colorId;
   final DateTime createdAt;
-  const Project({
+  const LocalProject({
     required this.id,
+    required this.userId,
     required this.name,
     required this.colorId,
     required this.createdAt,
@@ -142,28 +481,31 @@ class Project extends DataClass implements Insertable<Project> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    map['user_id'] = Variable<String>(userId);
     map['name'] = Variable<String>(name);
     map['color_id'] = Variable<int>(colorId);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
 
-  ProjectsCompanion toCompanion(bool nullToAbsent) {
-    return ProjectsCompanion(
+  LocalProjectsCompanion toCompanion(bool nullToAbsent) {
+    return LocalProjectsCompanion(
       id: Value(id),
+      userId: Value(userId),
       name: Value(name),
       colorId: Value(colorId),
       createdAt: Value(createdAt),
     );
   }
 
-  factory Project.fromJson(
+  factory LocalProject.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Project(
+    return LocalProject(
       id: serializer.fromJson<String>(json['id']),
+      userId: serializer.fromJson<String>(json['userId']),
       name: serializer.fromJson<String>(json['name']),
       colorId: serializer.fromJson<int>(json['colorId']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -174,26 +516,30 @@ class Project extends DataClass implements Insertable<Project> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'userId': serializer.toJson<String>(userId),
       'name': serializer.toJson<String>(name),
       'colorId': serializer.toJson<int>(colorId),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
 
-  Project copyWith({
+  LocalProject copyWith({
     String? id,
+    String? userId,
     String? name,
     int? colorId,
     DateTime? createdAt,
-  }) => Project(
+  }) => LocalProject(
     id: id ?? this.id,
+    userId: userId ?? this.userId,
     name: name ?? this.name,
     colorId: colorId ?? this.colorId,
     createdAt: createdAt ?? this.createdAt,
   );
-  Project copyWithCompanion(ProjectsCompanion data) {
-    return Project(
+  LocalProject copyWithCompanion(LocalProjectsCompanion data) {
+    return LocalProject(
       id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
       name: data.name.present ? data.name.value : this.name,
       colorId: data.colorId.present ? data.colorId.value : this.colorId,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
@@ -202,8 +548,9 @@ class Project extends DataClass implements Insertable<Project> {
 
   @override
   String toString() {
-    return (StringBuffer('Project(')
+    return (StringBuffer('LocalProject(')
           ..write('id: $id, ')
+          ..write('userId: $userId, ')
           ..write('name: $name, ')
           ..write('colorId: $colorId, ')
           ..write('createdAt: $createdAt')
@@ -212,40 +559,46 @@ class Project extends DataClass implements Insertable<Project> {
   }
 
   @override
-  int get hashCode => Object.hash(id, name, colorId, createdAt);
+  int get hashCode => Object.hash(id, userId, name, colorId, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Project &&
+      (other is LocalProject &&
           other.id == this.id &&
+          other.userId == this.userId &&
           other.name == this.name &&
           other.colorId == this.colorId &&
           other.createdAt == this.createdAt);
 }
 
-class ProjectsCompanion extends UpdateCompanion<Project> {
+class LocalProjectsCompanion extends UpdateCompanion<LocalProject> {
   final Value<String> id;
+  final Value<String> userId;
   final Value<String> name;
   final Value<int> colorId;
   final Value<DateTime> createdAt;
   final Value<int> rowid;
-  const ProjectsCompanion({
+  const LocalProjectsCompanion({
     this.id = const Value.absent(),
+    this.userId = const Value.absent(),
     this.name = const Value.absent(),
     this.colorId = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  ProjectsCompanion.insert({
+  LocalProjectsCompanion.insert({
     this.id = const Value.absent(),
+    required String userId,
     required String name,
     required int colorId,
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
-  }) : name = Value(name),
+  }) : userId = Value(userId),
+       name = Value(name),
        colorId = Value(colorId);
-  static Insertable<Project> custom({
+  static Insertable<LocalProject> custom({
     Expression<String>? id,
+    Expression<String>? userId,
     Expression<String>? name,
     Expression<int>? colorId,
     Expression<DateTime>? createdAt,
@@ -253,6 +606,7 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
       if (name != null) 'name': name,
       if (colorId != null) 'color_id': colorId,
       if (createdAt != null) 'created_at': createdAt,
@@ -260,15 +614,17 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     });
   }
 
-  ProjectsCompanion copyWith({
+  LocalProjectsCompanion copyWith({
     Value<String>? id,
+    Value<String>? userId,
     Value<String>? name,
     Value<int>? colorId,
     Value<DateTime>? createdAt,
     Value<int>? rowid,
   }) {
-    return ProjectsCompanion(
+    return LocalProjectsCompanion(
       id: id ?? this.id,
+      userId: userId ?? this.userId,
       name: name ?? this.name,
       colorId: colorId ?? this.colorId,
       createdAt: createdAt ?? this.createdAt,
@@ -281,6 +637,9 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<String>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
@@ -299,8 +658,9 @@ class ProjectsCompanion extends UpdateCompanion<Project> {
 
   @override
   String toString() {
-    return (StringBuffer('ProjectsCompanion(')
+    return (StringBuffer('LocalProjectsCompanion(')
           ..write('id: $id, ')
+          ..write('userId: $userId, ')
           ..write('name: $name, ')
           ..write('colorId: $colorId, ')
           ..write('createdAt: $createdAt, ')
@@ -323,7 +683,19 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
-    clientDefault: () => const Uuid().v4(),
+    clientDefault: () => const Uuid().v7(),
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES local_users (id) ON UPDATE CASCADE ON DELETE CASCADE',
+    ),
   );
   static const VerificationMeta _projectIdMeta = const VerificationMeta(
     'projectId',
@@ -336,7 +708,7 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES projects (id) ON UPDATE CASCADE ON DELETE SET NULL',
+      'REFERENCES local_projects (id) ON UPDATE CASCADE ON DELETE SET NULL',
     ),
   );
   static const VerificationMeta _startedAtMeta = const VerificationMeta(
@@ -362,7 +734,13 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
     requiredDuringInsert: true,
   );
   @override
-  List<GeneratedColumn> get $columns => [id, projectId, startedAt, endedAt];
+  List<GeneratedColumn> get $columns => [
+    id,
+    userId,
+    projectId,
+    startedAt,
+    endedAt,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -377,6 +755,14 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
     }
     if (data.containsKey('project_id')) {
       context.handle(
@@ -413,6 +799,10 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
         DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      )!,
       projectId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}project_id'],
@@ -436,11 +826,13 @@ class $SessionsTable extends Sessions with TableInfo<$SessionsTable, Session> {
 
 class Session extends DataClass implements Insertable<Session> {
   final String id;
+  final String userId;
   final String? projectId;
   final DateTime startedAt;
   final DateTime endedAt;
   const Session({
     required this.id,
+    required this.userId,
     this.projectId,
     required this.startedAt,
     required this.endedAt,
@@ -449,6 +841,7 @@ class Session extends DataClass implements Insertable<Session> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    map['user_id'] = Variable<String>(userId);
     if (!nullToAbsent || projectId != null) {
       map['project_id'] = Variable<String>(projectId);
     }
@@ -460,6 +853,7 @@ class Session extends DataClass implements Insertable<Session> {
   SessionsCompanion toCompanion(bool nullToAbsent) {
     return SessionsCompanion(
       id: Value(id),
+      userId: Value(userId),
       projectId: projectId == null && nullToAbsent
           ? const Value.absent()
           : Value(projectId),
@@ -475,6 +869,7 @@ class Session extends DataClass implements Insertable<Session> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Session(
       id: serializer.fromJson<String>(json['id']),
+      userId: serializer.fromJson<String>(json['userId']),
       projectId: serializer.fromJson<String?>(json['projectId']),
       startedAt: serializer.fromJson<DateTime>(json['startedAt']),
       endedAt: serializer.fromJson<DateTime>(json['endedAt']),
@@ -485,6 +880,7 @@ class Session extends DataClass implements Insertable<Session> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'userId': serializer.toJson<String>(userId),
       'projectId': serializer.toJson<String?>(projectId),
       'startedAt': serializer.toJson<DateTime>(startedAt),
       'endedAt': serializer.toJson<DateTime>(endedAt),
@@ -493,11 +889,13 @@ class Session extends DataClass implements Insertable<Session> {
 
   Session copyWith({
     String? id,
+    String? userId,
     Value<String?> projectId = const Value.absent(),
     DateTime? startedAt,
     DateTime? endedAt,
   }) => Session(
     id: id ?? this.id,
+    userId: userId ?? this.userId,
     projectId: projectId.present ? projectId.value : this.projectId,
     startedAt: startedAt ?? this.startedAt,
     endedAt: endedAt ?? this.endedAt,
@@ -505,6 +903,7 @@ class Session extends DataClass implements Insertable<Session> {
   Session copyWithCompanion(SessionsCompanion data) {
     return Session(
       id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
       projectId: data.projectId.present ? data.projectId.value : this.projectId,
       startedAt: data.startedAt.present ? data.startedAt.value : this.startedAt,
       endedAt: data.endedAt.present ? data.endedAt.value : this.endedAt,
@@ -515,6 +914,7 @@ class Session extends DataClass implements Insertable<Session> {
   String toString() {
     return (StringBuffer('Session(')
           ..write('id: $id, ')
+          ..write('userId: $userId, ')
           ..write('projectId: $projectId, ')
           ..write('startedAt: $startedAt, ')
           ..write('endedAt: $endedAt')
@@ -523,12 +923,13 @@ class Session extends DataClass implements Insertable<Session> {
   }
 
   @override
-  int get hashCode => Object.hash(id, projectId, startedAt, endedAt);
+  int get hashCode => Object.hash(id, userId, projectId, startedAt, endedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Session &&
           other.id == this.id &&
+          other.userId == this.userId &&
           other.projectId == this.projectId &&
           other.startedAt == this.startedAt &&
           other.endedAt == this.endedAt);
@@ -536,12 +937,14 @@ class Session extends DataClass implements Insertable<Session> {
 
 class SessionsCompanion extends UpdateCompanion<Session> {
   final Value<String> id;
+  final Value<String> userId;
   final Value<String?> projectId;
   final Value<DateTime> startedAt;
   final Value<DateTime> endedAt;
   final Value<int> rowid;
   const SessionsCompanion({
     this.id = const Value.absent(),
+    this.userId = const Value.absent(),
     this.projectId = const Value.absent(),
     this.startedAt = const Value.absent(),
     this.endedAt = const Value.absent(),
@@ -549,14 +952,17 @@ class SessionsCompanion extends UpdateCompanion<Session> {
   });
   SessionsCompanion.insert({
     this.id = const Value.absent(),
+    required String userId,
     this.projectId = const Value.absent(),
     required DateTime startedAt,
     required DateTime endedAt,
     this.rowid = const Value.absent(),
-  }) : startedAt = Value(startedAt),
+  }) : userId = Value(userId),
+       startedAt = Value(startedAt),
        endedAt = Value(endedAt);
   static Insertable<Session> custom({
     Expression<String>? id,
+    Expression<String>? userId,
     Expression<String>? projectId,
     Expression<DateTime>? startedAt,
     Expression<DateTime>? endedAt,
@@ -564,6 +970,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
       if (projectId != null) 'project_id': projectId,
       if (startedAt != null) 'started_at': startedAt,
       if (endedAt != null) 'ended_at': endedAt,
@@ -573,6 +980,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
 
   SessionsCompanion copyWith({
     Value<String>? id,
+    Value<String>? userId,
     Value<String?>? projectId,
     Value<DateTime>? startedAt,
     Value<DateTime>? endedAt,
@@ -580,6 +988,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
   }) {
     return SessionsCompanion(
       id: id ?? this.id,
+      userId: userId ?? this.userId,
       projectId: projectId ?? this.projectId,
       startedAt: startedAt ?? this.startedAt,
       endedAt: endedAt ?? this.endedAt,
@@ -592,6 +1001,9 @@ class SessionsCompanion extends UpdateCompanion<Session> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<String>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
     }
     if (projectId.present) {
       map['project_id'] = Variable<String>(projectId.value);
@@ -612,6 +1024,7 @@ class SessionsCompanion extends UpdateCompanion<Session> {
   String toString() {
     return (StringBuffer('SessionsCompanion(')
           ..write('id: $id, ')
+          ..write('userId: $userId, ')
           ..write('projectId: $projectId, ')
           ..write('startedAt: $startedAt, ')
           ..write('endedAt: $endedAt, ')
@@ -1107,326 +1520,17 @@ class ProjectRollupsCompanion extends UpdateCompanion<ProjectRollup> {
   }
 }
 
-class $LocalUsersTable extends LocalUsers
-    with TableInfo<$LocalUsersTable, LocalUser> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $LocalUsersTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _emailMeta = const VerificationMeta('email');
-  @override
-  late final GeneratedColumn<String> email = GeneratedColumn<String>(
-    'email',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _fullNameMeta = const VerificationMeta(
-    'fullName',
-  );
-  @override
-  late final GeneratedColumn<String> fullName = GeneratedColumn<String>(
-    'full_name',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _avatarUrlMeta = const VerificationMeta(
-    'avatarUrl',
-  );
-  @override
-  late final GeneratedColumn<String> avatarUrl = GeneratedColumn<String>(
-    'avatar_url',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [id, email, fullName, avatarUrl];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'local_users';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<LocalUser> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
-    }
-    if (data.containsKey('email')) {
-      context.handle(
-        _emailMeta,
-        email.isAcceptableOrUnknown(data['email']!, _emailMeta),
-      );
-    }
-    if (data.containsKey('full_name')) {
-      context.handle(
-        _fullNameMeta,
-        fullName.isAcceptableOrUnknown(data['full_name']!, _fullNameMeta),
-      );
-    }
-    if (data.containsKey('avatar_url')) {
-      context.handle(
-        _avatarUrlMeta,
-        avatarUrl.isAcceptableOrUnknown(data['avatar_url']!, _avatarUrlMeta),
-      );
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  LocalUser map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return LocalUser(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
-      email: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}email'],
-      ),
-      fullName: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}full_name'],
-      ),
-      avatarUrl: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}avatar_url'],
-      ),
-    );
-  }
-
-  @override
-  $LocalUsersTable createAlias(String alias) {
-    return $LocalUsersTable(attachedDatabase, alias);
-  }
-}
-
-class LocalUser extends DataClass implements Insertable<LocalUser> {
-  final String id;
-  final String? email;
-  final String? fullName;
-  final String? avatarUrl;
-  const LocalUser({
-    required this.id,
-    this.email,
-    this.fullName,
-    this.avatarUrl,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    if (!nullToAbsent || email != null) {
-      map['email'] = Variable<String>(email);
-    }
-    if (!nullToAbsent || fullName != null) {
-      map['full_name'] = Variable<String>(fullName);
-    }
-    if (!nullToAbsent || avatarUrl != null) {
-      map['avatar_url'] = Variable<String>(avatarUrl);
-    }
-    return map;
-  }
-
-  LocalUsersCompanion toCompanion(bool nullToAbsent) {
-    return LocalUsersCompanion(
-      id: Value(id),
-      email: email == null && nullToAbsent
-          ? const Value.absent()
-          : Value(email),
-      fullName: fullName == null && nullToAbsent
-          ? const Value.absent()
-          : Value(fullName),
-      avatarUrl: avatarUrl == null && nullToAbsent
-          ? const Value.absent()
-          : Value(avatarUrl),
-    );
-  }
-
-  factory LocalUser.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return LocalUser(
-      id: serializer.fromJson<String>(json['id']),
-      email: serializer.fromJson<String?>(json['email']),
-      fullName: serializer.fromJson<String?>(json['fullName']),
-      avatarUrl: serializer.fromJson<String?>(json['avatarUrl']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'email': serializer.toJson<String?>(email),
-      'fullName': serializer.toJson<String?>(fullName),
-      'avatarUrl': serializer.toJson<String?>(avatarUrl),
-    };
-  }
-
-  LocalUser copyWith({
-    String? id,
-    Value<String?> email = const Value.absent(),
-    Value<String?> fullName = const Value.absent(),
-    Value<String?> avatarUrl = const Value.absent(),
-  }) => LocalUser(
-    id: id ?? this.id,
-    email: email.present ? email.value : this.email,
-    fullName: fullName.present ? fullName.value : this.fullName,
-    avatarUrl: avatarUrl.present ? avatarUrl.value : this.avatarUrl,
-  );
-  LocalUser copyWithCompanion(LocalUsersCompanion data) {
-    return LocalUser(
-      id: data.id.present ? data.id.value : this.id,
-      email: data.email.present ? data.email.value : this.email,
-      fullName: data.fullName.present ? data.fullName.value : this.fullName,
-      avatarUrl: data.avatarUrl.present ? data.avatarUrl.value : this.avatarUrl,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('LocalUser(')
-          ..write('id: $id, ')
-          ..write('email: $email, ')
-          ..write('fullName: $fullName, ')
-          ..write('avatarUrl: $avatarUrl')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, email, fullName, avatarUrl);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is LocalUser &&
-          other.id == this.id &&
-          other.email == this.email &&
-          other.fullName == this.fullName &&
-          other.avatarUrl == this.avatarUrl);
-}
-
-class LocalUsersCompanion extends UpdateCompanion<LocalUser> {
-  final Value<String> id;
-  final Value<String?> email;
-  final Value<String?> fullName;
-  final Value<String?> avatarUrl;
-  final Value<int> rowid;
-  const LocalUsersCompanion({
-    this.id = const Value.absent(),
-    this.email = const Value.absent(),
-    this.fullName = const Value.absent(),
-    this.avatarUrl = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  LocalUsersCompanion.insert({
-    required String id,
-    this.email = const Value.absent(),
-    this.fullName = const Value.absent(),
-    this.avatarUrl = const Value.absent(),
-    this.rowid = const Value.absent(),
-  }) : id = Value(id);
-  static Insertable<LocalUser> custom({
-    Expression<String>? id,
-    Expression<String>? email,
-    Expression<String>? fullName,
-    Expression<String>? avatarUrl,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (email != null) 'email': email,
-      if (fullName != null) 'full_name': fullName,
-      if (avatarUrl != null) 'avatar_url': avatarUrl,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  LocalUsersCompanion copyWith({
-    Value<String>? id,
-    Value<String?>? email,
-    Value<String?>? fullName,
-    Value<String?>? avatarUrl,
-    Value<int>? rowid,
-  }) {
-    return LocalUsersCompanion(
-      id: id ?? this.id,
-      email: email ?? this.email,
-      fullName: fullName ?? this.fullName,
-      avatarUrl: avatarUrl ?? this.avatarUrl,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (email.present) {
-      map['email'] = Variable<String>(email.value);
-    }
-    if (fullName.present) {
-      map['full_name'] = Variable<String>(fullName.value);
-    }
-    if (avatarUrl.present) {
-      map['avatar_url'] = Variable<String>(avatarUrl.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('LocalUsersCompanion(')
-          ..write('id: $id, ')
-          ..write('email: $email, ')
-          ..write('fullName: $fullName, ')
-          ..write('avatarUrl: $avatarUrl, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
 abstract class _$LocalDatabase extends GeneratedDatabase {
   _$LocalDatabase(QueryExecutor e) : super(e);
   $LocalDatabaseManager get managers => $LocalDatabaseManager(this);
-  late final $ProjectsTable projects = $ProjectsTable(this);
+  late final $LocalUsersTable localUsers = $LocalUsersTable(this);
+  late final $LocalProjectsTable localProjects = $LocalProjectsTable(this);
   late final $SessionsTable sessions = $SessionsTable(this);
   late final $DailyRollupsTable dailyRollups = $DailyRollupsTable(this);
   late final $ProjectRollupsTable projectRollups = $ProjectRollupsTable(this);
-  late final $LocalUsersTable localUsers = $LocalUsersTable(this);
-  late final ProjectsDao projectsDao = ProjectsDao(this as LocalDatabase);
+  late final LocalProjectsDao localProjectsDao = LocalProjectsDao(
+    this as LocalDatabase,
+  );
   late final SessionsDao sessionsDao = SessionsDao(this as LocalDatabase);
   late final DailyRollupsDao dailyRollupsDao = DailyRollupsDao(
     this as LocalDatabase,
@@ -1440,24 +1544,52 @@ abstract class _$LocalDatabase extends GeneratedDatabase {
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
-    projects,
+    localUsers,
+    localProjects,
     sessions,
     dailyRollups,
     projectRollups,
-    localUsers,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
     WritePropagation(
       on: TableUpdateQuery.onTableName(
-        'projects',
+        'local_users',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('local_projects', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'local_users',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('local_projects', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'local_users',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('sessions', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'local_users',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('sessions', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'local_projects',
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('sessions', kind: UpdateKind.update)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
-        'projects',
+        'local_projects',
         limitUpdateKind: UpdateKind.update,
       ),
       result: [TableUpdate('sessions', kind: UpdateKind.update)],
@@ -1468,30 +1600,431 @@ abstract class _$LocalDatabase extends GeneratedDatabase {
       const DriftDatabaseOptions(storeDateTimeAsText: true);
 }
 
-typedef $$ProjectsTableCreateCompanionBuilder = ProjectsCompanion Function({
-  Value<String> id,
-  required String name,
-  required int colorId,
-  Value<DateTime> createdAt,
+typedef $$LocalUsersTableCreateCompanionBuilder = LocalUsersCompanion Function({
+  required String id,
+  Value<String?> email,
+  Value<String?> fullName,
+  Value<String?> avatarUrl,
   Value<int> rowid,
 });
-typedef $$ProjectsTableUpdateCompanionBuilder = ProjectsCompanion Function({
+typedef $$LocalUsersTableUpdateCompanionBuilder = LocalUsersCompanion Function({
   Value<String> id,
-  Value<String> name,
-  Value<int> colorId,
-  Value<DateTime> createdAt,
+  Value<String?> email,
+  Value<String?> fullName,
+  Value<String?> avatarUrl,
   Value<int> rowid,
 });
 
-final class $$ProjectsTableReferences
-    extends BaseReferences<_$LocalDatabase, $ProjectsTable, Project> {
-  $$ProjectsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+final class $$LocalUsersTableReferences
+    extends BaseReferences<_$LocalDatabase, $LocalUsersTable, LocalUser> {
+  $$LocalUsersTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$LocalProjectsTable, List<LocalProject>>
+  _localProjectsRefsTable(_$LocalDatabase db) => MultiTypedResultKey.fromTable(
+    db.localProjects,
+    aliasName: 'local_users__id__local_projects__user_id',
+  );
+
+  $$LocalProjectsTableProcessedTableManager get localProjectsRefs {
+    final manager = $$LocalProjectsTableTableManager(
+      $_db,
+      $_db.localProjects,
+    ).filter((f) => f.userId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_localProjectsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 
   static MultiTypedResultKey<$SessionsTable, List<Session>> _sessionsRefsTable(
     _$LocalDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.sessions,
-    aliasName: 'projects__id__sessions__project_id',
+    aliasName: 'local_users__id__sessions__user_id',
+  );
+
+  $$SessionsTableProcessedTableManager get sessionsRefs {
+    final manager = $$SessionsTableTableManager(
+      $_db,
+      $_db.sessions,
+    ).filter((f) => f.userId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_sessionsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$LocalUsersTableFilterComposer
+    extends Composer<_$LocalDatabase, $LocalUsersTable> {
+  $$LocalUsersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get email => $composableBuilder(
+    column: $table.email,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get fullName => $composableBuilder(
+    column: $table.fullName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get avatarUrl => $composableBuilder(
+    column: $table.avatarUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> localProjectsRefs(
+    Expression<bool> Function($$LocalProjectsTableFilterComposer f) f,
+  ) {
+    final $$LocalProjectsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.localProjects,
+      getReferencedColumn: (t) => t.userId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LocalProjectsTableFilterComposer(
+            $db: $db,
+            $table: $db.localProjects,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> sessionsRefs(
+    Expression<bool> Function($$SessionsTableFilterComposer f) f,
+  ) {
+    final $$SessionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.sessions,
+      getReferencedColumn: (t) => t.userId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SessionsTableFilterComposer(
+            $db: $db,
+            $table: $db.sessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$LocalUsersTableOrderingComposer
+    extends Composer<_$LocalDatabase, $LocalUsersTable> {
+  $$LocalUsersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get email => $composableBuilder(
+    column: $table.email,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get fullName => $composableBuilder(
+    column: $table.fullName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get avatarUrl => $composableBuilder(
+    column: $table.avatarUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$LocalUsersTableAnnotationComposer
+    extends Composer<_$LocalDatabase, $LocalUsersTable> {
+  $$LocalUsersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get email =>
+      $composableBuilder(column: $table.email, builder: (column) => column);
+
+  GeneratedColumn<String> get fullName =>
+      $composableBuilder(column: $table.fullName, builder: (column) => column);
+
+  GeneratedColumn<String> get avatarUrl =>
+      $composableBuilder(column: $table.avatarUrl, builder: (column) => column);
+
+  Expression<T> localProjectsRefs<T extends Object>(
+    Expression<T> Function($$LocalProjectsTableAnnotationComposer a) f,
+  ) {
+    final $$LocalProjectsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.localProjects,
+      getReferencedColumn: (t) => t.userId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LocalProjectsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.localProjects,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> sessionsRefs<T extends Object>(
+    Expression<T> Function($$SessionsTableAnnotationComposer a) f,
+  ) {
+    final $$SessionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.sessions,
+      getReferencedColumn: (t) => t.userId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SessionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.sessions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$LocalUsersTableTableManager
+    extends
+        RootTableManager<
+          _$LocalDatabase,
+          $LocalUsersTable,
+          LocalUser,
+          $$LocalUsersTableFilterComposer,
+          $$LocalUsersTableOrderingComposer,
+          $$LocalUsersTableAnnotationComposer,
+          $$LocalUsersTableCreateCompanionBuilder,
+          $$LocalUsersTableUpdateCompanionBuilder,
+          (LocalUser, $$LocalUsersTableReferences),
+          LocalUser,
+          PrefetchHooks Function({bool localProjectsRefs, bool sessionsRefs})
+        > {
+  $$LocalUsersTableTableManager(_$LocalDatabase db, $LocalUsersTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LocalUsersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$LocalUsersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$LocalUsersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String?> email = const Value.absent(),
+                Value<String?> fullName = const Value.absent(),
+                Value<String?> avatarUrl = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalUsersCompanion(
+                id: id,
+                email: email,
+                fullName: fullName,
+                avatarUrl: avatarUrl,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                Value<String?> email = const Value.absent(),
+                Value<String?> fullName = const Value.absent(),
+                Value<String?> avatarUrl = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LocalUsersCompanion.insert(
+                id: id,
+                email: email,
+                fullName: fullName,
+                avatarUrl: avatarUrl,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$LocalUsersTable, LocalUser>(table),
+                  $$LocalUsersTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({localProjectsRefs = false, sessionsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (localProjectsRefs) db.localProjects,
+                    if (sessionsRefs) db.sessions,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (localProjectsRefs)
+                        await $_getPrefetchedData<
+                          LocalUser,
+                          $LocalUsersTable,
+                          LocalProject
+                        >(
+                          currentTable: table,
+                          referencedTable: $$LocalUsersTableReferences
+                              ._localProjectsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$LocalUsersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).localProjectsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.userId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (sessionsRefs)
+                        await $_getPrefetchedData<
+                          LocalUser,
+                          $LocalUsersTable,
+                          Session
+                        >(
+                          currentTable: table,
+                          referencedTable: $$LocalUsersTableReferences
+                              ._sessionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$LocalUsersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).sessionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.userId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$LocalUsersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$LocalDatabase,
+      $LocalUsersTable,
+      LocalUser,
+      $$LocalUsersTableFilterComposer,
+      $$LocalUsersTableOrderingComposer,
+      $$LocalUsersTableAnnotationComposer,
+      $$LocalUsersTableCreateCompanionBuilder,
+      $$LocalUsersTableUpdateCompanionBuilder,
+      (LocalUser, $$LocalUsersTableReferences),
+      LocalUser,
+      PrefetchHooks Function({bool localProjectsRefs, bool sessionsRefs})
+    >;
+typedef $$LocalProjectsTableCreateCompanionBuilder =
+    LocalProjectsCompanion Function({
+      Value<String> id,
+      required String userId,
+      required String name,
+      required int colorId,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+typedef $$LocalProjectsTableUpdateCompanionBuilder =
+    LocalProjectsCompanion Function({
+      Value<String> id,
+      Value<String> userId,
+      Value<String> name,
+      Value<int> colorId,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+final class $$LocalProjectsTableReferences
+    extends BaseReferences<_$LocalDatabase, $LocalProjectsTable, LocalProject> {
+  $$LocalProjectsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $LocalUsersTable _userIdTable(_$LocalDatabase db) =>
+      db.localUsers.createAlias('local_projects__user_id__local_users__id');
+
+  $$LocalUsersTableProcessedTableManager get userId {
+    final $_column = $_itemColumn<String>('user_id')!;
+
+    final manager = $$LocalUsersTableTableManager(
+      $_db,
+      $_db.localUsers,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_userIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$SessionsTable, List<Session>> _sessionsRefsTable(
+    _$LocalDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.sessions,
+    aliasName: 'local_projects__id__sessions__project_id',
   );
 
   $$SessionsTableProcessedTableManager get sessionsRefs {
@@ -1507,9 +2040,9 @@ final class $$ProjectsTableReferences
   }
 }
 
-class $$ProjectsTableFilterComposer
-    extends Composer<_$LocalDatabase, $ProjectsTable> {
-  $$ProjectsTableFilterComposer({
+class $$LocalProjectsTableFilterComposer
+    extends Composer<_$LocalDatabase, $LocalProjectsTable> {
+  $$LocalProjectsTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -1535,6 +2068,29 @@ class $$ProjectsTableFilterComposer
     column: $table.createdAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  $$LocalUsersTableFilterComposer get userId {
+    final $$LocalUsersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.localUsers,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LocalUsersTableFilterComposer(
+            $db: $db,
+            $table: $db.localUsers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 
   Expression<bool> sessionsRefs(
     Expression<bool> Function($$SessionsTableFilterComposer f) f,
@@ -1562,9 +2118,9 @@ class $$ProjectsTableFilterComposer
   }
 }
 
-class $$ProjectsTableOrderingComposer
-    extends Composer<_$LocalDatabase, $ProjectsTable> {
-  $$ProjectsTableOrderingComposer({
+class $$LocalProjectsTableOrderingComposer
+    extends Composer<_$LocalDatabase, $LocalProjectsTable> {
+  $$LocalProjectsTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -1590,11 +2146,34 @@ class $$ProjectsTableOrderingComposer
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  $$LocalUsersTableOrderingComposer get userId {
+    final $$LocalUsersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.localUsers,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LocalUsersTableOrderingComposer(
+            $db: $db,
+            $table: $db.localUsers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
-class $$ProjectsTableAnnotationComposer
-    extends Composer<_$LocalDatabase, $ProjectsTable> {
-  $$ProjectsTableAnnotationComposer({
+class $$LocalProjectsTableAnnotationComposer
+    extends Composer<_$LocalDatabase, $LocalProjectsTable> {
+  $$LocalProjectsTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -1612,6 +2191,29 @@ class $$ProjectsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$LocalUsersTableAnnotationComposer get userId {
+    final $$LocalUsersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.localUsers,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LocalUsersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.localUsers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 
   Expression<T> sessionsRefs<T extends Object>(
     Expression<T> Function($$SessionsTableAnnotationComposer a) f,
@@ -1639,41 +2241,45 @@ class $$ProjectsTableAnnotationComposer
   }
 }
 
-class $$ProjectsTableTableManager
+class $$LocalProjectsTableTableManager
     extends
         RootTableManager<
           _$LocalDatabase,
-          $ProjectsTable,
-          Project,
-          $$ProjectsTableFilterComposer,
-          $$ProjectsTableOrderingComposer,
-          $$ProjectsTableAnnotationComposer,
-          $$ProjectsTableCreateCompanionBuilder,
-          $$ProjectsTableUpdateCompanionBuilder,
-          (Project, $$ProjectsTableReferences),
-          Project,
-          PrefetchHooks Function({bool sessionsRefs})
+          $LocalProjectsTable,
+          LocalProject,
+          $$LocalProjectsTableFilterComposer,
+          $$LocalProjectsTableOrderingComposer,
+          $$LocalProjectsTableAnnotationComposer,
+          $$LocalProjectsTableCreateCompanionBuilder,
+          $$LocalProjectsTableUpdateCompanionBuilder,
+          (LocalProject, $$LocalProjectsTableReferences),
+          LocalProject,
+          PrefetchHooks Function({bool userId, bool sessionsRefs})
         > {
-  $$ProjectsTableTableManager(_$LocalDatabase db, $ProjectsTable table)
-    : super(
+  $$LocalProjectsTableTableManager(
+    _$LocalDatabase db,
+    $LocalProjectsTable table,
+  ) : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$ProjectsTableFilterComposer($db: db, $table: table),
+              $$LocalProjectsTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $$ProjectsTableOrderingComposer($db: db, $table: table),
+              $$LocalProjectsTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$ProjectsTableAnnotationComposer($db: db, $table: table),
+              $$LocalProjectsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
+                Value<String> userId = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<int> colorId = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => ProjectsCompanion(
+              }) => LocalProjectsCompanion(
                 id: id,
+                userId: userId,
                 name: name,
                 colorId: colorId,
                 createdAt: createdAt,
@@ -1682,12 +2288,14 @@ class $$ProjectsTableTableManager
           createCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
+                required String userId,
                 required String name,
                 required int colorId,
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => ProjectsCompanion.insert(
+              }) => LocalProjectsCompanion.insert(
                 id: id,
+                userId: userId,
                 name: name,
                 colorId: colorId,
                 createdAt: createdAt,
@@ -1696,25 +2304,62 @@ class $$ProjectsTableTableManager
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable<$ProjectsTable, Project>(table),
-                  $$ProjectsTableReferences(db, table, e),
+                  e.readTable<$LocalProjectsTable, LocalProject>(table),
+                  $$LocalProjectsTableReferences(db, table, e),
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({sessionsRefs = false}) {
+          prefetchHooksCallback: ({userId = false, sessionsRefs = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [if (sessionsRefs) db.sessions],
-              addJoins: null,
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (userId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.userId,
+                        referencedTable: $$LocalProjectsTableReferences
+                            ._userIdTable(db),
+                        referencedColumn: $$LocalProjectsTableReferences
+                            ._userIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
               getPrefetchedDataCallback: (items) async {
                 return [
                   if (sessionsRefs)
-                    await $_getPrefetchedData<Project, $ProjectsTable, Session>(
+                    await $_getPrefetchedData<
+                      LocalProject,
+                      $LocalProjectsTable,
+                      Session
+                    >(
                       currentTable: table,
-                      referencedTable: $$ProjectsTableReferences
+                      referencedTable: $$LocalProjectsTableReferences
                           ._sessionsRefsTable(db),
                       managerFromTypedResult: (p0) =>
-                          $$ProjectsTableReferences(db, table, p0).sessionsRefs,
+                          $$LocalProjectsTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).sessionsRefs,
                       referencedItemsForCurrentItem: (item, referencedItems) =>
                           referencedItems.where((e) => e.projectId == item.id),
                       typedResults: items,
@@ -1727,22 +2372,23 @@ class $$ProjectsTableTableManager
       );
 }
 
-typedef $$ProjectsTableProcessedTableManager =
+typedef $$LocalProjectsTableProcessedTableManager =
     ProcessedTableManager<
       _$LocalDatabase,
-      $ProjectsTable,
-      Project,
-      $$ProjectsTableFilterComposer,
-      $$ProjectsTableOrderingComposer,
-      $$ProjectsTableAnnotationComposer,
-      $$ProjectsTableCreateCompanionBuilder,
-      $$ProjectsTableUpdateCompanionBuilder,
-      (Project, $$ProjectsTableReferences),
-      Project,
-      PrefetchHooks Function({bool sessionsRefs})
+      $LocalProjectsTable,
+      LocalProject,
+      $$LocalProjectsTableFilterComposer,
+      $$LocalProjectsTableOrderingComposer,
+      $$LocalProjectsTableAnnotationComposer,
+      $$LocalProjectsTableCreateCompanionBuilder,
+      $$LocalProjectsTableUpdateCompanionBuilder,
+      (LocalProject, $$LocalProjectsTableReferences),
+      LocalProject,
+      PrefetchHooks Function({bool userId, bool sessionsRefs})
     >;
 typedef $$SessionsTableCreateCompanionBuilder = SessionsCompanion Function({
   Value<String> id,
+  required String userId,
   Value<String?> projectId,
   required DateTime startedAt,
   required DateTime endedAt,
@@ -1750,6 +2396,7 @@ typedef $$SessionsTableCreateCompanionBuilder = SessionsCompanion Function({
 });
 typedef $$SessionsTableUpdateCompanionBuilder = SessionsCompanion Function({
   Value<String> id,
+  Value<String> userId,
   Value<String?> projectId,
   Value<DateTime> startedAt,
   Value<DateTime> endedAt,
@@ -1760,15 +2407,32 @@ final class $$SessionsTableReferences
     extends BaseReferences<_$LocalDatabase, $SessionsTable, Session> {
   $$SessionsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static $ProjectsTable _projectIdTable(_$LocalDatabase db) =>
-      db.projects.createAlias('sessions__project_id__projects__id');
+  static $LocalUsersTable _userIdTable(_$LocalDatabase db) =>
+      db.localUsers.createAlias('sessions__user_id__local_users__id');
 
-  $$ProjectsTableProcessedTableManager? get projectId {
+  $$LocalUsersTableProcessedTableManager get userId {
+    final $_column = $_itemColumn<String>('user_id')!;
+
+    final manager = $$LocalUsersTableTableManager(
+      $_db,
+      $_db.localUsers,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_userIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $LocalProjectsTable _projectIdTable(_$LocalDatabase db) =>
+      db.localProjects.createAlias('sessions__project_id__local_projects__id');
+
+  $$LocalProjectsTableProcessedTableManager? get projectId {
     final $_column = $_itemColumn<String>('project_id');
     if ($_column == null) return null;
-    final manager = $$ProjectsTableTableManager(
+    final manager = $$LocalProjectsTableTableManager(
       $_db,
-      $_db.projects,
+      $_db.localProjects,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_projectIdTable($_db));
     if (item == null) return manager;
@@ -1802,20 +2466,43 @@ class $$SessionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  $$ProjectsTableFilterComposer get projectId {
-    final $$ProjectsTableFilterComposer composer = $composerBuilder(
+  $$LocalUsersTableFilterComposer get userId {
+    final $$LocalUsersTableFilterComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.projectId,
-      referencedTable: $db.projects,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.localUsers,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$ProjectsTableFilterComposer(
+          }) => $$LocalUsersTableFilterComposer(
             $db: $db,
-            $table: $db.projects,
+            $table: $db.localUsers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$LocalProjectsTableFilterComposer get projectId {
+    final $$LocalProjectsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.projectId,
+      referencedTable: $db.localProjects,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LocalProjectsTableFilterComposer(
+            $db: $db,
+            $table: $db.localProjects,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -1850,20 +2537,43 @@ class $$SessionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  $$ProjectsTableOrderingComposer get projectId {
-    final $$ProjectsTableOrderingComposer composer = $composerBuilder(
+  $$LocalUsersTableOrderingComposer get userId {
+    final $$LocalUsersTableOrderingComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.projectId,
-      referencedTable: $db.projects,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.localUsers,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$ProjectsTableOrderingComposer(
+          }) => $$LocalUsersTableOrderingComposer(
             $db: $db,
-            $table: $db.projects,
+            $table: $db.localUsers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$LocalProjectsTableOrderingComposer get projectId {
+    final $$LocalProjectsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.projectId,
+      referencedTable: $db.localProjects,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LocalProjectsTableOrderingComposer(
+            $db: $db,
+            $table: $db.localProjects,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -1892,20 +2602,43 @@ class $$SessionsTableAnnotationComposer
   GeneratedColumn<DateTime> get endedAt =>
       $composableBuilder(column: $table.endedAt, builder: (column) => column);
 
-  $$ProjectsTableAnnotationComposer get projectId {
-    final $$ProjectsTableAnnotationComposer composer = $composerBuilder(
+  $$LocalUsersTableAnnotationComposer get userId {
+    final $$LocalUsersTableAnnotationComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.projectId,
-      referencedTable: $db.projects,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.localUsers,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$ProjectsTableAnnotationComposer(
+          }) => $$LocalUsersTableAnnotationComposer(
             $db: $db,
-            $table: $db.projects,
+            $table: $db.localUsers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$LocalProjectsTableAnnotationComposer get projectId {
+    final $$LocalProjectsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.projectId,
+      referencedTable: $db.localProjects,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LocalProjectsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.localProjects,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -1929,7 +2662,7 @@ class $$SessionsTableTableManager
           $$SessionsTableUpdateCompanionBuilder,
           (Session, $$SessionsTableReferences),
           Session,
-          PrefetchHooks Function({bool projectId})
+          PrefetchHooks Function({bool userId, bool projectId})
         > {
   $$SessionsTableTableManager(_$LocalDatabase db, $SessionsTable table)
     : super(
@@ -1945,12 +2678,14 @@ class $$SessionsTableTableManager
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
+                Value<String> userId = const Value.absent(),
                 Value<String?> projectId = const Value.absent(),
                 Value<DateTime> startedAt = const Value.absent(),
                 Value<DateTime> endedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SessionsCompanion(
                 id: id,
+                userId: userId,
                 projectId: projectId,
                 startedAt: startedAt,
                 endedAt: endedAt,
@@ -1959,12 +2694,14 @@ class $$SessionsTableTableManager
           createCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
+                required String userId,
                 Value<String?> projectId = const Value.absent(),
                 required DateTime startedAt,
                 required DateTime endedAt,
                 Value<int> rowid = const Value.absent(),
               }) => SessionsCompanion.insert(
                 id: id,
+                userId: userId,
                 projectId: projectId,
                 startedAt: startedAt,
                 endedAt: endedAt,
@@ -1978,7 +2715,7 @@ class $$SessionsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({projectId = false}) {
+          prefetchHooksCallback: ({userId = false, projectId = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [],
@@ -1998,6 +2735,18 @@ class $$SessionsTableTableManager
                       dynamic
                     >
                   >(state) {
+                    if (userId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.userId,
+                        referencedTable: $$SessionsTableReferences._userIdTable(
+                          db,
+                        ),
+                        referencedColumn: $$SessionsTableReferences
+                            ._userIdTable(db)
+                            .id,
+                      ) as T;
+                    }
                     if (projectId) {
                       state = state.withJoin(
                         currentTable: table,
@@ -2033,7 +2782,7 @@ typedef $$SessionsTableProcessedTableManager =
       $$SessionsTableUpdateCompanionBuilder,
       (Session, $$SessionsTableReferences),
       Session,
-      PrefetchHooks Function({bool projectId})
+      PrefetchHooks Function({bool userId, bool projectId})
     >;
 typedef $$DailyRollupsTableCreateCompanionBuilder =
     DailyRollupsCompanion Function({
@@ -2368,203 +3117,18 @@ typedef $$ProjectRollupsTableProcessedTableManager =
       ProjectRollup,
       PrefetchHooks Function()
     >;
-typedef $$LocalUsersTableCreateCompanionBuilder = LocalUsersCompanion Function({
-  required String id,
-  Value<String?> email,
-  Value<String?> fullName,
-  Value<String?> avatarUrl,
-  Value<int> rowid,
-});
-typedef $$LocalUsersTableUpdateCompanionBuilder = LocalUsersCompanion Function({
-  Value<String> id,
-  Value<String?> email,
-  Value<String?> fullName,
-  Value<String?> avatarUrl,
-  Value<int> rowid,
-});
-
-class $$LocalUsersTableFilterComposer
-    extends Composer<_$LocalDatabase, $LocalUsersTable> {
-  $$LocalUsersTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get email => $composableBuilder(
-    column: $table.email,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get fullName => $composableBuilder(
-    column: $table.fullName,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get avatarUrl => $composableBuilder(
-    column: $table.avatarUrl,
-    builder: (column) => ColumnFilters(column),
-  );
-}
-
-class $$LocalUsersTableOrderingComposer
-    extends Composer<_$LocalDatabase, $LocalUsersTable> {
-  $$LocalUsersTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get email => $composableBuilder(
-    column: $table.email,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get fullName => $composableBuilder(
-    column: $table.fullName,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get avatarUrl => $composableBuilder(
-    column: $table.avatarUrl,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$LocalUsersTableAnnotationComposer
-    extends Composer<_$LocalDatabase, $LocalUsersTable> {
-  $$LocalUsersTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get email =>
-      $composableBuilder(column: $table.email, builder: (column) => column);
-
-  GeneratedColumn<String> get fullName =>
-      $composableBuilder(column: $table.fullName, builder: (column) => column);
-
-  GeneratedColumn<String> get avatarUrl =>
-      $composableBuilder(column: $table.avatarUrl, builder: (column) => column);
-}
-
-class $$LocalUsersTableTableManager
-    extends
-        RootTableManager<
-          _$LocalDatabase,
-          $LocalUsersTable,
-          LocalUser,
-          $$LocalUsersTableFilterComposer,
-          $$LocalUsersTableOrderingComposer,
-          $$LocalUsersTableAnnotationComposer,
-          $$LocalUsersTableCreateCompanionBuilder,
-          $$LocalUsersTableUpdateCompanionBuilder,
-          (
-            LocalUser,
-            BaseReferences<_$LocalDatabase, $LocalUsersTable, LocalUser>,
-          ),
-          LocalUser,
-          PrefetchHooks Function()
-        > {
-  $$LocalUsersTableTableManager(_$LocalDatabase db, $LocalUsersTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$LocalUsersTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$LocalUsersTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$LocalUsersTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                Value<String?> email = const Value.absent(),
-                Value<String?> fullName = const Value.absent(),
-                Value<String?> avatarUrl = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => LocalUsersCompanion(
-                id: id,
-                email: email,
-                fullName: fullName,
-                avatarUrl: avatarUrl,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                required String id,
-                Value<String?> email = const Value.absent(),
-                Value<String?> fullName = const Value.absent(),
-                Value<String?> avatarUrl = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => LocalUsersCompanion.insert(
-                id: id,
-                email: email,
-                fullName: fullName,
-                avatarUrl: avatarUrl,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable<$LocalUsersTable, LocalUser>(table),
-                  BaseReferences<_$LocalDatabase, $LocalUsersTable, LocalUser>(
-                    db,
-                    table,
-                    e,
-                  ),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback: null,
-        ),
-      );
-}
-
-typedef $$LocalUsersTableProcessedTableManager =
-    ProcessedTableManager<
-      _$LocalDatabase,
-      $LocalUsersTable,
-      LocalUser,
-      $$LocalUsersTableFilterComposer,
-      $$LocalUsersTableOrderingComposer,
-      $$LocalUsersTableAnnotationComposer,
-      $$LocalUsersTableCreateCompanionBuilder,
-      $$LocalUsersTableUpdateCompanionBuilder,
-      (LocalUser, BaseReferences<_$LocalDatabase, $LocalUsersTable, LocalUser>),
-      LocalUser,
-      PrefetchHooks Function()
-    >;
 
 class $LocalDatabaseManager {
   final _$LocalDatabase _db;
   $LocalDatabaseManager(this._db);
-  $$ProjectsTableTableManager get projects =>
-      $$ProjectsTableTableManager(_db, _db.projects);
+  $$LocalUsersTableTableManager get localUsers =>
+      $$LocalUsersTableTableManager(_db, _db.localUsers);
+  $$LocalProjectsTableTableManager get localProjects =>
+      $$LocalProjectsTableTableManager(_db, _db.localProjects);
   $$SessionsTableTableManager get sessions =>
       $$SessionsTableTableManager(_db, _db.sessions);
   $$DailyRollupsTableTableManager get dailyRollups =>
       $$DailyRollupsTableTableManager(_db, _db.dailyRollups);
   $$ProjectRollupsTableTableManager get projectRollups =>
       $$ProjectRollupsTableTableManager(_db, _db.projectRollups);
-  $$LocalUsersTableTableManager get localUsers =>
-      $$LocalUsersTableTableManager(_db, _db.localUsers);
 }

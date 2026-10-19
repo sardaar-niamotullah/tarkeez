@@ -95,7 +95,7 @@ class ProjectFormCubit extends Cubit<ProjectFormState> {
 
     final next = s.copyWith(
       nameError: () =>
-          s.touched.contains('name') ? FormValidators.validateName(name) : null,
+          s.touched.contains('name') ? FormValidators.validateProjectName(name) : null,
     );
 
     final savedProject = next.savedProject;
@@ -105,7 +105,7 @@ class ProjectFormCubit extends Cubit<ProjectFormState> {
               next.selectedColorId != savedProject.colorId;
 
     final isValid =
-        FormValidators.validateName(name) == null &&
+        FormValidators.validateProjectName(name) == null &&
         next.selectedColorId != null;
 
     return next.copyWith(

@@ -2,14 +2,15 @@ import 'package:equatable/equatable.dart';
 import 'package:tarkeez/core/database/local_database.dart';
 
 class ProjectModel extends Equatable {
-  const ProjectModel({
+  const new({
     this.id,
+    this.userId,
     required this.name,
     required this.colorId,
     required this.createdAt,
   });
 
-  final String? id;
+  final String? id, userId;
   final String name;
   final int colorId;
   final DateTime createdAt;
@@ -31,7 +32,7 @@ class ProjectModel extends Equatable {
     );
   }
 
-  factory ProjectModel.fromRow(Project row) {
+  factory ProjectModel.fromRow(LocalProject row) {
     return ProjectModel(
       id: row.id,
       colorId: row.colorId,

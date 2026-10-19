@@ -4,7 +4,8 @@ part of 'sessions_dao.dart';
 
 // ignore_for_file: type=lint
 mixin _$SessionsDaoMixin on DatabaseAccessor<LocalDatabase> {
-  $ProjectsTable get projects => attachedDatabase.projects;
+  $LocalUsersTable get localUsers => attachedDatabase.localUsers;
+  $LocalProjectsTable get localProjects => attachedDatabase.localProjects;
   $SessionsTable get sessions => attachedDatabase.sessions;
   SessionsDaoManager get managers => SessionsDaoManager(this);
 }
@@ -12,8 +13,10 @@ mixin _$SessionsDaoMixin on DatabaseAccessor<LocalDatabase> {
 class SessionsDaoManager {
   final _$SessionsDaoMixin _db;
   SessionsDaoManager(this._db);
-  $$ProjectsTableTableManager get projects =>
-      $$ProjectsTableTableManager(_db.attachedDatabase, _db.projects);
+  $$LocalUsersTableTableManager get localUsers =>
+      $$LocalUsersTableTableManager(_db.attachedDatabase, _db.localUsers);
+  $$LocalProjectsTableTableManager get localProjects =>
+      $$LocalProjectsTableTableManager(_db.attachedDatabase, _db.localProjects);
   $$SessionsTableTableManager get sessions =>
       $$SessionsTableTableManager(_db.attachedDatabase, _db.sessions);
 }

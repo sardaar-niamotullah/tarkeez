@@ -7,14 +7,14 @@ import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/project_color_selection_box.dart';
 
 class ProjectColorOptionsSection extends StatelessWidget {
-  final int? selectedColorId;
-  final ValueChanged<int> onColorSelected;
-
-  const ProjectColorOptionsSection({
+  const new({
     super.key,
     required this.selectedColorId,
     required this.onColorSelected,
   });
+  
+  final int? selectedColorId;
+  final ValueChanged<int> onColorSelected;
 
   @override
   Widget build(BuildContext context) {

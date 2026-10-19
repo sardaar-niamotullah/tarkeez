@@ -9,7 +9,7 @@ import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 
 class SimulateSessions extends StatefulWidget {
-  const SimulateSessions({super.key});
+  const new({super.key});
 
   @override
   State<SimulateSessions> createState() => _SimulateSessionsState();
@@ -152,6 +152,7 @@ class _SimulateSessionsState extends State<SimulateSessions> {
 
         pending.add(
           SessionsCompanion.insert(
+            userId: '',
             startedAt: sessionStartLocal.toUtc(),
             endedAt: sessionEndLocal.toUtc(),
             projectId: Value(projectId),
