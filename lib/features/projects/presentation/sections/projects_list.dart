@@ -67,8 +67,13 @@ class ProjectsList extends StatelessWidget {
 
     return SliverList.builder(
       itemCount: projects.length,
-      itemBuilder: (context, i) =>
-          ProjectInfoTile(project: projects[i], tileColor: tileColor(i)),
+      itemBuilder: (context, i) => Container(
+        margin: .only(bottom: 8),
+        child: ProjectInfoTile(
+          project: projects[i],
+          tileColor: scheme.onSurface,
+        ),
+      ),
     );
   }
 }

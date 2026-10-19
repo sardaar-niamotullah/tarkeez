@@ -11,18 +11,18 @@ import 'package:tarkeez/features/projects/presentation/sections/add_or_update_pr
 import 'package:tarkeez/features/projects/presentation/sections/widgets/project_delete_button.dart';
 
 class ProjectInfoTile extends StatelessWidget {
-  final ProjectModel? project;
-  final int? durationInSeconds;
-  final Color tileColor;
-  final bool isLocked;
-
-  const ProjectInfoTile({
+  const new({
     super.key,
     this.project,
     this.durationInSeconds,
     required this.tileColor,
     this.isLocked = false,
   });
+  
+  final ProjectModel? project;
+  final int? durationInSeconds;
+  final Color tileColor;
+  final bool isLocked;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class ProjectInfoTile extends StatelessWidget {
     final resolvedColor = project != null
         ? projectColors[project!.colorId]
         : scheme.onTertiary;
-        
+
     return Container(
       padding: .symmetric(
         horizontal: ContainerDesignUtils.padding,
