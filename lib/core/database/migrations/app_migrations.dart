@@ -19,13 +19,15 @@ MigrationStrategy buildMigrationStrategy(LocalDatabase db) {
       }
       if (from < 4) {
         await m.createTable(db.projectRollups);
-        // Fill BOTH rollup tables from existing sessions. This also repairs
-        // daily_rollups for sessions recorded before its triggers existed.
         await rebuildRollupData(db);
         await createProjectRollupTriggers(db);
       }
       if (from < 5) {
         await m.createTable(db.localUsers);
+      }
+      if (from < 6) {
+        await m.createTable(db.localProjects);
+        await m.deleteTable('projects'); 
       }
     },
     beforeOpen: (details) async {
