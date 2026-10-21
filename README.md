@@ -1,7 +1,18 @@
+# Tarkeez
+
+Offline-first Flutter app. Every action is saved to local SQLite first and synced to the cloud in the background, so the UI never waits for the network.
+
+- **App:** Flutter · BLoC · Drift (SQLite) · GetIt · GoRouter
+- **Backend:** NestJS + PostgreSQL on a Contabo VPS, served over HTTPS
+- **Auth:** Google Sign-In. NestJS verifies the Google ID token and issues its own JWT, which every request carries.
+
+> **Status:** projects sync is the first phase. Sessions, rollups and the leaderboard follow the same pattern and are described here as the target design.
+
 ## Key conventions
 
-- **IDs:** every primary key is a UUIDv7, generated on the client (`const Uuid().v7()`), except the `users` table (PK is the email) and the exceptions listed below. UUIDv7 is time-ordered, so inserts stay index-friendly and the queue replays in creation order.
-- **Multiple accounts:** both SQLite and Postgres have a `users` table. Every other table carries `user_email`, and every query is scoped by the active account.
+- **IDs:** every primary key is a UUIDv7, generated on the client (`const Uuid().v7()`), except the `users` table (PK is the email) and the exceptions listed below. UUIDv7 is time-ordered, so inserts stay index-friendly and lists can use `id` as a tiebreaker.
+- **Multiple accounts:** both SQLite and Postgres have a `users` table. Every other table carries `user_email`, and every query is scoped by the active account. On the server, NestJS takes the email from the verified JWT and adds it to every query, so a client can never read or write another account's rows.
+- **Server clock:** every synced cloud table has an `updated_at` that Postgres sets itself, never the phone. It is the only thing sync cursors are based on.
 - **Two kinds of daily totals:**
   - `daily_rollups` holds **local-day** totals (the user's own timezone) for heatmaps, reports and streaks. It exists in SQLite and in the cloud.
   - `utc_daily_rollups` holds **UTC-day** totals for the international leaderboard. It exists in the cloud only and is maintained by cloud triggers.
@@ -13,36 +24,51 @@
 - **Session length cap:** a session lasts at most 24 hours, so it spans at most two local days and two UTC days. Every trigger therefore writes at most two slices.
 - **Exceptions to the UUIDv7 rule:**
   - Rollup tables keep composite keys (for example `user_email + date`) because the triggers upsert on them.
-  - `app_meta` is a key-value table.
+  - `sync_queue` is keyed by `user_email + entity + entity_id` (one row per item).
   - `sync_state` is keyed by `user_email`, one row per account.
+  - `app_meta` is a key-value table.
+
+## How sync works
+
+- **One queue row per item.** Every local write saves the data and upserts a `sync_queue` row in the same transaction, so a change can never be saved without being queued. Editing the same project five times offline leaves one row. The row stores only `entity + id + op`; the push reads the current data, so it always sends the latest version. Each re-enqueue bumps `revision`, so a change made during a push is never lost.
+- **Push** sends the queued items in one request. It runs 2 seconds after any write (bursts collapse into one), at app start, and every 30 minutes. If the queue is empty, no request is made.
+- **Pull** runs at app start and every 30 minutes, always after a push. It is a **delta pull**: the app sends a cursor per entity (the newest `updated_at` it has applied) and its `device_id`, and the server returns only rows changed since that cursor and **not written by that device**. When nothing changed, the answer is an empty list.
+- **Own writes never come back.** Every write is stamped with the install's `device_id` (`last_writer_device` in the cloud), and the pull skips rows written by the asking device.
+- **New device or reinstall:** the cursor is empty, so the first pull downloads everything once (500 rows per page, tombstones skipped). Every later pull is a delta.
+- **Deletes:** local deletes are normal hard deletes. In the cloud, projects and sessions are soft-deleted (`deleted_at`) so other devices learn about it from the next pull.
+- **Conflicts:** the last push wins. A save always clears `deleted_at`, so an edit beats a delete made on another device. A pull never overwrites a row that still has an unsynced local change.
+- **Rejected items:** the server validates each item (for example project name 3 to 20 characters, trimmed) and reports rejected ones. The app retries them up to 5 times, then leaves them in the queue unsent.
+
+| Moment                   | Network                                                |
+| ------------------------ | ------------------------------------------------------ |
+| Create, edit or delete   | One push of the changed item, no pull                  |
+| App start, every 30 min  | Push (only if the queue is not empty) + one delta pull |
+| Nothing changed anywhere | Push skipped, pull returns `[]`                        |
+| New device               | One-time full download                                 |
 
 ## Architecture Diagram
 
 **Workflow**
 
-1. **Write:** UI → BLoC → Repository → Drift DAO writes to SQLite for the active account. A trigger splits the session at local midnight and updates `daily_rollups` and `project_rollups` immediately, and the change is added to `sync_queue`.
-2. **Read:** lists read `sessions` (last 7 days) and reports and heatmaps read lifetime rollups. Both come from local SQLite, so no network call is needed.
-3. **Push (every 30 min):** the Sync Service sends the whole `sync_queue` in one batch. The cloud upserts by UUID (safe to retry), its triggers split the session and update the cloud rollups (local-day, project and UTC-day), and `sync_state.version` is bumped.
+1. **Write:** UI → BLoC → Repository → Drift DAO writes to SQLite for the active account. For a session, a trigger splits it at local midnight and updates `daily_rollups` and `project_rollups` immediately. The change is added to `sync_queue` in the same transaction.
+2. **Read:** lists read `sessions` (last 7 days) and `projects`; reports and heatmaps read lifetime rollups. All of it comes from local SQLite, so no network call is needed.
+3. **Push:** the Sync Service sends the queued items to `POST /sync/push`. The server applies them in one transaction, upserting by UUID (safe to retry). For sessions, cloud triggers split them and update the cloud rollups (local-day, project and UTC-day). The server answers with the rejected items, if any. Accepted items are cleared from `sync_queue`.
 4. **Prune (after a successful push):** local sessions older than 7 days are deleted, but only if they were already pushed. `suppress_rollups=1` stops the triggers from touching the rollups, because the day totals were already counted.
-5. **Pull (app start):** the app first pushes any pending `sync_queue` rows, then compares the cloud `sync_state.version` with its stored value. It only downloads data if another device wrote or this is a new device.
-   - The pull fetches the full project list (a few rows) and removes local projects that no longer exist.
+5. **Pull (`GET /sync/pull`):** the delta pull described above.
+   - Changed projects are applied directly; tombstones delete the local project.
    - Pulled sessions (last 7 days) are inserted with `suppress_rollups=1`, because a session that started just before the window can spill into it. The cloud rollups are the source of truth for those days.
-   - Rollup rows changed since the last pull are applied as authoritative values, for any date.
-   - Pulled data is stored on top of what is already local, so it is never downloaded twice.
-6. **Cloud prune (daily):** `pg_cron` deletes sessions older than 8 days. Rollups are kept forever.
-7. **Leaderboard:** the `get_leaderboard` RPC reads `utc_daily_rollups` for a UTC date (or range) and returns the top N plus the caller's own rank, with display names instead of emails. Nothing is downloaded or stored locally for it.
+   - Changed rollup rows are applied as authoritative values, except for days that still have an unsynced local session.
+   - Pulled data is stored on top of what is already local, and the cursors move forward, so nothing is downloaded twice.
+6. **Cloud prune (daily):** a NestJS scheduled job deletes sessions older than 8 days, tombstones included. Rollups are kept forever.
+7. **Leaderboard:** `GET /leaderboard` reads `utc_daily_rollups` for a UTC date (or range) and returns the top N plus the caller's own rank, with display names instead of emails. Nothing is downloaded or stored locally for it.
 
 **In plain words**
 
-When a tracked session is finished, the UI hands it to the BLoC. The BLoC passes it to the repository, and the repository uses the DAOs to write it into the local SQLite database. As soon as the row lands in SQLite, database triggers split it at local midnight and add the seconds to `daily_rollups` and `project_rollups`, so heatmaps and reports update instantly without scanning sessions. The DAO also adds a note to `sync_queue` saying "this session still has to go to the cloud". None of this needs internet.
+When something is saved, the UI hands it to the BLoC, the repository writes it to SQLite, and a note goes into `sync_queue`. None of this needs internet, and for sessions, database triggers update the day totals instantly.
 
-Every 30 minutes the Sync Service wakes up, reads the notes in `sync_queue` and sends them to Supabase in one request over HTTPS with the user's JWT. Supabase checks the login and runs `push_changes`, which saves the sessions in PostgreSQL. Cloud triggers then split each session again (at local midnight and at UTC midnight) and update `daily_rollups`, `project_rollups` and `utc_daily_rollups`. When the cloud confirms, the Sync Service clears those notes from `sync_queue`.
+A couple of seconds after a change, and again at app start and every 30 minutes, the Sync Service sends the queued notes to the NestJS API in one request. At app start and every 30 minutes it then asks one more question: "what changed since my cursor that I didn't write myself?" Usually the answer is nothing.
 
 After a successful push, the app deletes sessions older than 7 days from SQLite. The rollups stay, so lifetime totals are never lost. The cloud does the same once a day for sessions older than 8 days.
-
-When the app opens, it first pushes anything still waiting, then asks the cloud one tiny question: "did another device write since I last looked?" If not, nothing is downloaded. If yes, or if this is a new device, it downloads only what changed since last time and stores it on top of what SQLite already has, so the same data is never downloaded twice.
-
-The leaderboard is the only screen that talks to the cloud directly. It asks `get_leaderboard`, shows the answer, and saves nothing locally.
 
 **Reading the diagram**
 
@@ -54,31 +80,31 @@ flowchart TB
   subgraph APP["Frontend: Flutter · offline-first"]
     direction LR
     UI["UI Screens"] --> BLOC["BLoC"] --> REPO["Repositories<br/>(scoped by user_email)"] --> DAO["DAOs"] --> LDB[("SQLite<br/>users · projects<br/>sessions (last 7 days)<br/>daily_rollups · project_rollups<br/>sync_queue · sync_state · app_meta<br/>──────<br/>triggers: session to rollups, split at local midnight")]
-    REPO -.->|"every 30 min · app start"| SYNC["Sync Service<br/>push · prune · pull"]
+    REPO -.->|"after each write · app start · every 30 min"| SYNC["Sync Service<br/>push · prune · pull"]
     SYNC <-->|"reads sync_queue, writes pulled data"| LDB
   end
 
-  subgraph CLOUD["Backend: Supabase"]
+  subgraph VPS["Backend: Contabo VPS"]
     direction LR
-    AUTH["Supabase Auth<br/>OAuth sign-in issues the JWT<br/>RLS by user_email"] --> RPC["RPC functions<br/>push_changes · check_remote_changes · pull_changes · get_leaderboard"] --> CDB[("PostgreSQL<br/>users · projects<br/>sessions (last 8 days)<br/>daily_rollups · project_rollups · utc_daily_rollups (lifetime)<br/>sync_state<br/>──────<br/>triggers: session to 3 rollup tables, split at local and UTC midnight")]
-    CRON["pg_cron daily<br/>delete sessions older than 8 days"] --> CDB
+    API["NestJS API<br/>JWT guard: user_email comes from the token<br/>POST /sync/push · GET /sync/pull · GET /leaderboard"] --> PG[("PostgreSQL<br/>users · projects<br/>sessions (last 8 days)<br/>daily_rollups · project_rollups · utc_daily_rollups (lifetime)<br/>──────<br/>triggers: session to 3 rollup tables, split at local and UTC midnight")]
+    CRON["NestJS scheduled job (daily)<br/>delete sessions older than 8 days"] --> PG
   end
 
-  APP -->|"Sync Service → Auth<br/>HTTPS + JWT (access token from OAuth login)<br/>① every 30 min: push sync_queue<br/>② app start: check version, pull changes only if needed"| CLOUD
-  APP -.->|"Leaderboard screen → get_leaderboard<br/>(online only, nothing stored locally)"| CLOUD
+  APP -->|"HTTPS + JWT<br/>① push: queued items in one request<br/>② pull: only rows changed since the cursor (app start · every 30 min)"| API
+  APP -.->|"Leaderboard screen: GET /leaderboard<br/>(online only, nothing stored locally)"| API
 ```
 
 ## Local ER diagram (SQLite)
 
 **Workflow**
 
-- `users` holds every account that has signed in on this device. Projects, sessions, rollups, the queue and the sync cursor all belong to a `user_email`.
+- `users` holds every account that has signed in on this device. Projects, sessions, rollups, the queue and the sync state all belong to a `user_email`.
 - A session is written once with its `utc_offset_minutes`. Triggers split it at local midnight and add each day's seconds to `daily_rollups` and `project_rollups`, so reports never scan sessions.
 - `local_date` is the local start date of the session. It is only used for the 7-day window and list ordering.
 - Sessions older than 7 days are pruned, but the rollups stay for the lifetime of the account.
-- `sync_queue` holds changes waiting for the next push.
-- `sync_state` stores, per account, the last cloud version seen and the last pull time.
-- `app_meta` holds device-wide flags (`suppress_rollups`, `device_id`, `active_user_email`).
+- `sync_queue` holds one row per item with a change waiting for the next push.
+- `sync_state` stores, per account, this install's `device_id` and one pull cursor per entity (empty means "never pulled").
+- `app_meta` holds device-wide flags (`suppress_rollups`, `active_user_email`).
 - There is no UTC table locally. UTC totals only matter for the leaderboard, which the cloud computes.
 
 ```mermaid
@@ -93,60 +119,60 @@ erDiagram
   SESSIONS }o..o{ DAILY_ROLLUPS : "triggers feed, split at local midnight"
   SESSIONS }o..o{ PROJECT_ROLLUPS : "triggers feed, split at local midnight"
   PROJECTS ||..o{ PROJECT_ROLLUPS : "logical link, no FK"
+  PROJECTS ||--o| SYNC_QUEUE : "pending change"
   SESSIONS ||--o| SYNC_QUEUE : "pending change"
 
   USERS {
-    text email PK
-    text display_name
-    datetime created_at "UTC"
-    datetime last_active_at "UTC"
+    email text PK
+    display_name text
+    created_at datetime "UTC"
+    last_active_at datetime "UTC"
   }
   PROJECTS {
-    text id PK "uuidv7"
-    text user_email FK
-    text name "1-20 chars"
-    int color_id
-    datetime created_at "UTC"
+    id text PK "uuidv7"
+    user_email text FK
+    name text "3-20 chars, trimmed"
+    color_id int
+    created_at datetime "UTC, set once by the app"
   }
   SESSIONS {
-    text id PK "uuidv7"
-    text user_email FK
-    text project_id FK "nullable"
-    datetime started_at "UTC"
-    datetime ended_at "UTC, max 24h after started_at"
-    int utc_offset_minutes "device offset when recorded, e.g. 360"
-    text local_date "yyyy-MM-dd start date at that offset"
+    id text PK "uuidv7"
+    user_email text FK
+    project_id text FK "nullable"
+    started_at datetime "UTC"
+    ended_at datetime "UTC, max 24h after started_at"
+    utc_offset_minutes int "device offset when recorded, e.g. 360"
+    local_date text "yyyy-MM-dd start date at that offset"
   }
   DAILY_ROLLUPS {
-    text user_email PK, FK
-    text date PK "local date"
-    int duration_seconds "local-day total, split at local midnight"
+    user_email text PK, FK
+    date text PK "local date"
+    duration_seconds int "local-day total, split at local midnight"
   }
   PROJECT_ROLLUPS {
-    text user_email PK, FK
-    text date PK "local date"
-    text project_id PK "empty string = No Project"
-    int duration_seconds
+    user_email text PK, FK
+    date text PK "local date"
+    project_id text PK "empty string = No Project"
+    duration_seconds int
   }
   SYNC_QUEUE {
-    text id PK "uuidv7, replay in order"
-    text user_email FK
-    text entity "session or project"
-    text entity_id
-    text op "upsert or delete"
-    text payload "json"
-    datetime created_at
-    int attempts
+    user_email text PK, FK
+    entity text PK "project or session"
+    entity_id text PK
+    op text "upsert or delete"
+    revision int "bumped on every re-enqueue"
+    attempts int "stops retrying after 5"
   }
   SYNC_STATE {
-    text user_email PK, FK
-    int last_seen_version
-    datetime last_pull_at "server clock"
-    datetime last_push_at
+    user_email text PK, FK
+    device_id text "random, one per install"
+    projects_cursor text "newest cloud updated_at applied, null = never pulled"
+    sessions_cursor text
+    rollups_cursor text
   }
   APP_META {
-    text key PK "suppress_rollups, device_id, active_user_email"
-    text value
+    key text PK "suppress_rollups, active_user_email"
+    value text
   }
 ```
 
@@ -154,16 +180,17 @@ erDiagram
 
 **Workflow**
 
-- `users` mirrors the app's accounts. It links to Supabase Auth through `auth_uid`, and RLS compares `user_email` with the email claim in the JWT, so each account only sees its own rows.
-- `push_changes` upserts projects and sessions in one transaction (sessions first, then project deletes), and triggers update the rollups.
-- Deleting a project is a hard delete. A `BEFORE DELETE` trigger merges that project's rollups into the `''` (No Project) bucket.
-- Sessions carry `deleted_at` tombstones so other devices learn about deletions. They are purged with the session.
+- `users` mirrors the app's accounts, keyed by email. NestJS reads the email from the verified JWT and scopes every query with it.
+- `POST /sync/push` upserts projects and sessions in one transaction (sessions first, then project deletes). Triggers update the rollups.
+- `updated_at` is set by Postgres on every insert and update. It is the sync cursor for projects, sessions and rollups.
+- `last_writer_device` records which install wrote a row, so that device's pull can skip it. It is never sent back to the app.
+- Deleting a project is a soft delete (`deleted_at`). A trigger moves that project's rollups into the `''` (No Project) bucket and clears `project_id` on its sessions. Project tombstones are kept for now.
+- Sessions also carry `deleted_at` tombstones. They are purged together with the session.
 - Each session feeds three rollup tables, and a session that crosses midnight adds one slice per day:
   - `daily_rollups` and `project_rollups` are split at local midnight, which the trigger finds from `utc_offset_minutes`.
   - `utc_daily_rollups` is split at UTC midnight.
-- The daily prune deletes sessions older than 8 days (a one-day buffer for timezones). The delete triggers skip the subtraction while `app.pruning = on`, so rollups stay forever.
-- `sync_state.version` is bumped on every push. Devices compare it to decide whether to pull, and the check costs a few bytes.
-- `get_leaderboard` reads `utc_daily_rollups` and exposes `display_name` instead of the email.
+- The daily prune deletes sessions older than 8 days (a one-day buffer for timezones). The delete triggers skip the subtraction while the prune runs, so rollups stay forever.
+- `get_leaderboard` logic reads `utc_daily_rollups` and exposes `display_name` instead of the email.
 
 ```mermaid
 erDiagram
@@ -172,7 +199,6 @@ erDiagram
   USERS ||--o{ DAILY_ROLLUPS : owns
   USERS ||--o{ PROJECT_ROLLUPS : owns
   USERS ||--o{ UTC_DAILY_ROLLUPS : owns
-  USERS ||--|| SYNC_STATE : has
   PROJECTS ||--o{ SESSIONS : "has"
   SESSIONS }o..o{ DAILY_ROLLUPS : "triggers feed, split at local midnight"
   SESSIONS }o..o{ PROJECT_ROLLUPS : "triggers feed, split at local midnight"
@@ -180,53 +206,66 @@ erDiagram
   PROJECTS ||..o{ PROJECT_ROLLUPS : "logical link, no FK"
 
   USERS {
-    text email PK "ON UPDATE CASCADE"
-    uuid auth_uid UK "Supabase auth.users id"
-    text display_name "shown on leaderboards"
-    timestamptz created_at
+    email text PK "ON UPDATE CASCADE"
+    display_name text "shown on leaderboards"
+    created_at timestamptz
   }
   PROJECTS {
-    uuid id PK "uuidv7, client-generated"
-    text user_email FK
-    text name
-    int color_id
-    timestamptz created_at
-    timestamptz updated_at
+    id uuid PK "uuidv7, client-generated"
+    user_email text FK
+    name text "3-20 chars, trimmed"
+    color_id int
+    created_at timestamptz "set once by the app"
+    updated_at timestamptz "server clock, sync cursor"
+    deleted_at timestamptz "tombstone"
+    last_writer_device text "install that wrote it"
   }
   SESSIONS {
-    uuid id PK "uuidv7, client-generated"
-    text user_email FK
-    uuid project_id FK "nullable"
-    timestamptz started_at
-    timestamptz ended_at "max 24h after started_at"
-    int utc_offset_minutes "from client, used to find local midnight"
-    date local_date "start date at that offset"
-    timestamptz updated_at
-    timestamptz deleted_at "tombstone, purged with session"
+    id uuid PK "uuidv7, client-generated"
+    user_email text FK
+    project_id uuid FK "nullable"
+    started_at timestamptz
+    ended_at timestamptz "max 24h after started_at"
+    utc_offset_minutes int "from client, used to find local midnight"
+    local_date date "start date at that offset"
+    updated_at timestamptz "server clock, sync cursor"
+    deleted_at timestamptz "tombstone, purged with session"
+    last_writer_device text "install that wrote it"
   }
   DAILY_ROLLUPS {
-    text user_email PK, FK
+    user_email text PK, FK
     date date PK "local date"
-    int duration_seconds "local-day total, split at local midnight"
-    timestamptz updated_at
+    duration_seconds int "local-day total, split at local midnight"
+    updated_at timestamptz "sync cursor"
   }
   PROJECT_ROLLUPS {
-    text user_email PK, FK
+    user_email text PK, FK
     date date PK "local date"
-    text project_id PK "empty string = No Project"
-    int duration_seconds
-    timestamptz updated_at
+    project_id text PK "empty string = No Project"
+    duration_seconds int
+    updated_at timestamptz "sync cursor"
   }
   UTC_DAILY_ROLLUPS {
-    text user_email PK, FK
-    date utc_date PK "UTC day, split at UTC midnight"
-    int duration_seconds
-    timestamptz updated_at
-  }
-  SYNC_STATE {
-    text user_email PK, FK
-    bigint version "bumped on every push"
-    text last_writer_device
-    timestamptz updated_at
+    user_email text PK, FK
+    utc_date date PK "UTC day, split at UTC midnight"
+    duration_seconds int
+    updated_at timestamptz
   }
 ```
+
+## API
+
+| Endpoint             | Purpose                                                                                       |
+| -------------------- | --------------------------------------------------------------------------------------------- |
+| `POST /auth/google`  | Verify the Google ID token, return an access and a refresh JWT                                |
+| `POST /auth/refresh` | Return a new access token                                                                     |
+| `POST /sync/push`    | Apply the queued items in one transaction, return the rejected ones                           |
+| `GET /sync/pull`     | Return rows changed since each cursor, not written by the asking device (paged, 500 per page) |
+| `GET /leaderboard`   | Top N plus the caller's own rank for a UTC date or range                                      |
+
+## Planned
+
+- **Free tier:** show only the two most recently created projects (`created_at` desc, `id` as tiebreaker, deleted ones excluded). Enforce it on the server too, because `created_at` comes from the phone's clock.
+- **Project tombstone purge:** a scheduled job that deletes old tombstones, plus a rule that a device offline for longer than the purge window resets its cursors and reconciles against the full live list.
+- **Sync on reconnect:** trigger a push when the network comes back, instead of waiting for the next write, app start or 30-minute tick.
+- **Hosting:** HTTPS reverse proxy in front of NestJS, and a nightly PostgreSQL dump stored off the VPS.
