@@ -23,12 +23,12 @@ class LocalProjectsDao extends DatabaseAccessor<LocalDatabase>
   }
 
   // READ
+  //TODO: order getAllprojects just like watch all projects
   Future<List<LocalProject>> getAllProjects() =>
       (select(localProjects)..where((t) => t.userId.equals(_uid))).get();
   Future<LocalProject?> getProjectById(String id) => (select(
     localProjects,
   )..where((t) => t.id.equals(id) & t.userId.equals(_uid))).getSingleOrNull();
-
   Stream<List<LocalProject>> watchAllProjects() {
     return (select(localProjects)
           ..where((t) => t.userId.equals(_uid))
