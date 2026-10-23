@@ -3,15 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class BottomSheetTitleTile extends StatelessWidget {
-  final String title, iconPath;
-  final double iconSize;
-
-  const BottomSheetTitleTile({
+    const new({
     super.key,
     required this.title,
     required this.iconPath,
     this.iconSize = 24,
   });
+  final String title, iconPath;
+  final double iconSize;
+
+
 
   @override
   Widget build(BuildContext context) {

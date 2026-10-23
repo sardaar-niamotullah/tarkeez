@@ -6,7 +6,7 @@ import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class FilterDurationSelectorButton extends StatelessWidget {
-  const FilterDurationSelectorButton({
+  const new({
     super.key,
     required this.title,
     required this.onTap,

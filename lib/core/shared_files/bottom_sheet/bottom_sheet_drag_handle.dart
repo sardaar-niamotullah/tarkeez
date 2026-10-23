@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 
 class BottomSheetDragHandle extends StatelessWidget {
-  const BottomSheetDragHandle({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {

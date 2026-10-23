@@ -3,7 +3,7 @@ import 'package:tarkeez/core/shared_files/bottom_sheet/filter_duration_selector_
 import 'package:tarkeez/core/shared_files/enums/period_range.dart';
 
 class DurationFilterBottomSheetSection extends StatelessWidget {
-  const DurationFilterBottomSheetSection({
+  const new({
     super.key,
     required this.selected,
     required this.onSelected,

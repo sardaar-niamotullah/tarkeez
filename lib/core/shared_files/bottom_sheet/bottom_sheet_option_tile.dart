@@ -4,11 +4,7 @@ import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class BottomSheetOptionTile extends StatelessWidget {
-  final String title, iconPath;
-  final VoidCallback onTap;
-  final bool isLastTile, isActive;
-
-  const BottomSheetOptionTile({
+  const new({
     super.key,
     required this.title,
     required this.iconPath,
@@ -16,6 +12,10 @@ class BottomSheetOptionTile extends StatelessWidget {
     this.isLastTile = false,
     this.isActive = false,
   });
+
+  final String title, iconPath;
+  final VoidCallback onTap;
+  final bool isLastTile, isActive;
 
   @override
   Widget build(BuildContext context) {

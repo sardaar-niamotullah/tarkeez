@@ -5,9 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class PickDateBottomSheet extends StatelessWidget {
+  const new({super.key, required this.onDatePicked});
   final ValueChanged<DateTime> onDatePicked;
-
-  const PickDateBottomSheet({super.key, required this.onDatePicked});
 
   @override
   Widget build(BuildContext context) {

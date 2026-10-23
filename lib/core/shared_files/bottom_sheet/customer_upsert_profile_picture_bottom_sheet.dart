@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 
 class CustomerUpsertProfilePictureBottomSheet extends StatelessWidget {
-  const CustomerUpsertProfilePictureBottomSheet({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
