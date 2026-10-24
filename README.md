@@ -306,8 +306,9 @@ erDiagram
   LOCAL_PROJECTS {
     id text PK "uuidv7"
     user_id text FK
-    name text "1-20 chars"
+    name text "3-20 chars"
     color_id int
+    created_at datetime
     deleted_at datetime "tombstone, kept forever"
   }
   LOCAL_SESSIONS {
@@ -395,6 +396,7 @@ erDiagram
     user_id uuid FK
     name text
     color_id int
+    created_at timestamptz
     deleted_at timestamptz "tombstone, kept forever"
     updated_at timestamptz "set by the database, pull cursor"
   }
