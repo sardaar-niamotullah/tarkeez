@@ -300,7 +300,7 @@ erDiagram
   LOCAL_USERS {
     id text PK "Supabase Auth user id"
     email text
-    display_name text
+    full_name text
     history_reset_at datetime "last reset applied on this device"
   }
   LOCAL_PROJECTS {
@@ -387,8 +387,8 @@ erDiagram
 
   USERS {
     id uuid PK "Supabase Auth user id"
-    email text UK
-    display_name text "shown on leaderboards"
+    email text
+    full_name text "shown on leaderboards"
     history_reset_at timestamptz "null until the first reset"
   }
   PROJECTS {
