@@ -1,232 +1,466 @@
+# Tarkeez: data and sync architecture
+
+Tarkeez is offline-first. The app reads and writes a local SQLite database, and a sync layer copies changes to Supabase (PostgreSQL) in the background.
+
+**Sessions are the source of truth.** Every session is kept forever, locally and in the cloud. All totals (daily, per project, leaderboard, streak) are derived from sessions. Only three things sync: `users` (display name and history reset value), `projects` and `sessions`.
+
+## Contents
+
+1. [Key conventions](#key-conventions)
+2. [How a session is split at midnight](#how-a-session-is-split-at-midnight)
+3. [How sync works](#how-sync-works)
+4. [Architecture diagram](#architecture-diagram)
+5. [Local ER diagram (SQLite)](#local-er-diagram-sqlite)
+6. [Server ER diagram (PostgreSQL)](#server-er-diagram-postgresql)
+7. [Overlap rule](#overlap-rule)
+8. [Editing and deleting](#editing-and-deleting)
+9. [Rebuilding rollups](#rebuilding-rollups)
+10. [Design notes](#design-notes)
+
 ## Key conventions
 
-- **IDs:** every primary key is a UUIDv7, generated on the client (`const Uuid().v7()`), except the `users` table (PK is the email) and the exceptions listed below. UUIDv7 is time-ordered, so inserts stay index-friendly and the queue replays in creation order.
-- **Multiple accounts:** both SQLite and Postgres have a `users` table. Every other table carries `user_email`, and every query is scoped by the active account.
-- **Two kinds of daily totals:**
-  - `daily_rollups` holds **local-day** totals (the user's own timezone) for heatmaps, reports and streaks. It exists in SQLite and in the cloud.
-  - `utc_daily_rollups` holds **UTC-day** totals for the international leaderboard. It exists in the cloud only and is maintained by cloud triggers.
-- **Midnight splitting:** a session that crosses midnight is split, and each day receives only the seconds that fall inside it.
-  - `daily_rollups` and `project_rollups` split at **local** midnight.
-  - `utc_daily_rollups` splits at **UTC** midnight.
-  - Example: a Dhaka session from 23:30 to 00:30 adds 30 min to each local day.
-- **Timezone offset:** every session stores `utc_offset_minutes` (for example `+360`) from the moment it was recorded. SQLite and Postgres both use it to find local midnight, so they always agree, even if the phone's timezone changes later.
-- **Session length cap:** a session lasts at most 24 hours, so it spans at most two local days and two UTC days. Every trigger therefore writes at most two slices.
-- **Exceptions to the UUIDv7 rule:**
-  - Rollup tables keep composite keys (for example `user_email + date`) because the triggers upsert on them.
-  - `app_meta` is a key-value table.
-  - `sync_state` is keyed by `user_email`, one row per account.
+- **Naming:** a table that exists on both sides uses its plain name in the cloud and a `local_` prefix in SQLite (`users` and `local_users`). A table that exists on one side keeps its plain name.
+- **IDs:** primary keys are client-generated UUIDv7 (`const Uuid().v7()`). Exceptions:
+  - `users.id` is the Supabase Auth user id, the same value locally and in the cloud.
+  - Rollup tables use composite keys (for example `user_id + date`).
+  - `app_meta` is a key-value table, and the sync-state tables are keyed by `user_id`.
+- **Accounts:** every table except `users` has `user_id`, and every query is scoped to the active account. Cloud RLS is `user_id = auth.uid()`.
+- **What syncs:**
 
-## Architecture Diagram
+  | Local table              | Cloud table         | Syncs?                                                    |
+  | ------------------------ | ------------------- | --------------------------------------------------------- |
+  | `local_users`            | `users`             | Yes, cloud to device (`display_name`, `history_reset_at`) |
+  | `local_projects`         | `projects`          | Yes, both ways                                            |
+  | `local_sessions`         | `sessions`          | Yes, both ways                                            |
+  | `local_daily_rollups`    | `daily_rollups`     | No. Each side derives its own from sessions               |
+  | `project_rollups`        | none                | Local only, derived from sessions                         |
+  | none                     | `utc_daily_rollups` | Cloud only, derived from sessions                         |
+  | `sync_queue`, `app_meta` | none                | Local bookkeeping                                         |
+  | `local_sync_state`       | `sync_state`        | No. Separate bookkeeping on each side                     |
+
+- **Time:** `started_at` and `ended_at` are absolute instants. `utc_offset_minutes` is the device's offset when the session was recorded. Local time is `started_at + utc_offset_minutes`. Sessions store no date column. Calendar dates exist only in the rollup tables, and UTC dates only in `utc_daily_rollups`.
+- **Daily totals:**
+  - `daily_rollups`: local-day totals. Stored locally (heatmaps, reports, streaks) and in the cloud (streak leaderboard).
+  - `utc_daily_rollups`: UTC-day totals for the time leaderboard. Cloud only.
+  - `project_rollups`: local-day totals per project for project charts. Local only.
+- **Session length cap:** at most 24 hours, so a session touches at most two local days and two UTC days, and each trigger writes at most two slices per table.
+- **Immutable sessions:** a saved session only changes by getting `deleted_at`, and that is one-way. Triggers react only to an insert and to `deleted_at` being set. Projects can be edited.
+- **No overlapping sessions:** a user never has two live sessions that overlap in time, even across devices. The cloud keeps the longest and drops the other (see "Overlap rule").
+- **Tombstones, kept forever:** projects and sessions are never hard-deleted. They get `deleted_at`, which syncs like any other change.
+- **Foreign keys:** project rows are never removed, so `project_id` on a session always resolves. There is no cascade or `SET NULL`. A session whose project is deleted counts as "No Project" when read.
+- **Sync cursor:** the database stamps every project and session with `updated_at` whenever it is added or changed. Each device stores the biggest stamp it has received (its cursor) and pulls rows stamped after it.
+- **Storage:** about 0.5 KB per session including indexes. At 500 sessions a month that is about 250 KB per user per month, or 3 MB per user per year. Rollups add a few KB per user per year.
+
+## How a session is split at midnight
+
+### Stored values
+
+```
+started_at           absolute instant
+ended_at             absolute instant, at most 24 h after started_at
+utc_offset_minutes   the device's offset from UTC when recorded, e.g. +360
+```
+
+### Instants and wall-clock time
+
+- An **instant** is one exact moment, like "21:00 UTC on Oct 23". Every timezone agrees on it.
+- A **wall-clock time** is what a local clock showed, like "22:00". Without a timezone it is not a single moment.
+
+The app stores the instant and the offset, and calculates local time when needed:
+
+```
+local time = started_at + utc_offset_minutes
+```
+
+Instants are used because overlap checks, durations and ordering need one common timeline. A phone in Dhaka (UTC+6) that recorded 22:00 to 23:00 and a device at UTC+0 that recorded 16:30 to 17:30 look unrelated as wall-clock numbers, but they overlap by 30 minutes in real time. Wall-clock times are also ambiguous when daylight saving repeats an hour.
+
+### One function, two calls
+
+```
+split(start, end, offset):
+  shift both ends by the offset
+  cut at every 24-hour boundary on the shifted timeline
+  return one slice per day touched      (at most two)
+
+local rollups : split(started_at, ended_at, utc_offset_minutes)
+UTC rollups   : split(started_at, ended_at, 0)
+```
+
+The two splits are independent, and each adds up to the full session length.
+
+### Example: a session that crosses both midnights
+
+A 4-hour session on a device at UTC+1 (`utc_offset_minutes = 60`), started at 22:00 local on Oct 23. Local midnight is 2 hours in, and UTC midnight is 3 hours in. Stored values:
+
+```
+started_at           = Oct 23, 21:00 UTC
+ended_at             = Oct 24, 01:00 UTC
+utc_offset_minutes   = 60
+```
+
+| Moment                     | UTC           | Local (UTC+1) |
+| -------------------------- | ------------- | ------------- |
+| Start                      | Oct 23, 21:00 | Oct 23, 22:00 |
+| 2 h in: **local midnight** | Oct 23, 23:00 | Oct 24, 00:00 |
+| 3 h in: **UTC midnight**   | Oct 24, 00:00 | Oct 24, 01:00 |
+| End                        | Oct 24, 01:00 | Oct 24, 02:00 |
+
+```
+time (UTC)  21:00     22:00     23:00     00:00     01:00
+              ├─────────┼─────────┼─────────┼─────────┤
+local time  22:00     23:00     00:00     01:00     02:00
+
+UTC days      │        Oct 23 · 3 h         │Oct 24·1h│
+local days    │   Oct 23 · 2 h    │   Oct 24 · 2 h    │
+```
+
+| Rollup table                                         | Cut at         | Oct 23   | Oct 24  | Total    |
+| ---------------------------------------------------- | -------------- | -------- | ------- | -------- |
+| `local_daily_rollups` (`daily_rollups` in the cloud) | local midnight | 7,200 s  | 7,200 s | 14,400 s |
+| `project_rollups`                                    | local midnight | 7,200 s  | 7,200 s | 14,400 s |
+| `utc_daily_rollups`                                  | UTC midnight   | 10,800 s | 3,600 s | 14,400 s |
+
+The local split shifts the session by the offset (21:00 to 01:00 becomes 22:00 to 02:00) and cuts at 00:00. The UTC split cuts the stored instants at 00:00 UTC.
+
+### Edge cases
+
+- **Both midnights in one session:** a session contains both only if it is longer than the gap between them, which equals the offset's distance from UTC: 1 hour for UTC+1, 6 hours for Dhaka (UTC+6).
+- **Deleting a session** recomputes the same slices and subtracts them. A tombstone that arrives already deleted adds nothing.
+- **Daylight saving:** one offset is stored per session. If the clocks change mid-session, the split uses the start offset, so that session's day boundary can be off by up to one hour.
+- **Ending exactly at midnight** produces no empty slice for the next day.
+
+## How sync works
+
+Each sync **pushes first, then pulls**.
+
+- **Push:** send the rows listed in `sync_queue`.
+- **Pull:** fetch every row stamped after the device's cursor.
+
+### Pieces
+
+| Piece        | Where                           | Purpose                                                                                              |
+| ------------ | ------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `sync_queue` | device                          | Rows changed locally and not yet pushed. Stores the table and id only. The row is read at push time. |
+| `updated_at` | cloud `projects` and `sessions` | Time the database last changed the row. A trigger sets it, so device clocks never matter.            |
+| cursor       | `local_sync_state`              | Biggest `updated_at` received. One for projects, one for sessions.                                   |
+
+Pull queries:
+
+```sql
+select * from projects where user_id = :me and updated_at > :projects_cursor;
+select * from sessions where user_id = :me and updated_at > :sessions_cursor;
+-- then move each cursor to the biggest updated_at received
+```
+
+Cloud sessions in `updated_at` order, with the phone's cursor:
+
+```
+ 10:00 ■■■■■■■■■■  50 sessions  │  10:20 ■■■■■■  30 sessions
+                                ▲
+                  phone's cursor = 10:00
+           next pull = everything right of the cursor
+```
+
+### Example: phone, tablet and cloud
+
+| Time  | Device | What happens                                                                                                       | Rows downloaded       | Cursor after |
+| ----- | ------ | ------------------------------------------------------------------------------------------------------------------ | --------------------- | ------------ |
+| 10:00 | Phone  | Pushes 50 new sessions, stamped 10:00. Pulls after its cursor (none): gets its own 50 back, which changes nothing. | 50 (own)              | 10:00        |
+| 10:10 | Tablet | New device, nothing to push. Pulls with no cursor: every row.                                                      | **50**                | 10:00        |
+| 10:20 | Tablet | Pushes 30 new sessions, stamped 10:20. Pulls after 10:00: gets its own 30 back.                                    | 30 (own)              | 10:20        |
+| 10:30 | Phone  | Nothing to push. Pulls after 10:00.                                                                                | **30** (the tablet's) | 10:20        |
+| 10:40 | Tablet | Nothing to push. Pulls after 10:20.                                                                                | 0                     | 10:20        |
+
+Both devices end with the same 80 sessions, and the phone downloaded only the 30 it was missing.
+
+### Edits, deletes and overlap drops
+
+Every other change uses the same path. The cloud re-stamps the row, so it falls after every device's cursor and is pulled.
+
+| Change                                 | Cloud                                     | Other devices                                                                   |
+| -------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------- |
+| Phone renames a project at 11:00       | Replaces the row, stamps 11:00            | The tablet's next pull returns the project and saves the new name               |
+| Tablet deletes a session at 11:05      | Sets `deleted_at`, stamps 11:05           | The phone's next pull returns the tombstone, and its trigger subtracts the time |
+| Overlap makes the cloud drop a session | Sets `deleted_at` on the loser, stamps it | Every device, including the one that recorded it, pulls the tombstone           |
+
+### Rows that arrive twice
+
+A device can receive rows it already has: its own rows right after a push, and rows repeated by the cursor overlap (rule 5 below). This is safe:
+
+- Rows are saved with an **upsert by id**, so there are no duplicates.
+- A session never changes after it is saved, so the repeat is identical.
+- Triggers react only to a new row or to the first `deleted_at`, so nothing is counted twice.
+
+### Safety rules
+
+1. **A pull never overwrites a row that still has an entry in `sync_queue`.** That row has an unpushed edit. The next push settles it (last push wins).
+2. **A tombstone is one-way.** When saving a pulled row, an existing `deleted_at` is kept, so a stale copy never revives a deleted row.
+3. **Pull in pages and save the cursor after each page.** A failure repeats at most one page.
+4. **The cursor only moves forward.**
+5. **Overlap:** a pull asks for `updated_at > cursor - 2 minutes`, so a transaction that committed late with an earlier stamp is not missed.
+
+### Special situations
+
+| Situation                                    | Behaviour                                                                                                                       |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| New phone, reinstall, or cleared app storage | No cursor, so the first pull returns everything. This restores the history once (about 3 MB per year of history).               |
+| Second account on the same device            | Rows and cursors are per `user_id`, so accounts never mix.                                                                      |
+| Offline for a week                           | The cursor is a week old, so the next pull returns the week's changes, in pages.                                                |
+| Two devices edit the same project offline    | Last push wins for the whole row. The other device pulls the winning version on its next sync.                                  |
+| "Delete all history" on another device       | The pull sees a newer `history_reset_at`. The device wipes its sessions and rollups, clears its cursors and pulls from scratch. |
+
+### Cost
+
+Without a per-device tag, a device downloads its own rows once after pushing them: about one extra copy of the user's data, roughly 3 MB per user per year. Two optional changes can remove it if egress becomes a real cost:
+
+- **Version shortcut:** `push_changes` returns the cloud version from before the push. If it equals the version the device last saw, nobody else wrote, so the device stores the new version and skips the pull.
+- **Device tag:** add `device_id` to `sessions` and `projects` and `and device_id <> :mine` to the pull queries. This needs extra rules for cleared storage, restored backups and dropped sessions.
+
+## Architecture diagram
 
 **Workflow**
 
-1. **Write:** UI → BLoC → Repository → Drift DAO writes to SQLite for the active account. A trigger splits the session at local midnight and updates `daily_rollups` and `project_rollups` immediately, and the change is added to `sync_queue`.
-2. **Read:** lists read `sessions` (last 7 days) and reports and heatmaps read lifetime rollups. Both come from local SQLite, so no network call is needed.
-3. **Push (every 30 min):** the Sync Service sends the whole `sync_queue` in one batch. The cloud upserts by UUID (safe to retry), its triggers split the session and update the cloud rollups (local-day, project and UTC-day), and `sync_state.version` is bumped.
-4. **Prune (after a successful push):** local sessions older than 7 days are deleted, but only if they were already pushed. `suppress_rollups=1` stops the triggers from touching the rollups, because the day totals were already counted.
-5. **Pull (app start):** the app first pushes any pending `sync_queue` rows, then compares the cloud `sync_state.version` with its stored value. It only downloads data if another device wrote or this is a new device.
-   - The pull fetches the full project list (a few rows) and removes local projects that no longer exist.
-   - Pulled sessions (last 7 days) are inserted with `suppress_rollups=1`, because a session that started just before the window can spill into it. The cloud rollups are the source of truth for those days.
-   - Rollup rows changed since the last pull are applied as authoritative values, for any date.
-   - Pulled data is stored on top of what is already local, so it is never downloaded twice.
-6. **Cloud prune (daily):** `pg_cron` deletes sessions older than 8 days. Rollups are kept forever.
-7. **Leaderboard:** the `get_leaderboard` RPC reads `utc_daily_rollups` for a UTC date (or range) and returns the top N plus the caller's own rank, with display names instead of emails. Nothing is downloaded or stored locally for it.
+1. **Write:** when a session is finished, UI → BLoC → Repository → Drift DAO writes it to `local_sessions` with its `utc_offset_minutes`. Local triggers split it at local midnight and update `local_daily_rollups` and `project_rollups`. The DAO adds a row to `sync_queue`.
+2. **Read:** session lists read `local_sessions`. Reports, heatmaps and streaks read the rollups. All reads are local.
+3. **Push (every 30 min, app start, every project change):** the Sync Service sends the queued rows to `push_changes` in one batch. The cloud upserts projects, then sessions, by UUID (safe to retry). It resolves overlaps (see "Overlap rule"), cloud triggers update `daily_rollups` and `utc_daily_rollups`, and `sync_state.version` is bumped. The response lists which sessions were kept and dropped, and the device applies that locally.
+4. **Pull (right after the push, app start, new device):** the app calls `check_remote_changes`, which returns the cloud `version` and `history_reset_at`.
+   - If `history_reset_at` is newer than the local value, the app wipes local sessions and rollups, clears its cursors and pulls from scratch.
+   - If `version` equals the last seen value, nothing is downloaded.
+   - Otherwise it downloads, in pages, every project and session stamped after its cursor and upserts them. Local triggers rebuild the rollups. No rollup is downloaded.
+5. **Leaderboards:** `get_leaderboard` reads `utc_daily_rollups` for time rankings and `daily_rollups` for streak rankings. It returns the top N and the caller's rank, with display names. Nothing is stored locally.
 
 **In plain words**
 
-When a tracked session is finished, the UI hands it to the BLoC. The BLoC passes it to the repository, and the repository uses the DAOs to write it into the local SQLite database. As soon as the row lands in SQLite, database triggers split it at local midnight and add the seconds to `daily_rollups` and `project_rollups`, so heatmaps and reports update instantly without scanning sessions. The DAO also adds a note to `sync_queue` saying "this session still has to go to the cloud". None of this needs internet.
+A finished session is written to SQLite. Triggers add its seconds to the local rollups immediately, so reports update without scanning sessions, and a note is added to `sync_queue`. None of this needs internet.
 
-Every 30 minutes the Sync Service wakes up, reads the notes in `sync_queue` and sends them to Supabase in one request over HTTPS with the user's JWT. Supabase checks the login and runs `push_changes`, which saves the sessions in PostgreSQL. Cloud triggers then split each session again (at local midnight and at UTC midnight) and update `daily_rollups`, `project_rollups` and `utc_daily_rollups`. When the cloud confirms, the Sync Service clears those notes from `sync_queue`.
+Every 30 minutes, and when the app opens, the Sync Service sends the queued projects and sessions to Supabase over HTTPS with the user's JWT. The cloud keeps the longest session when two overlap, and its triggers add each kept session to `daily_rollups` and `utc_daily_rollups`. The app then asks whether anything changed since it last looked, and downloads only the rows stamped after its cursor. Pulled sessions go through the same local triggers as recorded ones.
 
-After a successful push, the app deletes sessions older than 7 days from SQLite. The rollups stay, so lifetime totals are never lost. The cloud does the same once a day for sessions older than 8 days.
-
-When the app opens, it first pushes anything still waiting, then asks the cloud one tiny question: "did another device write since I last looked?" If not, nothing is downloaded. If yes, or if this is a new device, it downloads only what changed since last time and stores it on top of what SQLite already has, so the same data is never downloaded twice.
-
-The leaderboard is the only screen that talks to the cloud directly. It asks `get_leaderboard`, shows the answer, and saves nothing locally.
-
-**Reading the diagram**
-
-- There are only two databases. **SQLite** is the database the app uses all day: every screen reads and writes it, and it works fully offline. **PostgreSQL** is the shared copy in the cloud: it is the backup, it joins data from multiple devices, and it is the only place UTC totals and the leaderboard exist.
-- If the two ever disagree, the cloud rollups win, because the cloud has seen every device. The phone only talks to the cloud through the Sync Service (and the leaderboard screen).
+The leaderboard screens are the only screens that call the cloud directly.
 
 ```mermaid
 flowchart TB
   subgraph APP["Frontend: Flutter · offline-first"]
     direction LR
-    UI["UI Screens"] --> BLOC["BLoC"] --> REPO["Repositories<br/>(scoped by user_email)"] --> DAO["DAOs"] --> LDB[("SQLite<br/>users · projects<br/>sessions (last 7 days)<br/>daily_rollups · project_rollups<br/>sync_queue · sync_state · app_meta<br/>──────<br/>triggers: session to rollups, split at local midnight")]
-    REPO -.->|"every 30 min · app start"| SYNC["Sync Service<br/>push · prune · pull"]
+    UI["UI Screens"] --> BLOC["BLoC"] --> REPO["Repositories<br/>(scoped by user_id)"] --> DAO["DAOs"] --> LDB[("SQLite<br/>local_users · local_projects · local_sessions (all history)<br/>local_daily_rollups · project_rollups (derived, local only)<br/>sync_queue · local_sync_state · app_meta<br/>──────<br/>triggers: session to rollups, split at local midnight")]
+    REPO -.->|"every 30 min · app start"| SYNC["Sync Service<br/>push · pull"]
     SYNC <-->|"reads sync_queue, writes pulled data"| LDB
   end
 
   subgraph CLOUD["Backend: Supabase"]
     direction LR
-    AUTH["Supabase Auth<br/>OAuth sign-in issues the JWT<br/>RLS by user_email"] --> RPC["RPC functions<br/>push_changes · check_remote_changes · pull_changes · get_leaderboard"] --> CDB[("PostgreSQL<br/>users · projects<br/>sessions (last 8 days)<br/>daily_rollups · project_rollups · utc_daily_rollups (lifetime)<br/>sync_state<br/>──────<br/>triggers: session to 3 rollup tables, split at local and UTC midnight")]
-    CRON["pg_cron daily<br/>delete sessions older than 8 days"] --> CDB
+    AUTH["Supabase Auth<br/>OAuth sign-in issues the JWT<br/>RLS by user_id"] --> RPC["RPC functions<br/>push_changes · check_remote_changes · pull_projects · pull_sessions · reset_history · get_leaderboard"] --> CDB[("PostgreSQL<br/>users · projects · sessions (all history)<br/>daily_rollups · utc_daily_rollups (derived, cloud only)<br/>sync_state<br/>──────<br/>overlap constraint on sessions<br/>triggers: session to daily_rollups (local midnight) and utc_daily_rollups (UTC midnight)")]
   end
 
-  APP -->|"Sync Service → Auth<br/>HTTPS + JWT (access token from OAuth login)<br/>① every 30 min: push sync_queue<br/>② app start: check version, pull changes only if needed"| CLOUD
-  APP -.->|"Leaderboard screen → get_leaderboard<br/>(online only, nothing stored locally)"| CLOUD
+  APP -->|"Sync Service → Auth<br/>HTTPS + JWT (access token from OAuth login)<br/>① push sync_queue (projects, sessions)<br/>② check version and history_reset_at, pull rows stamped after the cursor"| CLOUD
+  APP -.->|"Leaderboard screens → get_leaderboard<br/>(online only, nothing stored locally)"| CLOUD
 ```
 
 ## Local ER diagram (SQLite)
 
-**Workflow**
-
-- `users` holds every account that has signed in on this device. Projects, sessions, rollups, the queue and the sync cursor all belong to a `user_email`.
-- A session is written once with its `utc_offset_minutes`. Triggers split it at local midnight and add each day's seconds to `daily_rollups` and `project_rollups`, so reports never scan sessions.
-- `local_date` is the local start date of the session. It is only used for the 7-day window and list ordering.
-- Sessions older than 7 days are pruned, but the rollups stay for the lifetime of the account.
-- `sync_queue` holds changes waiting for the next push.
-- `sync_state` stores, per account, the last cloud version seen and the last pull time.
-- `app_meta` holds device-wide flags (`suppress_rollups`, `device_id`, `active_user_email`).
-- There is no UTC table locally. UTC totals only matter for the leaderboard, which the cloud computes.
+- `local_users` holds every account that has signed in on this device, created from the cloud `users` row at sign-in. `history_reset_at` is the last reset this device applied.
+- Triggers on `local_sessions` split each session at local midnight into `local_daily_rollups` and `project_rollups`. They fire on insert and when `deleted_at` is first set. An insert that already has `deleted_at` (a pulled tombstone) adds nothing. Pulled rows are saved with upserts, never replace.
+- `project_rollups` has no FK to projects. A project that is missing or has `deleted_at` set is counted as "No Project" (`''`) through the `project_rollups_effective` view.
+- `sync_queue` lists the rows to push. It stores no copy of the data. Every change is an upsert, and a delete is `deleted_at` being set.
+- `local_sync_state` stores, per account, the last cloud `version` seen and the two cursors.
+- `app_meta` holds device-wide values (`active_user_id`).
 
 ```mermaid
 erDiagram
-  USERS ||--o{ PROJECTS : owns
-  USERS ||--o{ SESSIONS : owns
-  USERS ||--o{ DAILY_ROLLUPS : owns
-  USERS ||--o{ PROJECT_ROLLUPS : owns
-  USERS ||--o{ SYNC_QUEUE : queues
-  USERS ||--|| SYNC_STATE : has
-  PROJECTS ||--o{ SESSIONS : "has (SET NULL on delete)"
-  SESSIONS }o..o{ DAILY_ROLLUPS : "triggers feed, split at local midnight"
-  SESSIONS }o..o{ PROJECT_ROLLUPS : "triggers feed, split at local midnight"
-  PROJECTS ||..o{ PROJECT_ROLLUPS : "logical link, no FK"
-  SESSIONS ||--o| SYNC_QUEUE : "pending change"
+  LOCAL_USERS ||--o{ LOCAL_PROJECTS : owns
+  LOCAL_USERS ||--o{ LOCAL_SESSIONS : owns
+  LOCAL_USERS ||--o{ LOCAL_DAILY_ROLLUPS : owns
+  LOCAL_USERS ||--o{ PROJECT_ROLLUPS : owns
+  LOCAL_USERS ||--o{ SYNC_QUEUE : queues
+  LOCAL_USERS ||--|| LOCAL_SYNC_STATE : has
+  LOCAL_PROJECTS ||--o{ LOCAL_SESSIONS : "has (never hard-deleted, no cascade)"
+  LOCAL_SESSIONS }o..o{ LOCAL_DAILY_ROLLUPS : "triggers feed, split at local midnight"
+  LOCAL_SESSIONS }o..o{ PROJECT_ROLLUPS : "triggers feed, split at local midnight"
+  LOCAL_PROJECTS ||..o{ PROJECT_ROLLUPS : "logical link, no FK"
 
-  USERS {
-    text email PK
-    text display_name
-    datetime created_at "UTC"
-    datetime last_active_at "UTC"
+  LOCAL_USERS {
+    id text PK "Supabase Auth user id"
+    email text
+    display_name text
+    history_reset_at datetime "last reset applied on this device"
   }
-  PROJECTS {
-    text id PK "uuidv7"
-    text user_email FK
-    text name "1-20 chars"
-    int color_id
-    datetime created_at "UTC"
+  LOCAL_PROJECTS {
+    id text PK "uuidv7"
+    user_id text FK
+    name text "1-20 chars"
+    color_id int
+    deleted_at datetime "tombstone, kept forever"
   }
-  SESSIONS {
-    text id PK "uuidv7"
-    text user_email FK
-    text project_id FK "nullable"
-    datetime started_at "UTC"
-    datetime ended_at "UTC, max 24h after started_at"
-    int utc_offset_minutes "device offset when recorded, e.g. 360"
-    text local_date "yyyy-MM-dd start date at that offset"
+  LOCAL_SESSIONS {
+    id text PK "uuidv7"
+    user_id text FK
+    project_id text FK "nullable"
+    started_at datetime "absolute instant"
+    ended_at datetime "absolute instant, max 24h after started_at"
+    utc_offset_minutes int "device offset when recorded, e.g. 360"
+    deleted_at datetime "tombstone, kept forever"
   }
-  DAILY_ROLLUPS {
-    text user_email PK, FK
-    text date PK "local date"
-    int duration_seconds "local-day total, split at local midnight"
+  LOCAL_DAILY_ROLLUPS {
+    user_id text PK, FK
+    date text PK "local date"
+    duration_seconds int "local-day total, split at local midnight"
   }
   PROJECT_ROLLUPS {
-    text user_email PK, FK
-    text date PK "local date"
-    text project_id PK "empty string = No Project"
-    int duration_seconds
+    user_id text PK, FK
+    date text PK "local date"
+    project_id text PK "empty string = No Project"
+    duration_seconds int
   }
   SYNC_QUEUE {
-    text id PK "uuidv7, replay in order"
-    text user_email FK
-    text entity "session or project"
-    text entity_id
-    text op "upsert or delete"
-    text payload "json"
-    datetime created_at
-    int attempts
+    id text PK "uuidv7, replay in order"
+    user_id text FK
+    entity text "session or project"
+    entity_id text
+    attempts int
   }
-  SYNC_STATE {
-    text user_email PK, FK
-    int last_seen_version
-    datetime last_pull_at "server clock"
-    datetime last_push_at
+  LOCAL_SYNC_STATE {
+    user_id text PK, FK
+    last_seen_version int "cloud sync_state.version"
+    projects_cursor text "biggest updated_at received for projects"
+    sessions_cursor text "biggest updated_at received for sessions"
   }
   APP_META {
-    text key PK "suppress_rollups, device_id, active_user_email"
-    text value
+    key text PK "active_user_id"
+    value text
   }
 ```
 
 ## Server ER diagram (PostgreSQL)
 
-**Workflow**
+- `users` is keyed by the Supabase Auth user id. `display_name` appears on leaderboards and is changed through an online-only RPC. `history_reset_at` is null until the first "delete all history".
+- `push_changes` upserts projects first, then sessions. Each row runs in its own savepoint, so one failure does not fail the batch. A project upsert replaces the whole row (last push wins). Sessions that ended before `history_reset_at` are dropped. Overlaps follow the "Overlap rule".
+- A trigger sets `updated_at = now()` on every insert or update of a project or session. It is the pull cursor (see "How sync works").
+- Each live session feeds two rollup tables, one slice per day touched (see "How a session is split at midnight"):
+  - `daily_rollups`: split at local midnight using `utc_offset_minutes`. Powers the streak leaderboard.
+  - `utc_daily_rollups`: split at UTC midnight. Powers the time leaderboard.
+- Triggers add when a live session is inserted and subtract when `deleted_at` is first set. A retried push cannot count twice.
+- `sync_state.version` is bumped on every push and every reset. Devices compare it to decide whether to pull.
+- Indexes: `sessions (user_id, updated_at)` and `projects (user_id, updated_at)`.
+- There is no `project_rollups` in the cloud. Project charts use the local copy.
 
-- `users` mirrors the app's accounts. It links to Supabase Auth through `auth_uid`, and RLS compares `user_email` with the email claim in the JWT, so each account only sees its own rows.
-- `push_changes` upserts projects and sessions in one transaction (sessions first, then project deletes), and triggers update the rollups.
-- Deleting a project is a hard delete. A `BEFORE DELETE` trigger merges that project's rollups into the `''` (No Project) bucket.
-- Sessions carry `deleted_at` tombstones so other devices learn about deletions. They are purged with the session.
-- Each session feeds three rollup tables, and a session that crosses midnight adds one slice per day:
-  - `daily_rollups` and `project_rollups` are split at local midnight, which the trigger finds from `utc_offset_minutes`.
-  - `utc_daily_rollups` is split at UTC midnight.
-- The daily prune deletes sessions older than 8 days (a one-day buffer for timezones). The delete triggers skip the subtraction while `app.pruning = on`, so rollups stay forever.
-- `sync_state.version` is bumped on every push. Devices compare it to decide whether to pull, and the check costs a few bytes.
-- `get_leaderboard` reads `utc_daily_rollups` and exposes `display_name` instead of the email.
+```sql
+create extension if not exists btree_gist;
+
+-- Backstop only. push_changes resolves overlaps first (the longest session wins).
+alter table sessions add constraint no_overlap
+  exclude using gist (
+    user_id with =,
+    tstzrange(started_at, ended_at) with &&
+  ) where (deleted_at is null);
+```
 
 ```mermaid
 erDiagram
   USERS ||--o{ PROJECTS : owns
   USERS ||--o{ SESSIONS : owns
   USERS ||--o{ DAILY_ROLLUPS : owns
-  USERS ||--o{ PROJECT_ROLLUPS : owns
   USERS ||--o{ UTC_DAILY_ROLLUPS : owns
   USERS ||--|| SYNC_STATE : has
-  PROJECTS ||--o{ SESSIONS : "has"
-  SESSIONS }o..o{ DAILY_ROLLUPS : "triggers feed, split at local midnight"
-  SESSIONS }o..o{ PROJECT_ROLLUPS : "triggers feed, split at local midnight"
-  SESSIONS }o..o{ UTC_DAILY_ROLLUPS : "triggers feed, split at UTC midnight"
-  PROJECTS ||..o{ PROJECT_ROLLUPS : "logical link, no FK"
+  PROJECTS ||--o{ SESSIONS : "has (never hard-deleted, no cascade)"
+  SESSIONS }o..o{ DAILY_ROLLUPS : "trigger feeds, split at local midnight"
+  SESSIONS }o..o{ UTC_DAILY_ROLLUPS : "trigger feeds, split at UTC midnight"
 
   USERS {
-    text email PK "ON UPDATE CASCADE"
-    uuid auth_uid UK "Supabase auth.users id"
-    text display_name "shown on leaderboards"
-    timestamptz created_at
+    id uuid PK "Supabase Auth user id"
+    email text UK
+    display_name text "shown on leaderboards"
+    history_reset_at timestamptz "null until the first reset"
   }
   PROJECTS {
-    uuid id PK "uuidv7, client-generated"
-    text user_email FK
-    text name
-    int color_id
-    timestamptz created_at
-    timestamptz updated_at
+    id uuid PK "uuidv7, client-generated"
+    user_id uuid FK
+    name text
+    color_id int
+    deleted_at timestamptz "tombstone, kept forever"
+    updated_at timestamptz "set by the database, pull cursor"
   }
   SESSIONS {
-    uuid id PK "uuidv7, client-generated"
-    text user_email FK
-    uuid project_id FK "nullable"
-    timestamptz started_at
-    timestamptz ended_at "max 24h after started_at"
-    int utc_offset_minutes "from client, used to find local midnight"
-    date local_date "start date at that offset"
-    timestamptz updated_at
-    timestamptz deleted_at "tombstone, purged with session"
+    id uuid PK "uuidv7, client-generated"
+    user_id uuid FK
+    project_id uuid FK "nullable"
+    started_at timestamptz "absolute instant"
+    ended_at timestamptz "absolute instant, max 24h after started_at"
+    utc_offset_minutes int "from client"
+    deleted_at timestamptz "tombstone, kept forever"
+    updated_at timestamptz "set by the database, pull cursor"
   }
   DAILY_ROLLUPS {
-    text user_email PK, FK
+    user_id uuid PK, FK
     date date PK "local date"
-    int duration_seconds "local-day total, split at local midnight"
-    timestamptz updated_at
-  }
-  PROJECT_ROLLUPS {
-    text user_email PK, FK
-    date date PK "local date"
-    text project_id PK "empty string = No Project"
-    int duration_seconds
-    timestamptz updated_at
+    duration_seconds int "local-day total, split at local midnight"
   }
   UTC_DAILY_ROLLUPS {
-    text user_email PK, FK
-    date utc_date PK "UTC day, split at UTC midnight"
-    int duration_seconds
-    timestamptz updated_at
+    user_id uuid PK, FK
+    utc_date date PK "UTC day, split at UTC midnight"
+    duration_seconds int
   }
   SYNC_STATE {
-    text user_email PK, FK
-    bigint version "bumped on every push"
-    text last_writer_device
-    timestamptz updated_at
+    user_id uuid PK, FK
+    version bigint "bumped on every push and reset"
   }
 ```
+
+## Overlap rule
+
+A user never has two live sessions that overlap in time, even if two devices ran at once while offline. Only finished sessions are pushed, so a running timer never conflicts. Until a device syncs it cannot know about an overlap, so its totals may briefly count both sessions.
+
+`push_changes` handles each pushed session in four steps:
+
+1. Find the user's live sessions that overlap it.
+2. If there are none, insert it.
+3. If it is **longer than every session it overlaps**, set `deleted_at` on those sessions and insert it. A tie goes to the earlier `started_at`, then to the lower id.
+4. Otherwise it loses and is stored with `deleted_at` already set. The tombstone makes a retry a no-op and keeps every device consistent.
+
+Nothing is trimmed: the loser's time leaves the totals. The change reaches every device like this:
+
+- Cloud triggers subtract the dropped sessions from `daily_rollups` and `utc_daily_rollups`.
+- A pushed session that lost is reported in the `push_changes` response, and the pushing device sets `deleted_at` on its local copy immediately.
+- Every dropped session gets a fresh `updated_at`, so every device, including the one that recorded it, pulls the tombstone and subtracts the time.
+
+The exclusion constraint on `sessions` is a backstop. A bug in `push_changes` cannot leave overlapping live sessions in the database.
+
+## Editing and deleting
+
+**Edit a project**
+
+1. The device updates the local row (name or colour) and queues it.
+2. The next push replaces the whole cloud row and stamps a new `updated_at`. If two devices edited the same project offline, the last push wins.
+3. Every other device pulls the new version on its next sync. The device that lost gets the winning version the same way.
+4. Sessions and rollups are unchanged.
+
+**Delete a project**
+
+1. The device sets `deleted_at` on the project and queues it.
+2. Sessions, rollups and `project_id` values are unchanged.
+3. Project lists filter on `deleted_at is null`.
+4. Queries that group by project use the `project_rollups_effective` view (and the same rule on sessions). The effective project is `project_id` if that project exists and has no `deleted_at`, otherwise `''` (No Project).
+5. Undoing the delete is clearing `deleted_at`.
+
+**Delete a session**
+
+1. The device sets `deleted_at` on the session and queues it.
+2. The local trigger subtracts its seconds from `local_daily_rollups` and `project_rollups`.
+3. Cloud triggers subtract them from `daily_rollups` and `utc_daily_rollups`.
+4. Other devices pull the tombstone, and their triggers subtract the same seconds. No rollup values are sent.
+
+**Delete all history**
+
+1. The app calls `reset_history`. In one transaction the cloud hard-deletes the user's sessions, `daily_rollups` and `utc_daily_rollups`, sets `users.history_reset_at = now()` and bumps `sync_state.version`. Projects are kept.
+2. The calling device wipes its local sessions, rollups and queued session entries, clears its sessions cursor and stores the new `history_reset_at`.
+3. Every other device sees the newer `history_reset_at` in `check_remote_changes` and does the same.
+4. A device that was offline cannot restore old data. `push_changes` rejects any session with `ended_at < history_reset_at`, and the device drops those locally without requeuing them.
+
+## Rebuilding rollups
+
+Rollups can always be recomputed from sessions. `rebuild_rollups(user_id)` deletes the account's rows in `local_daily_rollups` and `project_rollups` and recreates them from all sessions where `deleted_at is null`, using the same split function. Use it for repairs, after a schema migration, or after a very large first pull. The cloud has the same function for `daily_rollups` and `utc_daily_rollups` (the latter split at UTC midnight).
+
+## Design notes
+
+- **`updated_at` (cloud `projects` and `sessions`):** set by the database and used as the pull cursor. A device-written time would not work: a session recorded offline on Monday and pushed on Wednesday would carry a Monday time, and a device whose cursor is already at Tuesday would miss it.
+- **`history_reset_at` (`users`, `local_users`):** one timestamp, null until the first reset. A device wipes its history when the cloud value is newer than its own. The cloud also uses it to reject stale pushes.
+- **`utc_offset_minutes`:** an instant alone does not give the user's local date. The offset recorded with the session lets SQLite and Postgres find the same local midnight, even if the phone's timezone changes later.
+- **No `device_id`:** it would only save a device from downloading its own rows once, and it would add rules for cleared storage, restored backups and dropped sessions. Re-pulling a few own rows is harmless (see "Rows that arrive twice").
