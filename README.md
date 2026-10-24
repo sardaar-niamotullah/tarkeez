@@ -49,6 +49,7 @@ Tarkeez is offline-first. The app reads and writes a local SQLite database, and 
 - **Tombstones, kept forever:** projects and sessions are never hard-deleted. They get `deleted_at`, which syncs like any other change.
 - **Foreign keys:** project rows are never removed, so `project_id` on a session always resolves. There is no cascade or `SET NULL`. A session whose project is deleted counts as "No Project" when read.
 - **Sync cursor:** the database stamps every project and session with `updated_at` whenever it is added or changed. Each device stores the biggest stamp it has received (its cursor) and pulls rows stamped after it.
+- **Sync trigger:** there is no timer. Sync runs when `sync_queue` has rows and the device is online, at app start, and when the user taps the Sync button (see "When sync runs").
 - **Storage:** about 0.5 KB per session including indexes. At 500 sessions a month that is about 250 KB per user per month, or 3 MB per user per year. Rollups add a few KB per user per year.
 
 ## How a session is split at midnight
@@ -131,18 +132,36 @@ The local split shifts the session by the offset (21:00 to 01:00 becomes 22:00 t
 
 ## How sync works
 
-Each sync **pushes first, then pulls**.
+A sync run **pushes first, then pulls**.
 
 - **Push:** send the rows listed in `sync_queue`.
 - **Pull:** fetch every row stamped after the device's cursor.
 
+### When sync runs
+
+There is no timer. Sync starts only on one of these three events, and only while the device is online:
+
+| Event                     | Run                                     |
+| ------------------------- | --------------------------------------- |
+| `sync_queue` is not empty | push, then pull                         |
+| App start                 | push (if the queue has rows), then pull |
+| Sync button               | push (if the queue has rows), then pull |
+
+`sync_queue` is not empty covers two cases: a change is queued while the device is online (session finished, project edit, delete), and the connection returns while rows are waiting.
+
+- **App start while offline:** the sync runs when the connection returns.
+- **Offline:** rows wait in `sync_queue` and no attempt is made. A sync starts when the connection returns.
+- **Failed push:** the rows stay in the queue and are retried at the next event above. Nothing retries on a timer.
+- **Empty queue:** the device does not poll. It receives other devices' changes at app start, on the Sync button, or in the pull that follows its own next push.
+- **Overlapping events:** events that arrive while a run is in progress are merged into one follow-up run.
+
 ### Pieces
 
-| Piece        | Where                           | Purpose                                                                                              |
-| ------------ | ------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Piece        | Where                           | Purpose                                                                                               |
+| ------------ | ------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | `sync_queue` | device                          | Rows changed locally and not yet pushed. Stores the table and id only. The row is read at push time. |
-| `updated_at` | cloud `projects` and `sessions` | Time the database last changed the row. A trigger sets it, so device clocks never matter.            |
-| cursor       | `local_sync_state`              | Biggest `updated_at` received. One for projects, one for sessions.                                   |
+| `updated_at` | cloud `projects` and `sessions` | Time the database last changed the row. A trigger sets it, so device clocks never matter.             |
+| cursor       | `local_sync_state`              | Biggest `updated_at` received. One for projects, one for sessions.                                    |
 
 Pull queries:
 
@@ -163,13 +182,13 @@ Cloud sessions in `updated_at` order, with the phone's cursor:
 
 ### Example: phone, tablet and cloud
 
-| Time  | Device | What happens                                                                                                       | Rows downloaded       | Cursor after |
-| ----- | ------ | ------------------------------------------------------------------------------------------------------------------ | --------------------- | ------------ |
-| 10:00 | Phone  | Pushes 50 new sessions, stamped 10:00. Pulls after its cursor (none): gets its own 50 back, which changes nothing. | 50 (own)              | 10:00        |
-| 10:10 | Tablet | New device, nothing to push. Pulls with no cursor: every row.                                                      | **50**                | 10:00        |
-| 10:20 | Tablet | Pushes 30 new sessions, stamped 10:20. Pulls after 10:00: gets its own 30 back.                                    | 30 (own)              | 10:20        |
-| 10:30 | Phone  | Nothing to push. Pulls after 10:00.                                                                                | **30** (the tablet's) | 10:20        |
-| 10:40 | Tablet | Nothing to push. Pulls after 10:20.                                                                                | 0                     | 10:20        |
+| Time  | Device | What happens                                                                                                                                  | Rows downloaded       | Cursor after |
+| ----- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- | ------------ |
+| 10:00 | Phone  | Connection returns with 50 queued sessions. Pushes them, stamped 10:00. Pulls after its cursor (none): gets its own 50 back, which changes nothing. | 50 (own)              | 10:00        |
+| 10:10 | Tablet | App start on a new device, nothing to push. Pulls with no cursor: every row.                                                                  | **50**                | 10:00        |
+| 10:20 | Tablet | The 30 sessions recorded since are queued and the device is online, so it pushes them, stamped 10:20. Pulls after 10:00: gets its own 30 back. | 30 (own)              | 10:20        |
+| 10:30 | Phone  | App start, queue empty. Pulls after 10:00.                                                                                                    | **30** (the tablet's) | 10:20        |
+| 10:40 | Tablet | Sync button, queue empty. Pulls after 10:20.                                                                                                  | 0                     | 10:20        |
 
 Both devices end with the same 80 sessions, and the phone downloaded only the 30 it was missing.
 
@@ -201,13 +220,14 @@ A device can receive rows it already has: its own rows right after a push, and r
 
 ### Special situations
 
-| Situation                                    | Behaviour                                                                                                                       |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| New phone, reinstall, or cleared app storage | No cursor, so the first pull returns everything. This restores the history once (about 3 MB per year of history).               |
-| Second account on the same device            | Rows and cursors are per `user_id`, so accounts never mix.                                                                      |
-| Offline for a week                           | The cursor is a week old, so the next pull returns the week's changes, in pages.                                                |
-| Two devices edit the same project offline    | Last push wins for the whole row. The other device pulls the winning version on its next sync.                                  |
-| "Delete all history" on another device       | The pull sees a newer `history_reset_at`. The device wipes its sessions and rollups, clears its cursors and pulls from scratch. |
+| Situation                                    | Behaviour                                                                                                                                           |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Changes queued while offline                 | Rows wait in `sync_queue`, and no attempt is made. A sync starts when the connection returns.                                                       |
+| New phone, reinstall, or cleared app storage | No cursor, so the first pull returns everything. This restores the history once (about 3 MB per year of history).                                   |
+| Second account on the same device            | Rows and cursors are per `user_id`, so accounts never mix.                                                                                          |
+| Offline for a week                           | The cursor is a week old, so the next pull returns the week's changes, in pages.                                                                    |
+| Two devices edit the same project offline    | Last push wins for the whole row. The other device pulls the winning version on its next sync.                                                      |
+| "Delete all history" on another device       | The device's next sync sees a newer `history_reset_at`. It wipes its sessions and rollups, clears its cursors and pulls from scratch.               |
 
 ### Cost
 
@@ -222,8 +242,8 @@ Without a per-device tag, a device downloads its own rows once after pushing the
 
 1. **Write:** when a session is finished, UI → BLoC → Repository → Drift DAO writes it to `local_sessions` with its `utc_offset_minutes`. Local triggers split it at local midnight and update `local_daily_rollups` and `project_rollups`. The DAO adds a row to `sync_queue`.
 2. **Read:** session lists read `local_sessions`. Reports, heatmaps and streaks read the rollups. All reads are local.
-3. **Push (every 30 min, app start, every project change):** the Sync Service sends the queued rows to `push_changes` in one batch. The cloud upserts projects, then sessions, by UUID (safe to retry). It resolves overlaps (see "Overlap rule"), cloud triggers update `daily_rollups` and `utc_daily_rollups`, and `sync_state.version` is bumped. The response lists which sessions were kept and dropped, and the device applies that locally.
-4. **Pull (right after the push, app start, new device):** the app calls `check_remote_changes`, which returns the cloud `version` and `history_reset_at`.
+3. **Push (when the queue has rows and the device is online, at app start, or on the Sync button):** the Sync Service sends the queued rows to `push_changes` in one batch. The cloud upserts projects, then sessions, by UUID (safe to retry). It resolves overlaps (see "Overlap rule"), cloud triggers update `daily_rollups` and `utc_daily_rollups`, and `sync_state.version` is bumped. The response lists which sessions were kept and dropped, and the device applies that locally. If the device is offline, nothing is attempted.
+4. **Pull (right after every push, at app start, on the Sync button):** the app calls `check_remote_changes`, which returns the cloud `version` and `history_reset_at`.
    - If `history_reset_at` is newer than the local value, the app wipes local sessions and rollups, clears its cursors and pulls from scratch.
    - If `version` equals the last seen value, nothing is downloaded.
    - Otherwise it downloads, in pages, every project and session stamped after its cursor and upserts them. Local triggers rebuild the rollups. No rollup is downloaded.
@@ -233,7 +253,7 @@ Without a per-device tag, a device downloads its own rows once after pushing the
 
 A finished session is written to SQLite. Triggers add its seconds to the local rollups immediately, so reports update without scanning sessions, and a note is added to `sync_queue`. None of this needs internet.
 
-Every 30 minutes, and when the app opens, the Sync Service sends the queued projects and sessions to Supabase over HTTPS with the user's JWT. The cloud keeps the longest session when two overlap, and its triggers add each kept session to `daily_rollups` and `utc_daily_rollups`. The app then asks whether anything changed since it last looked, and downloads only the rows stamped after its cursor. Pulled sessions go through the same local triggers as recorded ones.
+When the queue has rows and the device is online, the Sync Service sends the queued projects and sessions to Supabase over HTTPS with the user's JWT. If the device is offline, the rows wait and nothing is attempted until the connection returns. A sync also runs at app start and when the user taps the Sync button. There is no timer. The cloud keeps the longest session when two overlap, and its triggers add each kept session to `daily_rollups` and `utc_daily_rollups`. The app then asks whether anything changed since it last looked, and downloads only the rows stamped after its cursor. Pulled sessions go through the same local triggers as recorded ones.
 
 The leaderboard screens are the only screens that call the cloud directly.
 
@@ -242,7 +262,7 @@ flowchart TB
   subgraph APP["Frontend: Flutter · offline-first"]
     direction LR
     UI["UI Screens"] --> BLOC["BLoC"] --> REPO["Repositories<br/>(scoped by user_id)"] --> DAO["DAOs"] --> LDB[("SQLite<br/>local_users · local_projects · local_sessions (all history)<br/>local_daily_rollups · project_rollups (derived, local only)<br/>sync_queue · local_sync_state · app_meta<br/>──────<br/>triggers: session to rollups, split at local midnight")]
-    REPO -.->|"every 30 min · app start"| SYNC["Sync Service<br/>push · pull"]
+    REPO -.->|"queue not empty + online · app start · Sync button"| SYNC["Sync Service<br/>push · pull"]
     SYNC <-->|"reads sync_queue, writes pulled data"| LDB
   end
 
@@ -260,7 +280,7 @@ flowchart TB
 - `local_users` holds every account that has signed in on this device, created from the cloud `users` row at sign-in. `history_reset_at` is the last reset this device applied.
 - Triggers on `local_sessions` split each session at local midnight into `local_daily_rollups` and `project_rollups`. They fire on insert and when `deleted_at` is first set. An insert that already has `deleted_at` (a pulled tombstone) adds nothing. Pulled rows are saved with upserts, never replace.
 - `project_rollups` has no FK to projects. A project that is missing or has `deleted_at` set is counted as "No Project" (`''`) through the `project_rollups_effective` view.
-- `sync_queue` lists the rows to push. It stores no copy of the data. Every change is an upsert, and a delete is `deleted_at` being set.
+- `sync_queue` lists the rows to push. It stores no copy of the data. Every change is an upsert, and a delete is `deleted_at` being set. A non-empty queue is what starts a sync when the device is online.
 - `local_sync_state` stores, per account, the last cloud `version` seen and the two cursors.
 - `app_meta` holds device-wide values (`active_user_id`).
 
@@ -419,7 +439,7 @@ Nothing is trimmed: the loser's time leaves the totals. The change reaches every
 
 - Cloud triggers subtract the dropped sessions from `daily_rollups` and `utc_daily_rollups`.
 - A pushed session that lost is reported in the `push_changes` response, and the pushing device sets `deleted_at` on its local copy immediately.
-- Every dropped session gets a fresh `updated_at`, so every device, including the one that recorded it, pulls the tombstone and subtracts the time.
+- Every dropped session gets a fresh `updated_at`, so every device, including the one that recorded it, pulls the tombstone on its next sync and subtracts the time.
 
 The exclusion constraint on `sessions` is a backstop. A bug in `push_changes` cannot leave overlapping live sessions in the database.
 
@@ -445,13 +465,13 @@ The exclusion constraint on `sessions` is a backstop. A bug in `push_changes` ca
 1. The device sets `deleted_at` on the session and queues it.
 2. The local trigger subtracts its seconds from `local_daily_rollups` and `project_rollups`.
 3. Cloud triggers subtract them from `daily_rollups` and `utc_daily_rollups`.
-4. Other devices pull the tombstone, and their triggers subtract the same seconds. No rollup values are sent.
+4. Other devices pull the tombstone on their next sync, and their triggers subtract the same seconds. No rollup values are sent.
 
 **Delete all history**
 
 1. The app calls `reset_history`. In one transaction the cloud hard-deletes the user's sessions, `daily_rollups` and `utc_daily_rollups`, sets `users.history_reset_at = now()` and bumps `sync_state.version`. Projects are kept.
 2. The calling device wipes its local sessions, rollups and queued session entries, clears its sessions cursor and stores the new `history_reset_at`.
-3. Every other device sees the newer `history_reset_at` in `check_remote_changes` and does the same.
+3. Every other device sees the newer `history_reset_at` in `check_remote_changes` on its next sync and does the same.
 4. A device that was offline cannot restore old data. `push_changes` rejects any session with `ended_at < history_reset_at`, and the device drops those locally without requeuing them.
 
 ## Rebuilding rollups
@@ -463,4 +483,5 @@ Rollups can always be recomputed from sessions. `rebuild_rollups(user_id)` delet
 - **`updated_at` (cloud `projects` and `sessions`):** set by the database and used as the pull cursor. A device-written time would not work: a session recorded offline on Monday and pushed on Wednesday would carry a Monday time, and a device whose cursor is already at Tuesday would miss it.
 - **`history_reset_at` (`users`, `local_users`):** one timestamp, null until the first reset. A device wipes its history when the cloud value is newer than its own. The cloud also uses it to reject stale pushes.
 - **`utc_offset_minutes`:** an instant alone does not give the user's local date. The offset recorded with the session lets SQLite and Postgres find the same local midnight, even if the phone's timezone changes later.
+- **No periodic sync:** a timer would spend battery and requests when nothing changed. Sync runs only on the events listed in "When sync runs".
 - **No `device_id`:** it would only save a device from downloading its own rows once, and it would add rules for cleared storage, restored backups and dropped sessions. Re-pulling a few own rows is harmless (see "Rows that arrive twice").
