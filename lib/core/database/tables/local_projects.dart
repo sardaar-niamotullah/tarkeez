@@ -12,10 +12,12 @@ class LocalProjects extends Table {
   )();
   TextColumn get name => text().withLength(min: 3, max: 20)();
   IntColumn get colorId => integer()();
-  @override
-  List<String> get customConstraints => ['CHECK (color_id BETWEEN 0 AND 20)'];
   DateTimeColumn get createdAt =>
       dateTime().clientDefault(() => DateTime.now().toUtc())();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+
+  @override
+  List<String> get customConstraints => ['CHECK (color_id BETWEEN 0 AND 20)'];
 
   @override
   Set<Column> get primaryKey => {id};

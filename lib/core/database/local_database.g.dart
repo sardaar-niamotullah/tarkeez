@@ -49,8 +49,25 @@ class $LocalUsersTable extends LocalUsers
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _historyResetAtMeta = const VerificationMeta(
+    'historyResetAt',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, email, fullName, avatarUrl];
+  late final GeneratedColumn<String> historyResetAt = GeneratedColumn<String>(
+    'history_reset_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    email,
+    fullName,
+    avatarUrl,
+    historyResetAt,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -86,6 +103,15 @@ class $LocalUsersTable extends LocalUsers
         avatarUrl.isAcceptableOrUnknown(data['avatar_url']!, _avatarUrlMeta),
       );
     }
+    if (data.containsKey('history_reset_at')) {
+      context.handle(
+        _historyResetAtMeta,
+        historyResetAt.isAcceptableOrUnknown(
+          data['history_reset_at']!,
+          _historyResetAtMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -111,6 +137,10 @@ class $LocalUsersTable extends LocalUsers
         DriftSqlType.string,
         data['${effectivePrefix}avatar_url'],
       ),
+      historyResetAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}history_reset_at'],
+      ),
     );
   }
 
@@ -125,11 +155,13 @@ class LocalUser extends DataClass implements Insertable<LocalUser> {
   final String? email;
   final String? fullName;
   final String? avatarUrl;
+  final String? historyResetAt;
   const LocalUser({
     required this.id,
     this.email,
     this.fullName,
     this.avatarUrl,
+    this.historyResetAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -143,6 +175,9 @@ class LocalUser extends DataClass implements Insertable<LocalUser> {
     }
     if (!nullToAbsent || avatarUrl != null) {
       map['avatar_url'] = Variable<String>(avatarUrl);
+    }
+    if (!nullToAbsent || historyResetAt != null) {
+      map['history_reset_at'] = Variable<String>(historyResetAt);
     }
     return map;
   }
@@ -159,6 +194,9 @@ class LocalUser extends DataClass implements Insertable<LocalUser> {
       avatarUrl: avatarUrl == null && nullToAbsent
           ? const Value.absent()
           : Value(avatarUrl),
+      historyResetAt: historyResetAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(historyResetAt),
     );
   }
 
@@ -172,6 +210,7 @@ class LocalUser extends DataClass implements Insertable<LocalUser> {
       email: serializer.fromJson<String?>(json['email']),
       fullName: serializer.fromJson<String?>(json['fullName']),
       avatarUrl: serializer.fromJson<String?>(json['avatarUrl']),
+      historyResetAt: serializer.fromJson<String?>(json['historyResetAt']),
     );
   }
   @override
@@ -182,6 +221,7 @@ class LocalUser extends DataClass implements Insertable<LocalUser> {
       'email': serializer.toJson<String?>(email),
       'fullName': serializer.toJson<String?>(fullName),
       'avatarUrl': serializer.toJson<String?>(avatarUrl),
+      'historyResetAt': serializer.toJson<String?>(historyResetAt),
     };
   }
 
@@ -190,11 +230,15 @@ class LocalUser extends DataClass implements Insertable<LocalUser> {
     Value<String?> email = const Value.absent(),
     Value<String?> fullName = const Value.absent(),
     Value<String?> avatarUrl = const Value.absent(),
+    Value<String?> historyResetAt = const Value.absent(),
   }) => LocalUser(
     id: id ?? this.id,
     email: email.present ? email.value : this.email,
     fullName: fullName.present ? fullName.value : this.fullName,
     avatarUrl: avatarUrl.present ? avatarUrl.value : this.avatarUrl,
+    historyResetAt: historyResetAt.present
+        ? historyResetAt.value
+        : this.historyResetAt,
   );
   LocalUser copyWithCompanion(LocalUsersCompanion data) {
     return LocalUser(
@@ -202,6 +246,9 @@ class LocalUser extends DataClass implements Insertable<LocalUser> {
       email: data.email.present ? data.email.value : this.email,
       fullName: data.fullName.present ? data.fullName.value : this.fullName,
       avatarUrl: data.avatarUrl.present ? data.avatarUrl.value : this.avatarUrl,
+      historyResetAt: data.historyResetAt.present
+          ? data.historyResetAt.value
+          : this.historyResetAt,
     );
   }
 
@@ -211,13 +258,15 @@ class LocalUser extends DataClass implements Insertable<LocalUser> {
           ..write('id: $id, ')
           ..write('email: $email, ')
           ..write('fullName: $fullName, ')
-          ..write('avatarUrl: $avatarUrl')
+          ..write('avatarUrl: $avatarUrl, ')
+          ..write('historyResetAt: $historyResetAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, email, fullName, avatarUrl);
+  int get hashCode =>
+      Object.hash(id, email, fullName, avatarUrl, historyResetAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -225,7 +274,8 @@ class LocalUser extends DataClass implements Insertable<LocalUser> {
           other.id == this.id &&
           other.email == this.email &&
           other.fullName == this.fullName &&
-          other.avatarUrl == this.avatarUrl);
+          other.avatarUrl == this.avatarUrl &&
+          other.historyResetAt == this.historyResetAt);
 }
 
 class LocalUsersCompanion extends UpdateCompanion<LocalUser> {
@@ -233,12 +283,14 @@ class LocalUsersCompanion extends UpdateCompanion<LocalUser> {
   final Value<String?> email;
   final Value<String?> fullName;
   final Value<String?> avatarUrl;
+  final Value<String?> historyResetAt;
   final Value<int> rowid;
   const LocalUsersCompanion({
     this.id = const Value.absent(),
     this.email = const Value.absent(),
     this.fullName = const Value.absent(),
     this.avatarUrl = const Value.absent(),
+    this.historyResetAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   LocalUsersCompanion.insert({
@@ -246,6 +298,7 @@ class LocalUsersCompanion extends UpdateCompanion<LocalUser> {
     this.email = const Value.absent(),
     this.fullName = const Value.absent(),
     this.avatarUrl = const Value.absent(),
+    this.historyResetAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id);
   static Insertable<LocalUser> custom({
@@ -253,6 +306,7 @@ class LocalUsersCompanion extends UpdateCompanion<LocalUser> {
     Expression<String>? email,
     Expression<String>? fullName,
     Expression<String>? avatarUrl,
+    Expression<String>? historyResetAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -260,6 +314,7 @@ class LocalUsersCompanion extends UpdateCompanion<LocalUser> {
       if (email != null) 'email': email,
       if (fullName != null) 'full_name': fullName,
       if (avatarUrl != null) 'avatar_url': avatarUrl,
+      if (historyResetAt != null) 'history_reset_at': historyResetAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -269,6 +324,7 @@ class LocalUsersCompanion extends UpdateCompanion<LocalUser> {
     Value<String?>? email,
     Value<String?>? fullName,
     Value<String?>? avatarUrl,
+    Value<String?>? historyResetAt,
     Value<int>? rowid,
   }) {
     return LocalUsersCompanion(
@@ -276,6 +332,7 @@ class LocalUsersCompanion extends UpdateCompanion<LocalUser> {
       email: email ?? this.email,
       fullName: fullName ?? this.fullName,
       avatarUrl: avatarUrl ?? this.avatarUrl,
+      historyResetAt: historyResetAt ?? this.historyResetAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -295,6 +352,9 @@ class LocalUsersCompanion extends UpdateCompanion<LocalUser> {
     if (avatarUrl.present) {
       map['avatar_url'] = Variable<String>(avatarUrl.value);
     }
+    if (historyResetAt.present) {
+      map['history_reset_at'] = Variable<String>(historyResetAt.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -308,6 +368,7 @@ class LocalUsersCompanion extends UpdateCompanion<LocalUser> {
           ..write('email: $email, ')
           ..write('fullName: $fullName, ')
           ..write('avatarUrl: $avatarUrl, ')
+          ..write('historyResetAt: $historyResetAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -378,8 +439,26 @@ class $LocalProjectsTable extends LocalProjects
     requiredDuringInsert: false,
     clientDefault: () => DateTime.now().toUtc(),
   );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, userId, name, colorId, createdAt];
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    userId,
+    name,
+    colorId,
+    createdAt,
+    deletedAt,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -425,6 +504,12 @@ class $LocalProjectsTable extends LocalProjects
         createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
       );
     }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
     return context;
   }
 
@@ -454,6 +539,10 @@ class $LocalProjectsTable extends LocalProjects
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
     );
   }
 
@@ -469,12 +558,14 @@ class LocalProject extends DataClass implements Insertable<LocalProject> {
   final String name;
   final int colorId;
   final DateTime createdAt;
+  final DateTime? deletedAt;
   const LocalProject({
     required this.id,
     required this.userId,
     required this.name,
     required this.colorId,
     required this.createdAt,
+    this.deletedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -484,6 +575,9 @@ class LocalProject extends DataClass implements Insertable<LocalProject> {
     map['name'] = Variable<String>(name);
     map['color_id'] = Variable<int>(colorId);
     map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
     return map;
   }
 
@@ -494,6 +588,9 @@ class LocalProject extends DataClass implements Insertable<LocalProject> {
       name: Value(name),
       colorId: Value(colorId),
       createdAt: Value(createdAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
     );
   }
 
@@ -508,6 +605,7 @@ class LocalProject extends DataClass implements Insertable<LocalProject> {
       name: serializer.fromJson<String>(json['name']),
       colorId: serializer.fromJson<int>(json['colorId']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
     );
   }
   @override
@@ -519,6 +617,7 @@ class LocalProject extends DataClass implements Insertable<LocalProject> {
       'name': serializer.toJson<String>(name),
       'colorId': serializer.toJson<int>(colorId),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
     };
   }
 
@@ -528,12 +627,14 @@ class LocalProject extends DataClass implements Insertable<LocalProject> {
     String? name,
     int? colorId,
     DateTime? createdAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
   }) => LocalProject(
     id: id ?? this.id,
     userId: userId ?? this.userId,
     name: name ?? this.name,
     colorId: colorId ?? this.colorId,
     createdAt: createdAt ?? this.createdAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
   );
   LocalProject copyWithCompanion(LocalProjectsCompanion data) {
     return LocalProject(
@@ -542,6 +643,7 @@ class LocalProject extends DataClass implements Insertable<LocalProject> {
       name: data.name.present ? data.name.value : this.name,
       colorId: data.colorId.present ? data.colorId.value : this.colorId,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
     );
   }
 
@@ -552,13 +654,15 @@ class LocalProject extends DataClass implements Insertable<LocalProject> {
           ..write('userId: $userId, ')
           ..write('name: $name, ')
           ..write('colorId: $colorId, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('deletedAt: $deletedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, userId, name, colorId, createdAt);
+  int get hashCode =>
+      Object.hash(id, userId, name, colorId, createdAt, deletedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -567,7 +671,8 @@ class LocalProject extends DataClass implements Insertable<LocalProject> {
           other.userId == this.userId &&
           other.name == this.name &&
           other.colorId == this.colorId &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.deletedAt == this.deletedAt);
 }
 
 class LocalProjectsCompanion extends UpdateCompanion<LocalProject> {
@@ -576,6 +681,7 @@ class LocalProjectsCompanion extends UpdateCompanion<LocalProject> {
   final Value<String> name;
   final Value<int> colorId;
   final Value<DateTime> createdAt;
+  final Value<DateTime?> deletedAt;
   final Value<int> rowid;
   const LocalProjectsCompanion({
     this.id = const Value.absent(),
@@ -583,6 +689,7 @@ class LocalProjectsCompanion extends UpdateCompanion<LocalProject> {
     this.name = const Value.absent(),
     this.colorId = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   LocalProjectsCompanion.insert({
@@ -591,6 +698,7 @@ class LocalProjectsCompanion extends UpdateCompanion<LocalProject> {
     required String name,
     required int colorId,
     this.createdAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : userId = Value(userId),
        name = Value(name),
@@ -601,6 +709,7 @@ class LocalProjectsCompanion extends UpdateCompanion<LocalProject> {
     Expression<String>? name,
     Expression<int>? colorId,
     Expression<DateTime>? createdAt,
+    Expression<DateTime>? deletedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -609,6 +718,7 @@ class LocalProjectsCompanion extends UpdateCompanion<LocalProject> {
       if (name != null) 'name': name,
       if (colorId != null) 'color_id': colorId,
       if (createdAt != null) 'created_at': createdAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -619,6 +729,7 @@ class LocalProjectsCompanion extends UpdateCompanion<LocalProject> {
     Value<String>? name,
     Value<int>? colorId,
     Value<DateTime>? createdAt,
+    Value<DateTime?>? deletedAt,
     Value<int>? rowid,
   }) {
     return LocalProjectsCompanion(
@@ -627,6 +738,7 @@ class LocalProjectsCompanion extends UpdateCompanion<LocalProject> {
       name: name ?? this.name,
       colorId: colorId ?? this.colorId,
       createdAt: createdAt ?? this.createdAt,
+      deletedAt: deletedAt ?? this.deletedAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -649,6 +761,9 @@ class LocalProjectsCompanion extends UpdateCompanion<LocalProject> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -663,6 +778,7 @@ class LocalProjectsCompanion extends UpdateCompanion<LocalProject> {
           ..write('name: $name, ')
           ..write('colorId: $colorId, ')
           ..write('createdAt: $createdAt, ')
+          ..write('deletedAt: $deletedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1519,6 +1635,554 @@ class ProjectRollupsCompanion extends UpdateCompanion<ProjectRollup> {
   }
 }
 
+class $PendingChangesTable extends PendingChanges
+    with TableInfo<$PendingChangesTable, PendingChange> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PendingChangesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: () => const Uuid().v7(),
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES local_users (id) ON UPDATE CASCADE ON DELETE CASCADE',
+    ),
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<SyncEntity, String> entity =
+      GeneratedColumn<String>(
+        'entity',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<SyncEntity>($PendingChangesTable.$converterentity);
+  static const VerificationMeta _entityIdMeta = const VerificationMeta(
+    'entityId',
+  );
+  @override
+  late final GeneratedColumn<String> entityId = GeneratedColumn<String>(
+    'entity_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, userId, entity, entityId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'pending_changes';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PendingChange> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('entity_id')) {
+      context.handle(
+        _entityIdMeta,
+        entityId.isAcceptableOrUnknown(data['entity_id']!, _entityIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entityIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PendingChange map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PendingChange(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      )!,
+      entity: $PendingChangesTable.$converterentity.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}entity'],
+        )!,
+      ),
+      entityId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity_id'],
+      )!,
+    );
+  }
+
+  @override
+  $PendingChangesTable createAlias(String alias) {
+    return $PendingChangesTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<SyncEntity, String, String> $converterentity =
+      const EnumNameConverter<SyncEntity>(SyncEntity.values);
+}
+
+class PendingChange extends DataClass implements Insertable<PendingChange> {
+  final String id;
+  final String userId;
+  final SyncEntity entity;
+  final String entityId;
+  const PendingChange({
+    required this.id,
+    required this.userId,
+    required this.entity,
+    required this.entityId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['user_id'] = Variable<String>(userId);
+    {
+      map['entity'] = Variable<String>(
+        $PendingChangesTable.$converterentity.toSql(entity),
+      );
+    }
+    map['entity_id'] = Variable<String>(entityId);
+    return map;
+  }
+
+  PendingChangesCompanion toCompanion(bool nullToAbsent) {
+    return PendingChangesCompanion(
+      id: Value(id),
+      userId: Value(userId),
+      entity: Value(entity),
+      entityId: Value(entityId),
+    );
+  }
+
+  factory PendingChange.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PendingChange(
+      id: serializer.fromJson<String>(json['id']),
+      userId: serializer.fromJson<String>(json['userId']),
+      entity: $PendingChangesTable.$converterentity.fromJson(
+        serializer.fromJson<String>(json['entity']),
+      ),
+      entityId: serializer.fromJson<String>(json['entityId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'userId': serializer.toJson<String>(userId),
+      'entity': serializer.toJson<String>(
+        $PendingChangesTable.$converterentity.toJson(entity),
+      ),
+      'entityId': serializer.toJson<String>(entityId),
+    };
+  }
+
+  PendingChange copyWith({
+    String? id,
+    String? userId,
+    SyncEntity? entity,
+    String? entityId,
+  }) => PendingChange(
+    id: id ?? this.id,
+    userId: userId ?? this.userId,
+    entity: entity ?? this.entity,
+    entityId: entityId ?? this.entityId,
+  );
+  PendingChange copyWithCompanion(PendingChangesCompanion data) {
+    return PendingChange(
+      id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      entity: data.entity.present ? data.entity.value : this.entity,
+      entityId: data.entityId.present ? data.entityId.value : this.entityId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PendingChange(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('entity: $entity, ')
+          ..write('entityId: $entityId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, userId, entity, entityId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PendingChange &&
+          other.id == this.id &&
+          other.userId == this.userId &&
+          other.entity == this.entity &&
+          other.entityId == this.entityId);
+}
+
+class PendingChangesCompanion extends UpdateCompanion<PendingChange> {
+  final Value<String> id;
+  final Value<String> userId;
+  final Value<SyncEntity> entity;
+  final Value<String> entityId;
+  final Value<int> rowid;
+  const PendingChangesCompanion({
+    this.id = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.entity = const Value.absent(),
+    this.entityId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PendingChangesCompanion.insert({
+    this.id = const Value.absent(),
+    required String userId,
+    required SyncEntity entity,
+    required String entityId,
+    this.rowid = const Value.absent(),
+  }) : userId = Value(userId),
+       entity = Value(entity),
+       entityId = Value(entityId);
+  static Insertable<PendingChange> custom({
+    Expression<String>? id,
+    Expression<String>? userId,
+    Expression<String>? entity,
+    Expression<String>? entityId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
+      if (entity != null) 'entity': entity,
+      if (entityId != null) 'entity_id': entityId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PendingChangesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? userId,
+    Value<SyncEntity>? entity,
+    Value<String>? entityId,
+    Value<int>? rowid,
+  }) {
+    return PendingChangesCompanion(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      entity: entity ?? this.entity,
+      entityId: entityId ?? this.entityId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (entity.present) {
+      map['entity'] = Variable<String>(
+        $PendingChangesTable.$converterentity.toSql(entity.value),
+      );
+    }
+    if (entityId.present) {
+      map['entity_id'] = Variable<String>(entityId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PendingChangesCompanion(')
+          ..write('id: $id, ')
+          ..write('userId: $userId, ')
+          ..write('entity: $entity, ')
+          ..write('entityId: $entityId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PullCheckpointsTable extends PullCheckpoints
+    with TableInfo<$PullCheckpointsTable, PullCheckpoint> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PullCheckpointsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES local_users (id) ON UPDATE CASCADE ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _lastProjectUpdatedAtMeta =
+      const VerificationMeta('lastProjectUpdatedAt');
+  @override
+  late final GeneratedColumn<String> lastProjectUpdatedAt =
+      GeneratedColumn<String>(
+        'last_project_updated_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [userId, lastProjectUpdatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'pull_checkpoints';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PullCheckpoint> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (data.containsKey('last_project_updated_at')) {
+      context.handle(
+        _lastProjectUpdatedAtMeta,
+        lastProjectUpdatedAt.isAcceptableOrUnknown(
+          data['last_project_updated_at']!,
+          _lastProjectUpdatedAtMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {userId};
+  @override
+  PullCheckpoint map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PullCheckpoint(
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      )!,
+      lastProjectUpdatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_project_updated_at'],
+      ),
+    );
+  }
+
+  @override
+  $PullCheckpointsTable createAlias(String alias) {
+    return $PullCheckpointsTable(attachedDatabase, alias);
+  }
+}
+
+class PullCheckpoint extends DataClass implements Insertable<PullCheckpoint> {
+  final String userId;
+  final String? lastProjectUpdatedAt;
+  const PullCheckpoint({required this.userId, this.lastProjectUpdatedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['user_id'] = Variable<String>(userId);
+    if (!nullToAbsent || lastProjectUpdatedAt != null) {
+      map['last_project_updated_at'] = Variable<String>(lastProjectUpdatedAt);
+    }
+    return map;
+  }
+
+  PullCheckpointsCompanion toCompanion(bool nullToAbsent) {
+    return PullCheckpointsCompanion(
+      userId: Value(userId),
+      lastProjectUpdatedAt: lastProjectUpdatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastProjectUpdatedAt),
+    );
+  }
+
+  factory PullCheckpoint.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PullCheckpoint(
+      userId: serializer.fromJson<String>(json['userId']),
+      lastProjectUpdatedAt: serializer.fromJson<String?>(
+        json['lastProjectUpdatedAt'],
+      ),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'userId': serializer.toJson<String>(userId),
+      'lastProjectUpdatedAt': serializer.toJson<String?>(lastProjectUpdatedAt),
+    };
+  }
+
+  PullCheckpoint copyWith({
+    String? userId,
+    Value<String?> lastProjectUpdatedAt = const Value.absent(),
+  }) => PullCheckpoint(
+    userId: userId ?? this.userId,
+    lastProjectUpdatedAt: lastProjectUpdatedAt.present
+        ? lastProjectUpdatedAt.value
+        : this.lastProjectUpdatedAt,
+  );
+  PullCheckpoint copyWithCompanion(PullCheckpointsCompanion data) {
+    return PullCheckpoint(
+      userId: data.userId.present ? data.userId.value : this.userId,
+      lastProjectUpdatedAt: data.lastProjectUpdatedAt.present
+          ? data.lastProjectUpdatedAt.value
+          : this.lastProjectUpdatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PullCheckpoint(')
+          ..write('userId: $userId, ')
+          ..write('lastProjectUpdatedAt: $lastProjectUpdatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(userId, lastProjectUpdatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PullCheckpoint &&
+          other.userId == this.userId &&
+          other.lastProjectUpdatedAt == this.lastProjectUpdatedAt);
+}
+
+class PullCheckpointsCompanion extends UpdateCompanion<PullCheckpoint> {
+  final Value<String> userId;
+  final Value<String?> lastProjectUpdatedAt;
+  final Value<int> rowid;
+  const PullCheckpointsCompanion({
+    this.userId = const Value.absent(),
+    this.lastProjectUpdatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PullCheckpointsCompanion.insert({
+    required String userId,
+    this.lastProjectUpdatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : userId = Value(userId);
+  static Insertable<PullCheckpoint> custom({
+    Expression<String>? userId,
+    Expression<String>? lastProjectUpdatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (userId != null) 'user_id': userId,
+      if (lastProjectUpdatedAt != null)
+        'last_project_updated_at': lastProjectUpdatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PullCheckpointsCompanion copyWith({
+    Value<String>? userId,
+    Value<String?>? lastProjectUpdatedAt,
+    Value<int>? rowid,
+  }) {
+    return PullCheckpointsCompanion(
+      userId: userId ?? this.userId,
+      lastProjectUpdatedAt: lastProjectUpdatedAt ?? this.lastProjectUpdatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (lastProjectUpdatedAt.present) {
+      map['last_project_updated_at'] = Variable<String>(
+        lastProjectUpdatedAt.value,
+      );
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PullCheckpointsCompanion(')
+          ..write('userId: $userId, ')
+          ..write('lastProjectUpdatedAt: $lastProjectUpdatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$LocalDatabase extends GeneratedDatabase {
   _$LocalDatabase(QueryExecutor e) : super(e);
   $LocalDatabaseManager get managers => $LocalDatabaseManager(this);
@@ -1527,6 +2191,10 @@ abstract class _$LocalDatabase extends GeneratedDatabase {
   late final $SessionsTable sessions = $SessionsTable(this);
   late final $DailyRollupsTable dailyRollups = $DailyRollupsTable(this);
   late final $ProjectRollupsTable projectRollups = $ProjectRollupsTable(this);
+  late final $PendingChangesTable pendingChanges = $PendingChangesTable(this);
+  late final $PullCheckpointsTable pullCheckpoints = $PullCheckpointsTable(
+    this,
+  );
   late final LocalUsersDao localUsersDao = LocalUsersDao(this as LocalDatabase);
   late final LocalProjectsDao localProjectsDao = LocalProjectsDao(
     this as LocalDatabase,
@@ -1536,6 +2204,12 @@ abstract class _$LocalDatabase extends GeneratedDatabase {
     this as LocalDatabase,
   );
   late final ProjectRollupsDao projectRollupsDao = ProjectRollupsDao(
+    this as LocalDatabase,
+  );
+  late final PendingChangesDao pendingChangesDao = PendingChangesDao(
+    this as LocalDatabase,
+  );
+  late final PullCheckpointsDao pullCheckpointsDao = PullCheckpointsDao(
     this as LocalDatabase,
   );
   @override
@@ -1548,6 +2222,8 @@ abstract class _$LocalDatabase extends GeneratedDatabase {
     sessions,
     dailyRollups,
     projectRollups,
+    pendingChanges,
+    pullCheckpoints,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -1593,6 +2269,34 @@ abstract class _$LocalDatabase extends GeneratedDatabase {
       ),
       result: [TableUpdate('sessions', kind: UpdateKind.update)],
     ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'local_users',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('pending_changes', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'local_users',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('pending_changes', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'local_users',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('pull_checkpoints', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'local_users',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('pull_checkpoints', kind: UpdateKind.update)],
+    ),
   ]);
   @override
   DriftDatabaseOptions get options =>
@@ -1604,6 +2308,7 @@ typedef $$LocalUsersTableCreateCompanionBuilder = LocalUsersCompanion Function({
   Value<String?> email,
   Value<String?> fullName,
   Value<String?> avatarUrl,
+  Value<String?> historyResetAt,
   Value<int> rowid,
 });
 typedef $$LocalUsersTableUpdateCompanionBuilder = LocalUsersCompanion Function({
@@ -1611,6 +2316,7 @@ typedef $$LocalUsersTableUpdateCompanionBuilder = LocalUsersCompanion Function({
   Value<String?> email,
   Value<String?> fullName,
   Value<String?> avatarUrl,
+  Value<String?> historyResetAt,
   Value<int> rowid,
 });
 
@@ -1654,6 +2360,45 @@ final class $$LocalUsersTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$PendingChangesTable, List<PendingChange>>
+  _pendingChangesRefsTable(_$LocalDatabase db) => MultiTypedResultKey.fromTable(
+    db.pendingChanges,
+    aliasName: 'local_users__id__pending_changes__user_id',
+  );
+
+  $$PendingChangesTableProcessedTableManager get pendingChangesRefs {
+    final manager = $$PendingChangesTableTableManager(
+      $_db,
+      $_db.pendingChanges,
+    ).filter((f) => f.userId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_pendingChangesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$PullCheckpointsTable, List<PullCheckpoint>>
+  _pullCheckpointsRefsTable(_$LocalDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.pullCheckpoints,
+        aliasName: 'local_users__id__pull_checkpoints__user_id',
+      );
+
+  $$PullCheckpointsTableProcessedTableManager get pullCheckpointsRefs {
+    final manager = $$PullCheckpointsTableTableManager(
+      $_db,
+      $_db.pullCheckpoints,
+    ).filter((f) => f.userId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _pullCheckpointsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$LocalUsersTableFilterComposer
@@ -1682,6 +2427,11 @@ class $$LocalUsersTableFilterComposer
 
   ColumnFilters<String> get avatarUrl => $composableBuilder(
     column: $table.avatarUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get historyResetAt => $composableBuilder(
+    column: $table.historyResetAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1734,6 +2484,56 @@ class $$LocalUsersTableFilterComposer
     );
     return f(composer);
   }
+
+  Expression<bool> pendingChangesRefs(
+    Expression<bool> Function($$PendingChangesTableFilterComposer f) f,
+  ) {
+    final $$PendingChangesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.pendingChanges,
+      getReferencedColumn: (t) => t.userId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PendingChangesTableFilterComposer(
+            $db: $db,
+            $table: $db.pendingChanges,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> pullCheckpointsRefs(
+    Expression<bool> Function($$PullCheckpointsTableFilterComposer f) f,
+  ) {
+    final $$PullCheckpointsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.pullCheckpoints,
+      getReferencedColumn: (t) => t.userId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PullCheckpointsTableFilterComposer(
+            $db: $db,
+            $table: $db.pullCheckpoints,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$LocalUsersTableOrderingComposer
@@ -1764,6 +2564,11 @@ class $$LocalUsersTableOrderingComposer
     column: $table.avatarUrl,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get historyResetAt => $composableBuilder(
+    column: $table.historyResetAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$LocalUsersTableAnnotationComposer
@@ -1786,6 +2591,11 @@ class $$LocalUsersTableAnnotationComposer
 
   GeneratedColumn<String> get avatarUrl =>
       $composableBuilder(column: $table.avatarUrl, builder: (column) => column);
+
+  GeneratedColumn<String> get historyResetAt => $composableBuilder(
+    column: $table.historyResetAt,
+    builder: (column) => column,
+  );
 
   Expression<T> localProjectsRefs<T extends Object>(
     Expression<T> Function($$LocalProjectsTableAnnotationComposer a) f,
@@ -1836,6 +2646,56 @@ class $$LocalUsersTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> pendingChangesRefs<T extends Object>(
+    Expression<T> Function($$PendingChangesTableAnnotationComposer a) f,
+  ) {
+    final $$PendingChangesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.pendingChanges,
+      getReferencedColumn: (t) => t.userId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PendingChangesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.pendingChanges,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> pullCheckpointsRefs<T extends Object>(
+    Expression<T> Function($$PullCheckpointsTableAnnotationComposer a) f,
+  ) {
+    final $$PullCheckpointsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.pullCheckpoints,
+      getReferencedColumn: (t) => t.userId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PullCheckpointsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.pullCheckpoints,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$LocalUsersTableTableManager
@@ -1851,7 +2711,12 @@ class $$LocalUsersTableTableManager
           $$LocalUsersTableUpdateCompanionBuilder,
           (LocalUser, $$LocalUsersTableReferences),
           LocalUser,
-          PrefetchHooks Function({bool localProjectsRefs, bool sessionsRefs})
+          PrefetchHooks Function({
+            bool localProjectsRefs,
+            bool sessionsRefs,
+            bool pendingChangesRefs,
+            bool pullCheckpointsRefs,
+          })
         > {
   $$LocalUsersTableTableManager(_$LocalDatabase db, $LocalUsersTable table)
     : super(
@@ -1870,12 +2735,14 @@ class $$LocalUsersTableTableManager
                 Value<String?> email = const Value.absent(),
                 Value<String?> fullName = const Value.absent(),
                 Value<String?> avatarUrl = const Value.absent(),
+                Value<String?> historyResetAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => LocalUsersCompanion(
                 id: id,
                 email: email,
                 fullName: fullName,
                 avatarUrl: avatarUrl,
+                historyResetAt: historyResetAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -1884,12 +2751,14 @@ class $$LocalUsersTableTableManager
                 Value<String?> email = const Value.absent(),
                 Value<String?> fullName = const Value.absent(),
                 Value<String?> avatarUrl = const Value.absent(),
+                Value<String?> historyResetAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => LocalUsersCompanion.insert(
                 id: id,
                 email: email,
                 fullName: fullName,
                 avatarUrl: avatarUrl,
+                historyResetAt: historyResetAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -1901,12 +2770,19 @@ class $$LocalUsersTableTableManager
               )
               .toList(),
           prefetchHooksCallback:
-              ({localProjectsRefs = false, sessionsRefs = false}) {
+              ({
+                localProjectsRefs = false,
+                sessionsRefs = false,
+                pendingChangesRefs = false,
+                pullCheckpointsRefs = false,
+              }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
                     if (localProjectsRefs) db.localProjects,
                     if (sessionsRefs) db.sessions,
+                    if (pendingChangesRefs) db.pendingChanges,
+                    if (pullCheckpointsRefs) db.pullCheckpoints,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -1953,6 +2829,48 @@ class $$LocalUsersTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (pendingChangesRefs)
+                        await $_getPrefetchedData<
+                          LocalUser,
+                          $LocalUsersTable,
+                          PendingChange
+                        >(
+                          currentTable: table,
+                          referencedTable: $$LocalUsersTableReferences
+                              ._pendingChangesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$LocalUsersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).pendingChangesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.userId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (pullCheckpointsRefs)
+                        await $_getPrefetchedData<
+                          LocalUser,
+                          $LocalUsersTable,
+                          PullCheckpoint
+                        >(
+                          currentTable: table,
+                          referencedTable: $$LocalUsersTableReferences
+                              ._pullCheckpointsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$LocalUsersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).pullCheckpointsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.userId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -1973,7 +2891,12 @@ typedef $$LocalUsersTableProcessedTableManager =
       $$LocalUsersTableUpdateCompanionBuilder,
       (LocalUser, $$LocalUsersTableReferences),
       LocalUser,
-      PrefetchHooks Function({bool localProjectsRefs, bool sessionsRefs})
+      PrefetchHooks Function({
+        bool localProjectsRefs,
+        bool sessionsRefs,
+        bool pendingChangesRefs,
+        bool pullCheckpointsRefs,
+      })
     >;
 typedef $$LocalProjectsTableCreateCompanionBuilder =
     LocalProjectsCompanion Function({
@@ -1982,6 +2905,7 @@ typedef $$LocalProjectsTableCreateCompanionBuilder =
       required String name,
       required int colorId,
       Value<DateTime> createdAt,
+      Value<DateTime?> deletedAt,
       Value<int> rowid,
     });
 typedef $$LocalProjectsTableUpdateCompanionBuilder =
@@ -1991,6 +2915,7 @@ typedef $$LocalProjectsTableUpdateCompanionBuilder =
       Value<String> name,
       Value<int> colorId,
       Value<DateTime> createdAt,
+      Value<DateTime?> deletedAt,
       Value<int> rowid,
     });
 
@@ -2065,6 +2990,11 @@ class $$LocalProjectsTableFilterComposer
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2146,6 +3076,11 @@ class $$LocalProjectsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$LocalUsersTableOrderingComposer get userId {
     final $$LocalUsersTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -2190,6 +3125,9 @@ class $$LocalProjectsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
 
   $$LocalUsersTableAnnotationComposer get userId {
     final $$LocalUsersTableAnnotationComposer composer = $composerBuilder(
@@ -2275,6 +3213,7 @@ class $$LocalProjectsTableTableManager
                 Value<String> name = const Value.absent(),
                 Value<int> colorId = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => LocalProjectsCompanion(
                 id: id,
@@ -2282,6 +3221,7 @@ class $$LocalProjectsTableTableManager
                 name: name,
                 colorId: colorId,
                 createdAt: createdAt,
+                deletedAt: deletedAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -2291,6 +3231,7 @@ class $$LocalProjectsTableTableManager
                 required String name,
                 required int colorId,
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => LocalProjectsCompanion.insert(
                 id: id,
@@ -2298,6 +3239,7 @@ class $$LocalProjectsTableTableManager
                 name: name,
                 colorId: colorId,
                 createdAt: createdAt,
+                deletedAt: deletedAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -3116,6 +4058,577 @@ typedef $$ProjectRollupsTableProcessedTableManager =
       ProjectRollup,
       PrefetchHooks Function()
     >;
+typedef $$PendingChangesTableCreateCompanionBuilder =
+    PendingChangesCompanion Function({
+      Value<String> id,
+      required String userId,
+      required SyncEntity entity,
+      required String entityId,
+      Value<int> rowid,
+    });
+typedef $$PendingChangesTableUpdateCompanionBuilder =
+    PendingChangesCompanion Function({
+      Value<String> id,
+      Value<String> userId,
+      Value<SyncEntity> entity,
+      Value<String> entityId,
+      Value<int> rowid,
+    });
+
+final class $$PendingChangesTableReferences
+    extends
+        BaseReferences<_$LocalDatabase, $PendingChangesTable, PendingChange> {
+  $$PendingChangesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $LocalUsersTable _userIdTable(_$LocalDatabase db) =>
+      db.localUsers.createAlias('pending_changes__user_id__local_users__id');
+
+  $$LocalUsersTableProcessedTableManager get userId {
+    final $_column = $_itemColumn<String>('user_id')!;
+
+    final manager = $$LocalUsersTableTableManager(
+      $_db,
+      $_db.localUsers,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_userIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$PendingChangesTableFilterComposer
+    extends Composer<_$LocalDatabase, $PendingChangesTable> {
+  $$PendingChangesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<SyncEntity, SyncEntity, String> get entity =>
+      $composableBuilder(
+        column: $table.entity,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnFilters<String> get entityId => $composableBuilder(
+    column: $table.entityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$LocalUsersTableFilterComposer get userId {
+    final $$LocalUsersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.localUsers,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LocalUsersTableFilterComposer(
+            $db: $db,
+            $table: $db.localUsers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PendingChangesTableOrderingComposer
+    extends Composer<_$LocalDatabase, $PendingChangesTable> {
+  $$PendingChangesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entity => $composableBuilder(
+    column: $table.entity,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entityId => $composableBuilder(
+    column: $table.entityId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$LocalUsersTableOrderingComposer get userId {
+    final $$LocalUsersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.localUsers,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LocalUsersTableOrderingComposer(
+            $db: $db,
+            $table: $db.localUsers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PendingChangesTableAnnotationComposer
+    extends Composer<_$LocalDatabase, $PendingChangesTable> {
+  $$PendingChangesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<SyncEntity, String> get entity =>
+      $composableBuilder(column: $table.entity, builder: (column) => column);
+
+  GeneratedColumn<String> get entityId =>
+      $composableBuilder(column: $table.entityId, builder: (column) => column);
+
+  $$LocalUsersTableAnnotationComposer get userId {
+    final $$LocalUsersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.localUsers,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LocalUsersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.localUsers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PendingChangesTableTableManager
+    extends
+        RootTableManager<
+          _$LocalDatabase,
+          $PendingChangesTable,
+          PendingChange,
+          $$PendingChangesTableFilterComposer,
+          $$PendingChangesTableOrderingComposer,
+          $$PendingChangesTableAnnotationComposer,
+          $$PendingChangesTableCreateCompanionBuilder,
+          $$PendingChangesTableUpdateCompanionBuilder,
+          (PendingChange, $$PendingChangesTableReferences),
+          PendingChange,
+          PrefetchHooks Function({bool userId})
+        > {
+  $$PendingChangesTableTableManager(
+    _$LocalDatabase db,
+    $PendingChangesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PendingChangesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PendingChangesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PendingChangesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> userId = const Value.absent(),
+                Value<SyncEntity> entity = const Value.absent(),
+                Value<String> entityId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PendingChangesCompanion(
+                id: id,
+                userId: userId,
+                entity: entity,
+                entityId: entityId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                required String userId,
+                required SyncEntity entity,
+                required String entityId,
+                Value<int> rowid = const Value.absent(),
+              }) => PendingChangesCompanion.insert(
+                id: id,
+                userId: userId,
+                entity: entity,
+                entityId: entityId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$PendingChangesTable, PendingChange>(table),
+                  $$PendingChangesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({userId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (userId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.userId,
+                        referencedTable: $$PendingChangesTableReferences
+                            ._userIdTable(db),
+                        referencedColumn: $$PendingChangesTableReferences
+                            ._userIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$PendingChangesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$LocalDatabase,
+      $PendingChangesTable,
+      PendingChange,
+      $$PendingChangesTableFilterComposer,
+      $$PendingChangesTableOrderingComposer,
+      $$PendingChangesTableAnnotationComposer,
+      $$PendingChangesTableCreateCompanionBuilder,
+      $$PendingChangesTableUpdateCompanionBuilder,
+      (PendingChange, $$PendingChangesTableReferences),
+      PendingChange,
+      PrefetchHooks Function({bool userId})
+    >;
+typedef $$PullCheckpointsTableCreateCompanionBuilder =
+    PullCheckpointsCompanion Function({
+      required String userId,
+      Value<String?> lastProjectUpdatedAt,
+      Value<int> rowid,
+    });
+typedef $$PullCheckpointsTableUpdateCompanionBuilder =
+    PullCheckpointsCompanion Function({
+      Value<String> userId,
+      Value<String?> lastProjectUpdatedAt,
+      Value<int> rowid,
+    });
+
+final class $$PullCheckpointsTableReferences
+    extends
+        BaseReferences<_$LocalDatabase, $PullCheckpointsTable, PullCheckpoint> {
+  $$PullCheckpointsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $LocalUsersTable _userIdTable(_$LocalDatabase db) =>
+      db.localUsers.createAlias('pull_checkpoints__user_id__local_users__id');
+
+  $$LocalUsersTableProcessedTableManager get userId {
+    final $_column = $_itemColumn<String>('user_id')!;
+
+    final manager = $$LocalUsersTableTableManager(
+      $_db,
+      $_db.localUsers,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_userIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$PullCheckpointsTableFilterComposer
+    extends Composer<_$LocalDatabase, $PullCheckpointsTable> {
+  $$PullCheckpointsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get lastProjectUpdatedAt => $composableBuilder(
+    column: $table.lastProjectUpdatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$LocalUsersTableFilterComposer get userId {
+    final $$LocalUsersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.localUsers,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LocalUsersTableFilterComposer(
+            $db: $db,
+            $table: $db.localUsers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PullCheckpointsTableOrderingComposer
+    extends Composer<_$LocalDatabase, $PullCheckpointsTable> {
+  $$PullCheckpointsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get lastProjectUpdatedAt => $composableBuilder(
+    column: $table.lastProjectUpdatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$LocalUsersTableOrderingComposer get userId {
+    final $$LocalUsersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.localUsers,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LocalUsersTableOrderingComposer(
+            $db: $db,
+            $table: $db.localUsers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PullCheckpointsTableAnnotationComposer
+    extends Composer<_$LocalDatabase, $PullCheckpointsTable> {
+  $$PullCheckpointsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get lastProjectUpdatedAt => $composableBuilder(
+    column: $table.lastProjectUpdatedAt,
+    builder: (column) => column,
+  );
+
+  $$LocalUsersTableAnnotationComposer get userId {
+    final $$LocalUsersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.localUsers,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$LocalUsersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.localUsers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PullCheckpointsTableTableManager
+    extends
+        RootTableManager<
+          _$LocalDatabase,
+          $PullCheckpointsTable,
+          PullCheckpoint,
+          $$PullCheckpointsTableFilterComposer,
+          $$PullCheckpointsTableOrderingComposer,
+          $$PullCheckpointsTableAnnotationComposer,
+          $$PullCheckpointsTableCreateCompanionBuilder,
+          $$PullCheckpointsTableUpdateCompanionBuilder,
+          (PullCheckpoint, $$PullCheckpointsTableReferences),
+          PullCheckpoint,
+          PrefetchHooks Function({bool userId})
+        > {
+  $$PullCheckpointsTableTableManager(
+    _$LocalDatabase db,
+    $PullCheckpointsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PullCheckpointsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PullCheckpointsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PullCheckpointsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> userId = const Value.absent(),
+                Value<String?> lastProjectUpdatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PullCheckpointsCompanion(
+                userId: userId,
+                lastProjectUpdatedAt: lastProjectUpdatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String userId,
+                Value<String?> lastProjectUpdatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PullCheckpointsCompanion.insert(
+                userId: userId,
+                lastProjectUpdatedAt: lastProjectUpdatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$PullCheckpointsTable, PullCheckpoint>(table),
+                  $$PullCheckpointsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({userId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (userId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.userId,
+                        referencedTable: $$PullCheckpointsTableReferences
+                            ._userIdTable(db),
+                        referencedColumn: $$PullCheckpointsTableReferences
+                            ._userIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$PullCheckpointsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$LocalDatabase,
+      $PullCheckpointsTable,
+      PullCheckpoint,
+      $$PullCheckpointsTableFilterComposer,
+      $$PullCheckpointsTableOrderingComposer,
+      $$PullCheckpointsTableAnnotationComposer,
+      $$PullCheckpointsTableCreateCompanionBuilder,
+      $$PullCheckpointsTableUpdateCompanionBuilder,
+      (PullCheckpoint, $$PullCheckpointsTableReferences),
+      PullCheckpoint,
+      PrefetchHooks Function({bool userId})
+    >;
 
 class $LocalDatabaseManager {
   final _$LocalDatabase _db;
@@ -3130,4 +4643,8 @@ class $LocalDatabaseManager {
       $$DailyRollupsTableTableManager(_db, _db.dailyRollups);
   $$ProjectRollupsTableTableManager get projectRollups =>
       $$ProjectRollupsTableTableManager(_db, _db.projectRollups);
+  $$PendingChangesTableTableManager get pendingChanges =>
+      $$PendingChangesTableTableManager(_db, _db.pendingChanges);
+  $$PullCheckpointsTableTableManager get pullCheckpoints =>
+      $$PullCheckpointsTableTableManager(_db, _db.pullCheckpoints);
 }

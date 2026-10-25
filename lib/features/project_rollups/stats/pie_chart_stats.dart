@@ -39,10 +39,7 @@ class PieChartStats {
     required PeriodRange period,
     DateTime? now,
   }) {
-    final projectsById = {
-      for (final p in projects)
-        if (p.id != null) p.id!: p,
-    };
+    final projectsById = {for (final p in projects) p.id: p};
 
     final durationByProjectId = <String?, int>{};
 

@@ -21,10 +21,7 @@ class DayWiseProjectsRollupStats {
     );
     final endKey = RollupDateUtils.format(today);
 
-    final projectsById = {
-      for (final p in projects)
-        if (p.id != null) p.id!: p,
-    };
+    final projectsById = {for (final p in projects) p.id: p};
 
     // date key -> (project id or null -> seconds)
     final byDate = <String, Map<String?, int>>{};

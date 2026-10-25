@@ -27,7 +27,19 @@ MigrationStrategy buildMigrationStrategy(LocalDatabase db) {
       }
       if (from < 6) {
         await m.createTable(db.localProjects);
-        await m.deleteTable('projects'); 
+        await m.deleteTable('projects');
+      }
+      if (from < 7) {
+        // createTable above already builds the newest shape, so only add the
+        // columns to tables that existed before this version.
+        if (from >= 5) {
+          await m.addColumn(db.localUsers, db.localUsers.historyResetAt);
+        }
+        if (from >= 6) {
+          await m.addColumn(db.localProjects, db.localProjects.deletedAt);
+        }
+        await m.createTable(db.pendingChanges);
+        await m.createTable(db.pullCheckpoints);
       }
     },
     beforeOpen: (details) async {

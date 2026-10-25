@@ -31,7 +31,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
       if (row == null) {
         throw StateError('Failed to load created project');
       }
-      return ProjectModel.fromRow(row);
+      return ProjectModel.fromLocal(row);
     });
   }
 
@@ -39,7 +39,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
   Future<Result<List<ProjectModel>>> fetchProjects() async {
     return resultGuard(() async {
       final rows = await _database.localProjectsDao.getAllProjects();
-      return rows.map(ProjectModel.fromRow).toList();
+      return rows.map(ProjectModel.fromLocal).toList();
     });
   }
 
@@ -47,7 +47,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
   Future<Result<ProjectModel>> updateProject(ProjectModel project) async {
     return resultGuard(() async {
       final success = await _database.localProjectsDao.updateProject(
-        id: project.id!,
+        id: project.id,
         name: project.name,
         colorId: project.colorId,
       );
@@ -61,7 +61,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
   @override
   Future<Result<void>> deleteProject(ProjectModel project) async {
     return resultGuard(() async {
-      await _database.localProjectsDao.deleteProject(project.id!);
+      await _database.localProjectsDao.deleteProject(project.id);
     });
   }
 }

@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
-import 'package:tarkeez/core/database/tables/local_users.dart';
 import 'package:tarkeez/core/database/local_database.dart';
+import 'package:tarkeez/core/database/tables/local_users.dart';
 
 part 'local_users_dao.g.dart';
 
@@ -20,4 +20,9 @@ class LocalUsersDao extends DatabaseAccessor<LocalDatabase>
 
   Future<int> deleteUser(String id) =>
       (delete(localUsers)..where((t) => t.id.equals(id))).go();
+
+  Future<void> setHistoryResetAt(String id, String? value) =>
+      (update(localUsers)..where((t) => t.id.equals(id))).write(
+        LocalUsersCompanion(historyResetAt: Value(value)),
+      );
 }
