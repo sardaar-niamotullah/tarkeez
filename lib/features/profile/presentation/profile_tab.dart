@@ -14,6 +14,7 @@ import 'package:tarkeez/features/profile/presentation/sections/heatmap.dart';
 import 'package:tarkeez/features/profile/presentation/sections/personal_bests_section.dart';
 import 'package:tarkeez/features/profile/presentation/sections/streaks.dart';
 import 'package:tarkeez/features/profile/presentation/sections/widgets/erase_all_data_button.dart';
+import 'package:tarkeez/features/profile/presentation/sections/widgets/sync_button.dart';
 import 'package:tarkeez/features/report/presentation/sections/invested_times_section.dart';
 
 class ProfileTab extends StatelessWidget {
@@ -100,8 +101,14 @@ class ProfileTab extends StatelessWidget {
                                             width: ContainerDesignUtils.padding,
                                           ),
                                           Expanded(
-                                            child: EraseAllDataButton(
-                                              isLocked: false,
+                                            child: Column(
+                                              children: [
+                                                SyncButton(),
+                                                SizedBox(height: 11),
+                                                EraseAllDataButton(
+                                                  isLocked: false,
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ],
@@ -115,10 +122,15 @@ class ProfileTab extends StatelessWidget {
                                             height:
                                                 ContainerDesignUtils.padding,
                                           ),
+                                          SyncButton(),
+                                          SizedBox(
+                                            height: ContainerDesignUtils
+                                                .halfPadding,
+                                          ),
                                           EraseAllDataButton(isLocked: false),
                                         ],
                                       ),
-                                    SizedBox(height: 64),
+                                    SizedBox(height: 80),
                                   ],
                                 ),
                               ),

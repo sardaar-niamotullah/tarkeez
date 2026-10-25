@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/projects/data/repositories/project_repository.dart';
@@ -6,15 +8,21 @@ part 'project_event.dart';
 part 'project_state.dart';
 
 class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
-  new(this._repository) : super(ProjectInitial()) {
+  new(this._repository, Stream<void> syncedProjects) : super(ProjectInitial()) {
     on<CreateProjectsRequested>(_onCreateProjectsRequested);
     on<FetchProjectsRequested>(_onFetchProjectsRequested);
     on<UpdateProjectsRequested>(_onUpdateProjectsRequested);
     on<DeleteProjectsRequested>(_onDeleteProjectsRequested);
+    on<ProjectsSynced>(_onProjectsSynced);
+
+    _syncSub = syncedProjects.listen((_) => add(ProjectsSynced()));
   }
+
   final ProjectRepository _repository;
+  late final StreamSubscription<void> _syncSub;
 
   // ── Private helpers ─────────────────────────────────────────────────────
+
   Future<void> _refreshProjects(
     Emitter<ProjectState> emit, {
     bool created = false,
@@ -25,10 +33,13 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
     final previousProjects = state is ProjectLoaded
         ? (state as ProjectLoaded).projects
         : null;
+
     emit(
       ProjectLoading(projects: previousProjects, isInitialLoad: isInitialLoad),
     );
+
     final result = await _repository.fetchProjects();
+
     result.fold(
       onSuccess: (projects) => emit(
         ProjectLoaded(
@@ -43,6 +54,7 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
   }
 
   // ── Event handlers ──────────────────────────────────────────────────────
+
   Future<void> _onCreateProjectsRequested(
     CreateProjectsRequested event,
     Emitter<ProjectState> emit,
@@ -51,6 +63,7 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
       name: event.name,
       colorId: event.colorId,
     );
+
     await result.fold(
       onSuccess: (_) => _refreshProjects(emit, created: true),
       onFailure: (error) async => emit(ProjectFailure(error.message)),
@@ -67,6 +80,7 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
     Emitter<ProjectState> emit,
   ) async {
     final result = await _repository.updateProject(event.project);
+
     await result.fold(
       onSuccess: (_) => _refreshProjects(emit, updated: true),
       onFailure: (error) async => emit(ProjectFailure(error.message)),
@@ -78,9 +92,28 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
     Emitter<ProjectState> emit,
   ) async {
     final deleteResult = await _repository.deleteProject(event.project);
+
     await deleteResult.fold(
       onSuccess: (_) => _refreshProjects(emit, deleted: true),
       onFailure: (error) async => emit(ProjectFailure(error.message)),
     );
+  }
+
+  /// Silent refresh: no loading state, so lists and dialogs do not flicker.
+  Future<void> _onProjectsSynced(
+    ProjectsSynced event,
+    Emitter<ProjectState> emit,
+  ) async {
+    final result = await _repository.fetchProjects();
+    result.fold(
+      onSuccess: (projects) => emit(ProjectLoaded.plain(projects)),
+      onFailure: (_) {},
+    );
+  }
+
+  @override
+  Future<void> close() {
+    _syncSub.cancel();
+    return super.close();
   }
 }

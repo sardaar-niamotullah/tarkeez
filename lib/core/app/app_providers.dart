@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/dependency_injection/di.dart';
 import 'package:tarkeez/core/shared_files/cubits/report_period_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/session_period_cubit.dart';
+import 'package:tarkeez/core/sync/bloc/sync_bloc.dart';
 import 'package:tarkeez/features/auth/bloc/auth_bloc.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
 import 'package:tarkeez/features/project_rollups/bloc/project_rollup_bloc.dart';
@@ -17,7 +18,7 @@ class AppProviders extends StatelessWidget {
     required this.child,
     required this.initialTheme,
   });
-  
+
   final Widget child;
   final ThemeState initialTheme;
 
@@ -30,6 +31,7 @@ class AppProviders extends StatelessWidget {
         BlocProvider(create: (_) => ReportPeriodCubit()),
         BlocProvider(create: (_) => SessionPeriodCubit()),
         BlocProvider(create: (_) => getIt<AuthBloc>()),
+        BlocProvider(create: (_) => getIt<SyncBloc>()),
         BlocProvider(create: (_) => getIt<ProjectBloc>()),
         BlocProvider(create: (_) => getIt<SessionBloc>()),
         BlocProvider(create: (_) => getIt<DailyRollupBloc>()),
