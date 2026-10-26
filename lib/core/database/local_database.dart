@@ -52,7 +52,7 @@ class LocalDatabase extends _$LocalDatabase {
   String get currentUserId => _currentUser.id;
 
   @override
-  int get schemaVersion => 0;
+  int get schemaVersion => 1;
 
   @override
   MigrationStrategy get migration => buildMigrationStrategy(this);
