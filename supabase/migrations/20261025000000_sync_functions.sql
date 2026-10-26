@@ -9,7 +9,6 @@
 --              (a project created before it, a session that ended before it)
 --   dropped  = session lost an overlap, stored as deleted
 -- =================================================================
-DROP FUNCTION IF EXISTS public.push_changes(JSONB);
 DROP FUNCTION IF EXISTS public.push_changes(JSONB, JSONB);
 
 CREATE FUNCTION public.push_changes(
