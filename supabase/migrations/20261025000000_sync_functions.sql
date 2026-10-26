@@ -3,14 +3,16 @@
 -- Bad data (fails a constraint or has a wrong type) is rejected.
 -- Any other error leaves the row pending on the device to retry.
 --
--- Response: 
--- applied = saved (live or already deleted)
--- rejected = never acceptable (bad data, or a session older than the last reset)
--- dropped  = session lost an overlap, stored as deleted
+-- Response:
+--   applied  = saved (live or already deleted)
+--   rejected = never acceptable: bad data, or older than the last history reset
+--              (a project created before it, a session that ended before it)
+--   dropped  = session lost an overlap, stored as deleted
 -- =================================================================
 DROP FUNCTION IF EXISTS public.push_changes(JSONB);
+DROP FUNCTION IF EXISTS public.push_changes(JSONB, JSONB);
 
-CREATE OR REPLACE FUNCTION public.push_changes(
+CREATE FUNCTION public.push_changes(
   p_projects JSONB DEFAULT '[]'::JSONB,
   p_sessions JSONB DEFAULT '[]'::JSONB
 )
@@ -42,13 +44,19 @@ BEGIN
   SELECT u.history_reset_at INTO v_reset_at FROM public.users u WHERE u.id = v_uid;
 
   -- ---------------------------------------------------------------
-  -- PROJECTS (projects survive a history reset, so no reset check)
+  -- PROJECTS
   -- ---------------------------------------------------------------
   FOR v_item IN SELECT value FROM jsonb_array_elements(p_projects) LOOP
     v_id := NULL;  -- so a failed id cast never reuses the previous row's id
     BEGIN
       v_id      := (v_item ->> 'id')::UUID;
       v_created := (v_item ->> 'created_at')::TIMESTAMPTZ;
+
+      -- created before the last "delete history": the device is stale
+      IF v_reset_at IS NOT NULL AND v_created < v_reset_at THEN
+        v_rejected := v_rejected || v_id;
+        CONTINUE;
+      END IF;
 
       INSERT INTO public.projects AS p (id, user_id, name, color_id, created_at, deleted_at)
       VALUES (
@@ -59,7 +67,7 @@ BEGIN
         SET name       = EXCLUDED.name,
             color_id   = EXCLUDED.color_id,
             deleted_at = COALESCE(p.deleted_at, EXCLUDED.deleted_at)  -- a tombstone is one-way
-        WHERE p.user_id = v_uid;
+        WHERE p.user_id = v_uid;  -- created_at is set on first insert and never changed
 
       IF FOUND THEN
         v_applied := v_applied || v_id;
@@ -72,6 +80,8 @@ BEGIN
         OR invalid_text_representation
         OR numeric_value_out_of_range
         OR datetime_field_overflow THEN
+        -- bad data: retrying will never work, so reject it
+        -- (if the id itself is unreadable, there is nothing to report)
         IF v_id IS NOT NULL THEN
           v_rejected := v_rejected || v_id;
         END IF;
@@ -188,7 +198,9 @@ $$;
 -- all its rows with the same time and cutting through that group would lose rows.
 -- p_overlap re-reads the last 2 minutes (for the first page of a pull only).
 -- =================================================================
-CREATE OR REPLACE FUNCTION public.pull_projects(
+DROP FUNCTION IF EXISTS public.pull_projects(TIMESTAMPTZ, BOOLEAN, INT);
+
+CREATE FUNCTION public.pull_projects(
   p_after     TIMESTAMPTZ DEFAULT NULL,
   p_overlap   BOOLEAN     DEFAULT FALSE,
   p_page_size INT         DEFAULT 200
@@ -225,7 +237,9 @@ $$;
 -- =================================================================
 -- pull_sessions: same paging rule as pull_projects
 -- =================================================================
-CREATE OR REPLACE FUNCTION public.pull_sessions(
+DROP FUNCTION IF EXISTS public.pull_sessions(TIMESTAMPTZ, BOOLEAN, INT);
+
+CREATE FUNCTION public.pull_sessions(
   p_after     TIMESTAMPTZ DEFAULT NULL,
   p_overlap   BOOLEAN     DEFAULT FALSE,
   p_page_size INT         DEFAULT 200
@@ -261,7 +275,9 @@ AS $$
 $$;
 
 -- =================================================================
--- reset_history: hard-deletes sessions and cloud rollups, keeps projects
+-- reset_history: hard-deletes everything the user has
+-- (rollups, sessions, projects) and stamps users.history_reset_at.
+-- Sessions are deleted before projects because they point at projects.
 -- =================================================================
 CREATE OR REPLACE FUNCTION public.reset_history()
 RETURNS TIMESTAMPTZ
@@ -279,9 +295,10 @@ BEGIN
 
   PERFORM pg_advisory_xact_lock(hashtextextended(v_uid::TEXT, 0));
 
-  DELETE FROM public.sessions          WHERE user_id = v_uid;
-  DELETE FROM public.daily_rollups     WHERE user_id = v_uid;
   DELETE FROM public.utc_daily_rollups WHERE user_id = v_uid;
+  DELETE FROM public.daily_rollups     WHERE user_id = v_uid;
+  DELETE FROM public.sessions          WHERE user_id = v_uid;
+  DELETE FROM public.projects          WHERE user_id = v_uid;
   UPDATE public.users SET history_reset_at = v_now WHERE id = v_uid;
 
   RETURN v_now;

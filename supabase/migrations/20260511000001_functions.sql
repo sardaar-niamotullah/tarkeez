@@ -68,7 +68,9 @@ $$;
 --   UTC rollups:   split_session(started_at, ended_at, 0)
 -- Returns one row per day touched (at most two).
 -- =================================================================
-CREATE OR REPLACE FUNCTION public.split_session(
+DROP FUNCTION IF EXISTS public.split_session(TIMESTAMPTZ, TIMESTAMPTZ, INT);
+
+CREATE FUNCTION public.split_session(
   p_start          TIMESTAMPTZ,
   p_end            TIMESTAMPTZ,
   p_offset_minutes INT
@@ -122,8 +124,8 @@ END;
 $$;
 
 -- =================================================================
--- Trigger on sessions:
---   live row inserted        -> add
+-- Trigger function for sessions:
+--   live row inserted           -> add
 --   deleted_at set (first time) -> subtract
 -- A tombstone that arrives already deleted adds nothing.
 -- =================================================================
@@ -146,11 +148,6 @@ BEGIN
   RETURN NULL;
 END;
 $$;
-
-CREATE TRIGGER sessions_feed_rollups
-  AFTER INSERT OR UPDATE OF deleted_at ON public.sessions
-  FOR EACH ROW
-  EXECUTE FUNCTION public.sessions_to_rollups();
 
 -- =================================================================
 -- rebuild_rollups: repair tool. Run it from the SQL editor, not from the app.
