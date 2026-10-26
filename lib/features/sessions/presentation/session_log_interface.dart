@@ -16,7 +16,7 @@ import 'package:tarkeez/features/sessions/presentation/widgets/pomodoro_set_dura
 import 'package:tarkeez/features/sessions/presentation/widgets/today_total_duration_display.dart';
 
 class SessionLogInterface extends StatefulWidget {
-  const SessionLogInterface({super.key});
+  const new({super.key});
 
   @override
   State<SessionLogInterface> createState() => _SessionLogInterfaceState();

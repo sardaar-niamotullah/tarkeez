@@ -1,11 +1,11 @@
 part of 'session_bloc.dart';
 
 sealed class SessionEvent {
-  const SessionEvent();
+  const new();
 }
 
 final class EntrySessionRequested extends SessionEvent {
-  const EntrySessionRequested({
+  const new({
     required this.startedAt,
     required this.endedAt,
     this.project,
@@ -15,11 +15,11 @@ final class EntrySessionRequested extends SessionEvent {
 }
 
 final class FetchSessionsForPeriodRequested extends SessionEvent {
-  const FetchSessionsForPeriodRequested(this.period);
+  const new(this.period);
   final PeriodRange period;
 }
 
 final class DeleteSessionRequested extends SessionEvent {
-  const DeleteSessionRequested(this.session);
+  const new(this.session);
   final SessionModel session;
 }

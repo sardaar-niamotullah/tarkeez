@@ -9,7 +9,7 @@ import 'package:tarkeez/features/report/presentation/sections/sessions_section.d
 import 'package:tarkeez/features/sessions/presentation/widgets/sessions_filter_tile.dart';
 
 class SessionsPage extends StatelessWidget {
-  const SessionsPage({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {

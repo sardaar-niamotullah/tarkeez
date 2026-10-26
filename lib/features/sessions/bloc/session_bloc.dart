@@ -11,10 +11,7 @@ part 'session_event.dart';
 part 'session_state.dart';
 
 class SessionBloc extends Bloc<SessionEvent, SessionState> {
-  final SessionRepository _repository;
-  PeriodRange _period = PeriodRange.last7Days;
-
-  SessionBloc(this._repository) : super(SessionInitial()) {
+  new(this._repository) : super(SessionInitial()) {
     on<EntrySessionRequested>(_onEntrySessionRequested);
     on<FetchSessionsForPeriodRequested>(
       _onFetchSessionsForPeriodRequested,
@@ -22,6 +19,9 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     );
     on<DeleteSessionRequested>(_onDeleteSessionRequested);
   }
+
+  final SessionRepository _repository;
+  PeriodRange _period = PeriodRange.last7Days;
 
   // ── Private helpers ─────────────────────────────────────────────────────
   List<(DateTime, DateTime)> _splitByLocalDay(
@@ -50,11 +50,11 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
 
   Future<Result<List<SessionModel>>> _fetchForCurrentPeriod() {
     final range = _period.dateRange();
-    if (range == null) return _repository.fetchAllSessions(); 
+    if (range == null) return _repository.fetchAllSessions();
     final (start, end) = range;
     return _repository.fetchSessionsInDateRange(
       startedAt: start,
-      endedAt: DateTime(end.year, end.month, end.day + 1), 
+      endedAt: DateTime(end.year, end.month, end.day + 1),
     );
   }
 

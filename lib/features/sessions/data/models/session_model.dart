@@ -6,7 +6,7 @@ class SessionModel extends Equatable {
   final DateTime startedAt, endedAt;
   final String? projectId;
 
-  const SessionModel({
+  const new({
     this.id,
     this.projectId,
     required this.startedAt,

@@ -10,8 +10,8 @@ import 'package:tarkeez/features/sessions/data/models/dummy_session.dart';
 import 'package:tarkeez/features/sessions/presentation/widgets/session_info_tile.dart';
 
 class SessionsSection extends StatelessWidget {
+  const new({super.key, required this.isLocked});
   final bool isLocked;
-  const SessionsSection({super.key, required this.isLocked});
 
   @override
   Widget build(BuildContext context) {
