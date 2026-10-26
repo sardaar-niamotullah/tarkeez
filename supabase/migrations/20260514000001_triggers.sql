@@ -40,6 +40,26 @@ CREATE TRIGGER create_user_after_user_signup
   FOR EACH ROW
   EXECUTE FUNCTION public.handle_new_user();
 
+-- =================================================================
+-- Set updated_at on every write
+-- Uses the database clock, not the device's, so every change lands after all device checkpoints.
+-- =================================================================
+-- Function: stamp the row with the database time
+CREATE OR REPLACE FUNCTION public.set_updated_at()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$;
+
+-- Trigger: fires the function before every project insert or update
+CREATE TRIGGER set_projects_updated_at
+  BEFORE INSERT OR UPDATE ON public.projects
+  FOR EACH ROW
+  EXECUTE FUNCTION public.set_updated_at();
 
 -- =================================================================
 -- Prevent ID updates on tables
