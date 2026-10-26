@@ -23,6 +23,7 @@ class SyncService {
 
   final _statuses = StreamController<SyncStatus>.broadcast();
   final _projectsChanged = StreamController<void>.broadcast();
+  final _sessionsChanged = StreamController<void>.broadcast();
 
   StreamSubscription<AuthState>? _authSub;
   StreamSubscription<bool>? _onlineSub;
@@ -44,6 +45,9 @@ class SyncService {
 
   /// Fires when a pull or a reset changed the project list on this device.
   Stream<void> get projectsChanged => _projectsChanged.stream;
+
+  /// Fires when a pull or a reset changed the sessions on this device.
+  Stream<void> get sessionsChanged => _sessionsChanged.stream;
 
   SyncStatus get current => _current;
 
@@ -69,6 +73,7 @@ class SyncService {
     await _pendingSub?.cancel();
     await _statuses.close();
     await _projectsChanged.close();
+    await _sessionsChanged.close();
   }
 
   Future<void> requestSync(SyncTrigger trigger) async {
@@ -102,7 +107,8 @@ class SyncService {
     }
   }
 
-  /// "Delete history": online only. For now it wipes projects.
+  /// "Delete history": online only. It wipes projects, sessions and rollups,
+  /// in the cloud and on this device.
   Future<void> resetHistory() async {
     if (!_isSignedIn) return;
 
@@ -116,6 +122,7 @@ class SyncService {
     result.fold(
       onSuccess: (_) {
         _projectsChanged.add(null);
+        _sessionsChanged.add(null);
         _emit(const SyncStatus(SyncPhase.resetDone, isManual: true));
       },
       onFailure: (error) => _emit(
@@ -132,6 +139,7 @@ class SyncService {
     result.fold(
       onSuccess: (outcome) {
         if (outcome.projectsChanged) _projectsChanged.add(null);
+        if (outcome.sessionsChanged) _sessionsChanged.add(null);
         _emit(SyncStatus(SyncPhase.succeeded, isManual: manual));
       },
       onFailure: (error) => _emit(
