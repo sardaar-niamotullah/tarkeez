@@ -1,9 +1,19 @@
 -- =================================================================
--- push_changes: upsert projects, one savepoint per row
+-- push_changes: upsert projects first, then sessions. One savepoint per row.
 -- Bad data (fails a constraint or has a wrong type) is rejected.
 -- Any other error leaves the row pending on the device to retry.
+--
+-- Response: 
+-- applied = saved (live or already deleted)
+-- rejected = never acceptable (bad data, or a session older than the last reset)
+-- dropped  = session lost an overlap, stored as deleted
 -- =================================================================
-CREATE OR REPLACE FUNCTION public.push_changes(p_projects JSONB DEFAULT '[]'::JSONB)
+DROP FUNCTION IF EXISTS public.push_changes(JSONB);
+
+CREATE OR REPLACE FUNCTION public.push_changes(
+  p_projects JSONB DEFAULT '[]'::JSONB,
+  p_sessions JSONB DEFAULT '[]'::JSONB
+)
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -15,8 +25,15 @@ DECLARE
   v_item     JSONB;
   v_id       UUID;
   v_created  TIMESTAMPTZ;
+  v_project  UUID;
+  v_started  TIMESTAMPTZ;
+  v_ended    TIMESTAMPTZ;
+  v_offset   INT;
+  v_deleted  TIMESTAMPTZ;
+  v_existing public.sessions%ROWTYPE;
   v_applied  UUID[] := '{}';
   v_rejected UUID[] := '{}';
+  v_dropped  UUID[] := '{}';
 BEGIN
   IF v_uid IS NULL THEN
     RAISE EXCEPTION 'not authenticated';
@@ -24,18 +41,14 @@ BEGIN
 
   SELECT u.history_reset_at INTO v_reset_at FROM public.users u WHERE u.id = v_uid;
 
+  -- ---------------------------------------------------------------
+  -- PROJECTS (projects survive a history reset, so no reset check)
+  -- ---------------------------------------------------------------
   FOR v_item IN SELECT value FROM jsonb_array_elements(p_projects) LOOP
     v_id := NULL;  -- so a failed id cast never reuses the previous row's id
-
     BEGIN
       v_id      := (v_item ->> 'id')::UUID;
       v_created := (v_item ->> 'created_at')::TIMESTAMPTZ;
-
-      -- created before the last "delete history": the device is stale
-      IF v_reset_at IS NOT NULL AND v_created < v_reset_at THEN
-        v_rejected := v_rejected || v_id;
-        CONTINUE;
-      END IF;
 
       INSERT INTO public.projects AS p (id, user_id, name, color_id, created_at, deleted_at)
       VALUES (
@@ -46,7 +59,7 @@ BEGIN
         SET name       = EXCLUDED.name,
             color_id   = EXCLUDED.color_id,
             deleted_at = COALESCE(p.deleted_at, EXCLUDED.deleted_at)  -- a tombstone is one-way
-        WHERE p.user_id = v_uid;  -- created_at is set on first insert and never changed
+        WHERE p.user_id = v_uid;
 
       IF FOUND THEN
         v_applied := v_applied || v_id;
@@ -59,8 +72,6 @@ BEGIN
         OR invalid_text_representation
         OR numeric_value_out_of_range
         OR datetime_field_overflow THEN
-        -- bad data: retrying will never work, so reject it
-        -- (if the id itself is unreadable, there is nothing to report)
         IF v_id IS NOT NULL THEN
           v_rejected := v_rejected || v_id;
         END IF;
@@ -69,9 +80,104 @@ BEGIN
     END;
   END LOOP;
 
+  -- ---------------------------------------------------------------
+  -- SESSIONS (immutable: only deleted_at can change)
+  -- ---------------------------------------------------------------
+  IF jsonb_array_length(p_sessions) > 0 THEN
+    -- one push per user at a time, so two devices cannot race on overlaps
+    PERFORM pg_advisory_xact_lock(hashtextextended(v_uid::TEXT, 0));
+  END IF;
+
+  FOR v_item IN SELECT value FROM jsonb_array_elements(p_sessions) LOOP
+    v_id := NULL;
+    BEGIN
+      v_id      := (v_item ->> 'id')::UUID;
+      v_project := (v_item ->> 'project_id')::UUID;
+      v_started := date_trunc('second', (v_item ->> 'started_at')::TIMESTAMPTZ);
+      v_ended   := date_trunc('second', (v_item ->> 'ended_at')::TIMESTAMPTZ);
+      v_offset  := (v_item ->> 'utc_offset_minutes')::INT;
+      v_deleted := (v_item ->> 'deleted_at')::TIMESTAMPTZ;
+
+      -- the device is stale: this session ended before the last "delete history"
+      IF v_reset_at IS NOT NULL AND v_ended < v_reset_at THEN
+        v_rejected := v_rejected || v_id;
+        CONTINUE;
+      END IF;
+
+      -- 1. The cloud already has this id (retry, or a delete coming from the device)
+      SELECT * INTO v_existing FROM public.sessions WHERE id = v_id;
+      IF FOUND THEN
+        IF v_existing.user_id <> v_uid THEN
+          v_rejected := v_rejected || v_id;
+          CONTINUE;
+        END IF;
+        IF v_existing.deleted_at IS NULL AND v_deleted IS NOT NULL THEN
+          UPDATE public.sessions SET deleted_at = v_deleted WHERE id = v_id;
+        END IF;
+        v_applied := v_applied || v_id;
+        CONTINUE;
+      END IF;
+
+      -- 2. A tombstone for a session the cloud never saw: store it as deleted
+      IF v_deleted IS NOT NULL THEN
+        INSERT INTO public.sessions
+          (id, user_id, project_id, started_at, ended_at, utc_offset_minutes, deleted_at)
+        VALUES (v_id, v_uid, v_project, v_started, v_ended, v_offset, v_deleted);
+        v_applied := v_applied || v_id;
+        CONTINUE;
+      END IF;
+
+      -- 3. Overlap rule. The new session loses if any overlapping live session
+      --    is longer, or equally long and earlier (then lower id).
+      IF EXISTS (
+        SELECT 1 FROM public.sessions o
+        WHERE o.user_id = v_uid
+          AND o.deleted_at IS NULL
+          AND tstzrange(o.started_at, o.ended_at) && tstzrange(v_started, v_ended)
+          AND NOT (
+            (v_ended - v_started) > (o.ended_at - o.started_at)
+            OR ((v_ended - v_started) = (o.ended_at - o.started_at)
+                AND (v_started, v_id) < (o.started_at, o.id))
+          )
+      ) THEN
+        INSERT INTO public.sessions
+          (id, user_id, project_id, started_at, ended_at, utc_offset_minutes, deleted_at)
+        VALUES (v_id, v_uid, v_project, v_started, v_ended, v_offset, NOW());
+        v_dropped := v_dropped || v_id;
+        CONTINUE;
+      END IF;
+
+      -- 4. The new session wins: drop everything it overlaps, then insert it
+      UPDATE public.sessions s
+      SET deleted_at = NOW()
+      WHERE s.user_id = v_uid
+        AND s.deleted_at IS NULL
+        AND tstzrange(s.started_at, s.ended_at) && tstzrange(v_started, v_ended);
+
+      INSERT INTO public.sessions
+        (id, user_id, project_id, started_at, ended_at, utc_offset_minutes, deleted_at)
+      VALUES (v_id, v_uid, v_project, v_started, v_ended, v_offset, NULL);
+      v_applied := v_applied || v_id;
+
+    EXCEPTION
+      WHEN check_violation
+        OR not_null_violation
+        OR invalid_text_representation
+        OR invalid_datetime_format
+        OR numeric_value_out_of_range
+        OR datetime_field_overflow THEN
+        IF v_id IS NOT NULL THEN
+          v_rejected := v_rejected || v_id;
+        END IF;
+      WHEN OTHERS THEN
+        NULL;  -- transient (for example the project is not pushed yet): stays pending
+    END;
+  END LOOP;
+
   RETURN jsonb_build_object(
     'applied',  to_jsonb(v_applied),
-    'rejected', to_jsonb(v_rejected)
+    'rejected', to_jsonb(v_rejected),
+    'dropped',  to_jsonb(v_dropped)
   );
 END;
 $$;
@@ -117,8 +223,45 @@ AS $$
 $$;
 
 -- =================================================================
--- reset_history: for now it wipes projects only
--- When sessions sync, delete the user's sessions here and keep projects.
+-- pull_sessions: same paging rule as pull_projects
+-- =================================================================
+CREATE OR REPLACE FUNCTION public.pull_sessions(
+  p_after     TIMESTAMPTZ DEFAULT NULL,
+  p_overlap   BOOLEAN     DEFAULT FALSE,
+  p_page_size INT         DEFAULT 200
+)
+RETURNS TABLE (
+  id UUID, project_id UUID, started_at TIMESTAMPTZ, ended_at TIMESTAMPTZ,
+  utc_offset_minutes SMALLINT, deleted_at TIMESTAMPTZ, updated_at TIMESTAMPTZ
+)
+LANGUAGE sql
+STABLE
+SET search_path = public
+AS $$
+  WITH bounds AS (
+    SELECT CASE WHEN p_after IS NULL THEN NULL::TIMESTAMPTZ
+                WHEN p_overlap THEN p_after - INTERVAL '2 minutes'
+                ELSE p_after END AS after_ts
+  ),
+  page AS (
+    SELECT se.updated_at
+    FROM public.sessions se, bounds b
+    WHERE se.user_id = auth.uid()
+      AND (b.after_ts IS NULL OR se.updated_at > b.after_ts)
+    ORDER BY se.updated_at, se.id
+    LIMIT GREATEST(p_page_size, 1)
+  )
+  SELECT se.id, se.project_id, se.started_at, se.ended_at,
+         se.utc_offset_minutes, se.deleted_at, se.updated_at
+  FROM public.sessions se, bounds b
+  WHERE se.user_id = auth.uid()
+    AND (b.after_ts IS NULL OR se.updated_at > b.after_ts)
+    AND se.updated_at <= (SELECT MAX(page.updated_at) FROM page)
+  ORDER BY se.updated_at, se.id;
+$$;
+
+-- =================================================================
+-- reset_history: hard-deletes sessions and cloud rollups, keeps projects
 -- =================================================================
 CREATE OR REPLACE FUNCTION public.reset_history()
 RETURNS TIMESTAMPTZ
@@ -134,7 +277,11 @@ BEGIN
     RAISE EXCEPTION 'not authenticated';
   END IF;
 
-  DELETE FROM public.projects WHERE user_id = v_uid;
+  PERFORM pg_advisory_xact_lock(hashtextextended(v_uid::TEXT, 0));
+
+  DELETE FROM public.sessions          WHERE user_id = v_uid;
+  DELETE FROM public.daily_rollups     WHERE user_id = v_uid;
+  DELETE FROM public.utc_daily_rollups WHERE user_id = v_uid;
   UPDATE public.users SET history_reset_at = v_now WHERE id = v_uid;
 
   RETURN v_now;
@@ -145,9 +292,12 @@ $$;
 -- Permissions: only signed-in users can call these functions
 -- anon is revoked by name because Supabase grants it directly
 -- =================================================================
-REVOKE ALL ON FUNCTION public.push_changes(JSONB) FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION public.push_changes(JSONB, JSONB) FROM PUBLIC, anon;
 REVOKE ALL ON FUNCTION public.pull_projects(TIMESTAMPTZ, BOOLEAN, INT) FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION public.pull_sessions(TIMESTAMPTZ, BOOLEAN, INT) FROM PUBLIC, anon;
 REVOKE ALL ON FUNCTION public.reset_history() FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.push_changes(JSONB) TO authenticated;
+
+GRANT EXECUTE ON FUNCTION public.push_changes(JSONB, JSONB) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.pull_projects(TIMESTAMPTZ, BOOLEAN, INT) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.pull_sessions(TIMESTAMPTZ, BOOLEAN, INT) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.reset_history() TO authenticated;
