@@ -32,9 +32,10 @@ class _EraseAllDataButtonState extends State<EraseAllDataButton> {
     setDialogState(() {});
 
     try {
+      // ignore: unused_local_variable
       final database = getIt<LocalDatabase>();
       // await database.projectsDao.deleteAllProjects();
-      await database.sessionsDao.deleteAllSessions();
+      // await database.localSessionsDao.deleteAllSessions();
       getIt<ProjectBloc>().add(FetchProjectsRequested());
       getIt<SessionBloc>().add(
         FetchSessionsForPeriodRequested(getIt<SessionPeriodCubit>().state),

@@ -1,123 +1,111 @@
 import 'package:drift/drift.dart';
-import 'package:tarkeez/core/database/tables/project_rollups.dart';
 import 'package:tarkeez/core/database/local_database.dart';
+import 'package:tarkeez/core/database/tables/local_projects.dart';
+import 'package:tarkeez/core/database/tables/project_rollups.dart';
 
 part 'project_rollups_dao.g.dart';
 
-@DriftAccessor(tables: [ProjectRollups])
+/// Reads go through the `project_rollups_effective` view: a project that is
+/// missing or deleted is counted as "No Project" ('').
+@DriftAccessor(tables: [ProjectRollups, LocalProjects])
 class ProjectRollupsDao extends DatabaseAccessor<LocalDatabase>
     with _$ProjectRollupsDaoMixin {
   ProjectRollupsDao(super.db);
 
+  static const _view = 'project_rollups_effective';
+
+  String get _uid => attachedDatabase.currentUserId;
+
   static String _toKey(String? projectId) => projectId ?? noProjectKey;
   static String? _fromKey(String key) => key == noProjectKey ? null : key;
 
-  // ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+  ProjectRollup _toRow(QueryRow r) => ProjectRollup(
+    userId: r.read<String>('user_id'),
+    date: r.read<String>('date'),
+    projectId: r.read<String>('project_id'),
+    durationSeconds: r.read<int>('duration_seconds'),
+  );
+
+  Selectable<ProjectRollup> _rollups({
+    String? start,
+    String? end,
+    String? projectKey,
+  }) {
+    final where = <String>['user_id = ?'];
+    final vars = <Variable>[Variable.withString(_uid)];
+    if (start != null) {
+      where.add('date >= ?');
+      vars.add(Variable.withString(start));
+    }
+    if (end != null) {
+      where.add('date <= ?');
+      vars.add(Variable.withString(end));
+    }
+    if (projectKey != null) {
+      where.add('project_id = ?');
+      vars.add(Variable.withString(projectKey));
+    }
+    return customSelect(
+      'SELECT user_id, date, project_id, duration_seconds FROM $_view '
+      'WHERE ${where.join(' AND ')} ORDER BY date, project_id',
+      variables: vars,
+      readsFrom: {projectRollups, localProjects},
+    ).map(_toRow);
+  }
+
   // READ
-  // ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-  Future<List<ProjectRollup>> getAllRollups() =>
-      (select(projectRollups)..orderBy([
-            (t) => OrderingTerm.asc(t.date),
-            (t) => OrderingTerm.asc(t.projectId),
-          ]))
-          .get();
+  Future<List<ProjectRollup>> getAllRollups() => _rollups().get();
 
   Future<List<ProjectRollup>> getRollupsForDate(String date) =>
-      (select(projectRollups)..where((t) => t.date.equals(date))).get();
+      _rollups(start: date, end: date).get();
 
-  Future<List<ProjectRollup>> getRollupsInRange(String start, String end) {
-    return (select(projectRollups)
-          ..where(
-            (t) =>
-                t.date.isBiggerOrEqualValue(start) &
-                t.date.isSmallerOrEqualValue(end),
-          )
-          ..orderBy([
-            (t) => OrderingTerm.asc(t.date),
-            (t) => OrderingTerm.asc(t.projectId),
-          ]))
-        .get();
-  }
+  Future<List<ProjectRollup>> getRollupsInRange(String start, String end) =>
+      _rollups(start: start, end: end).get();
 
   /// Pass `null` for the "No Project" bucket.
   Future<List<ProjectRollup>> getRollupsForProject(
     String? projectId, {
     String? start,
     String? end,
-  }) {
-    return (select(projectRollups)
-          ..where((t) {
-            Expression<bool> predicate = t.projectId.equals(_toKey(projectId));
-            if (start != null) {
-              predicate = predicate & t.date.isBiggerOrEqualValue(start);
-            }
-            if (end != null) {
-              predicate = predicate & t.date.isSmallerOrEqualValue(end);
-            }
-            return predicate;
-          })
-          ..orderBy([(t) => OrderingTerm.asc(t.date)]))
-        .get();
-  }
+  }) => _rollups(
+    start: start,
+    end: end,
+    projectKey: _toKey(projectId),
+  ).get();
 
-  Stream<List<ProjectRollup>> watchRollupsInRange(String start, String end) {
-    return (select(projectRollups)
-          ..where(
-            (t) =>
-                t.date.isBiggerOrEqualValue(start) &
-                t.date.isSmallerOrEqualValue(end),
-          )
-          ..orderBy([
-            (t) => OrderingTerm.asc(t.date),
-            (t) => OrderingTerm.asc(t.projectId),
-          ]))
-        .watch();
-  }
+  Stream<List<ProjectRollup>> watchRollupsInRange(String start, String end) =>
+      _rollups(start: start, end: end).watch();
 
-  // ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   // READ: aggregates
-  // ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-  JoinedSelectStatement<HasResultSet, dynamic> _totalsByProjectQuery(
-    String start,
-    String end,
-    Expression<int> total,
-  ) {
-    return selectOnly(projectRollups)
-      ..addColumns([projectRollups.projectId, total])
-      ..where(
-        projectRollups.date.isBiggerOrEqualValue(start) &
-            projectRollups.date.isSmallerOrEqualValue(end),
-      )
-      ..groupBy([projectRollups.projectId]);
-  }
+  Selectable<QueryRow> _totals(String start, String end) => customSelect(
+    'SELECT project_id, SUM(duration_seconds) AS total FROM $_view '
+    'WHERE user_id = ? AND date >= ? AND date <= ? GROUP BY project_id',
+    variables: [
+      Variable.withString(_uid),
+      Variable.withString(start),
+      Variable.withString(end),
+    ],
+    readsFrom: {projectRollups, localProjects},
+  );
 
-  Map<String?, int> _mapTotals(List<TypedResult> rows, Expression<int> total) {
-    return {
-      for (final r in rows)
-        _fromKey(r.read(projectRollups.projectId)!): r.read(total) ?? 0,
-    };
-  }
+  Map<String?, int> _mapTotals(List<QueryRow> rows) => {
+    for (final r in rows)
+      _fromKey(r.read<String>('project_id')): r.read<int>('total'),
+  };
 
   /// Total seconds per project over start..end (inclusive, 'YYYY-MM-DD').
   /// The `null` key is the "No Project" bucket.
   Future<Map<String?, int>> getTotalsByProjectInRange(
     String start,
     String end,
-  ) async {
-    final total = projectRollups.durationSeconds.sum();
-    final rows = await _totalsByProjectQuery(start, end, total).get();
-    return _mapTotals(rows, total);
-  }
+  ) async => _mapTotals(await _totals(start, end).get());
 
   Stream<Map<String?, int>> watchTotalsByProjectInRange(
     String start,
     String end,
-  ) {
-    final total = projectRollups.durationSeconds.sum();
-    return _totalsByProjectQuery(
-      start,
-      end,
-      total,
-    ).watch().map((rows) => _mapTotals(rows, total));
-  }
+  ) => _totals(start, end).watch().map(_mapTotals);
+
+  /// History reset.
+  Future<int> wipeAll() =>
+      (delete(projectRollups)..where((t) => t.userId.equals(_uid))).go();
 }

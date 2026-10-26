@@ -92,7 +92,7 @@ class _SimulateSessionsState extends State<SimulateSessions> {
     const maxDailyDurationSeconds = 43_200; // 12 hours
     const lowDurationThresholdSeconds = 1_800; // 30 minutes
 
-    var pending = <SessionsCompanion>[];
+    var pending = <LocalSessionsCompanion>[];
     var totalInserted = 0;
 
     Future<void> flush() async {
@@ -102,7 +102,7 @@ class _SimulateSessionsState extends State<SimulateSessions> {
       pending = [];
 
       await db.batch((b) {
-        b.insertAll(db.sessions, chunk);
+        b.insertAll(db.localSessions, chunk);
       });
 
       totalInserted += chunk.length;
@@ -151,8 +151,9 @@ class _SimulateSessionsState extends State<SimulateSessions> {
         final projectId = projectIds[random.nextInt(projectIds.length)];
 
         pending.add(
-          SessionsCompanion.insert(
+          LocalSessionsCompanion.insert(
             userId: '',
+            utcOffsetMinutes: 0,
             startedAt: sessionStartLocal.toUtc(),
             endedAt: sessionEndLocal.toUtc(),
             projectId: Value(projectId),

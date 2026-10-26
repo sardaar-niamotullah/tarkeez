@@ -20,7 +20,6 @@ import 'package:tarkeez/features/project_rollups/bloc/project_rollup_bloc.dart';
 import 'package:tarkeez/features/project_rollups/data/repositories/project_rollup_repository.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/features/projects/data/repositories/project_repository.dart';
-import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
 import 'package:tarkeez/features/sessions/data/repositories/session_repository.dart';
 
 final getIt = GetIt.instance;
@@ -96,9 +95,12 @@ Future<void> injectDependencies() async {
     () => SessionRepositoryImpl(getIt<LocalDatabase>()),
   );
 
-  getIt.registerLazySingleton<SessionBloc>(
-    () => SessionBloc(getIt<SessionRepository>()),
-  );
+  // getIt.registerLazySingleton<SessionBloc>(
+  //   () => SessionBloc(
+  //     getIt<SessionRepository>(),
+  //     getIt<SyncService>().sessionsChanged,
+  //   ),
+  // );
 
   getIt.registerLazySingleton<SessionPeriodCubit>(() => SessionPeriodCubit());
 

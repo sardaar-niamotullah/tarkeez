@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:tarkeez/core/database/local_database.dart';
 
 class DailyRollupModel extends Equatable {
-  const DailyRollupModel({required this.date, required this.durationSeconds});
+  const new({required this.date, required this.durationSeconds});
   final String date;
   final int durationSeconds;
 
@@ -14,7 +14,7 @@ class DailyRollupModel extends Equatable {
     durationSeconds: durationSeconds ?? this.durationSeconds,
   );
 
-  factory DailyRollupModel.fromRow(DailyRollup row) {
+  factory DailyRollupModel.fromRow(LocalDailyRollup row) {
     return DailyRollupModel(
       date: row.date,
       durationSeconds: row.durationSeconds,

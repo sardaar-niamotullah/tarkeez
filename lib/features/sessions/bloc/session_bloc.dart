@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/error/result.dart';
@@ -11,42 +13,27 @@ part 'session_event.dart';
 part 'session_state.dart';
 
 class SessionBloc extends Bloc<SessionEvent, SessionState> {
-  new(this._repository) : super(SessionInitial()) {
+  new(this._repository, Stream<void> syncedSessions) : super(SessionInitial()) {
     on<EntrySessionRequested>(_onEntrySessionRequested);
     on<FetchSessionsForPeriodRequested>(
       _onFetchSessionsForPeriodRequested,
       transformer: restartable(),
     );
     on<DeleteSessionRequested>(_onDeleteSessionRequested);
+    on<SessionsSynced>(_onSessionsSynced, transformer: restartable());
+
+    _syncSub = syncedSessions.listen((_) => add(SessionsSynced()));
   }
 
   final SessionRepository _repository;
+  late final StreamSubscription<void> _syncSub;
+
   PeriodRange _period = PeriodRange.last7Days;
 
   // ── Private helpers ─────────────────────────────────────────────────────
-  List<(DateTime, DateTime)> _splitByLocalDay(
-    DateTime startedAt,
-    DateTime endedAt,
-  ) {
-    final segments = <(DateTime, DateTime)>[];
-    var segmentStart = startedAt;
-
-    while (true) {
-      final localStart = segmentStart.toLocal();
-      final nextLocalMidnight = DateTime(
-        localStart.year,
-        localStart.month,
-        localStart.day,
-      ).add(const Duration(days: 1));
-      if (!nextLocalMidnight.isBefore(endedAt.toLocal())) {
-        segments.add((segmentStart, endedAt));
-        break;
-      }
-      segments.add((segmentStart, nextLocalMidnight));
-      segmentStart = nextLocalMidnight;
-    }
-    return segments;
-  }
+  List<SessionModel> get _currentSessions => state is SessionLoaded
+      ? (state as SessionLoaded).sessions
+      : const <SessionModel>[];
 
   Future<Result<List<SessionModel>>> _fetchForCurrentPeriod() {
     final range = _period.dateRange();
@@ -67,13 +54,16 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     final previousSessions = state is SessionLoaded
         ? (state as SessionLoaded).sessions
         : null;
+
     emit(
       SessionLoading(
         sessions: isInitialLoad ? const [] : (previousSessions ?? const []),
         isInitialLoad: isInitialLoad,
       ),
     );
+
     final result = await _fetchForCurrentPeriod();
+
     result.fold(
       onSuccess: (sessions) =>
           emit(SessionLoaded(sessions, isEntered: entered, isDeleted: deleted)),
@@ -84,31 +74,23 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
   }
 
   // ── Event handlers ──────────────────────────────────────────────────────
+
   Future<void> _onEntrySessionRequested(
     EntrySessionRequested event,
     Emitter<SessionState> emit,
   ) async {
-    final segments = _splitByLocalDay(event.startedAt, event.endedAt);
+    // One row for the whole session. The database triggers split it at midnight.
+    final result = await _repository.entrySession(
+      startedAt: event.startedAt,
+      endedAt: event.endedAt,
+      project: event.project,
+    );
 
-    for (final (segStart, segEnd) in segments) {
-      final result = await _repository.entrySession(
-        startedAt: segStart,
-        endedAt: segEnd,
-        project: event.project,
-      );
-      final failed = result.fold(
-        onSuccess: (_) => null,
-        onFailure: (error) => error.message,
-      );
-      if (failed != null) {
-        final previousSessions = state is SessionLoaded
-            ? (state as SessionLoaded).sessions
-            : const <SessionModel>[];
-        emit(SessionFailure(failed, sessions: previousSessions));
-        return;
-      }
-    }
-    await _refreshSessions(emit, entered: true);
+    await result.fold(
+      onSuccess: (_) => _refreshSessions(emit, entered: true),
+      onFailure: (error) async =>
+          emit(SessionFailure(error.message, sessions: _currentSessions)),
+    );
   }
 
   Future<void> _onFetchSessionsForPeriodRequested(
@@ -124,16 +106,29 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     Emitter<SessionState> emit,
   ) async {
     final result = await _repository.deleteSession(event.session);
+
     await result.fold(
       onSuccess: (_) => _refreshSessions(emit, deleted: true),
-      onFailure: (error) async => emit(
-        SessionFailure(
-          error.message,
-          sessions: state is SessionLoaded
-              ? (state as SessionLoaded).sessions
-              : const [],
-        ),
-      ),
+      onFailure: (error) async =>
+          emit(SessionFailure(error.message, sessions: _currentSessions)),
     );
+  }
+
+  /// Silent refresh: no loading state, so the list does not flicker.
+  Future<void> _onSessionsSynced(
+    SessionsSynced event,
+    Emitter<SessionState> emit,
+  ) async {
+    final result = await _fetchForCurrentPeriod();
+    result.fold(
+      onSuccess: (sessions) => emit(SessionLoaded.plain(sessions)),
+      onFailure: (_) {},
+    );
+  }
+
+  @override
+  Future<void> close() {
+    _syncSub.cancel();
+    return super.close();
   }
 }

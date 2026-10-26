@@ -1,4 +1,3 @@
-import 'package:drift/drift.dart';
 import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/error/result.dart';
 import 'package:tarkeez/core/error/result_guard.dart';
@@ -21,7 +20,16 @@ abstract interface class SessionRepository {
 
 class SessionRepositoryImpl implements SessionRepository {
   const new(this._database);
+
   final LocalDatabase _database;
+
+  static const _maxLength = Duration(hours: 24);
+
+  /// The cloud and the local triggers both work in whole seconds.
+  static DateTime _wholeSeconds(DateTime t) => DateTime.fromMillisecondsSinceEpoch(
+    t.millisecondsSinceEpoch ~/ 1000 * 1000,
+    isUtc: true,
+  );
 
   @override
   Future<Result<SessionModel>> entrySession({
@@ -30,26 +38,35 @@ class SessionRepositoryImpl implements SessionRepository {
     required DateTime endedAt,
   }) async {
     return resultGuard(() async {
-      final companion = SessionsCompanion.insert(
-        userId: '',
-        startedAt: startedAt.toUtc(),
-        endedAt: endedAt.toUtc(),
-        projectId: Value(project?.id),
+      final start = _wholeSeconds(startedAt);
+      final end = _wholeSeconds(endedAt);
+      final length = end.difference(start);
+
+      if (length <= Duration.zero || length > _maxLength) {
+        throw StateError('A session must be between 1 second and 24 hours long');
+      }
+
+      // One row per session. The triggers split it at midnight.
+      final id = await _database.localSessionsDao.insertSession(
+        startedAt: start,
+        endedAt: end,
+        utcOffsetMinutes: startedAt.toLocal().timeZoneOffset.inMinutes,
+        projectId: project?.id,
       );
-      final id = await _database.sessionsDao.insertSession(companion);
-      final row = await _database.sessionsDao.getSessionById(id);
+
+      final row = await _database.localSessionsDao.getSessionById(id);
       if (row == null) {
         throw StateError('Failed to load created session');
       }
-      return SessionModel.fromRow(row);
+      return SessionModel.fromLocal(row);
     });
   }
 
   @override
   Future<Result<List<SessionModel>>> fetchAllSessions() async {
     return resultGuard(() async {
-      final rows = await _database.sessionsDao.getAllSessions();
-      return rows.map(SessionModel.fromRow).toList();
+      final rows = await _database.localSessionsDao.getAllSessions();
+      return rows.map(SessionModel.fromLocal).toList();
     });
   }
 
@@ -59,19 +76,18 @@ class SessionRepositoryImpl implements SessionRepository {
     required DateTime endedAt,
   }) async {
     return resultGuard(() async {
-      final rows = await _database.sessionsDao.getAllSessionsInDateRange(
+      final rows = await _database.localSessionsDao.getAllSessionsInDateRange(
         startedAt: startedAt,
         endedAt: endedAt,
       );
-      return rows.map(SessionModel.fromRow).toList();
+      return rows.map(SessionModel.fromLocal).toList();
     });
   }
 
   @override
   Future<Result<void>> deleteSession(SessionModel session) async {
     return resultGuard(() async {
-      await _database.sessionsDao.deleteSession(session.id!);
-      return;
+      await _database.localSessionsDao.deleteSession(session.id!);
     });
   }
 }
