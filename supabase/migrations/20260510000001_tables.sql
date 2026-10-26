@@ -10,28 +10,28 @@ CREATE TABLE public.users (
     history_reset_at TIMESTAMPTZ
 );
 
--- CONSTRAINTS 
-alter table public.users
-add constraint full_name_length
-check (
-  char_length(trim(full_name)) between 3 and 30
+-- CONSTRAINTS
+ALTER TABLE public.users
+ADD CONSTRAINT full_name_length
+CHECK (
+  char_length(trim(full_name)) BETWEEN 3 AND 30
 );
 
 -- RLS
-alter table public.users enable row level security;
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 
-create policy "allow_select_own_data"
-on public.users
-for select
-to authenticated
-using (id = auth.uid());
+CREATE POLICY "allow_select_own_data"
+ON public.users
+FOR SELECT
+TO authenticated
+USING (id = auth.uid());
 
-create policy "allow_update_own_data"
-on public.users
-for update
-to authenticated
-using (id = auth.uid())
-with check (id = auth.uid());
+CREATE POLICY "allow_update_own_data"
+ON public.users
+FOR UPDATE
+TO authenticated
+USING (id = auth.uid())
+WITH CHECK (id = auth.uid());
 
 -- =================================================================
 -- PROJECT TABLE and CONSTRAINTS
@@ -47,46 +47,43 @@ CREATE TABLE public.projects (
     deleted_at TIMESTAMPTZ
 );
 
--- Index
-create index if not exists idx_projects_pull
-  on public.projects (user_id, updated_at);
+-- INDEX
+CREATE INDEX IF NOT EXISTS idx_projects_pull
+  ON public.projects (user_id, updated_at);
 
--- CONSTRAINTS 
-alter table public.projects
-alter column name set not null;
+-- CONSTRAINTS
+ALTER TABLE public.projects
+ADD CONSTRAINT projects_name_length_check
+CHECK (char_length(trim(name)) BETWEEN 3 AND 30);
 
-alter table public.projects
-add constraint projects_name_length_check
-check (char_length(trim(name)) between 3 and 30);
-
-alter table public.projects
-add constraint projects_color_id_check
-check (color_id between 0 and 20);
+ALTER TABLE public.projects
+ADD CONSTRAINT projects_color_id_check
+CHECK (color_id BETWEEN 0 AND 20);
 
 -- RLS
-alter table public.projects enable row level security;
+ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
 
-create policy "allow_select_own_projects"
-on public.projects
-for select
-to authenticated
-using (user_id = auth.uid());
+CREATE POLICY "allow_select_own_projects"
+ON public.projects
+FOR SELECT
+TO authenticated
+USING (user_id = auth.uid());
 
-create policy "allow_insert_own_projects"
-on public.projects
-for insert
-to authenticated
-with check (user_id = auth.uid());
+CREATE POLICY "allow_insert_own_projects"
+ON public.projects
+FOR INSERT
+TO authenticated
+WITH CHECK (user_id = auth.uid());
 
-create policy "allow_update_own_projects"
-on public.projects
-for update
-to authenticated
-using (user_id = auth.uid())
-with check (user_id = auth.uid());
+CREATE POLICY "allow_update_own_projects"
+ON public.projects
+FOR UPDATE
+TO authenticated
+USING (user_id = auth.uid())
+WITH CHECK (user_id = auth.uid());
 
-create policy "allow_delete_own_projects"
-on public.projects
-for delete
-to authenticated
-using (user_id = auth.uid());
+CREATE POLICY "allow_delete_own_projects"
+ON public.projects
+FOR DELETE
+TO authenticated
+USING (user_id = auth.uid());
