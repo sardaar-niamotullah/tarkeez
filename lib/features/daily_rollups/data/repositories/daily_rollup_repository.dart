@@ -10,7 +10,7 @@ abstract interface class DailyRollupRepository {
 }
 
 class DailyRollupRepositoryImpl implements DailyRollupRepository {
-  const DailyRollupRepositoryImpl(this._database);
+  const new(this._database);
   final LocalDatabase _database;
 
   @override

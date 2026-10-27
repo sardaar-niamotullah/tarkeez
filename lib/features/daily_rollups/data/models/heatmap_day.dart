@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class HeatmapDay extends Equatable {
-  const HeatmapDay({
+  const new({
     required this.date,
     required this.durationSeconds,
     required this.isFuture,

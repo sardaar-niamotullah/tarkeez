@@ -4,7 +4,7 @@ import 'package:tarkeez/core/database/tables/project_rollups.dart'
     show noProjectKey;
 
 class ProjectRollupModel extends Equatable {
-  const ProjectRollupModel({
+  const new({
     required this.date,
     required this.projectId,
     required this.durationSeconds,
@@ -12,7 +12,8 @@ class ProjectRollupModel extends Equatable {
 
   final String date;
 
-  /// null means "no project". Stored in the DB as noProjectKey ('').
+  /// null means "no project". The DB stores it as noProjectKey (''). A deleted
+  /// or missing project also arrives as '' (see project_rollups_effective).
   final String? projectId;
   final int durationSeconds;
 

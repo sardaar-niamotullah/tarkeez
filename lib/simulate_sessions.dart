@@ -4,6 +4,7 @@ import 'package:drift/drift.dart' show Value;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:tarkeez/core/app/user_data_reloader.dart';
 import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
@@ -69,7 +70,7 @@ class _SimulateSessionsState extends State<SimulateSessions> {
     controller.dispose();
   }
 
-  Future<void> _insertSimulateSessions() async {
+    Future<void> _insertSimulateSessions() async {
     final projectState = context.read<ProjectBloc>().state;
     final projectIds = <String?>[
       null, // no project
@@ -78,17 +79,16 @@ class _SimulateSessionsState extends State<SimulateSessions> {
     ];
 
     setState(() => _isInserting = true);
-
     debugPrint('🟨 📀 Simulate session insert started');
+
     final stopwatch = Stopwatch()..start();
     final db = GetIt.I<LocalDatabase>();
+    final userId = db.currentUserId;
     final random = Random();
-
     final now = DateTime.now();
-    final startDay = DateTime(now.year, now.month, now.day);
     final totalDays = _years * _daysPerYear;
+
     const batchSize = 2000;
-    const dayMinutes = 24 * 60;
     const maxDailyDurationSeconds = 43_200; // 12 hours
     const lowDurationThresholdSeconds = 1_800; // 30 minutes
 
@@ -97,38 +97,41 @@ class _SimulateSessionsState extends State<SimulateSessions> {
 
     Future<void> flush() async {
       if (pending.isEmpty) return;
-
       final chunk = pending;
       pending = [];
-
       await db.batch((b) {
         b.insertAll(db.localSessions, chunk);
       });
-
       totalInserted += chunk.length;
     }
 
     for (var dayOffset = 0; dayOffset < totalDays; dayOffset++) {
-      final dayStartLocal = startDay.subtract(Duration(days: dayOffset));
+      // Calendar days, so daylight saving never moves the start of the day.
+      final dayStart = DateTime(now.year, now.month, now.day - dayOffset);
+      final daySeconds = DateTime(
+        now.year,
+        now.month,
+        now.day - dayOffset + 1,
+      ).difference(dayStart).inSeconds;
 
       // 30..50 sessions per day.
       final numSessions = 30 + random.nextInt(21);
 
-      // 40% of days:
-      //   total duration = 0..1799 seconds
-      //
-      // 60% of days:
-      //   total duration = 1800..43200 seconds.
+      // 40% of days: total = 0..1799 seconds.
+      // 60% of days: total = 1800..43200 seconds.
       final totalDurationSeconds = random.nextDouble() < 0.4
           ? random.nextInt(lowDurationThresholdSeconds)
           : lowDurationThresholdSeconds +
                 random.nextInt(
                   maxDailyDurationSeconds - lowDurationThresholdSeconds + 1,
                 );
+
+      // Split the day's total into session lengths.
       final cuts = List.generate(
         numSessions - 1,
         (_) => random.nextInt(totalDurationSeconds + 1),
       )..sort();
+
       final sessionDurations = <int>[];
       var previous = 0;
       for (final cut in cuts) {
@@ -137,40 +140,55 @@ class _SimulateSessionsState extends State<SimulateSessions> {
       }
       sessionDurations.add(totalDurationSeconds - previous);
 
-      // Generate sessions throughout the day.
+      // Split the rest of the day into gaps, one before each session. The
+      // sessions then follow each other and never overlap (the cloud would
+      // drop overlapping ones).
+      final gapCuts = List.generate(
+        numSessions,
+        (_) => random.nextInt(daySeconds - totalDurationSeconds + 1),
+      )..sort();
+
+      var cursor = 0; // seconds since the start of the day
+      var previousGapCut = 0;
       for (var i = 0; i < numSessions; i++) {
-        final sessionStartLocal = dayStartLocal.add(
-          Duration(minutes: random.nextInt(dayMinutes)),
-        );
+        cursor += gapCuts[i] - previousGapCut;
+        previousGapCut = gapCuts[i];
+
         final durationSeconds = sessionDurations[i];
-        final sessionEndLocal = sessionStartLocal.add(
-          Duration(seconds: durationSeconds),
-        );
 
-        // Uniform random pick across null + all real project IDs.
-        final projectId = projectIds[random.nextInt(projectIds.length)];
+        // A session must last at least 1 second.
+        if (durationSeconds > 0) {
+          final startLocal = dayStart.add(Duration(seconds: cursor));
+          final endLocal = startLocal.add(Duration(seconds: durationSeconds));
 
-        pending.add(
-          LocalSessionsCompanion.insert(
-            userId: '',
-            utcOffsetMinutes: 0,
-            startedAt: sessionStartLocal.toUtc(),
-            endedAt: sessionEndLocal.toUtc(),
-            projectId: Value(projectId),
-          ),
-        );
-        if (pending.length >= batchSize) {
-          await flush();
+          pending.add(
+            LocalSessionsCompanion.insert(
+              userId: userId,
+              utcOffsetMinutes: startLocal.timeZoneOffset.inMinutes,
+              startedAt: startLocal.toUtc(),
+              endedAt: endLocal.toUtc(),
+              projectId: Value(projectIds[random.nextInt(projectIds.length)]),
+            ),
+          );
+
+          if (pending.length >= batchSize) await flush();
         }
+        cursor += durationSeconds;
       }
     }
+
     await flush();
+
     stopwatch.stop();
     debugPrint(
       '🟨 📀 ⏱️ Total db writeup time: '
       '${stopwatch.elapsedMilliseconds}ms, '
       'inserted $totalInserted sessions',
     );
+
+    // The rows went straight to the database, so tell the blocs to read again.
+    const UserDataReloader().reload();
+
     if (mounted) {
       setState(() => _isInserting = false);
     }

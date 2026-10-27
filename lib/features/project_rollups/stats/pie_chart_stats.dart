@@ -30,9 +30,9 @@ class PieChartStats {
         .toList();
   }
 
-  /// Sums rollup seconds per project. Rows with no project, or whose
-  /// project no longer exists, go into a single null-project bucket.
-  /// Sorted by duration, descending.
+  /// Sums rollup seconds per project. Rows with no project, or whose project is
+  /// not in [projects] (deleted, or deleted after these rows were cached), go
+  /// into a single null-project bucket. Sorted by duration, descending.
   static List<ProjectDurationModel> aggregateByProject({
     required List<ProjectRollupModel> rollups,
     required List<ProjectModel> projects,

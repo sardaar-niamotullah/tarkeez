@@ -14,7 +14,7 @@ abstract interface class ProjectRollupRepository {
 }
 
 class ProjectRollupRepositoryImpl implements ProjectRollupRepository {
-  const ProjectRollupRepositoryImpl(this._database);
+  const new(this._database);
   final LocalDatabase _database;
 
   @override
