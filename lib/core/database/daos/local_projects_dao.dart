@@ -13,12 +13,10 @@ class LocalProjectsDao extends DatabaseAccessor<LocalDatabase>
 
   String get _uid => attachedDatabase.currentUserId;
 
+  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   // CREATE
-
-  Future<String> insertProject({
-    required String name,
-    required int colorId,
-  }) {
+  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+  Future<String> insertProject({required String name, required int colorId}) {
     return transaction(() async {
       final row = await into(localProjects).insertReturning(
         LocalProjectsCompanion.insert(
@@ -35,8 +33,9 @@ class LocalProjectsDao extends DatabaseAccessor<LocalDatabase>
     });
   }
 
+  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   // READ (deleted projects are hidden)
-
+  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   Future<List<LocalProject>> getAllProjects() =>
       (select(localProjects)
             ..where((t) => t.userId.equals(_uid) & t.deletedAt.isNull())
@@ -57,8 +56,9 @@ class LocalProjectsDao extends DatabaseAccessor<LocalDatabase>
         .watch();
   }
 
+  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   // UPDATE
-
+  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   Future<bool> updateProject({
     required String id,
     required String name,
@@ -73,7 +73,10 @@ class LocalProjectsDao extends DatabaseAccessor<LocalDatabase>
                     t.deletedAt.isNull(),
               ))
               .write(
-                LocalProjectsCompanion(name: Value(name), colorId: Value(colorId)),
+                LocalProjectsCompanion(
+                  name: Value(name),
+                  colorId: Value(colorId),
+                ),
               );
       if (rows == 0) return false;
       await attachedDatabase.pendingChangesDao.enqueue(SyncEntity.project, id);
@@ -81,8 +84,9 @@ class LocalProjectsDao extends DatabaseAccessor<LocalDatabase>
     });
   }
 
+  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   // DELETE (soft: sets the tombstone)
-
+  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   Future<int> deleteProject(String id) {
     return transaction(() async {
       final rows =
@@ -93,7 +97,9 @@ class LocalProjectsDao extends DatabaseAccessor<LocalDatabase>
                     t.deletedAt.isNull(),
               ))
               .write(
-                LocalProjectsCompanion(deletedAt: Value(DateTime.now().toUtc())),
+                LocalProjectsCompanion(
+                  deletedAt: Value(DateTime.now().toUtc()),
+                ),
               );
       if (rows > 0) {
         await attachedDatabase.pendingChangesDao.enqueue(
@@ -105,7 +111,9 @@ class LocalProjectsDao extends DatabaseAccessor<LocalDatabase>
     });
   }
 
+  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   // SYNC
+  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 
   /// Rows to push. Tombstones are included.
   Future<List<LocalProject>> getProjectsForPush(Iterable<String> ids) =>
@@ -155,12 +163,16 @@ class LocalProjectsDao extends DatabaseAccessor<LocalDatabase>
         );
       }
 
-      await batch((b) => b.insertAllOnConflictUpdate(localProjects, companions));
+      await batch(
+        (b) => b.insertAllOnConflictUpdate(localProjects, companions),
+      );
       return changed;
     });
   }
 
-  /// Hard delete. Used for rows the cloud rejected and for a history reset.
+  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+  // Hard delete. Used for rows the cloud rejected and for a history reset.
+  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   Future<void> hardDeleteByIds(Iterable<String> ids) => (delete(
     localProjects,
   )..where((t) => t.userId.equals(_uid) & t.id.isIn(ids))).go();

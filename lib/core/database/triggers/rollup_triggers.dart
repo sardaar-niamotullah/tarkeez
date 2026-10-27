@@ -1,4 +1,3 @@
-// lib/core/database/triggers/rollup_triggers.dart   (UPDATE: replace the whole file)
 import 'package:drift/drift.dart';
 
 // ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––

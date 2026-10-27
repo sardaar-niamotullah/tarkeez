@@ -13,7 +13,9 @@ class LocalSessionsDao extends DatabaseAccessor<LocalDatabase>
 
   String get _uid => attachedDatabase.currentUserId;
 
+  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   // CREATE (the triggers update the rollups, the queue starts the sync)
+  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   Future<String> insertSession({
     required DateTime startedAt,
     required DateTime endedAt,
@@ -38,7 +40,9 @@ class LocalSessionsDao extends DatabaseAccessor<LocalDatabase>
     });
   }
 
+  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   // READ (deleted sessions are hidden, newest first)
+  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   Future<List<LocalSession>> getAllSessions() =>
       (select(localSessions)
             ..where((t) => t.userId.equals(_uid) & t.deletedAt.isNull())
@@ -68,7 +72,9 @@ class LocalSessionsDao extends DatabaseAccessor<LocalDatabase>
             ..orderBy([(t) => OrderingTerm.desc(t.startedAt)]))
           .get();
 
+  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   // DELETE (soft: sets the tombstone, the trigger subtracts the time)
+  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   Future<int> deleteSession(String id) {
     return transaction(() async {
       final rows =
@@ -79,16 +85,23 @@ class LocalSessionsDao extends DatabaseAccessor<LocalDatabase>
                     t.deletedAt.isNull(),
               ))
               .write(
-                LocalSessionsCompanion(deletedAt: Value(DateTime.now().toUtc())),
+                LocalSessionsCompanion(
+                  deletedAt: Value(DateTime.now().toUtc()),
+                ),
               );
       if (rows > 0) {
-        await attachedDatabase.pendingChangesDao.enqueue(SyncEntity.session, id);
+        await attachedDatabase.pendingChangesDao.enqueue(
+          SyncEntity.session,
+          id,
+        );
       }
       return rows;
     });
   }
 
+  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   // SYNC
+  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 
   /// Rows to push. Tombstones are included.
   Future<List<LocalSession>> getSessionsForPush(Iterable<String> ids) =>
@@ -102,7 +115,9 @@ class LocalSessionsDao extends DatabaseAccessor<LocalDatabase>
     return (update(localSessions)..where(
           (t) => t.userId.equals(_uid) & t.id.isIn(ids) & t.deletedAt.isNull(),
         ))
-        .write(LocalSessionsCompanion(deletedAt: Value(DateTime.now().toUtc())));
+        .write(
+          LocalSessionsCompanion(deletedAt: Value(DateTime.now().toUtc())),
+        );
   }
 
   /// Saves pulled rows. Returns true if something visible changed.
@@ -148,13 +163,17 @@ class LocalSessionsDao extends DatabaseAccessor<LocalDatabase>
         );
       }
 
-      await batch((b) => b.insertAllOnConflictUpdate(localSessions, companions));
+      await batch(
+        (b) => b.insertAllOnConflictUpdate(localSessions, companions),
+      );
       return changed;
     });
   }
 
+  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   /// Hard delete. Used for rows the cloud rejected. Triggers do not fire for
   /// this, so the caller rebuilds the rollups afterwards.
+  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   Future<void> hardDeleteByIds(Iterable<String> ids) => (delete(
     localSessions,
   )..where((t) => t.userId.equals(_uid) & t.id.isIn(ids))).go();

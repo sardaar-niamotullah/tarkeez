@@ -51,7 +51,6 @@ class LocalDatabase extends _$LocalDatabase {
 
   String get currentUserId => _currentUser.id;
 
-  /// 2: local_sessions, local_daily_rollups, project_rollups with user_id.
   @override
   int get schemaVersion => 2;
 
