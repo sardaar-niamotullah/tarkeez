@@ -3,6 +3,7 @@ import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/error/result.dart';
 import 'package:tarkeez/core/error/result_guard.dart';
 import 'package:tarkeez/core/shared_files/enums/sync_entity.dart';
+import 'package:tarkeez/core/sync/sync_log.dart';
 import 'package:tarkeez/core/sync/sync_remote_source.dart';
 import 'package:tarkeez/features/auth/current_user.dart';
 import 'package:tarkeez/features/auth/data/models/user_model.dart';
@@ -35,13 +36,16 @@ class SyncEngine {
   Future<Result<SyncOutcome>> sync() => resultGuard(() async {
     // 1. Reset check first. After "delete history" the cloud rejects older
     //    projects and sessions, so a stale device must not push them.
+    syncLog('[1/3] reset check');
     final resetApplied = await _pullUser();
 
     // 2. Push. Projects first, because sessions point at them.
+    syncLog('[2/3] push');
     await _pushProjects();
     await _pushSessions();
 
     // 3. Pull. Projects first, for the same reason.
+    syncLog('[3/3] pull');
     final projectsChanged = await _pullProjects();
     final sessionsChanged = await _pullSessions();
 
@@ -55,6 +59,7 @@ class SyncEngine {
   /// then on this device.
   Future<Result<void>> resetHistory() => resultGuard(() async {
     final resetAt = await _remote.resetHistory();
+    syncLog('reset: cloud wiped at $resetAt, now wiping this device');
     await _applyReset(resetAt);
   });
 
@@ -64,7 +69,10 @@ class SyncEngine {
     // Read the queue first, then the rows. An edit that lands in between is
     // pushed now (the row is read after) and its queue entry stays for next time.
     final pending = await _db.pendingChangesDao.getPending(SyncEntity.project);
-    if (pending.isEmpty) return;
+    if (pending.isEmpty) {
+      syncLog('push projects: nothing queued');
+      return;
+    }
 
     // Several edits of one project leave several entries. Push it once.
     final entryIdsByProject = <String, List<String>>{};
@@ -76,6 +84,9 @@ class SyncEngine {
       entryIdsByProject.keys,
     );
     final localIds = {for (final r in rows) r.id};
+    syncLog(
+      'push projects: ${pending.length} queued, ${rows.length} to send',
+    );
 
     // An entry whose row no longer exists has nothing to push.
     await _db.pendingChangesDao.deleteByIds([
@@ -87,6 +98,11 @@ class SyncEngine {
       final response = await _remote.pushProjects([
         for (final r in chunk) ProjectModel.fromLocal(r),
       ]);
+      syncLog(
+        'push projects: sent ${chunk.length} -> '
+        'applied ${response.applied.length}, '
+        'rejected ${response.rejected.length}',
+      );
 
       // Rejected rows were created before a history reset, or have bad data.
       // They are dropped, not requeued.
@@ -100,7 +116,10 @@ class SyncEngine {
 
   Future<void> _pushSessions() async {
     final pending = await _db.pendingChangesDao.getPending(SyncEntity.session);
-    if (pending.isEmpty) return;
+    if (pending.isEmpty) {
+      syncLog('push sessions: nothing queued');
+      return;
+    }
 
     final entryIdsBySession = <String, List<String>>{};
     for (final p in pending) {
@@ -111,6 +130,9 @@ class SyncEngine {
       entryIdsBySession.keys,
     );
     final localIds = {for (final r in rows) r.id};
+    syncLog(
+      'push sessions: ${pending.length} queued, ${rows.length} to send',
+    );
 
     await _db.pendingChangesDao.deleteByIds([
       for (final e in entryIdsBySession.entries)
@@ -123,6 +145,12 @@ class SyncEngine {
       final response = await _remote.pushSessions([
         for (final r in chunk) SessionModel.fromLocal(r),
       ]);
+      syncLog(
+        'push sessions: sent ${chunk.length} -> '
+        'applied ${response.applied.length}, '
+        'rejected ${response.rejected.length}, '
+        'dropped (lost an overlap) ${response.dropped.length}',
+      );
 
       // Lost an overlap: the cloud stored it as deleted. Do the same here now.
       // The trigger subtracts its time. Not queued again.
@@ -145,7 +173,10 @@ class SyncEngine {
     }
 
     // A hard delete fires no trigger, so recompute the rollups once.
-    if (removedRejected) await _db.rebuildRollups();
+    if (removedRejected) {
+      syncLog('push sessions: rejected rows removed, rebuilding rollups');
+      await _db.rebuildRollups();
+    }
   }
 
   // PULL
@@ -165,12 +196,14 @@ class SyncEngine {
     );
 
     final cloudResetAt = row['history_reset_at'] as String?;
-    if (cloudResetAt == null) return false;
-
     final localResetAt =
         (await _db.localUsersDao.getUserById(user.id))?.historyResetAt;
+    syncLog('reset check: cloud=$cloudResetAt, local=$localResetAt');
+
+    if (cloudResetAt == null) return false;
     if (!_isNewer(cloudResetAt, localResetAt)) return false;
 
+    syncLog('reset check: the cloud was reset after this device, wiping local data');
     await _applyReset(cloudResetAt);
     return true;
   }
@@ -180,6 +213,7 @@ class SyncEngine {
     String? cursor = await checkpoints.getProjectCheckpoint();
     var overlap = cursor != null; // first page also re-reads the last 2 minutes
     var changed = false;
+    var total = 0;
 
     for (var page = 0; page < _maxPagesPerRun; page++) {
       final rows = await _remote.pullProjects(
@@ -191,10 +225,16 @@ class SyncEngine {
       if (rows.isEmpty) break;
 
       changed |= await _db.localProjectsDao.applyPulled(rows);
+      total += rows.length;
       cursor = rows.last.updatedAt!; // rows arrive ordered by updated_at
+      syncLog(
+        'pull projects: page ${page + 1} -> ${rows.length} rows, '
+        'checkpoint $cursor',
+      );
       await checkpoints.advanceProjectCheckpoint(cursor); // save after each page
       if (rows.length < _pageSize) break;
     }
+    syncLog('pull projects: $total received, list changed: $changed');
     return changed;
   }
 
@@ -203,6 +243,7 @@ class SyncEngine {
     String? cursor = await checkpoints.getSessionCheckpoint();
     var overlap = cursor != null;
     var changed = false;
+    var total = 0;
 
     for (var page = 0; page < _maxPagesPerRun; page++) {
       final rows = await _remote.pullSessions(
@@ -215,29 +256,38 @@ class SyncEngine {
 
       // The local triggers rebuild the rollups. No rollup is downloaded.
       changed |= await _db.localSessionsDao.applyPulled(rows);
+      total += rows.length;
       cursor = rows.last.updatedAt!;
+      syncLog(
+        'pull sessions: page ${page + 1} -> ${rows.length} rows, '
+        'checkpoint $cursor',
+      );
       await checkpoints.advanceSessionCheckpoint(cursor);
       if (rows.length < _pageSize) break;
     }
+    syncLog('pull sessions: $total received, list changed: $changed');
     return changed;
   }
 
   // RESET: wipes projects, sessions and rollups, and clears queues and checkpoints.
 
-  Future<void> _applyReset(String resetAt) => _db.transaction(() async {
-    // Sessions first: they point at projects.
-    await _db.localSessionsDao.wipeAllSessions();
-    await _db.localProjectsDao.wipeAllProjects();
-    await _db.localDailyRollupsDao.wipeAll();
-    await _db.projectRollupsDao.wipeAll();
+  Future<void> _applyReset(String resetAt) async {
+    await _db.transaction(() async {
+      // Sessions first: they point at projects.
+      await _db.localSessionsDao.wipeAllSessions();
+      await _db.localProjectsDao.wipeAllProjects();
+      await _db.localDailyRollupsDao.wipeAll();
+      await _db.projectRollupsDao.wipeAll();
 
-    await _db.pendingChangesDao.clear(SyncEntity.session);
-    await _db.pendingChangesDao.clear(SyncEntity.project);
-    await _db.pullCheckpointsDao.clearSessionCheckpoint();
-    await _db.pullCheckpointsDao.clearProjectCheckpoint();
+      await _db.pendingChangesDao.clear(SyncEntity.session);
+      await _db.pendingChangesDao.clear(SyncEntity.project);
+      await _db.pullCheckpointsDao.clearSessionCheckpoint();
+      await _db.pullCheckpointsDao.clearProjectCheckpoint();
 
-    await _db.localUsersDao.setHistoryResetAt(_currentUser.id, resetAt);
-  });
+      await _db.localUsersDao.setHistoryResetAt(_currentUser.id, resetAt);
+    });
+    syncLog('reset applied on this device (history_reset_at = $resetAt)');
+  }
 
   // HELPERS
 

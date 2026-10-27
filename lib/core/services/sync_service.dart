@@ -5,6 +5,7 @@ import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/services/connectivity_service.dart';
 import 'package:tarkeez/core/shared_files/enums/sync_trigger.dart';
 import 'package:tarkeez/core/sync/sync_engine.dart';
+import 'package:tarkeez/core/sync/sync_log.dart';
 import 'package:tarkeez/core/sync/sync_status.dart';
 
 /// Decides when sync runs. There is no timer. It runs when:
@@ -78,8 +79,10 @@ class SyncService {
 
   Future<void> requestSync(SyncTrigger trigger) async {
     if (!_isSignedIn) return;
+    syncLog('requested by ${trigger.name}');
 
     if (!await _connectivity.isOnline) {
+      syncLog('offline, nothing attempted');
       if (trigger == SyncTrigger.appStart) _syncOnReconnect = true;
       if (trigger.isManual) {
         _emit(const SyncStatus(SyncPhase.offline, isManual: true));
@@ -88,6 +91,7 @@ class SyncService {
     }
 
     if (_running) {
+      syncLog('a run is already going, merged into one follow-up run');
       _rerun = true;
       _rerunManual = _rerunManual || trigger.isManual;
       return;
@@ -110,9 +114,11 @@ class SyncService {
   /// "Delete history": online only. The cloud goes first, then this device.
   Future<void> resetHistory() async {
     if (!_isSignedIn) return;
+    syncLog('reset requested');
 
     // The cloud must answer first, so the reset never starts offline.
     if (!await _connectivity.isOnline) {
+      syncLog('reset: offline, nothing attempted');
       _emit(const SyncStatus(SyncPhase.resetOffline, isManual: true));
       return;
     }
@@ -121,11 +127,15 @@ class SyncService {
     final result = await _exclusive(_engine.resetHistory);
     result.fold(
       onSuccess: (_) {
+        syncLog('reset done');
         _projectsChanged.add(null);
         _sessionsChanged.add(null);
         _emit(const SyncStatus(SyncPhase.resetDone, isManual: true));
       },
       onFailure: (error) {
+        syncLog(
+          'reset FAILED: ${error.message}. A sync will check what happened',
+        );
         _emit(
           SyncStatus(
             SyncPhase.resetFailed,
@@ -144,29 +154,51 @@ class SyncService {
   // INTERNALS
 
   Future<void> _runOnce({required bool manual}) async {
+    final stopwatch = Stopwatch()..start();
+    syncLog('run started (manual: $manual)');
     _emit(SyncStatus(SyncPhase.syncing, isManual: manual));
+
     final result = await _exclusive(_engine.sync);
     result.fold(
       onSuccess: (outcome) {
+        syncLog(
+          'run finished in ${stopwatch.elapsedMilliseconds}ms '
+          '(projects changed: ${outcome.projectsChanged}, '
+          'sessions changed: ${outcome.sessionsChanged})',
+        );
         if (outcome.projectsChanged) _projectsChanged.add(null);
         if (outcome.sessionsChanged) _sessionsChanged.add(null);
         _emit(SyncStatus(SyncPhase.succeeded, isManual: manual));
       },
-      onFailure: (error) => _emit(
-        SyncStatus(SyncPhase.failed, isManual: manual, message: error.message),
-      ),
+      onFailure: (error) {
+        syncLog(
+          'run FAILED after ${stopwatch.elapsedMilliseconds}ms: ${error.message}',
+        );
+        _emit(
+          SyncStatus(
+            SyncPhase.failed,
+            isManual: manual,
+            message: error.message,
+          ),
+        );
+      },
     );
   }
 
   void _onSignedIn() {
+    syncLog('signed in: watching pending changes');
     _pendingSub?.cancel();
     _pendingSub = _database.pendingChangesDao.watchPendingIds().listen((ids) {
-      if (ids.isNotEmpty) unawaited(requestSync(SyncTrigger.pendingChanges));
+      if (ids.isNotEmpty) {
+        syncLog('${ids.length} pending changes waiting');
+        unawaited(requestSync(SyncTrigger.pendingChanges));
+      }
     });
     unawaited(requestSync(SyncTrigger.appStart));
   }
 
   void _onSignedOut() {
+    syncLog('signed out: stopped watching pending changes');
     _pendingSub?.cancel();
     _pendingSub = null;
     _syncOnReconnect = false;
@@ -176,6 +208,10 @@ class SyncService {
     if (!_isSignedIn) return;
 
     final hasPending = await _database.pendingChangesDao.hasPending();
+    syncLog(
+      'connection restored (pending changes: $hasPending, '
+      'app-start sync waiting: $_syncOnReconnect)',
+    );
     if (!_syncOnReconnect && !hasPending) return;
 
     final trigger = _syncOnReconnect
