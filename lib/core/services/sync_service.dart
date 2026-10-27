@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/services/connectivity_service.dart';
+import 'package:tarkeez/core/shared_files/enums/sync_trigger.dart';
 import 'package:tarkeez/core/sync/sync_engine.dart';
 import 'package:tarkeez/core/sync/sync_status.dart';
-import 'package:tarkeez/core/sync/sync_trigger.dart';
 
 /// Decides when sync runs. There is no timer. It runs when:
 ///  - `pending_changes` has rows and the device is online

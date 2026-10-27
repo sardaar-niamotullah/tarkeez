@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/database/tables/pending_changes.dart';
-import 'package:tarkeez/core/sync/sync_entity.dart';
+import 'package:tarkeez/core/shared_files/enums/sync_entity.dart';
 
 part 'pending_changes_dao.g.dart';
 

@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:tarkeez/core/database/tables/local_users.dart';
-import 'package:tarkeez/core/sync/sync_entity.dart';
+import 'package:tarkeez/core/shared_files/enums/sync_entity.dart';
 import 'package:uuid/uuid.dart';
 
 /// Rows changed locally and not yet pushed. Stores the table and id only;

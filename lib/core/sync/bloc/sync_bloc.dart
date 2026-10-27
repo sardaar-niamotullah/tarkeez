@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/services/sync_service.dart';
+import 'package:tarkeez/core/shared_files/enums/sync_trigger.dart';
 import 'package:tarkeez/core/sync/sync_status.dart';
-import 'package:tarkeez/core/sync/sync_trigger.dart';
 
 part 'sync_event.dart';
 part 'sync_state.dart';

@@ -2,7 +2,7 @@ import 'package:drift/drift.dart' show Value;
 import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/error/result.dart';
 import 'package:tarkeez/core/error/result_guard.dart';
-import 'package:tarkeez/core/sync/sync_entity.dart';
+import 'package:tarkeez/core/shared_files/enums/sync_entity.dart';
 import 'package:tarkeez/core/sync/sync_remote_source.dart';
 import 'package:tarkeez/features/auth/current_user.dart';
 import 'package:tarkeez/features/auth/data/models/user_model.dart';

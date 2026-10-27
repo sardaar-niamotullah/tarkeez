@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/database/tables/local_sessions.dart';
-import 'package:tarkeez/core/sync/sync_entity.dart';
+import 'package:tarkeez/core/shared_files/enums/sync_entity.dart';
 import 'package:tarkeez/features/sessions/data/models/session_model.dart';
 
 part 'local_sessions_dao.g.dart';
