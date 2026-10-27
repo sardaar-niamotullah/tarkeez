@@ -5,13 +5,13 @@ sealed class DailyRollupEvent {}
 class FetchDailyRollupRequested extends DailyRollupEvent {}
 
 class RefreshDailyRollupRequested extends DailyRollupEvent {
-  RefreshDailyRollupRequested({this.days = 5});
+  new({this.days = 5});
   final int days;
 }
 
 /// Fired every tick (e.g. once/sec) while a session timer is running.
 class DailyRollupLiveTicked extends DailyRollupEvent {
-  DailyRollupLiveTicked(this.timerStartedAt);
+  new(this.timerStartedAt);
   final DateTime timerStartedAt;
 }
 

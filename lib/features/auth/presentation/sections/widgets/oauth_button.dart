@@ -1,3 +1,4 @@
+import 'package:tarkeez/core/app/user_data_reloader.dart';
 import 'package:tarkeez/core/routes/route_names.dart';
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
 import 'package:tarkeez/features/auth/bloc/auth_bloc.dart';
@@ -20,6 +21,7 @@ class OauthButton extends StatelessWidget {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, authState) {
         if (authState is AuthSuccess) {
+          const UserDataReloader().reload();
           context.go(RouteNames.home);
         }
         if (authState is AuthFailure) {

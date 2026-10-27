@@ -474,6 +474,7 @@ This removes every project, session and rollup the user has. Only the account st
 2. The calling device wipes its local sessions, projects, `local_daily_rollups` and `project_rollups`, clears its `pending_changes` and both checkpoints, and stores the new `history_reset_at`.
 3. Every other device sees the newer `history_reset_at` in the reset check at the start of its next sync, before it pushes anything, and does the same. Anything it recorded offline since the reset is wiped too.
 4. As a backstop, `push_changes` rejects any project with `created_at < history_reset_at` and any session with `ended_at < history_reset_at`. The device drops rejected rows locally without requeuing them.
+5. If the app gets no answer from `reset_history` (for example the connection drops), it shows an error and leaves local data alone. The cloud may already be reset. The app starts a sync as soon as it can, and the reset check clears the device if the reset went through. Running the reset again is safe.
 
 Example:
 

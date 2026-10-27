@@ -11,7 +11,7 @@ part 'project_rollup_event.dart';
 part 'project_rollup_state.dart';
 
 class ProjectRollupBloc extends Bloc<ProjectRollupEvent, ProjectRollupState> {
-  ProjectRollupBloc(this._repository) : super(ProjectRollupInitial()) {
+  new(this._repository) : super(ProjectRollupInitial()) {
     on<FetchProjectRollupRequested>(_onFetch);
     on<RefreshProjectRollupRequested>(_onRefresh);
   }

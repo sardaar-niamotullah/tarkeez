@@ -5,19 +5,19 @@ sealed class ProjectRollupState {}
 class ProjectRollupInitial extends ProjectRollupState {}
 
 class ProjectRollupLoading extends ProjectRollupState {
-  ProjectRollupLoading({this.rollups, this.isInitialLoad = false});
+  new({this.rollups, this.isInitialLoad = false});
   final List<ProjectRollupModel>? rollups;
   final bool isInitialLoad;
 }
 
 class ProjectRollupFailure extends ProjectRollupState {
-  ProjectRollupFailure(this.message, {this.rollups});
+  new(this.message, {this.rollups});
   final String message;
   final List<ProjectRollupModel>? rollups;
 }
 
 class ProjectRollupLoaded extends ProjectRollupState {
-  ProjectRollupLoaded({required this.rollups});
+  new({required this.rollups});
 
   final List<ProjectRollupModel> rollups;
 

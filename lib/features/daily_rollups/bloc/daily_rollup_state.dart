@@ -5,18 +5,18 @@ sealed class DailyRollupState {}
 class DailyRollupInitial extends DailyRollupState {}
 
 class DailyRollupLoading extends DailyRollupState {
-  DailyRollupLoading({this.rollupsByDate, this.isInitialLoad = false});
+  new({this.rollupsByDate, this.isInitialLoad = false});
   final Map<String, int>? rollupsByDate;
   final bool isInitialLoad;
 }
 
 class DailyRollupFailure extends DailyRollupState {
-  DailyRollupFailure(this.message);
+  new(this.message);
   final String message;
 }
 
 class DailyRollupLoaded extends DailyRollupState {
-  DailyRollupLoaded({
+  new({
     required this.rollupsByDate,
     this.liveDate,
     this.liveElapsedSeconds = 0,

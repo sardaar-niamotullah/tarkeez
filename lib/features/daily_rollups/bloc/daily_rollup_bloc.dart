@@ -16,14 +16,13 @@ part 'daily_rollup_event.dart';
 part 'daily_rollup_state.dart';
 
 class DailyRollupBloc extends Bloc<DailyRollupEvent, DailyRollupState> {
-  final DailyRollupRepository _repository;
-
-  DailyRollupBloc(this._repository) : super(DailyRollupInitial()) {
+  new(this._repository) : super(DailyRollupInitial()) {
     on<FetchDailyRollupRequested>(_onFetchDailyRollupRequested);
     on<RefreshDailyRollupRequested>(_onRefreshDailyRollupRequested);
     on<DailyRollupLiveTicked>(_onLiveTicked);
     on<DailyRollupLiveStopped>(_onLiveStopped);
   }
+  final DailyRollupRepository _repository;
 
   Future<void> _onFetchDailyRollupRequested(
     FetchDailyRollupRequested event,

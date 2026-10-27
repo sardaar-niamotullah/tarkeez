@@ -13,25 +13,39 @@ class SyncButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+
     return BlocConsumer<SyncBloc, SyncState>(
+      // Only the answer to a Sync tap. Background syncs and the erase stay silent.
       listenWhen: (_, current) {
         final s = current.status;
         return s.isManual &&
-            (s.phase == SyncPhase.failed || s.phase == SyncPhase.offline);
+            (s.phase == SyncPhase.succeeded ||
+                s.phase == SyncPhase.failed ||
+                s.phase == SyncPhase.offline);
       },
       listener: (context, state) {
         final s = state.status;
-        showErrorSnackBar(
-          context,
-          message: s.phase == SyncPhase.offline
-              ? 'No internet connection. Try again when you are online.'
-              : (s.message ?? 'Sync failed. Please try again.'),
-        );
+        switch (s.phase) {
+          case SyncPhase.succeeded:
+            showSuccessSnackBar(context, message: 'Everything is up to date.');
+          case SyncPhase.offline:
+            showErrorSnackBar(
+              context,
+              message: 'No internet connection. Try again when you are online.',
+            );
+          case SyncPhase.failed:
+            showErrorSnackBar(
+              context,
+              message: s.message ?? 'Sync failed. Please try again.',
+            );
+          default:
+            break;
+        }
       },
       builder: (context, state) {
+        final isSyncing = state.status.phase == SyncPhase.syncing;
+
         return Container(
-          // height: context.md ? 121 : null,
-          // padding: const .all(ContainerDesignUtils.padding),
           padding: const .symmetric(
             horizontal: ContainerDesignUtils.padding,
             vertical: 6,
@@ -54,9 +68,9 @@ class SyncButton extends StatelessWidget {
                   PrimaryButton(
                     title: 'Sync',
                     width: 96,
-                    isLoading: false,
-                    // backgroundColorRight: scheme.error,
-                    // backgroundColorLeft: AppTheme.errorBright,
+                    // Also disabled while an erase is running.
+                    enable: !state.status.isBusy,
+                    isLoading: isSyncing,
                     onPressed: () =>
                         context.read<SyncBloc>().add(const SyncButtonPressed()),
                   ),
