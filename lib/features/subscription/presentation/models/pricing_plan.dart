@@ -5,7 +5,7 @@ import 'package:tarkeez/core/theme/theme.dart';
 enum PricingPlanType { regularDeal, goodDeal, betterDeal, bestDeal }
 
 class PricingPlan {
-  const PricingPlan({
+  const new({
     required this.type,
     required this.dealValue,
     required this.duration,
@@ -33,7 +33,7 @@ const pricingPlans = [
     type: PricingPlanType.regularDeal,
     dealValue: 'Regular deal',
     duration: '3 months',
-    price: '1.9',
+    price: '4.9',
     saveAmount: 'Save 0%',
     color: AppTheme.blue,
     colorBright: AppTheme.blueBright,
@@ -43,8 +43,8 @@ const pricingPlans = [
     type: PricingPlanType.goodDeal,
     dealValue: 'Good deal',
     duration: '6 months',
-    price: '2.9',
-    saveAmount: 'Save 23%',
+    price: '6.9',
+    saveAmount: 'Save 29%',
     color: AppTheme.purple,
     colorBright: AppTheme.purpleBright,
     iconPath: SvgPaths.bookmark,
@@ -53,8 +53,8 @@ const pricingPlans = [
     type: PricingPlanType.betterDeal,
     dealValue: 'Better deal',
     duration: '1 year',
-    price: '3.9',
-    saveAmount: 'Save 48%',
+    price: '9.9',
+    saveAmount: 'Save 49%',
     color: AppTheme.pink,
     colorBright: AppTheme.pinkBright,
     iconPath: SvgPaths.bookmark,
@@ -62,9 +62,9 @@ const pricingPlans = [
   PricingPlan(
     type: PricingPlanType.bestDeal,
     dealValue: 'Best deal',
-    duration: 'Life time',
-    price: '4.9',
-    saveAmount: 'Maximum saving',
+    duration: '2 years',
+    price: '14.9',
+    saveAmount: 'Save 60%',
     color: AppTheme.fireTone,
     colorBright: AppTheme.lightningGold,
     iconPath: SvgPaths.bookmark,
