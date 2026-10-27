@@ -39,9 +39,10 @@ class SyncRemoteSource {
   });
 
   Future<PushResponse> _push(Map<String, dynamic> params) async {
-    final data =
-        await _client.rpc('push_changes', params: params)
-            as Map<String, dynamic>;
+    final data = await _client.rpc(
+      'push_changes',
+      params: params,
+    ) as Map<String, dynamic>;
     return PushResponse(
       applied: _ids(data['applied']),
       rejected: _ids(data['rejected']),
@@ -77,21 +78,23 @@ class SyncRemoteSource {
     ];
   }
 
-  Future<List> _pull(String fn, String? after, bool overlap, int pageSize) async {
+  Future<List> _pull(
+    String fn,
+    String? after,
+    bool overlap,
+    int pageSize,
+  ) async {
     return await _client.rpc(
-          fn,
-          params: {
-            'p_after': after,
-            'p_overlap': overlap,
-            'p_page_size': pageSize,
-          },
-        )
-        as List;
+      fn,
+      params: {'p_after': after, 'p_overlap': overlap, 'p_page_size': pageSize},
+    ) as List;
   }
 
   /// Returns the new `history_reset_at` as the server's timestamp text.
+  /// A timeout does not mean the cloud did nothing. See SyncService.resetHistory.
   Future<String> resetHistory() async =>
-      await _client.rpc('reset_history') as String;
+      await _client.rpc('reset_history').timeout(const Duration(seconds: 30))
+          as String;
 
   static List<String> _ids(Object? raw) => [
     for (final id in (raw as List? ?? const [])) id as String,

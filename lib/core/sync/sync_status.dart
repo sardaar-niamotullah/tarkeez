@@ -1,4 +1,14 @@
-enum SyncPhase { idle, syncing, succeeded, failed, offline, resetting, resetDone }
+enum SyncPhase {
+  idle,
+  syncing,
+  succeeded,
+  failed,
+  offline,
+  resetting,
+  resetDone,
+  resetFailed,
+  resetOffline,
+}
 
 class SyncStatus {
   const new(this.phase, {this.isManual = false, this.message});

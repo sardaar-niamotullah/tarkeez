@@ -111,7 +111,10 @@ Future<void> injectDependencies() async {
   );
 
   getIt.registerLazySingleton<DailyRollupBloc>(
-    () => DailyRollupBloc(getIt<DailyRollupRepository>()),
+    () => DailyRollupBloc(
+      getIt<DailyRollupRepository>(),
+      getIt<SyncService>().sessionsChanged,
+    ),
   );
 
   // ── Project Rollups ────────────────────────────────────────────────────
@@ -120,6 +123,9 @@ Future<void> injectDependencies() async {
   );
 
   getIt.registerLazySingleton<ProjectRollupBloc>(
-    () => ProjectRollupBloc(getIt<ProjectRollupRepository>()),
+    () => ProjectRollupBloc(
+      getIt<ProjectRollupRepository>(),
+      getIt<SyncService>().sessionsChanged,
+    ),
   );
 }

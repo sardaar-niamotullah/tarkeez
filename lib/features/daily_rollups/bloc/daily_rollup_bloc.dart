@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:tarkeez/core/extensions/period_range_extension.dart';
 import 'package:tarkeez/core/shared_files/enums/period_range.dart';
 import 'package:tarkeez/core/utils/rollup_date_utils.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:tarkeez/features/daily_rollups/data/models/personal_best_period.dart';
 import 'package:tarkeez/features/daily_rollups/data/models/timeline_model.dart';
 import 'package:tarkeez/features/daily_rollups/data/repositories/daily_rollup_repository.dart';
@@ -16,13 +19,18 @@ part 'daily_rollup_event.dart';
 part 'daily_rollup_state.dart';
 
 class DailyRollupBloc extends Bloc<DailyRollupEvent, DailyRollupState> {
-  new(this._repository) : super(DailyRollupInitial()) {
+  new(this._repository, Stream<void> syncedSessions)
+    : super(DailyRollupInitial()) {
     on<FetchDailyRollupRequested>(_onFetchDailyRollupRequested);
     on<RefreshDailyRollupRequested>(_onRefreshDailyRollupRequested);
     on<DailyRollupLiveTicked>(_onLiveTicked);
     on<DailyRollupLiveStopped>(_onLiveStopped);
+    on<DailyRollupSynced>(_onSynced, transformer: restartable());
+
+    _syncSub = syncedSessions.listen((_) => add(DailyRollupSynced()));
   }
   final DailyRollupRepository _repository;
+  late final StreamSubscription<void> _syncSub;
 
   Future<void> _onFetchDailyRollupRequested(
     FetchDailyRollupRequested event,
@@ -86,5 +94,30 @@ class DailyRollupBloc extends Bloc<DailyRollupEvent, DailyRollupState> {
     final current = state;
     if (current is! DailyRollupLoaded) return;
     emit(current.copyWith(clearLive: true));
+  }
+
+  Future<void> _onSynced(
+    DailyRollupSynced event,
+    Emitter<DailyRollupState> emit,
+  ) async {
+    final result = await _repository.fetchAllRollups();
+    result.fold(
+      onSuccess: (rollups) {
+        final byDate = {for (final r in rollups) r.date: r.durationSeconds};
+        final current = state;
+        emit(
+          current is DailyRollupLoaded
+              ? current.copyWith(rollupsByDate: byDate)
+              : DailyRollupLoaded(rollupsByDate: byDate),
+        );
+      },
+      onFailure: (_) {},
+    );
+  }
+
+  @override
+  Future<void> close() {
+    _syncSub.cancel();
+    return super.close();
   }
 }

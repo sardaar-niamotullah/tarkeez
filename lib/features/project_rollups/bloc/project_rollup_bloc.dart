@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
-import 'package:tarkeez/core/shared_files/enums/period_range.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:tarkeez/core/utils/rollup_date_utils.dart';
+import 'package:tarkeez/core/shared_files/enums/period_range.dart';
 import 'package:tarkeez/features/project_rollups/data/models/project_duration_model.dart';
 import 'package:tarkeez/features/project_rollups/data/models/project_rollup_model.dart';
 import 'package:tarkeez/features/project_rollups/data/repositories/project_rollup_repository.dart';
@@ -11,12 +14,17 @@ part 'project_rollup_event.dart';
 part 'project_rollup_state.dart';
 
 class ProjectRollupBloc extends Bloc<ProjectRollupEvent, ProjectRollupState> {
-  new(this._repository) : super(ProjectRollupInitial()) {
+  new(this._repository, Stream<void> syncedSessions)
+    : super(ProjectRollupInitial()) {
     on<FetchProjectRollupRequested>(_onFetch);
     on<RefreshProjectRollupRequested>(_onRefresh);
+    on<ProjectRollupSynced>(_onSynced, transformer: restartable());
+
+    _syncSub = syncedSessions.listen((_) => add(ProjectRollupSynced()));
   }
 
   final ProjectRollupRepository _repository;
+  late final StreamSubscription<void> _syncSub;
 
   List<ProjectRollupModel>? get _currentRollups => switch (state) {
     ProjectRollupLoaded(:final rollups) => rollups,
@@ -45,7 +53,7 @@ class ProjectRollupBloc extends Bloc<ProjectRollupEvent, ProjectRollupState> {
     RefreshProjectRollupRequested event,
     Emitter<ProjectRollupState> emit,
   ) async {
-    if (_currentRollups == null) return; 
+    if (_currentRollups == null) return;
 
     final result = await _repository.fetchRecentRollups(days: event.days);
 
@@ -66,5 +74,22 @@ class ProjectRollupBloc extends Bloc<ProjectRollupEvent, ProjectRollupState> {
       onFailure: (error) =>
           emit(ProjectRollupFailure(error.message, rollups: _currentRollups)),
     );
+  }
+
+  Future<void> _onSynced(
+    ProjectRollupSynced event,
+    Emitter<ProjectRollupState> emit,
+  ) async {
+    final result = await _repository.fetchAllRollups();
+    result.fold(
+      onSuccess: (rollups) => emit(ProjectRollupLoaded(rollups: rollups)),
+      onFailure: (_) {},
+    );
+  }
+
+  @override
+  Future<void> close() {
+    _syncSub.cancel();
+    return super.close();
   }
 }

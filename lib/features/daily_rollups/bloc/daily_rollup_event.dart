@@ -17,3 +17,6 @@ class DailyRollupLiveTicked extends DailyRollupEvent {
 
 /// Fired when a running timer is cancelled/discarded (no session saved).
 class DailyRollupLiveStopped extends DailyRollupEvent {}
+
+/// Sync changed the local sessions (a pull or a history reset): read the rollups again.
+class DailyRollupSynced extends DailyRollupEvent {}

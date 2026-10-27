@@ -107,13 +107,13 @@ class SyncService {
     }
   }
 
-  /// "Delete history": online only. It wipes projects, sessions and rollups,
-  /// in the cloud and on this device.
+  /// "Delete history": online only. The cloud goes first, then this device.
   Future<void> resetHistory() async {
     if (!_isSignedIn) return;
 
+    // The cloud must answer first, so the reset never starts offline.
     if (!await _connectivity.isOnline) {
-      _emit(const SyncStatus(SyncPhase.offline, isManual: true));
+      _emit(const SyncStatus(SyncPhase.resetOffline, isManual: true));
       return;
     }
 
@@ -125,9 +125,19 @@ class SyncService {
         _sessionsChanged.add(null);
         _emit(const SyncStatus(SyncPhase.resetDone, isManual: true));
       },
-      onFailure: (error) => _emit(
-        SyncStatus(SyncPhase.failed, isManual: true, message: error.message),
-      ),
+      onFailure: (error) {
+        _emit(
+          SyncStatus(
+            SyncPhase.resetFailed,
+            isManual: true,
+            message: error.message,
+          ),
+        );
+        // No answer does not mean nothing happened: the cloud may have finished
+        // the reset. A sync starts with the reset check, so it clears this
+        // device if the reset went through. Offline, it waits for the connection.
+        unawaited(requestSync(SyncTrigger.appStart));
+      },
     );
   }
 

@@ -7,15 +7,15 @@ import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class DeleteDialog extends StatelessWidget {
-  final VoidCallback onDeleteTap;
-  final bool isLoading;
-  final String? message;
-  const DeleteDialog({
+  const new({
     super.key,
     required this.onDeleteTap,
     this.isLoading = false,
     this.message,
   });
+  final VoidCallback onDeleteTap;
+  final bool isLoading;
+  final String? message;
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +31,7 @@ class DeleteDialog extends StatelessWidget {
           // Message
           // ──────────────────────────────────────────────
           Text(
-            message ??
-                'You are about to do a destrutive opperation. Which can not be reverted. Please be sure before doing this kind of opperation.',
+            message ?? 'You are about to do a destrutive opperation. Which can not be reverted. Please be sure before doing this kind of opperation.',
             style: TextUtils.paragraph(context),
             // textAlign: .center,
           ),
