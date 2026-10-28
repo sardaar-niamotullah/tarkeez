@@ -207,7 +207,7 @@ class SyncEngine {
   //
   // Pages are read by (updated_at, id). The cursor is the last row of the
   // previous page, so rows that share a timestamp are never split or skipped.
-  // Only the first page of a run starts 30 seconds before the checkpoint.
+  // Only the first page of a run starts 2 minutes before the checkpoint.
 
   /// Reads the device's own `users` row. Returns true if a reset was applied.
   Future<bool> _pullUser() async {

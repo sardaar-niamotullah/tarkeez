@@ -207,10 +207,9 @@ $$;
 -- pull_projects: one page of at most 200 rows, read by (updated_at, id).
 -- The cursor is the last row of the previous page (p_after, p_after_id), so
 -- rows that share a timestamp are never split or skipped.
--- p_overlap makes the first page of a pull start 30 seconds before the
+-- p_overlap makes the first page of a pull start 2 minutes before the
 -- checkpoint (README, safety rule 5).
 -- =================================================================
-DROP FUNCTION IF EXISTS public.pull_projects(TIMESTAMPTZ, BOOLEAN, INT);
 DROP FUNCTION IF EXISTS public.pull_projects(TIMESTAMPTZ, UUID, BOOLEAN, INT);
 
 CREATE FUNCTION public.pull_projects(
@@ -229,7 +228,7 @@ SET search_path = public
 AS $$
   WITH bounds AS (
     SELECT CASE WHEN p_after IS NULL THEN NULL::TIMESTAMPTZ
-                WHEN p_overlap THEN p_after - INTERVAL '30 seconds'
+                WHEN p_overlap THEN p_after - INTERVAL '2 minutes'
                 ELSE p_after END AS after_ts,
            COALESCE(p_after_id, '00000000-0000-0000-0000-000000000000'::UUID) AS after_id
   )
@@ -248,7 +247,6 @@ $$;
 -- =================================================================
 -- pull_sessions: same paging as pull_projects
 -- =================================================================
-DROP FUNCTION IF EXISTS public.pull_sessions(TIMESTAMPTZ, BOOLEAN, INT);
 DROP FUNCTION IF EXISTS public.pull_sessions(TIMESTAMPTZ, UUID, BOOLEAN, INT);
 
 CREATE FUNCTION public.pull_sessions(
@@ -267,7 +265,7 @@ SET search_path = public
 AS $$
   WITH bounds AS (
     SELECT CASE WHEN p_after IS NULL THEN NULL::TIMESTAMPTZ
-                WHEN p_overlap THEN p_after - INTERVAL '30 seconds'
+                WHEN p_overlap THEN p_after - INTERVAL '2 minutes'
                 ELSE p_after END AS after_ts,
            COALESCE(p_after_id, '00000000-0000-0000-0000-000000000000'::UUID) AS after_id
   )

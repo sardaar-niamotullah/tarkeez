@@ -53,7 +53,7 @@ class SyncRemoteSource {
   // PULL
 
   /// One page of rows after the cursor ([after], [afterId]), oldest first.
-  /// With [overlap] the page starts 30 seconds before [after]. It is used for
+  /// With [overlap] the page start 2 minutes before [after]. It is used for
   /// the first page of a pull only.
   Future<List<ProjectModel>> pullProjects({
     String? after,
