@@ -29,9 +29,11 @@ class SyncEngine {
   final SyncRemoteSource _remote;
   final CurrentUser _currentUser;
 
+  /// Rows per request and per local read, in both directions. Supabase returns
+  /// at most 1000 rows per request, and SQLite binds at most about 32,000
+  /// values in one statement. Nothing here sends, reads or binds more than this
+  /// at once, so a device that was offline for years syncs in many small pages.
   static const _pageSize = 200;
-  static const _pushChunkSize = 200;
-  static const _maxPagesPerRun = 500;
 
   Future<Result<SyncOutcome>> sync() => resultGuard(() async {
     // 1. Reset check first. After "delete history" the cloud rejects older
@@ -64,42 +66,49 @@ class SyncEngine {
   });
 
   // PUSH
+  //
+  // The queue is read in pages, oldest first. `cursor` is the id of the last
+  // entry read, so a row that stays pending (a hiccup in the cloud) is not read
+  // again in this run. It stays queued for the next sync. Entries added while
+  // the loop runs have bigger ids, so the loop picks them up too.
 
   Future<void> _pushProjects() async {
-    // Read the queue first, then the rows. An edit that lands in between is
-    // pushed now (the row is read after) and its queue entry stays for next time.
-    final pending = await _db.pendingChangesDao.getPending(SyncEntity.project);
-    if (pending.isEmpty) {
-      syncLog('push projects: nothing queued');
-      return;
-    }
+    String? cursor;
+    var sent = 0;
 
-    // Several edits of one project leave several entries. Push it once.
-    final entryIdsByProject = <String, List<String>>{};
-    for (final p in pending) {
-      (entryIdsByProject[p.entityId] ??= []).add(p.id);
-    }
+    while (true) {
+      final entries = await _db.pendingChangesDao.getPendingPage(
+        SyncEntity.project,
+        afterId: cursor,
+        limit: _pageSize,
+      );
+      if (entries.isEmpty) break;
+      cursor = entries.last.id;
 
-    final rows = await _db.localProjectsDao.getProjectsForPush(
-      entryIdsByProject.keys,
-    );
-    final localIds = {for (final r in rows) r.id};
-    syncLog(
-      'push projects: ${pending.length} queued, ${rows.length} to send',
-    );
+      // Several edits of one project leave several entries. Push it once.
+      final entryIdsByProject = <String, List<String>>{};
+      for (final e in entries) {
+        (entryIdsByProject[e.entityId] ??= []).add(e.id);
+      }
 
-    // An entry whose row no longer exists has nothing to push.
-    await _db.pendingChangesDao.deleteByIds([
-      for (final e in entryIdsByProject.entries)
-        if (!localIds.contains(e.key)) ...e.value,
-    ]);
+      final rows = await _db.localProjectsDao.getProjectsForPush(
+        entryIdsByProject.keys,
+      );
+      final localIds = {for (final r in rows) r.id};
 
-    for (final chunk in _chunks(rows, _pushChunkSize)) {
-      final response = await _remote.pushProjects([
-        for (final r in chunk) ProjectModel.fromLocal(r),
+      // An entry whose row no longer exists has nothing to push.
+      await _db.pendingChangesDao.deleteByIds([
+        for (final e in entryIdsByProject.entries)
+          if (!localIds.contains(e.key)) ...e.value,
       ]);
+      if (rows.isEmpty) continue;
+
+      final response = await _remote.pushProjects([
+        for (final r in rows) ProjectModel.fromLocal(r),
+      ]);
+      sent += rows.length;
       syncLog(
-        'push projects: sent ${chunk.length} -> '
+        'push projects: ${entries.length} queued -> sent ${rows.length}, '
         'applied ${response.applied.length}, '
         'rejected ${response.rejected.length}',
       );
@@ -112,41 +121,50 @@ class SyncEngine {
           ...?entryIdsByProject[id],
       ]);
     }
+
+    syncLog(
+      sent == 0
+          ? 'push projects: nothing to send'
+          : 'push projects: $sent sent in total',
+    );
   }
 
   Future<void> _pushSessions() async {
-    final pending = await _db.pendingChangesDao.getPending(SyncEntity.session);
-    if (pending.isEmpty) {
-      syncLog('push sessions: nothing queued');
-      return;
-    }
-
-    final entryIdsBySession = <String, List<String>>{};
-    for (final p in pending) {
-      (entryIdsBySession[p.entityId] ??= []).add(p.id);
-    }
-
-    final rows = await _db.localSessionsDao.getSessionsForPush(
-      entryIdsBySession.keys,
-    );
-    final localIds = {for (final r in rows) r.id};
-    syncLog(
-      'push sessions: ${pending.length} queued, ${rows.length} to send',
-    );
-
-    await _db.pendingChangesDao.deleteByIds([
-      for (final e in entryIdsBySession.entries)
-        if (!localIds.contains(e.key)) ...e.value,
-    ]);
-
+    String? cursor;
+    var sent = 0;
     var removedRejected = false;
 
-    for (final chunk in _chunks(rows, _pushChunkSize)) {
-      final response = await _remote.pushSessions([
-        for (final r in chunk) SessionModel.fromLocal(r),
+    while (true) {
+      final entries = await _db.pendingChangesDao.getPendingPage(
+        SyncEntity.session,
+        afterId: cursor,
+        limit: _pageSize,
+      );
+      if (entries.isEmpty) break;
+      cursor = entries.last.id;
+
+      final entryIdsBySession = <String, List<String>>{};
+      for (final e in entries) {
+        (entryIdsBySession[e.entityId] ??= []).add(e.id);
+      }
+
+      final rows = await _db.localSessionsDao.getSessionsForPush(
+        entryIdsBySession.keys,
+      );
+      final localIds = {for (final r in rows) r.id};
+
+      await _db.pendingChangesDao.deleteByIds([
+        for (final e in entryIdsBySession.entries)
+          if (!localIds.contains(e.key)) ...e.value,
       ]);
+      if (rows.isEmpty) continue;
+
+      final response = await _remote.pushSessions([
+        for (final r in rows) SessionModel.fromLocal(r),
+      ]);
+      sent += rows.length;
       syncLog(
-        'push sessions: sent ${chunk.length} -> '
+        'push sessions: ${entries.length} queued -> sent ${rows.length}, '
         'applied ${response.applied.length}, '
         'rejected ${response.rejected.length}, '
         'dropped (lost an overlap) ${response.dropped.length}',
@@ -172,6 +190,12 @@ class SyncEngine {
       ]);
     }
 
+    syncLog(
+      sent == 0
+          ? 'push sessions: nothing to send'
+          : 'push sessions: $sent sent in total',
+    );
+
     // A hard delete fires no trigger, so recompute the rollups once.
     if (removedRejected) {
       syncLog('push sessions: rejected rows removed, rebuilding rollups');
@@ -180,6 +204,10 @@ class SyncEngine {
   }
 
   // PULL
+  //
+  // Pages are read by (updated_at, id). The cursor is the last row of the
+  // previous page, so rows that share a timestamp are never split or skipped.
+  // Only the first page of a run starts 30 seconds before the checkpoint.
 
   /// Reads the device's own `users` row. Returns true if a reset was applied.
   Future<bool> _pullUser() async {
@@ -210,14 +238,16 @@ class SyncEngine {
 
   Future<bool> _pullProjects() async {
     final checkpoints = _db.pullCheckpointsDao;
-    String? cursor = await checkpoints.getProjectCheckpoint();
-    var overlap = cursor != null; // first page also re-reads the last 2 minutes
+    String? afterStamp = await checkpoints.getProjectCheckpoint();
+    String? afterId; // null on the first page
+    var overlap = afterStamp != null;
     var changed = false;
     var total = 0;
 
-    for (var page = 0; page < _maxPagesPerRun; page++) {
+    while (true) {
       final rows = await _remote.pullProjects(
-        after: cursor,
+        after: afterStamp,
+        afterId: afterId,
         overlap: overlap,
         pageSize: _pageSize,
       );
@@ -226,28 +256,31 @@ class SyncEngine {
 
       changed |= await _db.localProjectsDao.applyPulled(rows);
       total += rows.length;
-      cursor = rows.last.updatedAt!; // rows arrive ordered by updated_at
+      afterStamp = rows.last.updatedAt!;
+      afterId = rows.last.id;
       syncLog(
-        'pull projects: page ${page + 1} -> ${rows.length} rows, '
-        'checkpoint $cursor',
+        'pull projects: ${rows.length} rows, checkpoint $afterStamp',
       );
-      await checkpoints.advanceProjectCheckpoint(cursor); // save after each page
+      await checkpoints.advanceProjectCheckpoint(afterStamp); // save after each page
       if (rows.length < _pageSize) break;
     }
+
     syncLog('pull projects: $total received, list changed: $changed');
     return changed;
   }
 
   Future<bool> _pullSessions() async {
     final checkpoints = _db.pullCheckpointsDao;
-    String? cursor = await checkpoints.getSessionCheckpoint();
-    var overlap = cursor != null;
+    String? afterStamp = await checkpoints.getSessionCheckpoint();
+    String? afterId;
+    var overlap = afterStamp != null;
     var changed = false;
     var total = 0;
 
-    for (var page = 0; page < _maxPagesPerRun; page++) {
+    while (true) {
       final rows = await _remote.pullSessions(
-        after: cursor,
+        after: afterStamp,
+        afterId: afterId,
         overlap: overlap,
         pageSize: _pageSize,
       );
@@ -257,14 +290,15 @@ class SyncEngine {
       // The local triggers rebuild the rollups. No rollup is downloaded.
       changed |= await _db.localSessionsDao.applyPulled(rows);
       total += rows.length;
-      cursor = rows.last.updatedAt!;
+      afterStamp = rows.last.updatedAt!;
+      afterId = rows.last.id;
       syncLog(
-        'pull sessions: page ${page + 1} -> ${rows.length} rows, '
-        'checkpoint $cursor',
+        'pull sessions: ${rows.length} rows, checkpoint $afterStamp',
       );
-      await checkpoints.advanceSessionCheckpoint(cursor);
+      await checkpoints.advanceSessionCheckpoint(afterStamp);
       if (rows.length < _pageSize) break;
     }
+
     syncLog('pull sessions: $total received, list changed: $changed');
     return changed;
   }
@@ -293,11 +327,4 @@ class SyncEngine {
 
   static bool _isNewer(String cloud, String? local) =>
       local == null || DateTime.parse(cloud).isAfter(DateTime.parse(local));
-
-  static Iterable<List<T>> _chunks<T>(List<T> items, int size) sync* {
-    for (var i = 0; i < items.length; i += size) {
-      final end = i + size > items.length ? items.length : i + size;
-      yield items.sublist(i, end);
-    }
-  }
 }

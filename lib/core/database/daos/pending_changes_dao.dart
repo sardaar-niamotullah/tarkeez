@@ -23,11 +23,22 @@ class PendingChangesDao extends DatabaseAccessor<LocalDatabase>
         ),
       );
 
-  /// Oldest first (ids are UUIDv7).
-  Future<List<PendingChange>> getPending(SyncEntity entity) =>
+  /// The next [limit] queue entries of [entity] with an id after [afterId],
+  /// oldest first (ids are UUIDv7).
+  Future<List<PendingChange>> getPendingPage(
+    SyncEntity entity, {
+    String? afterId,
+    required int limit,
+  }) =>
       (select(pendingChanges)
-            ..where((t) => t.userId.equals(_uid) & t.entity.equalsValue(entity))
-            ..orderBy([(t) => OrderingTerm.asc(t.id)]))
+            ..where((t) {
+              final mine = t.userId.equals(_uid) & t.entity.equalsValue(entity);
+              return afterId == null
+                  ? mine
+                  : mine & t.id.isBiggerThanValue(afterId);
+            })
+            ..orderBy([(t) => OrderingTerm.asc(t.id)])
+            ..limit(limit))
           .get();
 
   Future<bool> hasPending() async {
@@ -41,9 +52,9 @@ class PendingChangesDao extends DatabaseAccessor<LocalDatabase>
 
   /// Emits whenever the queue changes. Starts a sync when it is not empty.
   Stream<List<String>> watchPendingIds() =>
-      (select(pendingChanges)..where((t) => t.userId.equals(_uid)))
-          .watch()
-          .map((rows) => [for (final r in rows) r.id]);
+      (select(pendingChanges)..where((t) => t.userId.equals(_uid))).watch().map(
+        (rows) => [for (final r in rows) r.id],
+      );
 
   /// Which of [entityIds] still have an unpushed change.
   Future<Set<String>> pendingEntityIds(

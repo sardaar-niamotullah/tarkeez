@@ -1,7 +1,15 @@
 -- =================================================================
+-- Page size: at most 200 rows per request, in both directions.
+-- It matches _pageSize in the app's sync engine. A longer queue is
+-- pushed in several requests, and a longer pull is read page by page.
+-- =================================================================
+
+-- =================================================================
 -- push_changes: upsert projects first, then sessions. One savepoint per row.
 -- Bad data (fails a constraint or has a wrong type) is rejected.
 -- Any other error leaves the row pending on the device to retry.
+--
+-- Limit: at most 200 rows in p_projects and 200 in p_sessions.
 --
 -- Response:
 --   applied  = saved (live or already deleted)
@@ -38,6 +46,10 @@ DECLARE
 BEGIN
   IF v_uid IS NULL THEN
     RAISE EXCEPTION 'not authenticated';
+  END IF;
+
+  IF jsonb_array_length(p_projects) > 200 OR jsonb_array_length(p_sessions) > 200 THEN
+    RAISE EXCEPTION 'push_changes: at most 200 rows per list, send the rest in another request';
   END IF;
 
   SELECT u.history_reset_at INTO v_reset_at FROM public.users u WHERE u.id = v_uid;
@@ -192,15 +204,18 @@ END;
 $$;
 
 -- =================================================================
--- pull_projects: rows stamped after p_after, in pages
--- A page always ends on a complete updated_at value, because one push stamps
--- all its rows with the same time and cutting through that group would lose rows.
--- p_overlap re-reads the last 2 minutes (for the first page of a pull only).
+-- pull_projects: one page of at most 200 rows, read by (updated_at, id).
+-- The cursor is the last row of the previous page (p_after, p_after_id), so
+-- rows that share a timestamp are never split or skipped.
+-- p_overlap makes the first page of a pull start 30 seconds before the
+-- checkpoint (README, safety rule 5).
 -- =================================================================
 DROP FUNCTION IF EXISTS public.pull_projects(TIMESTAMPTZ, BOOLEAN, INT);
+DROP FUNCTION IF EXISTS public.pull_projects(TIMESTAMPTZ, UUID, BOOLEAN, INT);
 
 CREATE FUNCTION public.pull_projects(
   p_after     TIMESTAMPTZ DEFAULT NULL,
+  p_after_id  UUID        DEFAULT NULL,
   p_overlap   BOOLEAN     DEFAULT FALSE,
   p_page_size INT         DEFAULT 200
 )
@@ -214,32 +229,31 @@ SET search_path = public
 AS $$
   WITH bounds AS (
     SELECT CASE WHEN p_after IS NULL THEN NULL::TIMESTAMPTZ
-                WHEN p_overlap THEN p_after - INTERVAL '2 minutes'
-                ELSE p_after END AS after_ts
-  ),
-  page AS (
-    SELECT pr.updated_at
-    FROM public.projects pr, bounds b
-    WHERE pr.user_id = auth.uid()
-      AND (b.after_ts IS NULL OR pr.updated_at > b.after_ts)
-    ORDER BY pr.updated_at, pr.id
-    LIMIT GREATEST(p_page_size, 1)
+                WHEN p_overlap THEN p_after - INTERVAL '30 seconds'
+                ELSE p_after END AS after_ts,
+           COALESCE(p_after_id, '00000000-0000-0000-0000-000000000000'::UUID) AS after_id
   )
   SELECT pr.id, pr.name, pr.color_id, pr.created_at, pr.deleted_at, pr.updated_at
   FROM public.projects pr, bounds b
   WHERE pr.user_id = auth.uid()
-    AND (b.after_ts IS NULL OR pr.updated_at > b.after_ts)
-    AND pr.updated_at <= (SELECT MAX(page.updated_at) FROM page)
-  ORDER BY pr.updated_at, pr.id;
+    AND (
+      b.after_ts IS NULL
+      OR (pr.updated_at >= b.after_ts          -- lets the index narrow the range
+          AND (pr.updated_at, pr.id) > (b.after_ts, b.after_id))
+    )
+  ORDER BY pr.updated_at, pr.id
+  LIMIT LEAST(GREATEST(p_page_size, 1), 200);
 $$;
 
 -- =================================================================
--- pull_sessions: same paging rule as pull_projects
+-- pull_sessions: same paging as pull_projects
 -- =================================================================
 DROP FUNCTION IF EXISTS public.pull_sessions(TIMESTAMPTZ, BOOLEAN, INT);
+DROP FUNCTION IF EXISTS public.pull_sessions(TIMESTAMPTZ, UUID, BOOLEAN, INT);
 
 CREATE FUNCTION public.pull_sessions(
   p_after     TIMESTAMPTZ DEFAULT NULL,
+  p_after_id  UUID        DEFAULT NULL,
   p_overlap   BOOLEAN     DEFAULT FALSE,
   p_page_size INT         DEFAULT 200
 )
@@ -253,24 +267,21 @@ SET search_path = public
 AS $$
   WITH bounds AS (
     SELECT CASE WHEN p_after IS NULL THEN NULL::TIMESTAMPTZ
-                WHEN p_overlap THEN p_after - INTERVAL '2 minutes'
-                ELSE p_after END AS after_ts
-  ),
-  page AS (
-    SELECT se.updated_at
-    FROM public.sessions se, bounds b
-    WHERE se.user_id = auth.uid()
-      AND (b.after_ts IS NULL OR se.updated_at > b.after_ts)
-    ORDER BY se.updated_at, se.id
-    LIMIT GREATEST(p_page_size, 1)
+                WHEN p_overlap THEN p_after - INTERVAL '30 seconds'
+                ELSE p_after END AS after_ts,
+           COALESCE(p_after_id, '00000000-0000-0000-0000-000000000000'::UUID) AS after_id
   )
   SELECT se.id, se.project_id, se.started_at, se.ended_at,
          se.utc_offset_minutes, se.deleted_at, se.updated_at
   FROM public.sessions se, bounds b
   WHERE se.user_id = auth.uid()
-    AND (b.after_ts IS NULL OR se.updated_at > b.after_ts)
-    AND se.updated_at <= (SELECT MAX(page.updated_at) FROM page)
-  ORDER BY se.updated_at, se.id;
+    AND (
+      b.after_ts IS NULL
+      OR (se.updated_at >= b.after_ts
+          AND (se.updated_at, se.id) > (b.after_ts, b.after_id))
+    )
+  ORDER BY se.updated_at, se.id
+  LIMIT LEAST(GREATEST(p_page_size, 1), 200);
 $$;
 
 -- =================================================================
@@ -309,11 +320,11 @@ $$;
 -- anon is revoked by name because Supabase grants it directly
 -- =================================================================
 REVOKE ALL ON FUNCTION public.push_changes(JSONB, JSONB) FROM PUBLIC, anon;
-REVOKE ALL ON FUNCTION public.pull_projects(TIMESTAMPTZ, BOOLEAN, INT) FROM PUBLIC, anon;
-REVOKE ALL ON FUNCTION public.pull_sessions(TIMESTAMPTZ, BOOLEAN, INT) FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION public.pull_projects(TIMESTAMPTZ, UUID, BOOLEAN, INT) FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION public.pull_sessions(TIMESTAMPTZ, UUID, BOOLEAN, INT) FROM PUBLIC, anon;
 REVOKE ALL ON FUNCTION public.reset_history() FROM PUBLIC, anon;
 
 GRANT EXECUTE ON FUNCTION public.push_changes(JSONB, JSONB) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.pull_projects(TIMESTAMPTZ, BOOLEAN, INT) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.pull_sessions(TIMESTAMPTZ, BOOLEAN, INT) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.pull_projects(TIMESTAMPTZ, UUID, BOOLEAN, INT) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.pull_sessions(TIMESTAMPTZ, UUID, BOOLEAN, INT) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.reset_history() TO authenticated;

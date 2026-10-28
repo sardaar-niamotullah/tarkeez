@@ -52,14 +52,22 @@ class SyncRemoteSource {
 
   // PULL
 
-  /// Rows stamped after [after], oldest first. [overlap] also re-reads the
-  /// last 2 minutes and is used for the first page of a pull only.
+  /// One page of rows after the cursor ([after], [afterId]), oldest first.
+  /// With [overlap] the page starts 30 seconds before [after]. It is used for
+  /// the first page of a pull only.
   Future<List<ProjectModel>> pullProjects({
     String? after,
+    String? afterId,
     required bool overlap,
     required int pageSize,
   }) async {
-    final data = await _pull('pull_projects', after, overlap, pageSize);
+    final data = await _pull(
+      'pull_projects',
+      after,
+      afterId,
+      overlap,
+      pageSize,
+    );
     return [
       for (final row in data)
         ProjectModel.fromJson(row as Map<String, dynamic>),
@@ -68,10 +76,17 @@ class SyncRemoteSource {
 
   Future<List<SessionModel>> pullSessions({
     String? after,
+    String? afterId,
     required bool overlap,
     required int pageSize,
   }) async {
-    final data = await _pull('pull_sessions', after, overlap, pageSize);
+    final data = await _pull(
+      'pull_sessions',
+      after,
+      afterId,
+      overlap,
+      pageSize,
+    );
     return [
       for (final row in data)
         SessionModel.fromJson(row as Map<String, dynamic>),
@@ -81,12 +96,18 @@ class SyncRemoteSource {
   Future<List> _pull(
     String fn,
     String? after,
+    String? afterId,
     bool overlap,
     int pageSize,
   ) async {
     return await _client.rpc(
       fn,
-      params: {'p_after': after, 'p_overlap': overlap, 'p_page_size': pageSize},
+      params: {
+        'p_after': after,
+        'p_after_id': afterId,
+        'p_overlap': overlap,
+        'p_page_size': pageSize,
+      },
     ) as List;
   }
 
