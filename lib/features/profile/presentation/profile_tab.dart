@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/go_premium_button.dart';
-import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
 import 'package:tarkeez/core/shared_files/widgets/avatar_circle.dart';
 import 'package:tarkeez/core/shared_files/widgets/custom_app_bar.dart';
 import 'package:tarkeez/core/shared_files/widgets/floating_action_button_wrapper.dart';
@@ -11,6 +10,7 @@ import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.da
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/sliver_scroll_max_width_box.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
+import 'package:tarkeez/features/auth/bloc/auth_bloc.dart';
 import 'package:tarkeez/features/profile/presentation/sections/heatmap.dart';
 import 'package:tarkeez/features/profile/presentation/sections/personal_bests_section.dart';
 import 'package:tarkeez/features/profile/presentation/sections/streaks.dart';
@@ -32,16 +32,22 @@ class ProfileTab extends StatelessWidget {
           bottom: false,
           child: Column(
             children: [
-              CustomAppBar(
-                title: 'Sardaar Niamotullah',
-                isBackButtonEnabled: false,
-                actions: [
-                  AvatarCircle(
-                    isEditable: false,
-                    radius: 18,
-                    imageUrl: 'https://lh3.googleusercontent.com/a/ACg8ocKoCwCI3505UxmTLlOmaN7f21lkr1TP4nz5qP7i0OlcahT9K3p3=s96-c',
-                  ),
-                ],
+              BlocBuilder<AuthBloc, AuthState>(
+                builder: (context, state) {
+                  final user = state is AuthSuccess ? state.user : null;
+                  return CustomAppBar(
+                    title: user?.fullName ?? 'Profile',
+                    isBackButtonEnabled: false,
+                    actions: [
+                      AvatarCircle(
+                        radius: 18,
+                        isEditable: false,
+                        name: user?.fullName,
+                        imageUrl: user?.avatarUrl,
+                      ),
+                    ],
+                  );
+                },
               ),
               Expanded(
                 child: Skeletonizer(

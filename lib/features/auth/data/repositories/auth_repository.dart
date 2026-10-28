@@ -101,7 +101,7 @@ class AuthRepositoryImpl implements AuthRepository {
       LocalUsersCompanion(
         id: Value(model.id),
         email: Value(model.email),
-        fullName: Value(model.name),
+        fullName: Value(model.fullName),
         avatarUrl: Value(model.avatarUrl),
       ),
     );

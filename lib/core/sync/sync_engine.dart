@@ -190,7 +190,7 @@ class SyncEngine {
       LocalUsersCompanion(
         id: Value(user.id),
         email: Value(user.email),
-        fullName: Value(user.name),
+        fullName: Value(user.fullName),
         avatarUrl: Value(user.avatarUrl),
       ),
     );
