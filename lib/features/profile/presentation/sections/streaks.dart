@@ -7,11 +7,10 @@ import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
 import 'package:tarkeez/features/profile/presentation/sections/widgets/streak_card.dart';
 
 class Streaks extends StatelessWidget {
-  const Streaks({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
-    //TODO: streak isn't updating in real time, need app restart.
     return Column(
       crossAxisAlignment: .start,
       children: [

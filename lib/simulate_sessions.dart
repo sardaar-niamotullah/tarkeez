@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:drift/drift.dart' show Value;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -70,7 +69,7 @@ class _SimulateSessionsState extends State<SimulateSessions> {
     controller.dispose();
   }
 
-    Future<void> _insertSimulateSessions() async {
+  Future<void> _insertSimulateSessions() async {
     final projectState = context.read<ProjectBloc>().state;
     final projectIds = <String?>[
       null, // no project
@@ -83,26 +82,35 @@ class _SimulateSessionsState extends State<SimulateSessions> {
 
     final stopwatch = Stopwatch()..start();
     final db = GetIt.I<LocalDatabase>();
-    final userId = db.currentUserId;
     final random = Random();
     final now = DateTime.now();
     final totalDays = _years * _daysPerYear;
 
-    const batchSize = 2000;
+    const chunkSize = 1000;
     const maxDailyDurationSeconds = 43_200; // 12 hours
     const lowDurationThresholdSeconds = 1_800; // 30 minutes
 
-    var pending = <LocalSessionsCompanion>[];
+    var pending = <({DateTime start, DateTime end, String? projectId})>[];
     var totalInserted = 0;
 
+    // The same call a hand-made session uses: it saves the row, the triggers
+    // update the rollups, and the change is queued for sync.
     Future<void> flush() async {
       if (pending.isEmpty) return;
       final chunk = pending;
       pending = [];
-      await db.batch((b) {
-        b.insertAll(db.localSessions, chunk);
+      await db.transaction(() async {
+        for (final s in chunk) {
+          await db.localSessionsDao.insertSession(
+            startedAt: s.start,
+            endedAt: s.end,
+            utcOffsetMinutes: s.start.timeZoneOffset.inMinutes,
+            projectId: s.projectId,
+          );
+        }
       });
       totalInserted += chunk.length;
+      debugPrint('🟨 📀 inserted $totalInserted sessions so far');
     }
 
     for (var dayOffset = 0; dayOffset < totalDays; dayOffset++) {
@@ -159,19 +167,13 @@ class _SimulateSessionsState extends State<SimulateSessions> {
         // A session must last at least 1 second.
         if (durationSeconds > 0) {
           final startLocal = dayStart.add(Duration(seconds: cursor));
-          final endLocal = startLocal.add(Duration(seconds: durationSeconds));
+          pending.add((
+            start: startLocal,
+            end: startLocal.add(Duration(seconds: durationSeconds)),
+            projectId: projectIds[random.nextInt(projectIds.length)],
+          ));
 
-          pending.add(
-            LocalSessionsCompanion.insert(
-              userId: userId,
-              utcOffsetMinutes: startLocal.timeZoneOffset.inMinutes,
-              startedAt: startLocal.toUtc(),
-              endedAt: endLocal.toUtc(),
-              projectId: Value(projectIds[random.nextInt(projectIds.length)]),
-            ),
-          );
-
-          if (pending.length >= batchSize) await flush();
+          if (pending.length >= chunkSize) await flush();
         }
         cursor += durationSeconds;
       }
@@ -186,7 +188,7 @@ class _SimulateSessionsState extends State<SimulateSessions> {
       'inserted $totalInserted sessions',
     );
 
-    // The rows went straight to the database, so tell the blocs to read again.
+    // The blocs read once, so ask them to read again.
     const UserDataReloader().reload();
 
     if (mounted) {
