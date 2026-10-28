@@ -10,14 +10,9 @@ import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/projects/presentation/sections/pick_project_bottom_sheet.dart';
 
 class SelectProjectButton extends StatelessWidget {
+  const new({super.key, this.selectedProject, required this.onProjectSelected});
   final ProjectModel? selectedProject;
   final ValueChanged<ProjectModel?> onProjectSelected;
-
-  const SelectProjectButton({
-    super.key,
-    this.selectedProject,
-    required this.onProjectSelected,
-  });
 
   @override
   Widget build(BuildContext context) {

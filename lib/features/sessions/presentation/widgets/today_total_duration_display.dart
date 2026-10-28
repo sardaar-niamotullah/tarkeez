@@ -8,7 +8,7 @@ import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
 import 'package:tarkeez/features/sessions/data/models/session_model.dart';
 
 class TodayTotalDurationDisplay extends StatelessWidget {
-  const TodayTotalDurationDisplay({
+  const new({
     super.key,
     required this.isRunning,
     required this.liveElapsed,

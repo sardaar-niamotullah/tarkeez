@@ -2,14 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 
 class PausePlayButton extends StatelessWidget {
+  const new({super.key, required this.isRunning, required this.onTap});
   final bool isRunning;
   final VoidCallback onTap;
-
-  const PausePlayButton({
-    super.key,
-    required this.isRunning,
-    required this.onTap,
-  });
 
   @override
   Widget build(BuildContext context) {

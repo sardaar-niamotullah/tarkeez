@@ -2,13 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class DurationTextUtils extends StatelessWidget {
-  final int durationInSeconds;
-  final double? fontSizePrimary, fontSizeSeconday;
-  final Color? fontColorPrimary, fontColorSecondary;
-  final bool showOnlyHour;
-  final double middleGap;
-
-  const DurationTextUtils({
+  const new({
     super.key,
     required this.durationInSeconds,
     this.fontSizePrimary,
@@ -18,14 +12,19 @@ class DurationTextUtils extends StatelessWidget {
     this.showOnlyHour = false,
     this.middleGap = 3,
   });
+  
+  final int durationInSeconds;
+  final double? fontSizePrimary, fontSizeSeconday;
+  final Color? fontColorPrimary, fontColorSecondary;
+  final bool showOnlyHour;
+  final double middleGap;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
-    final primaryStyle = TextUtils.title3(
-      context,
-    ).copyWith(fontSize: fontSizePrimary, color: fontColorPrimary);
+    final primaryStyle = TextUtils.title3(context)
+        .copyWith(fontSize: fontSizePrimary, color: fontColorPrimary);
 
     final durationInMinutes = durationInSeconds ~/ 60;
 

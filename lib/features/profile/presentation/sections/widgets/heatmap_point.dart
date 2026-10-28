@@ -4,16 +4,16 @@ import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
 import 'package:tarkeez/core/utils/date_time_formatter.dart';
 
 class HeatmapPoint extends StatelessWidget {
-  final int seconds;
-  final DateTime? date;
-  final bool paintHeatmap;
-
-  const HeatmapPoint({
+  const new({
     super.key,
     required this.seconds,
     this.date,
     this.paintHeatmap = true,
   });
+  
+  final int seconds;
+  final DateTime? date;
+  final bool paintHeatmap;
 
   double getOpacity(num seconds) {
     final s = seconds.toDouble();

@@ -11,8 +11,8 @@ import 'package:tarkeez/features/daily_rollups/data/models/personal_best_period.
 import 'package:tarkeez/features/profile/presentation/sections/widgets/personal_best_card.dart';
 
 class PersonalBestsSection extends StatelessWidget {
+  const new({super.key, required this.isLocked});
   final bool isLocked;
-  const PersonalBestsSection({super.key, required this.isLocked});
 
   @override
   Widget build(BuildContext context) {

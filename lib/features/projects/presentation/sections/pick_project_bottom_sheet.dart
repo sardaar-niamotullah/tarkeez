@@ -12,14 +12,13 @@ import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/project_picker_tile.dart';
 
 class ProjectSelectionResult {
+  const new(this.project);
   final ProjectModel? project;
-  const ProjectSelectionResult(this.project);
 }
 
 class PickProjectBottomSheet extends StatefulWidget {
+  const new({super.key, this.selectedProject});
   final ProjectModel? selectedProject;
-
-  const PickProjectBottomSheet({super.key, this.selectedProject});
 
   @override
   State<PickProjectBottomSheet> createState() => _PickProjectBottomSheetState();
