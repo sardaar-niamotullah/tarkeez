@@ -20,6 +20,12 @@ class _SimulateSessionsState extends State<SimulateSessions> {
   static const _maxYears = 50;
   static const _daysPerYear = 370;
 
+  static const _minGapSeconds = 180; // 3 minutes
+  static const _minDailySessions = 30;
+  static const _maxDailySessions = 50;
+  static const _maxDailyDurationSeconds = 43200; // 12 hours
+  static const _lowDurationThresholdSeconds = 1800; // 30 minutes
+
   bool _isInserting = false;
   int _years = _minYears;
 
@@ -43,8 +49,8 @@ class _SimulateSessionsState extends State<SimulateSessions> {
                 Align(
                   alignment: .centerRight,
                   child: CupertinoButton(
-                    child: const Text('Done'),
                     onPressed: () => Navigator.of(popupContext).pop(),
+                    child: const Text('Done'),
                   ),
                 ),
                 Expanded(
@@ -66,18 +72,21 @@ class _SimulateSessionsState extends State<SimulateSessions> {
         );
       },
     );
+
     controller.dispose();
   }
 
   Future<void> _insertSimulateSessions() async {
     final projectState = context.read<ProjectBloc>().state;
+
     final projectIds = <String?>[
-      null, // no project
+      null,
       if (projectState is ProjectLoaded)
         ...projectState.projects.map((p) => p.id),
     ];
 
     setState(() => _isInserting = true);
+
     debugPrint('🟨 📀 Simulate session insert started');
 
     final stopwatch = Stopwatch()..start();
@@ -87,108 +96,151 @@ class _SimulateSessionsState extends State<SimulateSessions> {
     final totalDays = _years * _daysPerYear;
 
     const chunkSize = 1000;
-    const maxDailyDurationSeconds = 43_200; // 12 hours
-    const lowDurationThresholdSeconds = 1_800; // 30 minutes
 
     var pending = <({DateTime start, DateTime end, String? projectId})>[];
     var totalInserted = 0;
 
-    // The same call a hand-made session uses: it saves the row, the triggers
-    // update the rollups, and the change is queued for sync.
     Future<void> flush() async {
       if (pending.isEmpty) return;
+
       final chunk = pending;
       pending = [];
+
       await db.transaction(() async {
-        for (final s in chunk) {
+        for (final session in chunk) {
           await db.localSessionsDao.insertSession(
-            startedAt: s.start,
-            endedAt: s.end,
-            utcOffsetMinutes: s.start.timeZoneOffset.inMinutes,
-            projectId: s.projectId,
+            startedAt: session.start,
+            endedAt: session.end,
+            utcOffsetMinutes: session.start.timeZoneOffset.inMinutes,
+            projectId: session.projectId,
           );
         }
       });
+
       totalInserted += chunk.length;
+
       debugPrint('🟨 📀 inserted $totalInserted sessions so far');
     }
 
     for (var dayOffset = 0; dayOffset < totalDays; dayOffset++) {
-      // Calendar days, so daylight saving never moves the start of the day.
       final dayStart = DateTime(now.year, now.month, now.day - dayOffset);
-      final daySeconds = DateTime(
+
+      final nextDayStart = DateTime(
         now.year,
         now.month,
         now.day - dayOffset + 1,
-      ).difference(dayStart).inSeconds;
+      );
 
-      // 30..50 sessions per day.
-      final numSessions = 30 + random.nextInt(21);
+      final daySeconds = nextDayStart.difference(dayStart).inSeconds;
 
-      // 40% of days: total = 0..1799 seconds.
-      // 60% of days: total = 1800..43200 seconds.
-      final totalDurationSeconds = random.nextDouble() < 0.4
-          ? random.nextInt(lowDurationThresholdSeconds)
-          : lowDurationThresholdSeconds +
+      // Randomly select 30–50 sessions for this day.
+      final requestedSessions =
+          _minDailySessions +
+          random.nextInt(_maxDailySessions - _minDailySessions + 1);
+
+      // 40% of days: 0–29 minutes.
+      // 60% of days: 30 minutes–12 hours.
+      final requestedTotalDuration = random.nextDouble() < 0.4
+          ? random.nextInt(_lowDurationThresholdSeconds)
+          : _lowDurationThresholdSeconds +
                 random.nextInt(
-                  maxDailyDurationSeconds - lowDurationThresholdSeconds + 1,
+                  _maxDailyDurationSeconds - _lowDurationThresholdSeconds + 1,
                 );
 
-      // Split the day's total into session lengths.
+      // Every session needs at least one second, and every pair of
+      // consecutive sessions needs a 180-second gap.
+      //
+      // Reduce the session count if the day cannot accommodate the
+      // requested durations and minimum gaps.
+      final maxSessionsByDay = max(
+        1,
+        (daySeconds + _minGapSeconds) ~/ (_minGapSeconds + 1),
+      );
+
+      final numSessions = min(requestedSessions, maxSessionsByDay);
+
+      // Distribute the requested duration across sessions.
+      // The total duration is capped to ensure that all sessions and
+      // their required gaps can fit inside the calendar day.
+      final availableDuration = max(
+        0,
+        daySeconds - (numSessions - 1) * _minGapSeconds,
+      );
+
+      final totalDurationSeconds = min(
+        requestedTotalDuration,
+        availableDuration,
+      );
+
+      // Split the daily duration into random session durations.
       final cuts = List.generate(
         numSessions - 1,
         (_) => random.nextInt(totalDurationSeconds + 1),
       )..sort();
 
       final sessionDurations = <int>[];
-      var previous = 0;
+      var previousCut = 0;
+
       for (final cut in cuts) {
-        sessionDurations.add(cut - previous);
-        previous = cut;
+        sessionDurations.add(cut - previousCut);
+        previousCut = cut;
       }
-      sessionDurations.add(totalDurationSeconds - previous);
 
-      // Split the rest of the day into gaps, one before each session. The
-      // sessions then follow each other and never overlap (the cloud would
-      // drop overlapping ones).
-      final gapCuts = List.generate(
-        numSessions,
-        (_) => random.nextInt(daySeconds - totalDurationSeconds + 1),
-      )..sort();
+      sessionDurations.add(totalDurationSeconds - previousCut);
 
-      var cursor = 0; // seconds since the start of the day
-      var previousGapCut = 0;
-      for (var i = 0; i < numSessions; i++) {
-        cursor += gapCuts[i] - previousGapCut;
-        previousGapCut = gapCuts[i];
+      // Sessions are generated chronologically. The gap is always
+      // measured from the previous session's END.
+      //
+      // Start late enough in the day that all durations and gaps fit.
+      final totalGapSeconds = (numSessions - 1) * _minGapSeconds;
 
+      final totalOccupiedSeconds =
+          sessionDurations.fold<int>(0, (sum, duration) => sum + duration) +
+          totalGapSeconds;
+
+      final maxStartOffset = max(0, daySeconds - totalOccupiedSeconds);
+
+      var cursor = random.nextInt(maxStartOffset + 1);
+
+      for (var i = 0; i < sessionDurations.length; i++) {
         final durationSeconds = sessionDurations[i];
 
-        // A session must last at least 1 second.
+        // Skip zero-length sessions.
         if (durationSeconds > 0) {
           final startLocal = dayStart.add(Duration(seconds: cursor));
+
+          final endLocal = startLocal.add(Duration(seconds: durationSeconds));
+
           pending.add((
             start: startLocal,
-            end: startLocal.add(Duration(seconds: durationSeconds)),
+            end: endLocal,
             projectId: projectIds[random.nextInt(projectIds.length)],
           ));
 
-          if (pending.length >= chunkSize) await flush();
+          if (pending.length >= chunkSize) {
+            await flush();
+          }
+
+          cursor += durationSeconds;
         }
-        cursor += durationSeconds;
+
+        // Reserve the mandatory 3-minute gap before the next session.
+        if (i < sessionDurations.length - 1) {
+          cursor += _minGapSeconds;
+        }
       }
     }
 
     await flush();
 
     stopwatch.stop();
+
     debugPrint(
       '🟨 📀 ⏱️ Total db writeup time: '
       '${stopwatch.elapsedMilliseconds}ms, '
       'inserted $totalInserted sessions',
     );
 
-    // The blocs read once, so ask them to read again.
     const UserDataReloader().reload();
 
     if (mounted) {
