@@ -39,11 +39,14 @@ class ProfileTab extends StatelessWidget {
                     title: user?.fullName ?? 'Profile',
                     isBackButtonEnabled: false,
                     actions: [
-                      AvatarCircle(
-                        radius: 18,
-                        isEditable: false,
-                        name: user?.fullName,
-                        imageUrl: user?.avatarUrl,
+                      Transform.translate(
+                        offset: Offset(0, context.md ? 5 : 0),
+                        child: AvatarCircle(
+                          radius: 18,
+                          isEditable: false,
+                          name: user?.fullName,
+                          imageUrl: user?.avatarUrl,
+                        ),
                       ),
                     ],
                   );
