@@ -13,11 +13,7 @@ import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/navigation_cubit.dart';
 
 class AppProviders extends StatelessWidget {
-  const new({
-    super.key,
-    required this.child,
-    required this.initialTheme,
-  });
+  const new({super.key, required this.child, required this.initialTheme});
 
   final Widget child;
   final ThemeState initialTheme;
@@ -37,7 +33,16 @@ class AppProviders extends StatelessWidget {
         BlocProvider(create: (_) => getIt<DailyRollupBloc>()),
         BlocProvider(create: (_) => getIt<ProjectRollupBloc>()),
       ],
-      child: child,
+      child: BlocListener<SessionBloc, SessionState>(
+        listenWhen: (_, current) =>
+            current is SessionLoaded &&
+            (current.isEntered || current.isDeleted),
+        listener: (context, _) {
+          context.read<DailyRollupBloc>().add(DailyRollupSynced());
+          context.read<ProjectRollupBloc>().add(ProjectRollupSynced());
+        },
+        child: child,
+      ),
     );
   }
 }
