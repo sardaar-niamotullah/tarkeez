@@ -4,6 +4,7 @@ import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/go_premium_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
+import 'package:tarkeez/core/shared_files/widgets/avatar_circle.dart';
 import 'package:tarkeez/core/shared_files/widgets/custom_app_bar.dart';
 import 'package:tarkeez/core/shared_files/widgets/floating_action_button_wrapper.dart';
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';
@@ -32,9 +33,15 @@ class ProfileTab extends StatelessWidget {
           child: Column(
             children: [
               CustomAppBar(
-                title: 'Profile',
+                title: 'Sardaar Niamotullah',
                 isBackButtonEnabled: false,
-                actions: [ActionPageIcon(iconPath: SvgPaths.user)],
+                actions: [
+                  AvatarCircle(
+                    isEditable: false,
+                    radius: 18,
+                    imageUrl: 'https://lh3.googleusercontent.com/a/ACg8ocKoCwCI3505UxmTLlOmaN7f21lkr1TP4nz5qP7i0OlcahT9K3p3=s96-c',
+                  ),
+                ],
               ),
               Expanded(
                 child: Skeletonizer(
