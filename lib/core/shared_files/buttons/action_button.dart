@@ -2,19 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class ActionButton extends StatelessWidget {
-  final String iconPath;
-  final double iconSize;
-  final Color? iconColor, backgroundColor;
-  final VoidCallback onTap;
-
-  const ActionButton({
+  const new({
     super.key,
     required this.iconPath,
     this.iconSize = 18,
+    this.boxSize = 32,
     this.iconColor,
     this.backgroundColor,
     required this.onTap,
   });
+
+  final String iconPath;
+  final double iconSize, boxSize;
+  final Color? iconColor, backgroundColor;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +27,8 @@ class ActionButton extends StatelessWidget {
         customBorder: const CircleBorder(),
         mouseCursor: SystemMouseCursors.click,
         child: Ink(
-          height: 32,
-          width: 32,
+          height: boxSize,
+          width: boxSize,
           decoration: BoxDecoration(
             color: backgroundColor ?? scheme.tertiary,
             shape: .circle,

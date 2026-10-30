@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tarkeez/core/shared_files/buttons/action_button.dart';
 import 'package:tarkeez/core/shared_files/buttons/theme_switch_button.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:flutter/material.dart';
@@ -111,7 +112,29 @@ class AppDrawer extends StatelessWidget {
                 iconPath: SvgPaths.logOut,
                 onTap: () => context.read<AuthBloc>().add(SignOutRequested()),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: .spaceBetween,
+                children: [
+                  ActionButton(
+                    iconPath: SvgPaths.appStore,
+                    onTap: () {},
+                  ),
+                  ActionButton(
+                    iconPath: SvgPaths.apple,
+                    onTap: () {},
+                  ),
+                  ActionButton(
+                    iconPath: SvgPaths.gear,
+                    onTap: () {},
+                  ),
+                  ActionButton(
+                    iconPath: SvgPaths.projects,
+                    onTap: () {},
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: .spaceBetween,
                 children: [

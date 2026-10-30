@@ -5,16 +5,16 @@ import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class AppDrawerItem extends StatelessWidget {
-  final String title;
-  final String iconPath;
-  final VoidCallback onTap;
-
-  const AppDrawerItem({
+  const new({
     super.key,
     required this.title,
     required this.iconPath,
     required this.onTap,
   });
+  
+  final String title;
+  final String iconPath;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
