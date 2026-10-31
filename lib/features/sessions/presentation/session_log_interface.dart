@@ -14,6 +14,8 @@ import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
 import 'package:tarkeez/features/sessions/presentation/widgets/pause_play_button.dart';
 import 'package:tarkeez/features/sessions/presentation/widgets/pomodoro_set_duration_button.dart';
 import 'package:tarkeez/features/sessions/presentation/widgets/today_total_duration_display.dart';
+import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
+import 'package:tarkeez/features/project_rollups/bloc/project_rollup_bloc.dart';
 
 class SessionLogInterface extends StatefulWidget {
   const new({super.key});
@@ -46,7 +48,15 @@ class _SessionLogInterfaceState extends State<SessionLogInterface> {
           _liveElapsed = AppClock.now().difference(startedAt);
         }
       });
+      if (startedAt != null) _pushLiveToStats(startedAt);
     });
+  }
+
+  void _pushLiveToStats(DateTime startedAt) {
+    context.read<DailyRollupBloc>().add(DailyRollupLiveTicked(startedAt));
+    context.read<ProjectRollupBloc>().add(
+      ProjectRollupLiveTicked(startedAt, _selectedProject?.id),
+    );
   }
 
   void _stopTicker() {

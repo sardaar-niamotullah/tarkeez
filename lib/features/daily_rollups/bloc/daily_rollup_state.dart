@@ -16,21 +16,26 @@ class DailyRollupFailure extends DailyRollupState {
 }
 
 class DailyRollupLoaded extends DailyRollupState {
-  new({
-    required this.rollupsByDate,
-    this.liveDate,
-    this.liveElapsedSeconds = 0,
-  });
+  new({required this.rollupsByDate, this.liveByDate = const {}});
 
+  /// Saved totals from SQLite: 'YYYY-MM-DD' -> seconds.
   final Map<String, int> rollupsByDate;
-  final String? liveDate;
-  final int liveElapsedSeconds;
 
-  int durationFor(String date) {
-    final base = rollupsByDate[date] ?? 0;
-    if (date == liveDate) return base + liveElapsedSeconds;
-    return base;
-  }
+  /// Seconds of the running session per local day (two entries when it
+  /// crosses midnight). Empty when no session is running.
+  final Map<String, int> liveByDate;
+
+  /// Saved totals plus the running session: the single map every stat below
+  /// reads from. `late final` builds it once per state, not once per getter.
+  late final Map<String, int> _effectiveRollups = liveByDate.isEmpty
+      ? rollupsByDate
+      : {
+          ...rollupsByDate,
+          for (final e in liveByDate.entries)
+            e.key: (rollupsByDate[e.key] ?? 0) + e.value,
+        };
+
+  int durationFor(String date) => _effectiveRollups[date] ?? 0;
 
   int totalSecondsForPeriod(PeriodRange period) {
     final range = period.dateRange();
@@ -43,14 +48,6 @@ class DailyRollupLoaded extends DailyRollupState {
       RollupDateUtils.format(start),
       RollupDateUtils.format(end),
     );
-  }
-
-  /// Merges DB-persisted rollups with today's live overlay — the single
-  /// map every stats computation below reads from.
-  Map<String, int> get _effectiveRollups {
-    if (liveDate == null || liveElapsedSeconds == 0) return rollupsByDate;
-    return Map<String, int>.from(rollupsByDate)
-      ..[liveDate!] = durationFor(liveDate!);
   }
 
   // Heatmap
@@ -94,14 +91,10 @@ class DailyRollupLoaded extends DailyRollupState {
 
   DailyRollupLoaded copyWith({
     Map<String, int>? rollupsByDate,
-    String? liveDate,
-    int? liveElapsedSeconds,
+    Map<String, int>? liveByDate,
     bool clearLive = false,
   }) => DailyRollupLoaded(
     rollupsByDate: rollupsByDate ?? this.rollupsByDate,
-    liveDate: clearLive ? null : (liveDate ?? this.liveDate),
-    liveElapsedSeconds: clearLive
-        ? 0
-        : (liveElapsedSeconds ?? this.liveElapsedSeconds),
+    liveByDate: clearLive ? const {} : (liveByDate ?? this.liveByDate),
   );
 }

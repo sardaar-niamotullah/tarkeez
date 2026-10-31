@@ -14,6 +14,9 @@ import 'package:tarkeez/features/daily_rollups/stats/streak_stats.dart';
 import 'package:tarkeez/features/daily_rollups/stats/timeline_stats.dart';
 import 'package:tarkeez/features/daily_rollups/data/models/heatmap_day.dart';
 import 'package:tarkeez/features/daily_rollups/stats/heatmap_stats.dart';
+import 'package:flutter/foundation.dart' show mapEquals;
+import 'package:tarkeez/core/utils/app_clock.dart';
+import 'package:tarkeez/core/utils/live_session_slices.dart';
 
 part 'daily_rollup_event.dart';
 part 'daily_rollup_state.dart';
@@ -78,40 +81,43 @@ class DailyRollupBloc extends Bloc<DailyRollupEvent, DailyRollupState> {
     final current = state;
     if (current is! DailyRollupLoaded) return;
 
-    final elapsed = DateTime.now().difference(event.timerStartedAt).inSeconds;
-    emit(
-      current.copyWith(
-        liveDate: RollupDateUtils.todayLocal(),
-        liveElapsedSeconds: elapsed,
-      ),
-    );
+    final live = LiveSessionSlices.split(event.timerStartedAt, AppClock.now());
+    // The timer widget ticks twice a second, the seconds change once.
+    if (mapEquals(live, current.liveByDate)) return;
+
+    emit(current.copyWith(liveByDate: live));
   }
 
-  void _onLiveStopped(
+  Future<void> _onLiveStopped(
     DailyRollupLiveStopped event,
     Emitter<DailyRollupState> emit,
-  ) {
-    final current = state;
-    if (current is! DailyRollupLoaded) return;
-    emit(current.copyWith(clearLive: true));
-  }
+  ) => _reload(emit, clearLive: true);
 
   Future<void> _onSynced(
     DailyRollupSynced event,
     Emitter<DailyRollupState> emit,
-  ) async {
+  ) => _reload(emit, clearLive: false);
+
+  Future<void> _reload(
+    Emitter<DailyRollupState> emit, {
+    required bool clearLive,
+  }) async {
     final result = await _repository.fetchAllRollups();
+    final current = state;
     result.fold(
       onSuccess: (rollups) {
         final byDate = {for (final r in rollups) r.date: r.durationSeconds};
-        final current = state;
         emit(
           current is DailyRollupLoaded
-              ? current.copyWith(rollupsByDate: byDate)
+              ? current.copyWith(rollupsByDate: byDate, clearLive: clearLive)
               : DailyRollupLoaded(rollupsByDate: byDate),
         );
       },
-      onFailure: (_) {},
+      onFailure: (_) {
+        if (clearLive && current is DailyRollupLoaded) {
+          emit(current.copyWith(clearLive: true));
+        }
+      },
     );
   }
 

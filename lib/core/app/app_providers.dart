@@ -35,11 +35,19 @@ class AppProviders extends StatelessWidget {
       ],
       child: BlocListener<SessionBloc, SessionState>(
         listenWhen: (_, current) =>
-            current is SessionLoaded &&
-            (current.isEntered || current.isDeleted),
-        listener: (context, _) {
-          context.read<DailyRollupBloc>().add(DailyRollupSynced());
-          context.read<ProjectRollupBloc>().add(ProjectRollupSynced());
+            current is SessionFailure ||
+            (current is SessionLoaded &&
+                (current.isEntered || current.isDeleted)),
+        listener: (context, state) {
+          final daily = context.read<DailyRollupBloc>();
+          final projects = context.read<ProjectRollupBloc>();
+          if (state is SessionLoaded && state.isDeleted) {
+            daily.add(DailyRollupSynced());
+            projects.add(ProjectRollupSynced());
+          } else {
+            daily.add(DailyRollupLiveStopped());
+            projects.add(ProjectRollupLiveStopped());
+          }
         },
         child: child,
       ),

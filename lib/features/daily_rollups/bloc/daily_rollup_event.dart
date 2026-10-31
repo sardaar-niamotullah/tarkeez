@@ -9,13 +9,13 @@ class RefreshDailyRollupRequested extends DailyRollupEvent {
   final int days;
 }
 
-/// Fired every tick (e.g. once/sec) while a session timer is running.
+/// Fired while a session timer is running. Repeats within the same second are ignored.
 class DailyRollupLiveTicked extends DailyRollupEvent {
   new(this.timerStartedAt);
   final DateTime timerStartedAt;
 }
 
-/// Fired when a running timer is cancelled/discarded (no session saved).
+/// /// The running session ended (saved or failed): re-read the rollups and drop the live part together.
 class DailyRollupLiveStopped extends DailyRollupEvent {}
 
 /// Sync changed the local sessions (a pull or a history reset): read the rollups again.
