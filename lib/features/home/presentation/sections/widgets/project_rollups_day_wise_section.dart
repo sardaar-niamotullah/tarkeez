@@ -7,11 +7,19 @@ import 'package:tarkeez/features/home/presentation/sections/widgets/project_dura
 import 'package:tarkeez/features/project_rollups/data/models/day_wise_projects_rollup_model.dart';
 
 class ProjectRollupsDayWiseSection extends StatelessWidget {
-  const new({super.key, required this.day, this.activeProjectId});
+  const new({
+    super.key,
+    required this.day,
+    this.isRunning = false,
+    this.activeProjectId,
+  });
 
   final DayWiseProjectsRollupModel day;
 
-  /// Project of the currently running session (only meaningful for today).
+  /// A session is running and this card is today's.
+  final bool isRunning;
+
+  /// Project of the running session. Null means "No project".
   final String? activeProjectId;
 
   String _label(BuildContext context) {
@@ -68,9 +76,7 @@ class ProjectRollupsDayWiseSection extends StatelessWidget {
                     project: item.project,
                     durationInSeconds: item.durationInSeconds,
                     fraction: total == 0 ? 0 : item.durationInSeconds / total,
-                    isActive:
-                        activeProjectId != null &&
-                        item.project?.id == activeProjectId,
+                    isActive: isRunning && item.project?.id == activeProjectId,
                   ),
               ],
             ),

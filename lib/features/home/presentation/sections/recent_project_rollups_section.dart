@@ -23,6 +23,9 @@ class RecentProjectRollupsSection extends StatelessWidget {
         };
         return BlocBuilder<ProjectRollupBloc, ProjectRollupState>(
           builder: (context, state) {
+            final loaded = state is ProjectRollupLoaded ? state : null;
+            final now = DateTime.now();
+            final today = DateTime(now.year, now.month, now.day);
             final List<ProjectRollupModel>? rollups = switch (state) {
               ProjectRollupLoaded(:final rollups) => rollups,
               ProjectRollupLoading(:final rollups) => rollups,
@@ -55,6 +58,9 @@ class RecentProjectRollupsSection extends StatelessWidget {
                   ProjectRollupsDayWiseSection(
                     key: ValueKey(day.date),
                     day: day,
+                    isRunning:
+                        (loaded?.isRunning ?? false) && day.date == today,
+                    activeProjectId: loaded?.runningProjectId,
                   ),
               ],
             );

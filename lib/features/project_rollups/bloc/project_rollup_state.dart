@@ -27,8 +27,15 @@ class ProjectRollupLoaded extends ProjectRollupState {
 
   /// What the UI reads: saved rows plus the running session. Every consumer
   /// sums rows per date and project, so the extra rows need no merging.
-  late final List<ProjectRollupModel> rollups =
-      live.isEmpty ? persisted : [...persisted, ...live];
+  late final List<ProjectRollupModel> rollups = live.isEmpty
+      ? persisted
+      : [...persisted, ...live];
+
+  /// A session is running. True from its first whole second until it is saved.
+  bool get isRunning => live.isNotEmpty;
+
+  /// Project of the running session. Null means "No project".
+  String? get runningProjectId => live.isEmpty ? null : live.first.projectId;
 
   List<ProjectDurationModel> durationsForPeriod(
     PeriodRange period,
