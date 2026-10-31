@@ -48,8 +48,8 @@ class ProjectDurationTile extends StatelessWidget {
                 ? context.md
                       ? context.lg
                             ? 128
-                            : 86
-                      : 48
+                            : 48
+                      : 44
                 : 20,
           ),
           ProjectDurationPercentageLine(project: project, fraction: fraction),
