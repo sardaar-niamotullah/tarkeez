@@ -6,9 +6,10 @@ import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 
 class ProjectPickerTile extends StatelessWidget {
+  const new({super.key, required this.index, this.project});
+  
   final int index;
   final ProjectModel? project;
-  const ProjectPickerTile({super.key, required this.index, this.project});
 
   @override
   Widget build(BuildContext context) {

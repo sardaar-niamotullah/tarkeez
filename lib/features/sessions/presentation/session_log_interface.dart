@@ -68,19 +68,45 @@ class _SessionLogInterfaceState extends State<SessionLogInterface> {
     });
   }
 
+  void _saveSession(DateTime startedAt, DateTime endedAt) {
+    context.read<SessionBloc>().add(
+      EntrySessionRequested(
+        startedAt: startedAt,
+        endedAt: endedAt,
+        project: _selectedProject,
+      ),
+    );
+  }
+
+  void _onProjectSelected(ProjectModel? project) {
+    final startedAt = _startedAt;
+    final now = AppClock.now();
+    final switched = project?.id != _selectedProject?.id;
+
+    // Under a second there is nothing to save (the repository rejects it),
+    // so that session just carries on under the new project.
+    if (startedAt != null &&
+        switched &&
+        now.difference(startedAt) >= const Duration(seconds: 1)) {
+      _saveSession(
+        startedAt,
+        now,
+      ); // _selectedProject is still the old one here
+      setState(() {
+        _startedAt = now;
+        _liveElapsed = Duration.zero;
+        _selectedProject = project;
+      });
+    } else {
+      setState(() => _selectedProject = project);
+    }
+  }
+
   void _onPausePlayTapped() {
     GetIt.I<SoundService>().playBell();
     if (_isRunning) {
       final startedAt = _startedAt;
-      if (startedAt != null) {
-        context.read<SessionBloc>().add(
-          EntrySessionRequested(
-            startedAt: startedAt,
-            endedAt: AppClock.now(),
-            project: _selectedProject,
-          ),
-        );
-      }
+      if (startedAt != null) _saveSession(startedAt, AppClock.now());
       _stopTicker();
       setState(() {
         _isRunning = false;
@@ -142,10 +168,8 @@ class _SessionLogInterfaceState extends State<SessionLogInterface> {
                       alignment: .centerLeft,
                       child: SelectProjectButton(
                         selectedProject: _selectedProject,
-                        onProjectSelected: (project) => setState(() {
-                          _selectedProject = project;
-                        }),
-                      ),
+                        onProjectSelected: _onProjectSelected,
+                      )
                     ),
                   ),
                 ),
