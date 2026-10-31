@@ -8,6 +8,7 @@ import 'package:tarkeez/features/auth/bloc/auth_bloc.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
 import 'package:tarkeez/features/project_rollups/bloc/project_rollup_bloc.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
+import 'package:tarkeez/features/projects/cubit/running_project_cubit.dart';
 import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
 import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/navigation_cubit.dart';
@@ -26,6 +27,7 @@ class AppProviders extends StatelessWidget {
         BlocProvider(create: (_) => NavigationCubit()),
         BlocProvider(create: (_) => ReportPeriodCubit()),
         BlocProvider(create: (_) => SessionPeriodCubit()),
+        BlocProvider(create: (_) => RunningProjectCubit()),
         BlocProvider(create: (_) => getIt<AuthBloc>()),
         BlocProvider(create: (_) => getIt<SyncBloc>()),
         BlocProvider(create: (_) => getIt<ProjectBloc>()),

@@ -8,6 +8,7 @@ import 'package:tarkeez/core/services/sound_service.dart';
 import 'package:tarkeez/core/utils/app_clock.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/session_log_interface_bottom_clipper.dart';
+import 'package:tarkeez/features/projects/cubit/running_project_cubit.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/select_project_button.dart';
 import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
@@ -100,13 +101,19 @@ class _SessionLogInterfaceState extends State<SessionLogInterface> {
     } else {
       setState(() => _selectedProject = project);
     }
+
+    if (_startedAt != null) {
+      context.read<RunningProjectCubit>().start(project?.id);
+    }
   }
 
   void _onPausePlayTapped() {
     GetIt.I<SoundService>().playBell();
+    final running = context.read<RunningProjectCubit>();
     if (_isRunning) {
       final startedAt = _startedAt;
       if (startedAt != null) _saveSession(startedAt, AppClock.now());
+      running.stop();
       _stopTicker();
       setState(() {
         _isRunning = false;
@@ -117,6 +124,7 @@ class _SessionLogInterfaceState extends State<SessionLogInterface> {
         _isRunning = true;
         _startedAt = AppClock.now();
       });
+      running.start(_selectedProject?.id);
       _startTicker();
     }
   }
@@ -169,7 +177,7 @@ class _SessionLogInterfaceState extends State<SessionLogInterface> {
                       child: SelectProjectButton(
                         selectedProject: _selectedProject,
                         onProjectSelected: _onProjectSelected,
-                      )
+                      ),
                     ),
                   ),
                 ),

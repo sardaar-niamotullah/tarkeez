@@ -5,6 +5,7 @@ import 'package:tarkeez/features/project_rollups/bloc/project_rollup_bloc.dart';
 import 'package:tarkeez/features/project_rollups/data/models/project_rollup_model.dart';
 import 'package:tarkeez/features/project_rollups/stats/day_wise_projects_rollup_stats.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
+import 'package:tarkeez/features/projects/cubit/running_project_cubit.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 
 class RecentProjectRollupsSection extends StatelessWidget {
@@ -14,6 +15,7 @@ class RecentProjectRollupsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final running = context.watch<RunningProjectCubit>().state;
     return BlocBuilder<ProjectBloc, ProjectState>(
       builder: (context, projectState) {
         final List<ProjectModel> projects = switch (projectState) {
@@ -23,7 +25,6 @@ class RecentProjectRollupsSection extends StatelessWidget {
         };
         return BlocBuilder<ProjectRollupBloc, ProjectRollupState>(
           builder: (context, state) {
-            final loaded = state is ProjectRollupLoaded ? state : null;
             final now = DateTime.now();
             final today = DateTime(now.year, now.month, now.day);
             final List<ProjectRollupModel>? rollups = switch (state) {
@@ -58,9 +59,8 @@ class RecentProjectRollupsSection extends StatelessWidget {
                   ProjectRollupsDayWiseSection(
                     key: ValueKey(day.date),
                     day: day,
-                    isRunning:
-                        (loaded?.isRunning ?? false) && day.date == today,
-                    activeProjectId: loaded?.runningProjectId,
+                    isRunning: running != null && day.date == today,
+                    activeProjectId: running?.id,
                   ),
               ],
             );
