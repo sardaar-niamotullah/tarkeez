@@ -43,6 +43,7 @@ class SvgPaths {
   static const String document = 'assets/svgs/document.svg';
   static const String editPen = 'assets/svgs/edit_pen.svg';
   static const String exclamation = 'assets/svgs/exclamation.svg';
+  static const String facebook = 'assets/svgs/facebook.svg';
   static const String flashDrive = 'assets/svgs/flash_drive.svg';
   static const String filter = 'assets/svgs/filter.svg';
   static const String folder = 'assets/svgs/folder.svg';
@@ -57,8 +58,10 @@ class SvgPaths {
   static const String headset = 'assets/svgs/headset.svg';
   static const String home = 'assets/svgs/home.svg';
   static const String homeBold = 'assets/svgs/home_bold.svg';
+  static const String instagram = 'assets/svgs/instagram.svg';
   static const String key = 'assets/svgs/key.svg';
   static const String laptop = 'assets/svgs/laptop.svg';
+  static const String linkedin = 'assets/svgs/linkedin.svg';
   static const String letter = 'assets/svgs/letter.svg';
   static const String letterUnread = 'assets/svgs/letter_unread.svg';
   static const String locationPin = 'assets/svgs/location_pin.svg';
@@ -108,4 +111,5 @@ class SvgPaths {
   static const String usersBold = 'assets/svgs/users_bold.svg';
   static const String upload = 'assets/svgs/upload.svg';
   static const String weight = 'assets/svgs/weight.svg';
+  static const String x = 'assets/svgs/x.svg';
 }

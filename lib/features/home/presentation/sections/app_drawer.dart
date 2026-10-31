@@ -116,22 +116,10 @@ class AppDrawer extends StatelessWidget {
               Row(
                 mainAxisAlignment: .spaceBetween,
                 children: [
-                  ActionButton(
-                    iconPath: SvgPaths.appStore,
-                    onTap: () {},
-                  ),
-                  ActionButton(
-                    iconPath: SvgPaths.apple,
-                    onTap: () {},
-                  ),
-                  ActionButton(
-                    iconPath: SvgPaths.gear,
-                    onTap: () {},
-                  ),
-                  ActionButton(
-                    iconPath: SvgPaths.projects,
-                    onTap: () {},
-                  ),
+                  ActionButton(iconPath: SvgPaths.linkedin, onTap: () {}),
+                  ActionButton(iconPath: SvgPaths.x, onTap: () {}),
+                  ActionButton(iconPath: SvgPaths.instagram, onTap: () {}),
+                  ActionButton(iconPath: SvgPaths.facebook, onTap: () {}),
                 ],
               ),
               const SizedBox(height: 8),
