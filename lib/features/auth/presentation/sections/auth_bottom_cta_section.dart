@@ -65,7 +65,7 @@ class AuthBottomCTASection extends StatelessWidget {
               // Tagline
               // ──────────────────────────────────────────────────────────
               Text(
-                'Keep daily track of the most valuable and limited\nresource you have access to, which is time.',
+                'Keep track of the most valuable and limited\nresource you have access to, which is time.',
                 style: TextUtils.paragraphSmall(
                   context,
                   color: scheme.onTertiary,
