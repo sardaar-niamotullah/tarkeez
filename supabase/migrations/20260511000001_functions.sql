@@ -5,6 +5,7 @@ CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = ''
 AS $$
 DECLARE
   oauth_name TEXT;
@@ -52,7 +53,7 @@ $$;
 CREATE OR REPLACE FUNCTION public.prevent_id_update()
 RETURNS trigger
 LANGUAGE plpgsql
-SECURITY DEFINER
+SET search_path = ''
 AS $$
 BEGIN
   IF NEW.id <> OLD.id THEN

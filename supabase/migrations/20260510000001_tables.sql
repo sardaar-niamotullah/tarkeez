@@ -25,15 +25,15 @@ CREATE POLICY "allow_select_own_data"
 ON public.users
 FOR SELECT
 TO authenticated
-USING (id = auth.uid());
+USING (id = (SELECT auth.uid()));
 
 DROP POLICY IF EXISTS "allow_update_own_data" ON public.users;
 CREATE POLICY "allow_update_own_data"
 ON public.users
 FOR UPDATE
 TO authenticated
-USING (id = auth.uid())
-WITH CHECK (id = auth.uid());
+USING (id = (SELECT auth.uid()))
+WITH CHECK (id = (SELECT auth.uid()));
 
 -- =================================================================
 -- PROJECTS
@@ -73,29 +73,29 @@ CREATE POLICY "allow_select_own_projects"
 ON public.projects
 FOR SELECT
 TO authenticated
-USING (user_id = auth.uid());
+USING (user_id = (SELECT auth.uid()));
 
 DROP POLICY IF EXISTS "allow_insert_own_projects" ON public.projects;
 CREATE POLICY "allow_insert_own_projects"
 ON public.projects
 FOR INSERT
 TO authenticated
-WITH CHECK (user_id = auth.uid());
+WITH CHECK (user_id = (SELECT auth.uid()));
 
 DROP POLICY IF EXISTS "allow_update_own_projects" ON public.projects;
 CREATE POLICY "allow_update_own_projects"
 ON public.projects
 FOR UPDATE
 TO authenticated
-USING (user_id = auth.uid())
-WITH CHECK (user_id = auth.uid());
+USING (user_id = (SELECT auth.uid()))
+WITH CHECK (user_id = (SELECT auth.uid()));
 
 DROP POLICY IF EXISTS "allow_delete_own_projects" ON public.projects;
 CREATE POLICY "allow_delete_own_projects"
 ON public.projects
 FOR DELETE
 TO authenticated
-USING (user_id = auth.uid());
+USING (user_id = (SELECT auth.uid()));
 
 -- =================================================================
 -- SESSIONS
@@ -147,29 +147,29 @@ CREATE POLICY "allow_select_own_sessions"
 ON public.sessions
 FOR SELECT
 TO authenticated
-USING (user_id = auth.uid());
+USING (user_id = (SELECT auth.uid()));
 
 DROP POLICY IF EXISTS "allow_insert_own_sessions" ON public.sessions;
 CREATE POLICY "allow_insert_own_sessions"
 ON public.sessions
 FOR INSERT
 TO authenticated
-WITH CHECK (user_id = auth.uid());
+WITH CHECK (user_id = (SELECT auth.uid()));
 
 DROP POLICY IF EXISTS "allow_update_own_sessions" ON public.sessions;
 CREATE POLICY "allow_update_own_sessions"
 ON public.sessions
 FOR UPDATE
 TO authenticated
-USING (user_id = auth.uid())
-WITH CHECK (user_id = auth.uid());
+USING (user_id = (SELECT auth.uid()))
+WITH CHECK (user_id = (SELECT auth.uid()));
 
 DROP POLICY IF EXISTS "allow_delete_own_sessions" ON public.sessions;
 CREATE POLICY "allow_delete_own_sessions"
 ON public.sessions
 FOR DELETE
 TO authenticated
-USING (user_id = auth.uid());
+USING (user_id = (SELECT auth.uid()));
 
 -- =================================================================
 -- ROLLUPS (filled by the trigger on sessions)
@@ -189,7 +189,7 @@ ALTER TABLE public.daily_rollups ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "allow_select_own_daily_rollups" ON public.daily_rollups;
 CREATE POLICY "allow_select_own_daily_rollups"
 ON public.daily_rollups FOR SELECT TO authenticated
-USING (user_id = auth.uid());
+USING (user_id = (SELECT auth.uid()));
 
 -- TABLE
 CREATE TABLE IF NOT EXISTS public.utc_daily_rollups (
@@ -205,4 +205,4 @@ ALTER TABLE public.utc_daily_rollups ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "allow_select_own_utc_daily_rollups" ON public.utc_daily_rollups;
 CREATE POLICY "allow_select_own_utc_daily_rollups"
 ON public.utc_daily_rollups FOR SELECT TO authenticated
-USING (user_id = auth.uid());
+USING (user_id = (SELECT auth.uid()));
