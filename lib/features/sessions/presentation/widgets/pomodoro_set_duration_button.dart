@@ -71,9 +71,8 @@ class PomodoroSetDurationButton extends StatelessWidget {
                 color: Colors.transparent,
                 child: InkWell(
                   onTap: () {
-                    final durationText = DateTimeFormatter.formatDurationSeconds(
-                      todaySeconds,
-                    );
+                    final durationText =
+                        DateTimeFormatter.formatDurationSeconds(todaySeconds);
                     showInfoSnackBar(
                       context,
                       message: 'Today\'s total invested time: $durationText',

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
+import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/shared_files/buttons/action_button.dart';
 import 'package:tarkeez/core/shared_files/cubits/session_timer_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/tracking_settings_cubit.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
@@ -83,15 +85,29 @@ class SessionLogInterface extends StatelessWidget {
                 ),
 
                 // ──────────────────────────────────────────────
-                // Pause play button
+                // Reset and Pause play button
                 // ──────────────────────────────────────────────
+                if (isPomodoro)
+                  Positioned(
+                    right: context.md ? 110 : 124,
+                    top: 10,
+                    child: ActionButton(
+                      iconPath: SvgPaths.refresh,
+                      backgroundColor: context.md
+                          ? scheme.onSurface
+                          : scheme.surface,
+                      onTap: () {},
+                    ),
+                  ),
                 Positioned(
                   right: context.md ? 24 : 36,
                   top: -10,
                   child: PausePlayButton(
                     isRunning: isRunning,
                     onTap: () {
-                      final tracking = context.read<TrackingSettingsCubit>().state;
+                      final tracking = context
+                          .read<TrackingSettingsCubit>()
+                          .state;
                       timer.toggle(
                         countdown: tracking.isPomodoro
                             ? Duration(minutes: tracking.pomodoroMinutes)
