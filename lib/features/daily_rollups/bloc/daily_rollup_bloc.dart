@@ -84,9 +84,15 @@ class DailyRollupBloc extends Bloc<DailyRollupEvent, DailyRollupState> {
     final live = LiveSessionSlices.split(event.timerStartedAt, AppClock.now());
     // The timer widget ticks twice a second, the seconds change once.
     if (mapEquals(live, current.liveByDate)) return;
+    // After a project switch the new session starts before the old part is
+    // read back from SQLite. The live part never shrinks: LiveStopped replaces it.
+    if (_sum(live) < _sum(current.liveByDate)) return;
 
     emit(current.copyWith(liveByDate: live));
   }
+
+   static int _sum(Map<String, int> byDate) =>
+      byDate.values.fold(0, (a, b) => a + b);
 
   Future<void> _onLiveStopped(
     DailyRollupLiveStopped event,

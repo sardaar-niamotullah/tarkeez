@@ -41,8 +41,6 @@ class SessionLogInterface extends StatelessWidget {
             builder: (context, s) => TodayTotalDurationDisplay(
               isRunning: s.isRunning,
               colonVisible: s.colonVisible,
-              startedAt: s.startedAt,
-              unsaved: s.unsaved,
             ),
           ),
           const PomodoroSetDurationButton(isPomodoroModeOn: true),

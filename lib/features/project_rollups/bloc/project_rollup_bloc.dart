@@ -120,9 +120,15 @@ class ProjectRollupBloc extends Bloc<ProjectRollupEvent, ProjectRollupState> {
     // The timer widget ticks twice a second, the seconds change once.
     // The project can also change mid-session, so compare the rows, not the total.
     if (listEquals(live, current.live)) return;
+    // After a project switch the new session starts before the old part is
+    // read back from SQLite. The live part never shrinks: LiveStopped replaces it.
+    if (_sum(live) < _sum(current.live)) return;
 
     emit(current.copyWith(live: live));
   }
+
+  static int _sum(List<ProjectRollupModel> rows) =>
+      rows.fold(0, (total, r) => total + r.durationSeconds);
 
   /// The running session ended (saved or failed). Re-reads SQLite and drops the
   /// live part in the same emit, so the session is never counted twice.

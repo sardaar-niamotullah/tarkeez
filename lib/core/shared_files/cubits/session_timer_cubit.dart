@@ -6,15 +6,8 @@ import 'package:tarkeez/core/utils/app_clock.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
 
-typedef EndedSession = ({DateTime startedAt, DateTime endedAt});
-
 class SessionTimerState extends Equatable {
-  const new({
-    this.project,
-    this.startedAt,
-    this.tick = 0,
-    this.unsaved = const [],
-  });
+  const new({this.project, this.startedAt, this.tick = 0});
 
   /// The picked project, also while idle.
   final ProjectModel? project;
@@ -25,32 +18,20 @@ class SessionTimerState extends Equatable {
   /// Counts 500 ms steps. Makes every tick a new state.
   final int tick;
 
-  /// Sessions sent to SessionBloc that are not in its list yet. The day total
-  /// keeps counting them, so it does not dip while they are being saved.
-  final List<EndedSession> unsaved;
-
   bool get isRunning => startedAt != null;
   bool get colonVisible => tick.isEven;
 
-  SessionTimerState copyWith({int? tick, List<EndedSession>? unsaved}) =>
-      SessionTimerState(
-        project: project,
-        startedAt: startedAt,
-        tick: tick ?? this.tick,
-        unsaved: unsaved ?? this.unsaved,
-      );
+  SessionTimerState ticked() =>
+      SessionTimerState(project: project, startedAt: startedAt, tick: tick + 1);
 
   @override
-  List<Object?> get props => [project, startedAt, tick, unsaved];
+  List<Object?> get props => [project, startedAt, tick];
 }
 
 class SessionTimerCubit extends Cubit<SessionTimerState> {
-  new(this._sessions) : super(const SessionTimerState()) {
-    _sub = _sessions.stream.listen(_onSessionState);
-  }
+  new(this._sessions) : super(const SessionTimerState());
 
   final SessionBloc _sessions;
-  late final StreamSubscription<SessionState> _sub;
   Timer? _timer;
 
   /// Play / stop button.
@@ -68,54 +49,36 @@ class SessionTimerCubit extends Cubit<SessionTimerState> {
     if (startedAt != null &&
         project?.id != state.project?.id &&
         now.difference(startedAt) >= const Duration(seconds: 1)) {
-      emit(
-        SessionTimerState(
-          project: project,
-          startedAt: now,
-          unsaved: _save(startedAt, now), // runs while state.project is still the old one
-        ),
-      );
+      _save(startedAt, now); // state.project is still the old one here
+      emit(SessionTimerState(project: project, startedAt: now));
     } else {
       emit(
         SessionTimerState(
           project: project,
           startedAt: startedAt,
           tick: state.tick,
-          unsaved: state.unsaved,
         ),
       );
     }
   }
 
   void _start() {
-    emit(
-      SessionTimerState(
-        project: state.project,
-        startedAt: AppClock.now(),
-        unsaved: state.unsaved,
-      ),
-    );
+    emit(SessionTimerState(project: state.project, startedAt: AppClock.now()));
     _timer?.cancel();
     _timer = Timer.periodic(
       const Duration(milliseconds: 500),
-      (_) => emit(state.copyWith(tick: state.tick + 1)),
+      (_) => emit(state.ticked()),
     );
   }
 
   void _stop() {
     final startedAt = state.startedAt;
-    if (startedAt == null) return;
+    if (startedAt != null) _save(startedAt, AppClock.now());
     _timer?.cancel();
-    emit(
-      SessionTimerState(
-        project: state.project,
-        unsaved: _save(startedAt, AppClock.now()),
-      ),
-    );
+    emit(SessionTimerState(project: state.project));
   }
 
-  /// Sends the session to SessionBloc. Returns the unsaved list including it.
-  List<EndedSession> _save(DateTime startedAt, DateTime endedAt) {
+  void _save(DateTime startedAt, DateTime endedAt) {
     _sessions.add(
       EntrySessionRequested(
         startedAt: startedAt,
@@ -123,21 +86,11 @@ class SessionTimerCubit extends Cubit<SessionTimerState> {
         project: state.project,
       ),
     );
-    return [...state.unsaved, (startedAt: startedAt, endedAt: endedAt)];
-  }
-
-  /// SessionBloc has the saved session now (or gave up on it): stop counting it here.
-  void _onSessionState(SessionState s) {
-    final done = s is SessionFailure || (s is SessionLoaded && s.isEntered);
-    if (done && state.unsaved.isNotEmpty) {
-      emit(state.copyWith(unsaved: state.unsaved.sublist(1)));
-    }
   }
 
   @override
   Future<void> close() {
     _timer?.cancel();
-    _sub.cancel();
     return super.close();
   }
 }
