@@ -6,20 +6,21 @@ import 'package:tarkeez/core/utils/app_clock.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
 import 'package:tarkeez/features/sessions/data/models/session_model.dart';
+import 'package:tarkeez/core/shared_files/cubits/session_timer_cubit.dart';
 
 class TodayTotalDurationDisplay extends StatelessWidget {
   const new({
     super.key,
     required this.isRunning,
-    required this.liveElapsed,
     required this.colonVisible,
     required this.startedAt,
+    required this.unsaved,
   });
 
   final bool isRunning;
-  final Duration liveElapsed;
   final bool colonVisible;
   final DateTime? startedAt;
+  final List<EndedSession> unsaved;
 
   static List<SessionModel> _logsFromState(SessionState state) {
     if (state is SessionLoaded) return state.sessions;
@@ -43,14 +44,15 @@ class TodayTotalDurationDisplay extends StatelessWidget {
     return total;
   }
 
-  static Duration _todaysLivePortion(DateTime? startedAt) {
-    if (startedAt == null) return Duration.zero;
+  /// Today's part of [start]..[end] (end defaults to now).
+  static Duration _todaysPortion(DateTime? start, [DateTime? end]) {
+    if (start == null) return Duration.zero;
     final now = AppClock.now();
     final todayStart = DateTime(now.year, now.month, now.day);
-    final effectiveStart = startedAt.toLocal().isBefore(todayStart)
+    final effectiveStart = start.toLocal().isBefore(todayStart)
         ? todayStart
-        : startedAt.toLocal();
-    final elapsed = now.difference(effectiveStart);
+        : start.toLocal();
+    final elapsed = (end ?? now).difference(effectiveStart);
     return elapsed.isNegative ? Duration.zero : elapsed;
   }
 
@@ -67,12 +69,13 @@ class TodayTotalDurationDisplay extends StatelessWidget {
     return BlocBuilder<SessionBloc, SessionState>(
       builder: (context, state) {
         final persistedToday = _todaysLoggedDuration(_logsFromState(state));
-        final liveToday = isRunning
-            ? _todaysLivePortion(startedAt)
-            : Duration.zero;
-        final total = persistedToday + liveToday;
+        final liveToday = isRunning ? _todaysPortion(startedAt) : Duration.zero;
+        final unsavedToday = unsaved.fold(
+          Duration.zero,
+          (sum, s) => sum + _todaysPortion(s.startedAt, s.endedAt),
+        );
+        final total = persistedToday + liveToday + unsavedToday;
         final parts = _formatDuration(total);
-
         return Row(
           mainAxisSize: .min,
           crossAxisAlignment: .center,
