@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/dependency_injection/di.dart';
+import 'package:tarkeez/core/services/sound_service.dart';
 import 'package:tarkeez/core/shared_files/cubits/navigation_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/report_period_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/session_period_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/session_timer_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
+import 'package:tarkeez/core/shared_files/cubits/tracking_settings_cubit.dart';
 import 'package:tarkeez/core/sync/bloc/sync_bloc.dart';
 import 'package:tarkeez/features/auth/bloc/auth_bloc.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
@@ -27,13 +29,17 @@ class AppProviders extends StatelessWidget {
         BlocProvider(create: (_) => NavigationCubit()),
         BlocProvider(create: (_) => ReportPeriodCubit()),
         BlocProvider(create: (_) => SessionPeriodCubit()),
+        BlocProvider(create: (_) => TrackingSettingsCubit()),
         BlocProvider(create: (_) => getIt<AuthBloc>()),
         BlocProvider(create: (_) => getIt<SyncBloc>()),
         BlocProvider(create: (_) => getIt<ProjectBloc>()),
         BlocProvider(create: (_) => getIt<SessionBloc>()),
         BlocProvider(create: (_) => getIt<DailyRollupBloc>()),
         BlocProvider(create: (_) => getIt<ProjectRollupBloc>()),
-        BlocProvider(create: (_) => SessionTimerCubit(getIt<SessionBloc>())),
+        BlocProvider(
+          create: (_) =>
+              SessionTimerCubit(getIt<SessionBloc>(), getIt<SoundService>()),
+        ),
       ],
       child: MultiBlocListener(
         listeners: [

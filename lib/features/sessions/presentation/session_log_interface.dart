@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
-import 'package:tarkeez/core/services/sound_service.dart';
 import 'package:tarkeez/core/shared_files/cubits/session_timer_cubit.dart';
+import 'package:tarkeez/core/shared_files/cubits/tracking_settings_cubit.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/session_log_interface_bottom_clipper.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/select_project_button.dart';
 import 'package:tarkeez/features/sessions/presentation/widgets/pause_play_button.dart';
 import 'package:tarkeez/features/sessions/presentation/widgets/pomodoro_set_duration_button.dart';
+import 'package:tarkeez/features/sessions/presentation/widgets/pomodoro_timer_display.dart';
 import 'package:tarkeez/features/sessions/presentation/widgets/today_total_duration_display.dart';
 
 class SessionLogInterface extends StatelessWidget {
@@ -23,6 +23,9 @@ class SessionLogInterface extends StatelessWidget {
       (SessionTimerCubit c) => c.state.isRunning,
     );
     final project = context.select((SessionTimerCubit c) => c.state.project);
+    final isPomodoro = context.select(
+      (TrackingSettingsCubit c) => c.state.isPomodoro,
+    );
 
     return Container(
       height: context.md ? 248 : null,
@@ -38,12 +41,18 @@ class SessionLogInterface extends StatelessWidget {
           // Timer (the only part that rebuilds on every tick)
           // ──────────────────────────────────────────────
           BlocBuilder<SessionTimerCubit, SessionTimerState>(
-            builder: (context, s) => TodayTotalDurationDisplay(
-              isRunning: s.isRunning,
-              colonVisible: s.colonVisible,
-            ),
+            builder: (context, s) => isPomodoro
+                ? PomodoroTimerDisplay(
+                    isRunning: s.isRunning,
+                    colonVisible: s.colonVisible,
+                    endsAt: s.endsAt,
+                  )
+                : TodayTotalDurationDisplay(
+                    isRunning: s.isRunning,
+                    colonVisible: s.colonVisible,
+                  ),
           ),
-          const PomodoroSetDurationButton(isPomodoroModeOn: false),
+          PomodoroSetDurationButton(isPomodoroModeOn: isPomodoro),
           const SizedBox(height: 16),
 
           SizedBox(
@@ -82,8 +91,12 @@ class SessionLogInterface extends StatelessWidget {
                   child: PausePlayButton(
                     isRunning: isRunning,
                     onTap: () {
-                      GetIt.I<SoundService>().playBell();
-                      timer.toggle();
+                      final tracking = context.read<TrackingSettingsCubit>().state;
+                      timer.toggle(
+                        countdown: tracking.isPomodoro
+                            ? Duration(minutes: tracking.pomodoroMinutes)
+                            : null,
+                      );
                     },
                   ),
                 ),
