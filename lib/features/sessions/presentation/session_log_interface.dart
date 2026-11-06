@@ -43,7 +43,7 @@ class SessionLogInterface extends StatelessWidget {
               colonVisible: s.colonVisible,
             ),
           ),
-          const PomodoroSetDurationButton(isPomodoroModeOn: true),
+          const PomodoroSetDurationButton(isPomodoroModeOn: false),
           const SizedBox(height: 16),
 
           SizedBox(

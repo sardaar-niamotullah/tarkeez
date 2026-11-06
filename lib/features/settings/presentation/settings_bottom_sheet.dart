@@ -8,7 +8,7 @@ import 'package:tarkeez/features/settings/presentation/widgets/settings_bottom_s
 import 'package:tarkeez/features/settings/presentation/widgets/theme_color_switch_buttons_tile.dart';
 
 class SettingsBottomSheet extends StatelessWidget {
-  const SettingsBottomSheet({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {

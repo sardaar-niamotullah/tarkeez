@@ -8,14 +8,13 @@ import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class SetPomodoroDurationBottomSheet extends StatefulWidget {
-  final ValueChanged<int> onDurationPicked;
-  final int initialMinutes;
-
-  const SetPomodoroDurationBottomSheet({
+  const new({
     super.key,
     required this.onDurationPicked,
     this.initialMinutes = 25,
   });
+  final ValueChanged<int> onDurationPicked;
+  final int initialMinutes;
 
   @override
   State<SetPomodoroDurationBottomSheet> createState() =>

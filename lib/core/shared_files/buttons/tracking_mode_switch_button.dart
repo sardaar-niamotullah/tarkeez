@@ -16,14 +16,10 @@ extension TrackingTypeLabel on TrackingType {
 }
 
 class TrackingModeSwitchButton extends StatelessWidget {
+  const new({super.key, required this.value, required this.onChanged});
+
   final TrackingType value;
   final ValueChanged<TrackingType> onChanged;
-
-  const TrackingModeSwitchButton({
-    super.key,
-    required this.value,
-    required this.onChanged,
-  });
 
   static const List<TrackingType> _options = TrackingType.values;
 
@@ -90,19 +86,19 @@ class TrackingModeSwitchButton extends StatelessWidget {
 }
 
 class _Label extends StatelessWidget {
-  final String text;
-  final bool active;
-  final Color activeColor;
-  final Color inactiveColor;
-  final BuildContext context;
-
-  const _Label({
+  const new({
     required this.text,
     required this.active,
     required this.activeColor,
     required this.inactiveColor,
     required this.context,
   });
+  
+  final String text;
+  final bool active;
+  final Color activeColor;
+  final Color inactiveColor;
+  final BuildContext context;
 
   @override
   Widget build(BuildContext ctx) {

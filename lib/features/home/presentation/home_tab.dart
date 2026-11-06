@@ -80,7 +80,7 @@ class HomeTab extends StatelessWidget {
             ),
           ],
         ),
-        FloatingActionButtonWrapper(actionButton: GoPremiumButton()),
+        const FloatingActionButtonWrapper(actionButton: GoPremiumButton()),
       ],
     );
   }
