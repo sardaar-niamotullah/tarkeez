@@ -84,6 +84,12 @@ flutter:
           weight: 600
         - asset: assets/fonts/poppins/Poppins-Bold.ttf
           weight: 700
+    - family: ArialRounded
+      fonts:
+        - asset: assets/fonts/arial_rounded/ArialRoundedMT-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/arial_rounded/ArialRoundedMT-Bold.ttf
+          weight: 700
 
 flutter_native_splash:
   color: "#0A0A0A"

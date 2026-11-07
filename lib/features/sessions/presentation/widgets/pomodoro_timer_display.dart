@@ -6,16 +6,7 @@ import 'package:tarkeez/features/sessions/presentation/widgets/timer_digits.dart
 
 /// Pomodoro countdown as m:ss ("120:00" ... "0:01", "0:00").
 class PomodoroTimerDisplay extends StatelessWidget {
-  const new({
-    super.key,
-    required this.isRunning,
-    required this.colonVisible,
-    required this.endsAt,
-    required this.left,
-  });
-
-  final bool isRunning;
-  final bool colonVisible;
+  const new({super.key, required this.endsAt, required this.left});
 
   /// Running: when the countdown ends.
   final DateTime? endsAt;
@@ -39,7 +30,6 @@ class PomodoroTimerDisplay extends StatelessWidget {
     return TimerDigits(
       left: '${seconds ~/ 60}',
       right: '${seconds % 60}'.padLeft(2, '0'),
-      dotsVisible: !isRunning || colonVisible,
     );
   }
 }

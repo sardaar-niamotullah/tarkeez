@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/theme/app_fonts.dart';
@@ -9,12 +11,29 @@ class TimerDigits extends StatelessWidget {
     super.key,
     required this.left,
     required this.right,
-    required this.dotsVisible,
+    this.dotsVisible = true,
   });
 
   final String left;
   final String right;
+
+  /// The linear timer blinks it while running, the pomodoro keeps it on.
   final bool dotsVisible;
+
+  /// Width of the widest digit in [style]: every digit gets a slot this wide.
+  static double _slotWidth(BuildContext context, TextStyle style) {
+    var widest = 0.0;
+    for (var digit = 0; digit < 10; digit++) {
+      final painter = TextPainter(
+        text: TextSpan(text: '$digit', style: style),
+        textDirection: .ltr,
+        textScaler: MediaQuery.textScalerOf(context),
+      )..layout();
+      widest = math.max(widest, painter.width);
+      painter.dispose();
+    }
+    return widest;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,8 +41,9 @@ class TimerDigits extends StatelessWidget {
     final compact = context.between(Breakpoints.md, Breakpoints.lg);
     final digitStyle = TextUtils.title1(
       context,
-      fontFamily: AppFontFamily.poppins,
-    ).copyWith(fontSize: compact ? 64 : 84);
+      fontFamily: AppFontFamily.sourceSans,
+    ).copyWith(fontSize: compact ? 72 : 92);
+    final slot = _slotWidth(context, digitStyle);
     final dotSize = compact ? 12.0 : 14.0;
     final dot = Container(
       height: dotSize,
@@ -34,21 +54,37 @@ class TimerDigits extends StatelessWidget {
       ),
     );
 
+    // Each digit is centered in its own slot, so "1" and "0" take the same width.
+    Widget digits(String text) => Row(
+      mainAxisSize: .min,
+      children: [
+        for (final char in text.split(''))
+          SizedBox(
+            width: slot,
+            child: Text(char, textAlign: .center, style: digitStyle),
+          ),
+      ],
+    );
+
     // scaleDown: "120:00" is wider than "0:25" and must still fit narrow phones.
     return FittedBox(
-      fit: BoxFit.scaleDown,
+      fit: .scaleDown,
       child: Row(
         mainAxisSize: .min,
         crossAxisAlignment: .center,
         children: [
-          Text(left, style: digitStyle),
+          digits(left),
           Container(
-            margin: .symmetric(horizontal: 3.5),
+            margin: .symmetric(horizontal: 6),
             child: Column(
-              children: [dot, SizedBox(height: compact ? 10 : 12), dot],
+              children: [
+                dot,
+                SizedBox(height: compact ? 10 : 12),
+                dot,
+              ],
             ),
           ),
-          Text(right, style: digitStyle),
+          digits(right),
         ],
       ),
     );

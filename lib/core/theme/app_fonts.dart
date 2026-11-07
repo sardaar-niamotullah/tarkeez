@@ -1,24 +1,12 @@
 import 'package:flutter/material.dart';
 
-enum AppFontFamily {
-  poppins,
-  amaranth,
-  roboto,
-  inter,
-  montserrat,
-  nunitoSans,
-  sourceSans,
-}
+enum AppFontFamily { poppins, sourceSans, arialRounded }
 
 class AppFonts {
   static const _familyNames = {
     AppFontFamily.sourceSans: 'SourceSans3',
     AppFontFamily.poppins: 'Poppins',
-    AppFontFamily.amaranth: 'Amaranth',
-    AppFontFamily.roboto: 'Roboto',
-    AppFontFamily.inter: 'Inter',
-    AppFontFamily.montserrat: 'Montserrat',
-    AppFontFamily.nunitoSans: 'NunitoSans',
+    AppFontFamily.arialRounded: 'ArialRounded',
   };
 
   static TextStyle font({

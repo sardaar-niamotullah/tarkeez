@@ -38,18 +38,13 @@ class SessionLogInterface extends StatelessWidget {
       ),
       child: Column(
         children: [
-          SizedBox(height: context.md ? 32 : 48),
+          SizedBox(height: context.md ? 20 : 48),
           // ──────────────────────────────────────────────
           // Timer (the only part that rebuilds on every tick)
           // ──────────────────────────────────────────────
           BlocBuilder<SessionTimerCubit, SessionTimerState>(
             builder: (context, s) => isPomodoro
-                ? PomodoroTimerDisplay(
-                    isRunning: s.isRunning,
-                    colonVisible: s.colonVisible,
-                    endsAt: s.endsAt,
-                    left: s.left,
-                  )
+                ? PomodoroTimerDisplay(endsAt: s.endsAt, left: s.left)
                 : TodayTotalDurationDisplay(
                     isRunning: s.isRunning,
                     colonVisible: s.colonVisible,
