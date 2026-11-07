@@ -176,6 +176,34 @@ USING (user_id = (SELECT auth.uid()));
 -- =================================================================
 
 -- TABLE
+CREATE TABLE IF NOT EXISTS public.project_rollups (
+    user_id UUID NOT NULL REFERENCES public.users(id),
+    date DATE NOT NULL,
+    project_id TEXT NOT NULL,  -- '' = No Project, no FK to projects
+    duration_seconds INTEGER NOT NULL,
+    PRIMARY KEY (user_id, date, project_id)
+);
+
+-- RLS
+ALTER TABLE public.project_rollups ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "allow_select_own_project_rollups" ON public.project_rollups;
+CREATE POLICY "allow_select_own_project_rollups"
+ON public.project_rollups FOR SELECT TO authenticated
+USING (user_id = (SELECT auth.uid()));
+
+-- VIEW: a missing or deleted project counts as No Project ('')
+CREATE OR REPLACE VIEW public.project_rollups_effective
+WITH (security_invoker = true) AS
+SELECT r.user_id, r.date,
+       COALESCE(p.id::TEXT, '') AS project_id,
+       SUM(r.duration_seconds)::INTEGER AS duration_seconds
+FROM public.project_rollups r
+LEFT JOIN public.projects p
+  ON p.id::TEXT = r.project_id AND p.deleted_at IS NULL
+GROUP BY r.user_id, r.date, COALESCE(p.id::TEXT, '');
+
+-- TABLE
 CREATE TABLE IF NOT EXISTS public.daily_rollups (
     user_id UUID NOT NULL REFERENCES public.users(id),
     date DATE NOT NULL,

@@ -65,8 +65,8 @@ $$;
 
 -- =================================================================
 -- split_session: one function, two calls (README: "How a session is split")
---   local rollups: split_session(started_at, ended_at, utc_offset_minutes)
---   UTC rollups:   split_session(started_at, ended_at, 0)
+--   daily_rollups, project_rollups: split_session(started_at, ended_at, utc_offset_minutes)
+--   utc_daily_rollups:              split_session(started_at, ended_at, 0)
 -- Returns one row per day touched (at most two).
 -- =================================================================
 DROP FUNCTION IF EXISTS public.split_session(TIMESTAMPTZ, TIMESTAMPTZ, INT);
@@ -93,13 +93,17 @@ $$;
 
 -- =================================================================
 -- apply_session_to_rollups: add (p_sign = 1) or subtract (p_sign = -1) one session
+-- Feeds daily_rollups, project_rollups (local days) and utc_daily_rollups (UTC days).
+-- p_project is NULL for a session with no project; it is stored as '' (No Project).
 -- =================================================================
+DROP FUNCTION IF EXISTS public.apply_session_to_rollups(UUID, TIMESTAMPTZ, TIMESTAMPTZ, INT, INT);  -- one-time cleanup, the signature now includes p_project
 CREATE OR REPLACE FUNCTION public.apply_session_to_rollups(
-  p_user   UUID,
-  p_start  TIMESTAMPTZ,
-  p_end    TIMESTAMPTZ,
-  p_offset INT,
-  p_sign   INT
+  p_user    UUID,
+  p_project UUID,
+  p_start   TIMESTAMPTZ,
+  p_end     TIMESTAMPTZ,
+  p_offset  INT,
+  p_sign    INT
 )
 RETURNS VOID
 LANGUAGE plpgsql
@@ -113,6 +117,12 @@ BEGIN
   ON CONFLICT (user_id, date) DO UPDATE
     SET duration_seconds = r.duration_seconds + EXCLUDED.duration_seconds;
 
+  INSERT INTO public.project_rollups AS r (user_id, date, project_id, duration_seconds)
+  SELECT p_user, s.day, COALESCE(p_project::TEXT, ''), p_sign * s.seconds
+  FROM public.split_session(p_start, p_end, p_offset) AS s
+  ON CONFLICT (user_id, date, project_id) DO UPDATE
+    SET duration_seconds = r.duration_seconds + EXCLUDED.duration_seconds;
+
   INSERT INTO public.utc_daily_rollups AS r (user_id, utc_date, duration_seconds)
   SELECT p_user, s.day, p_sign * s.seconds
   FROM public.split_session(p_start, p_end, 0) AS s
@@ -120,6 +130,7 @@ BEGIN
     SET duration_seconds = r.duration_seconds + EXCLUDED.duration_seconds;
 
   DELETE FROM public.daily_rollups     WHERE user_id = p_user AND duration_seconds <= 0;
+  DELETE FROM public.project_rollups   WHERE user_id = p_user AND duration_seconds <= 0;
   DELETE FROM public.utc_daily_rollups WHERE user_id = p_user AND duration_seconds <= 0;
 END;
 $$;
@@ -140,11 +151,11 @@ BEGIN
   IF TG_OP = 'INSERT' THEN
     IF NEW.deleted_at IS NULL THEN
       PERFORM public.apply_session_to_rollups(
-        NEW.user_id, NEW.started_at, NEW.ended_at, NEW.utc_offset_minutes, 1);
+        NEW.user_id, NEW.project_id, NEW.started_at, NEW.ended_at, NEW.utc_offset_minutes, 1);
     END IF;
   ELSIF OLD.deleted_at IS NULL AND NEW.deleted_at IS NOT NULL THEN
     PERFORM public.apply_session_to_rollups(
-      OLD.user_id, OLD.started_at, OLD.ended_at, OLD.utc_offset_minutes, -1);
+      OLD.user_id, OLD.project_id, OLD.started_at, OLD.ended_at, OLD.utc_offset_minutes, -1);
   END IF;
   RETURN NULL;
 END;
@@ -161,6 +172,7 @@ SET search_path = public
 AS $$
 BEGIN
   DELETE FROM public.daily_rollups     WHERE user_id = p_user;
+  DELETE FROM public.project_rollups   WHERE user_id = p_user;
   DELETE FROM public.utc_daily_rollups WHERE user_id = p_user;
 
   INSERT INTO public.daily_rollups (user_id, date, duration_seconds)
@@ -169,6 +181,13 @@ BEGIN
   CROSS JOIN LATERAL public.split_session(s.started_at, s.ended_at, s.utc_offset_minutes) x
   WHERE s.user_id = p_user AND s.deleted_at IS NULL
   GROUP BY s.user_id, x.day;
+
+  INSERT INTO public.project_rollups (user_id, date, project_id, duration_seconds)
+  SELECT s.user_id, x.day, COALESCE(s.project_id::TEXT, ''), SUM(x.seconds)
+  FROM public.sessions s
+  CROSS JOIN LATERAL public.split_session(s.started_at, s.ended_at, s.utc_offset_minutes) x
+  WHERE s.user_id = p_user AND s.deleted_at IS NULL
+  GROUP BY s.user_id, x.day, COALESCE(s.project_id::TEXT, '');
 
   INSERT INTO public.utc_daily_rollups (user_id, utc_date, duration_seconds)
   SELECT s.user_id, x.day, SUM(x.seconds)
@@ -180,7 +199,7 @@ END;
 $$;
 
 -- These must not be callable from the app (Supabase grants new functions to these roles).
-REVOKE ALL ON FUNCTION public.apply_session_to_rollups(UUID, TIMESTAMPTZ, TIMESTAMPTZ, INT, INT)
+REVOKE ALL ON FUNCTION public.apply_session_to_rollups(UUID, UUID, TIMESTAMPTZ, TIMESTAMPTZ, INT, INT)
   FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.sessions_to_rollups() FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.rebuild_rollups(UUID) FROM PUBLIC, anon, authenticated;

@@ -304,6 +304,7 @@ BEGIN
   PERFORM pg_advisory_xact_lock(hashtextextended(v_uid::TEXT, 0));
 
   DELETE FROM public.utc_daily_rollups WHERE user_id = v_uid;
+  DELETE FROM public.project_rollups   WHERE user_id = v_uid;
   DELETE FROM public.daily_rollups     WHERE user_id = v_uid;
   DELETE FROM public.sessions          WHERE user_id = v_uid;
   DELETE FROM public.projects          WHERE user_id = v_uid;

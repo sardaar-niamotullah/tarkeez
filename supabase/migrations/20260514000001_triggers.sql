@@ -48,7 +48,7 @@ CREATE TRIGGER set_sessions_updated_at
 
 -- =================================================================
 -- Fires the function after a live session is inserted or deleted_at is set.
--- It adds to or subtracts from daily_rollups and utc_daily_rollups.
+-- It adds to or subtracts from daily_rollups, project_rollups and utc_daily_rollups.
 -- =================================================================
 DROP TRIGGER IF EXISTS sessions_feed_rollups ON public.sessions;
 CREATE TRIGGER sessions_feed_rollups
