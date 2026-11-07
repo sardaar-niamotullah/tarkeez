@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
-import 'package:tarkeez/core/theme/app_fonts.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 /// The big "left : right" display shared by the linear and the pomodoro timer.
@@ -39,10 +38,8 @@ class TimerDigits extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final compact = context.between(Breakpoints.md, Breakpoints.lg);
-    final digitStyle = TextUtils.title1(
-      context,
-      fontFamily: AppFontFamily.sourceSans,
-    ).copyWith(fontSize: compact ? 72 : 92);
+    final digitStyle = TextUtils.title1(context)
+        .copyWith(fontSize: compact ? 72 : 92);
     final slot = _slotWidth(context, digitStyle);
     final dotSize = compact ? 12.0 : 14.0;
     final dot = Container(
