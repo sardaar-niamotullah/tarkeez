@@ -21,7 +21,6 @@ Tarkeez is offline-first. The app reads and writes a local SQLite database, and 
 
 ## Key conventions
 
-- **Naming:** a table that exists on both sides uses its plain name in the cloud and a `local_` prefix in SQLite (`users` and `local_users`). A table that exists on one side keeps its plain name.
 - **IDs:** primary keys are client-generated UUIDv7 (`const Uuid().v7()`). Exceptions:
   - `users.id` is the Supabase Auth user id, the same value locally and in the cloud.
   - Rollup tables use composite keys (for example `user_id + date`).
@@ -29,22 +28,22 @@ Tarkeez is offline-first. The app reads and writes a local SQLite database, and 
 - **Accounts:** every table except `users` has `user_id`, and every query is scoped to the active account. Cloud RLS is `user_id = auth.uid()`.
 - **What syncs:**
 
-  | Local table           | Cloud table         | Syncs?                                                 |
-  | --------------------- | ------------------- | ------------------------------------------------------ |
-  | `local_users`         | `users`             | Yes, cloud to device (`full_name`, `history_reset_at`) |
-  | `local_projects`      | `projects`          | Yes, both ways                                         |
-  | `local_sessions`      | `sessions`          | Yes, both ways                                         |
-  | `local_daily_rollups` | `daily_rollups`     | No. Each side derives its own from sessions            |
-  | `project_rollups`     | none                | Local only, derived from sessions                      |
-  | none                  | `utc_daily_rollups` | Cloud only, derived from sessions                      |
-  | `pending_changes`     | none                | Local bookkeeping                                      |
-  | `pull_checkpoints`    | none                | Local bookkeeping. Each device has its own position    |
+  | Table               | SQLite | PostgreSQL | Syncs?                                                  |
+  | ------------------- | ------ | ---------- | ------------------------------------------------------- |
+  | `users`             | Yes    | Yes        | Yes, cloud to device (`full_name`, `history_reset_at`)  |
+  | `projects`          | Yes    | Yes        | Yes, both ways                                          |
+  | `sessions`          | Yes    | Yes        | Yes, both ways                                          |
+  | `daily_rollups`     | Yes    | Yes        | No. Each side derives its own from sessions             |
+  | `project_rollups`   | Yes    | Yes        | No. Each side derives its own from sessions             |
+  | `utc_daily_rollups` | No     | Yes        | No. Cloud only, derived from sessions                   |
+  | `pending_changes`   | Yes    | No         | No. Local bookkeeping                                   |
+  | `pull_checkpoints`  | Yes    | No         | No. Local bookkeeping. Each device has its own position |
 
 - **Time:** `started_at` and `ended_at` are absolute instants. `utc_offset_minutes` is the device's offset when the session was recorded. Local time is `started_at + utc_offset_minutes`. Sessions store no date column. Calendar dates exist only in the rollup tables, and UTC dates only in `utc_daily_rollups`.
 - **Daily totals:**
   - `daily_rollups`: local-day totals. Stored locally (heatmaps, reports, streaks) and in the cloud (streak leaderboard).
+  - `project_rollups`: local-day totals per project. Stored locally (project charts) and in the cloud.
   - `utc_daily_rollups`: UTC-day totals for the time leaderboard. Cloud only.
-  - `project_rollups`: local-day totals per project for project charts. Local only.
 - **Session length cap:** at most 24 hours, so a session touches at most two local days and two UTC days, and each trigger writes at most two slices per table.
 - **Immutable sessions:** a saved session only changes by getting `deleted_at`, and that is one-way. Triggers react only to an insert and to `deleted_at` being set. Projects can be edited.
 - **No overlapping sessions:** a user never has two live sessions that overlap in time, even across devices. The cloud keeps the longest and drops the other (see "Overlap rule").
@@ -87,8 +86,8 @@ split(start, end, offset):
   cut at every 24-hour boundary on the shifted timeline
   return one slice per day touched      (at most two)
 
-local rollups : split(started_at, ended_at, utc_offset_minutes)
-UTC rollups   : split(started_at, ended_at, 0)
+daily_rollups, project_rollups : split(started_at, ended_at, utc_offset_minutes)
+utc_daily_rollups              : split(started_at, ended_at, 0)
 ```
 
 The two splits are independent, and each adds up to the full session length.
@@ -119,11 +118,11 @@ UTC days      │        Oct 23 · 3 h         │Oct 24·1h│
 local days    │   Oct 23 · 2 h    │   Oct 24 · 2 h    │
 ```
 
-| Rollup table                                         | Cut at         | Oct 23   | Oct 24  | Total    |
-| ---------------------------------------------------- | -------------- | -------- | ------- | -------- |
-| `local_daily_rollups` (`daily_rollups` in the cloud) | local midnight | 7,200 s  | 7,200 s | 14,400 s |
-| `project_rollups`                                    | local midnight | 7,200 s  | 7,200 s | 14,400 s |
-| `utc_daily_rollups`                                  | UTC midnight   | 10,800 s | 3,600 s | 14,400 s |
+| Rollup table        | Cut at         | Oct 23   | Oct 24  | Total    |
+| ------------------- | -------------- | -------- | ------- | -------- |
+| `daily_rollups`     | local midnight | 7,200 s  | 7,200 s | 14,400 s |
+| `project_rollups`   | local midnight | 7,200 s  | 7,200 s | 14,400 s |
+| `utc_daily_rollups` | UTC midnight   | 10,800 s | 3,600 s | 14,400 s |
 
 The local split shifts the session by the offset (21:00 to 01:00 becomes 22:00 to 02:00) and cuts at 00:00. The UTC split cuts the stored instants at 00:00 UTC.
 
@@ -190,12 +189,12 @@ Example: a phone was offline for 5 years and holds 30,000 queued sessions. When 
 
 ### Pieces
 
-| Piece              | Where                               | Purpose                                                                                                      |
-| ------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `pending_changes`  | device                              | Rows changed locally and not yet pushed. Stores the table and id only. The row is read at push time.         |
-| `updated_at`       | cloud `projects` and `sessions`     | Time the database last changed the row. A trigger sets it, so device clocks never matter.                    |
-| `pull_checkpoints` | device                              | Biggest `updated_at` received: `last_project_updated_at` and `last_session_updated_at`. One row per account. |
-| `history_reset_at` | cloud `users`, device `local_users` | Time of the last "Delete all history". A device that sees a newer cloud value wipes its data.                |
+| Piece              | Where                           | Purpose                                                                                                      |
+| ------------------ | ------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `pending_changes`  | device                          | Rows changed locally and not yet pushed. Stores the table and id only. The row is read at push time.         |
+| `updated_at`       | cloud `projects` and `sessions` | Time the database last changed the row. A trigger sets it, so device clocks never matter.                    |
+| `pull_checkpoints` | device                          | Biggest `updated_at` received: `last_project_updated_at` and `last_session_updated_at`. One row per account. |
+| `history_reset_at` | `users`, cloud and device       | Time of the last "Delete all history". A device that sees a newer cloud value wipes its data.                |
 
 Pull query (200 rows per page, the same for sessions):
 
@@ -221,13 +220,13 @@ When nothing changed, a pull still returns the newest row and every row stamped 
 
 ### Example: phone, tablet and cloud
 
-| Time  | Device | What happens                                                                                                                                          | Rows downloaded | Checkpoint after |
-| ----- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- | ---------------- |
-| 10:00 | Phone  | Connection returns with 50 pending sessions. Pushes them, stamped 10:00. Pulls with no checkpoint: gets its own 50 back.                              | 50 (own)        | 10:00            |
-| 10:10 | Tablet | App start on a new device, nothing to push. Pulls with no checkpoint: every row.                                                                      | **50**          | 10:00            |
+| Time  | Device | What happens                                                                                                                                                     | Rows downloaded | Checkpoint after |
+| ----- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- | ---------------- |
+| 10:00 | Phone  | Connection returns with 50 pending sessions. Pushes them, stamped 10:00. Pulls with no checkpoint: gets its own 50 back.                                         | 50 (own)        | 10:00            |
+| 10:10 | Tablet | App start on a new device, nothing to push. Pulls with no checkpoint: every row.                                                                                 | **50**          | 10:00            |
 | 10:20 | Tablet | The 30 sessions recorded since are pending, so it pushes them, stamped 10:20. Pulls from 09:58 (checkpoint 10:00 minus 2 minutes): the 50 it has and its own 30. | 80 (30 own)     | 10:20            |
-| 10:30 | Phone  | App start, nothing pending. Pulls from 09:58: its own 50 and the tablet's 30.                                                                         | 80 (**30 new**) | 10:20            |
-| 10:40 | Tablet | Sync button, nothing pending. Pulls from 10:18: the 30 stamped 10:20, which it already has.                                                           | 30 (none new)   | 10:20            |
+| 10:30 | Phone  | App start, nothing pending. Pulls from 09:58: its own 50 and the tablet's 30.                                                                                    | 80 (**30 new**) | 10:20            |
+| 10:40 | Tablet | Sync button, nothing pending. Pulls from 10:18: the 30 stamped 10:20, which it already has.                                                                      | 30 (none new)   | 10:20            |
 
 Both devices end with the same 80 sessions. The phone downloaded 80 rows, and 30 of them were new to it.
 
@@ -260,15 +259,15 @@ A device can receive rows it already has: its own rows right after a push, and r
 
 ### Special situations
 
-| Situation                                    | Behaviour                                                                                                                                                                                                                                                                               |
-| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Changes made while offline                   | Rows wait in `pending_changes`, and no attempt is made. A sync starts when the connection returns.                                                                                                                                                                                      |
-| Offline for years                            | The queue holds thousands of entries. It is pushed 200 rows per request, oldest first, and each page leaves the queue when the cloud answers, so an interrupted sync continues where it stopped.                                                                                         |
-| New phone, reinstall, or cleared app storage | No checkpoint, so the first pull returns everything, 200 rows per request. This restores the history once (about 3 MB per year of history).                                                                                                                                             |
-| Second account on the same device            | Rows and checkpoints are per `user_id`, so accounts never mix.                                                                                                                                                                                                                          |
-| Offline for a week                           | The checkpoint is a week old, so the next pull returns the week's changes, in pages.                                                                                                                                                                                                    |
-| Two devices edit the same project offline    | Last push wins for the whole row. The other device pulls the winning version on its next sync.                                                                                                                                                                                          |
-| "Delete all history" on another device       | The device's next sync reads a newer `history_reset_at` on its `users` row, before it pushes. It wipes its projects, sessions and rollups, clears its pending changes and checkpoints, and pulls from scratch.                                                                          |
+| Situation                                    | Behaviour                                                                                                                                                                                                                                                                                           |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Changes made while offline                   | Rows wait in `pending_changes`, and no attempt is made. A sync starts when the connection returns.                                                                                                                                                                                                  |
+| Offline for years                            | The queue holds thousands of entries. It is pushed 200 rows per request, oldest first, and each page leaves the queue when the cloud answers, so an interrupted sync continues where it stopped.                                                                                                    |
+| New phone, reinstall, or cleared app storage | No checkpoint, so the first pull returns everything, 200 rows per request. This restores the history once (about 3 MB per year of history).                                                                                                                                                         |
+| Second account on the same device            | Rows and checkpoints are per `user_id`, so accounts never mix.                                                                                                                                                                                                                                      |
+| Offline for a week                           | The checkpoint is a week old, so the next pull returns the week's changes, in pages.                                                                                                                                                                                                                |
+| Two devices edit the same project offline    | Last push wins for the whole row. The other device pulls the winning version on its next sync.                                                                                                                                                                                                      |
+| "Delete all history" on another device       | The device's next sync reads a newer `history_reset_at` on its `users` row, before it pushes. It wipes its projects, sessions and rollups, clears its pending changes and checkpoints, and pulls from scratch.                                                                                      |
 | Device offline during a reset                | Same as above. Everything the device recorded since the reset is wiped too, including rows still in `pending_changes`. If a stale push still reaches the cloud (a reset lands in the middle of a sync), `push_changes` rejects projects created before the reset and sessions that ended before it. |
 
 ### Cost
@@ -279,30 +278,30 @@ A device downloads its own rows once after pushing them, and re-reads the rows s
 
 **Workflow**
 
-1. **Write:** when a session is finished, UI → BLoC → Repository → Drift DAO writes it to `local_sessions` with its `utc_offset_minutes`. Local triggers split it at local midnight and update `local_daily_rollups` and `project_rollups`. The DAO adds a row to `pending_changes`.
-2. **Read:** session lists read `local_sessions`. Reports, heatmaps and streaks read the rollups. All reads are local.
+1. **Write:** when a session is finished, UI → BLoC → Repository → Drift DAO writes it to `sessions` with its `utc_offset_minutes`. Local triggers split it at local midnight and update `daily_rollups` and `project_rollups`. The DAO adds a row to `pending_changes`.
+2. **Read:** session lists read `sessions`. Reports, heatmaps and streaks read the rollups. All reads are local.
 3. **Sync starts** when `pending_changes` has rows and the device is online, at app start, or on the Sync button. If the device is offline, nothing is attempted. A sync begins with the reset check: the app reads its `users` row. If `history_reset_at` is newer than the local value, it wipes local projects, sessions, rollups and pending changes, and clears its checkpoints.
-4. **Push:** the Sync Service reads `pending_changes` 200 entries at a time and sends each page to `push_changes`, projects first, then sessions, until the queue is empty. The cloud upserts the rows by UUID (safe to retry). It rejects projects created before the last reset and sessions that ended before it, and it resolves overlaps (see "Overlap rule"). Cloud triggers update `daily_rollups` and `utc_daily_rollups`. The response lists which rows were applied, rejected and dropped, and the device applies that locally and removes the answered entries from the queue.
+4. **Push:** the Sync Service reads `pending_changes` 200 entries at a time and sends each page to `push_changes`, projects first, then sessions, until the queue is empty. The cloud upserts the rows by UUID (safe to retry). It rejects projects created before the last reset and sessions that ended before it, and it resolves overlaps (see "Overlap rule"). Cloud triggers update `daily_rollups`, `project_rollups` and `utc_daily_rollups`. The response lists which rows were applied, rejected and dropped, and the device applies that locally and removes the answered entries from the queue.
 5. **Pull (right after every push):** the app calls `pull_projects`, then `pull_sessions`, 200 rows per page, starting 2 minutes before `last_project_updated_at` and `last_session_updated_at`, until a page has fewer than 200 rows. The app upserts each page and moves the checkpoint. Local triggers rebuild the rollups. No rollup is downloaded.
 
 **In plain words**
 
-A finished session is written to SQLite. Triggers add its seconds to the local rollups immediately, so reports update without scanning sessions, and a row is added to `pending_changes`. None of this needs internet.
+A finished session is written to SQLite. Triggers add its seconds to `daily_rollups` and `project_rollups` immediately, so reports update without scanning sessions, and a row is added to `pending_changes`. None of this needs internet.
 
-When `pending_changes` has rows and the device is online, the Sync Service first reads the user's `users` row from Supabase over HTTPS with the user's JWT. If a history reset is newer than the one the device has applied, the device wipes its data. Then it sends the pending projects and sessions, 200 per request. If the device is offline, the rows wait and nothing is attempted until the connection returns. A sync also runs at app start and when the user taps the Sync button. There is no timer. The cloud keeps the longest session when two overlap, and its triggers add each kept session to `daily_rollups` and `utc_daily_rollups`. The app then downloads the rows stamped after its checkpoints, 200 per page. Pulled sessions go through the same local triggers as recorded ones.
+When `pending_changes` has rows and the device is online, the Sync Service first reads the user's `users` row from Supabase over HTTPS with the user's JWT. If a history reset is newer than the one the device has applied, the device wipes its data. Then it sends the pending projects and sessions, 200 per request. If the device is offline, the rows wait and nothing is attempted until the connection returns. A sync also runs at app start and when the user taps the Sync button. There is no timer. The cloud keeps the longest session when two overlap, and its triggers add each kept session to `daily_rollups`, `project_rollups` and `utc_daily_rollups`. The app then downloads the rows stamped after its checkpoints, 200 per page. Pulled sessions go through the same local triggers as recorded ones.
 
 ```mermaid
 flowchart TB
   subgraph APP["Frontend: Flutter · offline-first"]
     direction LR
-    UI["UI Screens"] --> BLOC["BLoC"] --> REPO["Repositories<br/>(scoped by user_id)"] --> DAO["DAOs"] --> LDB[("SQLite<br/>local_users · local_projects · local_sessions (all history)<br/>local_daily_rollups · project_rollups (derived, local only)<br/>pending_changes · pull_checkpoints<br/>──────<br/>triggers: session to rollups, split at local midnight")]
+    UI["UI Screens"] --> BLOC["BLoC"] --> REPO["Repositories<br/>(scoped by user_id)"] --> DAO["DAOs"] --> LDB[("SQLite<br/>users · projects · sessions (all history)<br/>daily_rollups · project_rollups (derived)<br/>pending_changes · pull_checkpoints<br/>──────<br/>triggers: session to daily_rollups and project_rollups, split at local midnight")]
     REPO -.->|"pending changes + online · app start · Sync button"| SYNC["Sync Service<br/>reset check · push · pull<br/>(200 rows per page)"]
     SYNC <-->|"reads pending_changes, writes pulled data, wipes on reset"| LDB
   end
 
   subgraph CLOUD["Backend: Supabase"]
     direction LR
-    AUTH["Supabase Auth<br/>OAuth sign-in issues the JWT<br/>RLS by user_id"] --> RPC["RPC functions<br/>push_changes · pull_projects · pull_sessions · reset_history"] --> CDB[("PostgreSQL<br/>users · projects · sessions (all history)<br/>daily_rollups · utc_daily_rollups (derived, cloud only)<br/>──────<br/>overlap constraint on sessions<br/>triggers: session to daily_rollups (local midnight) and utc_daily_rollups (UTC midnight)")]
+    AUTH["Supabase Auth<br/>OAuth sign-in issues the JWT<br/>RLS by user_id"] --> RPC["RPC functions<br/>push_changes · pull_projects · pull_sessions · reset_history"] --> CDB[("PostgreSQL<br/>users · projects · sessions (all history)<br/>daily_rollups · project_rollups · utc_daily_rollups (derived)<br/>──────<br/>overlap constraint on sessions<br/>triggers: session to daily_rollups and project_rollups (local midnight) and utc_daily_rollups (UTC midnight)")]
   end
 
   APP -->|"Sync Service → Auth<br/>HTTPS + JWT (access token from OAuth login)<br/>① read users.history_reset_at<br/>② push pending_changes, 200 rows per request<br/>③ pull rows stamped after the checkpoints, 200 per page"| CLOUD
@@ -310,33 +309,33 @@ flowchart TB
 
 ## Local ER diagram (SQLite)
 
-- `local_users` holds every account that has signed in on this device, created from the cloud `users` row at sign-in. `history_reset_at` is the last reset this device applied.
-- Triggers on `local_sessions` split each session at local midnight into `local_daily_rollups` and `project_rollups`. They fire on insert and when `deleted_at` is first set. An insert that already has `deleted_at` (a pulled tombstone) adds nothing. Pulled rows are saved with upserts, never replace.
+- `users` holds every account that has signed in on this device, created from the cloud `users` row at sign-in. `history_reset_at` is the last reset this device applied.
+- Triggers on `sessions` split each session at local midnight into `daily_rollups` and `project_rollups`. They fire on insert and when `deleted_at` is first set. An insert that already has `deleted_at` (a pulled tombstone) adds nothing. Pulled rows are saved with upserts, never replace.
 - `project_rollups` has no FK to projects. A project that is missing or has `deleted_at` set is counted as "No Project" (`''`) through the `project_rollups_effective` view.
 - `pending_changes` lists the rows to push. It stores no copy of the data. Every change is an upsert, and a delete is `deleted_at` being set. Push reads it 200 entries at a time, oldest first, and removes the entries the cloud answered. A non-empty table is what starts a sync when the device is online.
 - `pull_checkpoints` stores, per account, the biggest `updated_at` received for projects and for sessions. A pull asks for rows stamped after them, starting 2 minutes before.
-- A history reset wipes the account's `local_sessions`, `local_projects`, `local_daily_rollups`, `project_rollups` and `pending_changes`, in that order for the first two (sessions point at projects), and clears both checkpoints. Triggers do not run for this wipe.
+- A history reset wipes the account's `sessions`, `projects`, `daily_rollups`, `project_rollups` and `pending_changes`, in that order for the first two (sessions point at projects), and clears both checkpoints. Triggers do not run for this wipe.
 
 ```mermaid
 erDiagram
-  LOCAL_USERS ||--o{ LOCAL_PROJECTS : owns
-  LOCAL_USERS ||--o{ LOCAL_SESSIONS : owns
-  LOCAL_USERS ||--o{ LOCAL_DAILY_ROLLUPS : owns
-  LOCAL_USERS ||--o{ PROJECT_ROLLUPS : owns
-  LOCAL_USERS ||--o{ PENDING_CHANGES : queues
-  LOCAL_USERS ||--|| PULL_CHECKPOINTS : has
-  LOCAL_PROJECTS ||--o{ LOCAL_SESSIONS : "has (no cascade, no SET NULL)"
-  LOCAL_SESSIONS }o..o{ LOCAL_DAILY_ROLLUPS : "triggers feed, split at local midnight"
-  LOCAL_SESSIONS }o..o{ PROJECT_ROLLUPS : "triggers feed, split at local midnight"
-  LOCAL_PROJECTS ||..o{ PROJECT_ROLLUPS : "logical link, no FK"
+  USERS ||--o{ PROJECTS : owns
+  USERS ||--o{ SESSIONS : owns
+  USERS ||--o{ DAILY_ROLLUPS : owns
+  USERS ||--o{ PROJECT_ROLLUPS : owns
+  USERS ||--o{ PENDING_CHANGES : queues
+  USERS ||--|| PULL_CHECKPOINTS : has
+  PROJECTS ||--o{ SESSIONS : "has (no cascade, no SET NULL)"
+  SESSIONS }o..o{ DAILY_ROLLUPS : "triggers feed, split at local midnight"
+  SESSIONS }o..o{ PROJECT_ROLLUPS : "triggers feed, split at local midnight"
+  PROJECTS ||..o{ PROJECT_ROLLUPS : "logical link, no FK"
 
-  LOCAL_USERS {
+  USERS {
     id text PK "Supabase Auth user id"
     email text
     full_name text
     history_reset_at datetime "last reset applied on this device"
   }
-  LOCAL_PROJECTS {
+  PROJECTS {
     id text PK "uuidv7"
     user_id text FK
     name text "3-20 chars"
@@ -344,7 +343,7 @@ erDiagram
     created_at datetime
     deleted_at datetime "tombstone, kept until a history reset"
   }
-  LOCAL_SESSIONS {
+  SESSIONS {
     id text PK "uuidv7"
     user_id text FK
     project_id text FK "nullable"
@@ -353,7 +352,7 @@ erDiagram
     utc_offset_minutes int "device offset when recorded, e.g. 360"
     deleted_at datetime "tombstone, kept until a history reset"
   }
-  LOCAL_DAILY_ROLLUPS {
+  DAILY_ROLLUPS {
     user_id text PK, FK
     date text PK "local date"
     duration_seconds int "local-day total, split at local midnight"
@@ -382,14 +381,15 @@ erDiagram
 - `users` is keyed by the Supabase Auth user id. `full_name` is filled from the sign-in profile when the account is created and is copied to the device on every sync. `history_reset_at` is null until the first "delete all history". Devices read it at the start of every sync.
 - `push_changes` takes at most 200 rows per list. It upserts projects first, then sessions. Each row runs in its own savepoint, so one failure does not fail the batch. A project upsert replaces the whole row (last push wins). Projects created before `history_reset_at` and sessions that ended before it are rejected. Overlaps follow the "Overlap rule".
 - `pull_projects` and `pull_sessions` return one page of at most 200 rows, read by `(updated_at, id)` after the cursor the device sends.
-- `reset_history` hard-deletes the user's `utc_daily_rollups`, `daily_rollups`, `sessions` and `projects` (in that order) and sets `history_reset_at = now()`, all in one transaction. Triggers do not run for these deletes. The `users` row stays.
+- `reset_history` hard-deletes the user's `utc_daily_rollups`, `project_rollups`, `daily_rollups`, `sessions` and `projects` (in that order) and sets `history_reset_at = now()`, all in one transaction. Triggers do not run for these deletes. The `users` row stays.
 - A trigger sets `updated_at = now()` on every insert or update of a project or session. Device checkpoints track it (see "How sync works").
-- Each live session feeds two rollup tables, one slice per day touched (see "How a session is split at midnight"):
+- Each live session feeds three rollup tables, one slice per day touched (see "How a session is split at midnight"):
   - `daily_rollups`: split at local midnight using `utc_offset_minutes`. Powers the streak leaderboard.
+  - `project_rollups`: split at local midnight using `utc_offset_minutes`, one row per project per day. A session with no project goes to `''` (No Project).
   - `utc_daily_rollups`: split at UTC midnight. Powers the time leaderboard.
 - Triggers add when a live session is inserted and subtract when `deleted_at` is first set. A retried push cannot count twice.
+- `project_rollups` has no FK to projects. A project that is missing or has `deleted_at` set is counted as "No Project" (`''`) through the `project_rollups_effective` view.
 - Indexes: `sessions (user_id, updated_at)` and `projects (user_id, updated_at)`.
-- There is no `project_rollups` in the cloud. Project charts use the local copy.
 - The cloud keeps no per-device state. Each device keeps its own position in `pull_checkpoints`.
 
 ```sql
@@ -408,10 +408,13 @@ erDiagram
   USERS ||--o{ PROJECTS : owns
   USERS ||--o{ SESSIONS : owns
   USERS ||--o{ DAILY_ROLLUPS : owns
+  USERS ||--o{ PROJECT_ROLLUPS : owns
   USERS ||--o{ UTC_DAILY_ROLLUPS : owns
   PROJECTS ||--o{ SESSIONS : "has (no cascade, no SET NULL)"
   SESSIONS }o..o{ DAILY_ROLLUPS : "trigger feeds, split at local midnight"
+  SESSIONS }o..o{ PROJECT_ROLLUPS : "trigger feeds, split at local midnight"
   SESSIONS }o..o{ UTC_DAILY_ROLLUPS : "trigger feeds, split at UTC midnight"
+  PROJECTS ||..o{ PROJECT_ROLLUPS : "logical link, no FK"
 
   USERS {
     id uuid PK "Supabase Auth user id"
@@ -443,6 +446,12 @@ erDiagram
     date date PK "local date"
     duration_seconds int "local-day total, split at local midnight"
   }
+  PROJECT_ROLLUPS {
+    user_id uuid PK, FK
+    date date PK "local date"
+    project_id text PK "empty string = No Project"
+    duration_seconds int
+  }
   UTC_DAILY_ROLLUPS {
     user_id uuid PK, FK
     utc_date date PK "UTC day, split at UTC midnight"
@@ -463,7 +472,7 @@ A user never has two live sessions that overlap in time, even if two devices ran
 
 Nothing is trimmed: the loser's time leaves the totals. The change reaches every device like this:
 
-- Cloud triggers subtract the dropped sessions from `daily_rollups` and `utc_daily_rollups`.
+- Cloud triggers subtract the dropped sessions from `daily_rollups`, `project_rollups` and `utc_daily_rollups`.
 - A pushed session that lost is reported in the `push_changes` response, and the pushing device sets `deleted_at` on its local copy immediately.
 - Every dropped session gets a fresh `updated_at`, so every device, including the one that recorded it, pulls the tombstone on its next sync and subtracts the time.
 
@@ -489,35 +498,35 @@ The exclusion constraint on `sessions` is a backstop. A bug in `push_changes` ca
 **Delete a session**
 
 1. The device sets `deleted_at` on the session and adds it to `pending_changes`.
-2. The local trigger subtracts its seconds from `local_daily_rollups` and `project_rollups`.
-3. Cloud triggers subtract them from `daily_rollups` and `utc_daily_rollups`.
+2. The local trigger subtracts its seconds from `daily_rollups` and `project_rollups`.
+3. Cloud triggers subtract them from `daily_rollups`, `project_rollups` and `utc_daily_rollups`.
 4. Other devices pull the tombstone on their next sync, and their triggers subtract the same seconds. No rollup values are sent.
 
 **Delete all history**
 
 This removes every project, session and rollup the user has. Only the account stays.
 
-1. The app calls `reset_history` (online only). In one transaction the cloud hard-deletes the user's `utc_daily_rollups`, `daily_rollups`, `sessions` and `projects`, in that order because sessions point at projects, and sets `users.history_reset_at = now()`. No trigger runs for these deletes.
-2. The calling device wipes its local sessions, projects, `local_daily_rollups` and `project_rollups`, clears its `pending_changes` and both checkpoints, and stores the new `history_reset_at`.
+1. The app calls `reset_history` (online only). In one transaction the cloud hard-deletes the user's `utc_daily_rollups`, `project_rollups`, `daily_rollups`, `sessions` and `projects`, in that order because sessions point at projects, and sets `users.history_reset_at = now()`. No trigger runs for these deletes.
+2. The calling device wipes its local sessions, projects, `daily_rollups` and `project_rollups`, clears its `pending_changes` and both checkpoints, and stores the new `history_reset_at`.
 3. Every other device sees the newer `history_reset_at` in the reset check at the start of its next sync, before it pushes anything, and does the same. Anything it recorded offline since the reset is wiped too.
 4. As a backstop, `push_changes` rejects any project with `created_at < history_reset_at` and any session with `ended_at < history_reset_at`. The device drops rejected rows locally without requeuing them.
 5. If the app gets no answer from `reset_history` (for example the connection drops), it shows an error and leaves local data alone. The cloud may already be reset. The app starts a sync as soon as it can, and the reset check clears the device if the reset went through. Running the reset again is safe.
 
 Example:
 
-| Time  | Device                                             | What happens                                                                                                                                                                                          |
-| ----- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 12:00 | Phone                                              | The user taps "Delete all history". The cloud deletes the rollups, sessions and projects and sets `history_reset_at` to 12:00. The phone wipes its local data.                                        |
+| Time  | Device                                             | What happens                                                                                                                                                                                         |
+| ----- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 12:00 | Phone                                              | The user taps "Delete all history". The cloud deletes the rollups, sessions and projects and sets `history_reset_at` to 12:00. The phone wipes its local data.                                       |
 | 12:30 | Tablet (offline since 11:00, 20 unsynced sessions) | The connection returns. The reset check sees 12:00, which is newer than the tablet's value. It wipes its projects, sessions, rollups, the 20 pending entries and its checkpoints. It pushes nothing. |
-| 12:30 | Tablet                                             | The pull starts with no checkpoints and returns 0 rows, because the cloud is empty.                                                                                                                   |
+| 12:30 | Tablet                                             | The pull starts with no checkpoints and returns 0 rows, because the cloud is empty.                                                                                                                  |
 
 ## Rebuilding rollups
 
-Rollups can always be recomputed from sessions. `rebuild_rollups(user_id)` deletes the account's rows in `local_daily_rollups` and `project_rollups` and recreates them from all sessions where `deleted_at is null`, using the same split function. Use it for repairs, after a schema migration, or after a very large first pull. The device also runs it after it removes rejected sessions, because a hard delete fires no trigger. The cloud has the same function for `daily_rollups` and `utc_daily_rollups` (the latter split at UTC midnight).
+Rollups can always be recomputed from sessions. `rebuild_rollups(user_id)` deletes the account's rows in `daily_rollups` and `project_rollups` and recreates them from all sessions where `deleted_at is null`, using the same split function. Use it for repairs, after a schema migration, or after a very large first pull. The device also runs it after it removes rejected sessions, because a hard delete fires no trigger. The cloud has the same function, and it also rebuilds `utc_daily_rollups` (split at UTC midnight).
 
 ## Design notes
 
 - **`updated_at` (cloud `projects` and `sessions`):** set by the database and used for pull checkpoints. A device-written time would not work: a session recorded offline on Monday and pushed on Wednesday would carry a Monday time, and a device whose checkpoint is already at Tuesday would miss it.
-- **`history_reset_at` (`users`, `local_users`):** one timestamp, null until the first reset. A device wipes its projects, sessions and rollups when the cloud value is newer than its own. The cloud also uses it to reject stale pushes.
+- **`history_reset_at` (`users`, cloud and device):** one timestamp, null until the first reset. A device wipes its projects, sessions and rollups when the cloud value is newer than its own. The cloud also uses it to reject stale pushes.
 - **Reset check before push:** a phone that was offline during a reset still holds old projects and sessions. Checking first means it wipes them before it tries to push anything, so the cloud never has to reject them and the phone never keeps sessions that point at projects the cloud refused.
 - **`utc_offset_minutes`:** an instant alone does not give the user's local date. The offset recorded with the session lets SQLite and Postgres find the same local midnight, even if the phone's timezone changes later.
