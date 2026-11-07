@@ -15,12 +15,12 @@ import 'package:tarkeez/core/sync/sync_status.dart';
 /// Offline, nothing is attempted. Events that arrive during a run are merged
 /// into one follow-up run.
 class SyncService {
-  new(this._engine, this._connectivity, this._supabase, this._database);
+  new(this._engine, this._connectivity, this._supabase, this._localDatabase);
 
   final SyncEngine _engine;
   final ConnectivityService _connectivity;
   final SupabaseClient _supabase;
-  final LocalDatabase _database;
+  final LocalDatabase _localDatabase;
 
   final _statuses = StreamController<SyncStatus>.broadcast();
   final _projectsChanged = StreamController<void>.broadcast();
@@ -188,7 +188,7 @@ class SyncService {
   void _onSignedIn() {
     syncLog('signed in: watching pending changes');
     _pendingSub?.cancel();
-    _pendingSub = _database.pendingChangesDao.watchPendingIds().listen((ids) {
+    _pendingSub = _localDatabase.pendingChangesDao.watchPendingIds().listen((ids) {
       if (ids.isNotEmpty) {
         syncLog('${ids.length} pending changes waiting');
         unawaited(requestSync(SyncTrigger.pendingChanges));
@@ -207,7 +207,7 @@ class SyncService {
   Future<void> _onConnectionRestored() async {
     if (!_isSignedIn) return;
 
-    final hasPending = await _database.pendingChangesDao.hasPending();
+    final hasPending = await _localDatabase.pendingChangesDao.hasPending();
     syncLog(
       'connection restored (pending changes: $hasPending, '
       'app-start sync waiting: $_syncOnReconnect)',

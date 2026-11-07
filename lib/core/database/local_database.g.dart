@@ -3,12 +3,11 @@
 part of 'local_database.dart';
 
 // ignore_for_file: type=lint
-class $LocalUsersTable extends LocalUsers
-    with TableInfo<$LocalUsersTable, LocalUser> {
+class $UsersTable extends Users with TableInfo<$UsersTable, LocalUser> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $LocalUsersTable(this.attachedDatabase, [this._alias]);
+  $UsersTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -72,7 +71,7 @@ class $LocalUsersTable extends LocalUsers
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'local_users';
+  static const String $name = 'users';
   @override
   VerificationContext validateIntegrity(
     Insertable<LocalUser> instance, {
@@ -145,8 +144,8 @@ class $LocalUsersTable extends LocalUsers
   }
 
   @override
-  $LocalUsersTable createAlias(String alias) {
-    return $LocalUsersTable(attachedDatabase, alias);
+  $UsersTable createAlias(String alias) {
+    return $UsersTable(attachedDatabase, alias);
   }
 }
 
@@ -182,8 +181,8 @@ class LocalUser extends DataClass implements Insertable<LocalUser> {
     return map;
   }
 
-  LocalUsersCompanion toCompanion(bool nullToAbsent) {
-    return LocalUsersCompanion(
+  UsersCompanion toCompanion(bool nullToAbsent) {
+    return UsersCompanion(
       id: Value(id),
       email: email == null && nullToAbsent
           ? const Value.absent()
@@ -240,7 +239,7 @@ class LocalUser extends DataClass implements Insertable<LocalUser> {
         ? historyResetAt.value
         : this.historyResetAt,
   );
-  LocalUser copyWithCompanion(LocalUsersCompanion data) {
+  LocalUser copyWithCompanion(UsersCompanion data) {
     return LocalUser(
       id: data.id.present ? data.id.value : this.id,
       email: data.email.present ? data.email.value : this.email,
@@ -278,14 +277,14 @@ class LocalUser extends DataClass implements Insertable<LocalUser> {
           other.historyResetAt == this.historyResetAt);
 }
 
-class LocalUsersCompanion extends UpdateCompanion<LocalUser> {
+class UsersCompanion extends UpdateCompanion<LocalUser> {
   final Value<String> id;
   final Value<String?> email;
   final Value<String?> fullName;
   final Value<String?> avatarUrl;
   final Value<String?> historyResetAt;
   final Value<int> rowid;
-  const LocalUsersCompanion({
+  const UsersCompanion({
     this.id = const Value.absent(),
     this.email = const Value.absent(),
     this.fullName = const Value.absent(),
@@ -293,7 +292,7 @@ class LocalUsersCompanion extends UpdateCompanion<LocalUser> {
     this.historyResetAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  LocalUsersCompanion.insert({
+  UsersCompanion.insert({
     required String id,
     this.email = const Value.absent(),
     this.fullName = const Value.absent(),
@@ -319,7 +318,7 @@ class LocalUsersCompanion extends UpdateCompanion<LocalUser> {
     });
   }
 
-  LocalUsersCompanion copyWith({
+  UsersCompanion copyWith({
     Value<String>? id,
     Value<String?>? email,
     Value<String?>? fullName,
@@ -327,7 +326,7 @@ class LocalUsersCompanion extends UpdateCompanion<LocalUser> {
     Value<String?>? historyResetAt,
     Value<int>? rowid,
   }) {
-    return LocalUsersCompanion(
+    return UsersCompanion(
       id: id ?? this.id,
       email: email ?? this.email,
       fullName: fullName ?? this.fullName,
@@ -363,7 +362,7 @@ class LocalUsersCompanion extends UpdateCompanion<LocalUser> {
 
   @override
   String toString() {
-    return (StringBuffer('LocalUsersCompanion(')
+    return (StringBuffer('UsersCompanion(')
           ..write('id: $id, ')
           ..write('email: $email, ')
           ..write('fullName: $fullName, ')
@@ -375,12 +374,12 @@ class LocalUsersCompanion extends UpdateCompanion<LocalUser> {
   }
 }
 
-class $LocalProjectsTable extends LocalProjects
-    with TableInfo<$LocalProjectsTable, LocalProject> {
+class $ProjectsTable extends Projects
+    with TableInfo<$ProjectsTable, LocalProject> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $LocalProjectsTable(this.attachedDatabase, [this._alias]);
+  $ProjectsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -400,7 +399,7 @@ class $LocalProjectsTable extends LocalProjects
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES local_users (id) ON UPDATE CASCADE ON DELETE CASCADE',
+      'REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
@@ -463,7 +462,7 @@ class $LocalProjectsTable extends LocalProjects
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'local_projects';
+  static const String $name = 'projects';
   @override
   VerificationContext validateIntegrity(
     Insertable<LocalProject> instance, {
@@ -547,8 +546,8 @@ class $LocalProjectsTable extends LocalProjects
   }
 
   @override
-  $LocalProjectsTable createAlias(String alias) {
-    return $LocalProjectsTable(attachedDatabase, alias);
+  $ProjectsTable createAlias(String alias) {
+    return $ProjectsTable(attachedDatabase, alias);
   }
 }
 
@@ -581,8 +580,8 @@ class LocalProject extends DataClass implements Insertable<LocalProject> {
     return map;
   }
 
-  LocalProjectsCompanion toCompanion(bool nullToAbsent) {
-    return LocalProjectsCompanion(
+  ProjectsCompanion toCompanion(bool nullToAbsent) {
+    return ProjectsCompanion(
       id: Value(id),
       userId: Value(userId),
       name: Value(name),
@@ -636,7 +635,7 @@ class LocalProject extends DataClass implements Insertable<LocalProject> {
     createdAt: createdAt ?? this.createdAt,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
   );
-  LocalProject copyWithCompanion(LocalProjectsCompanion data) {
+  LocalProject copyWithCompanion(ProjectsCompanion data) {
     return LocalProject(
       id: data.id.present ? data.id.value : this.id,
       userId: data.userId.present ? data.userId.value : this.userId,
@@ -675,7 +674,7 @@ class LocalProject extends DataClass implements Insertable<LocalProject> {
           other.deletedAt == this.deletedAt);
 }
 
-class LocalProjectsCompanion extends UpdateCompanion<LocalProject> {
+class ProjectsCompanion extends UpdateCompanion<LocalProject> {
   final Value<String> id;
   final Value<String> userId;
   final Value<String> name;
@@ -683,7 +682,7 @@ class LocalProjectsCompanion extends UpdateCompanion<LocalProject> {
   final Value<DateTime> createdAt;
   final Value<DateTime?> deletedAt;
   final Value<int> rowid;
-  const LocalProjectsCompanion({
+  const ProjectsCompanion({
     this.id = const Value.absent(),
     this.userId = const Value.absent(),
     this.name = const Value.absent(),
@@ -692,7 +691,7 @@ class LocalProjectsCompanion extends UpdateCompanion<LocalProject> {
     this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  LocalProjectsCompanion.insert({
+  ProjectsCompanion.insert({
     this.id = const Value.absent(),
     required String userId,
     required String name,
@@ -723,7 +722,7 @@ class LocalProjectsCompanion extends UpdateCompanion<LocalProject> {
     });
   }
 
-  LocalProjectsCompanion copyWith({
+  ProjectsCompanion copyWith({
     Value<String>? id,
     Value<String>? userId,
     Value<String>? name,
@@ -732,7 +731,7 @@ class LocalProjectsCompanion extends UpdateCompanion<LocalProject> {
     Value<DateTime?>? deletedAt,
     Value<int>? rowid,
   }) {
-    return LocalProjectsCompanion(
+    return ProjectsCompanion(
       id: id ?? this.id,
       userId: userId ?? this.userId,
       name: name ?? this.name,
@@ -772,7 +771,7 @@ class LocalProjectsCompanion extends UpdateCompanion<LocalProject> {
 
   @override
   String toString() {
-    return (StringBuffer('LocalProjectsCompanion(')
+    return (StringBuffer('ProjectsCompanion(')
           ..write('id: $id, ')
           ..write('userId: $userId, ')
           ..write('name: $name, ')
@@ -785,12 +784,12 @@ class LocalProjectsCompanion extends UpdateCompanion<LocalProject> {
   }
 }
 
-class $LocalSessionsTable extends LocalSessions
-    with TableInfo<$LocalSessionsTable, LocalSession> {
+class $SessionsTable extends Sessions
+    with TableInfo<$SessionsTable, LocalSession> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $LocalSessionsTable(this.attachedDatabase, [this._alias]);
+  $SessionsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -810,7 +809,7 @@ class $LocalSessionsTable extends LocalSessions
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES local_users (id) ON UPDATE CASCADE ON DELETE CASCADE',
+      'REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _projectIdMeta = const VerificationMeta(
@@ -824,7 +823,7 @@ class $LocalSessionsTable extends LocalSessions
     type: DriftSqlType.string,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES local_projects (id)',
+      'REFERENCES projects (id)',
     ),
   );
   static const VerificationMeta _startedAtMeta = const VerificationMeta(
@@ -885,7 +884,7 @@ class $LocalSessionsTable extends LocalSessions
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'local_sessions';
+  static const String $name = 'sessions';
   @override
   VerificationContext validateIntegrity(
     Insertable<LocalSession> instance, {
@@ -984,8 +983,8 @@ class $LocalSessionsTable extends LocalSessions
   }
 
   @override
-  $LocalSessionsTable createAlias(String alias) {
-    return $LocalSessionsTable(attachedDatabase, alias);
+  $SessionsTable createAlias(String alias) {
+    return $SessionsTable(attachedDatabase, alias);
   }
 }
 
@@ -1031,8 +1030,8 @@ class LocalSession extends DataClass implements Insertable<LocalSession> {
     return map;
   }
 
-  LocalSessionsCompanion toCompanion(bool nullToAbsent) {
-    return LocalSessionsCompanion(
+  SessionsCompanion toCompanion(bool nullToAbsent) {
+    return SessionsCompanion(
       id: Value(id),
       userId: Value(userId),
       projectId: projectId == null && nullToAbsent
@@ -1093,7 +1092,7 @@ class LocalSession extends DataClass implements Insertable<LocalSession> {
     utcOffsetMinutes: utcOffsetMinutes ?? this.utcOffsetMinutes,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
   );
-  LocalSession copyWithCompanion(LocalSessionsCompanion data) {
+  LocalSession copyWithCompanion(SessionsCompanion data) {
     return LocalSession(
       id: data.id.present ? data.id.value : this.id,
       userId: data.userId.present ? data.userId.value : this.userId,
@@ -1144,7 +1143,7 @@ class LocalSession extends DataClass implements Insertable<LocalSession> {
           other.deletedAt == this.deletedAt);
 }
 
-class LocalSessionsCompanion extends UpdateCompanion<LocalSession> {
+class SessionsCompanion extends UpdateCompanion<LocalSession> {
   final Value<String> id;
   final Value<String> userId;
   final Value<String?> projectId;
@@ -1153,7 +1152,7 @@ class LocalSessionsCompanion extends UpdateCompanion<LocalSession> {
   final Value<int> utcOffsetMinutes;
   final Value<DateTime?> deletedAt;
   final Value<int> rowid;
-  const LocalSessionsCompanion({
+  const SessionsCompanion({
     this.id = const Value.absent(),
     this.userId = const Value.absent(),
     this.projectId = const Value.absent(),
@@ -1163,7 +1162,7 @@ class LocalSessionsCompanion extends UpdateCompanion<LocalSession> {
     this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  LocalSessionsCompanion.insert({
+  SessionsCompanion.insert({
     this.id = const Value.absent(),
     required String userId,
     this.projectId = const Value.absent(),
@@ -1198,7 +1197,7 @@ class LocalSessionsCompanion extends UpdateCompanion<LocalSession> {
     });
   }
 
-  LocalSessionsCompanion copyWith({
+  SessionsCompanion copyWith({
     Value<String>? id,
     Value<String>? userId,
     Value<String?>? projectId,
@@ -1208,7 +1207,7 @@ class LocalSessionsCompanion extends UpdateCompanion<LocalSession> {
     Value<DateTime?>? deletedAt,
     Value<int>? rowid,
   }) {
-    return LocalSessionsCompanion(
+    return SessionsCompanion(
       id: id ?? this.id,
       userId: userId ?? this.userId,
       projectId: projectId ?? this.projectId,
@@ -1252,7 +1251,7 @@ class LocalSessionsCompanion extends UpdateCompanion<LocalSession> {
 
   @override
   String toString() {
-    return (StringBuffer('LocalSessionsCompanion(')
+    return (StringBuffer('SessionsCompanion(')
           ..write('id: $id, ')
           ..write('userId: $userId, ')
           ..write('projectId: $projectId, ')
@@ -1266,12 +1265,12 @@ class LocalSessionsCompanion extends UpdateCompanion<LocalSession> {
   }
 }
 
-class $LocalDailyRollupsTable extends LocalDailyRollups
-    with TableInfo<$LocalDailyRollupsTable, LocalDailyRollup> {
+class $DailyRollupsTable extends DailyRollups
+    with TableInfo<$DailyRollupsTable, LocalDailyRollup> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $LocalDailyRollupsTable(this.attachedDatabase, [this._alias]);
+  $DailyRollupsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
   @override
   late final GeneratedColumn<String> userId = GeneratedColumn<String>(
@@ -1281,7 +1280,7 @@ class $LocalDailyRollupsTable extends LocalDailyRollups
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES local_users (id) ON UPDATE CASCADE ON DELETE CASCADE',
+      'REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _dateMeta = const VerificationMeta('date');
@@ -1311,7 +1310,7 @@ class $LocalDailyRollupsTable extends LocalDailyRollups
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'local_daily_rollups';
+  static const String $name = 'daily_rollups';
   @override
   VerificationContext validateIntegrity(
     Insertable<LocalDailyRollup> instance, {
@@ -1369,8 +1368,8 @@ class $LocalDailyRollupsTable extends LocalDailyRollups
   }
 
   @override
-  $LocalDailyRollupsTable createAlias(String alias) {
-    return $LocalDailyRollupsTable(attachedDatabase, alias);
+  $DailyRollupsTable createAlias(String alias) {
+    return $DailyRollupsTable(attachedDatabase, alias);
   }
 }
 
@@ -1395,8 +1394,8 @@ class LocalDailyRollup extends DataClass
     return map;
   }
 
-  LocalDailyRollupsCompanion toCompanion(bool nullToAbsent) {
-    return LocalDailyRollupsCompanion(
+  DailyRollupsCompanion toCompanion(bool nullToAbsent) {
+    return DailyRollupsCompanion(
       userId: Value(userId),
       date: Value(date),
       durationSeconds: Value(durationSeconds),
@@ -1433,7 +1432,7 @@ class LocalDailyRollup extends DataClass
     date: date ?? this.date,
     durationSeconds: durationSeconds ?? this.durationSeconds,
   );
-  LocalDailyRollup copyWithCompanion(LocalDailyRollupsCompanion data) {
+  LocalDailyRollup copyWithCompanion(DailyRollupsCompanion data) {
     return LocalDailyRollup(
       userId: data.userId.present ? data.userId.value : this.userId,
       date: data.date.present ? data.date.value : this.date,
@@ -1464,18 +1463,18 @@ class LocalDailyRollup extends DataClass
           other.durationSeconds == this.durationSeconds);
 }
 
-class LocalDailyRollupsCompanion extends UpdateCompanion<LocalDailyRollup> {
+class DailyRollupsCompanion extends UpdateCompanion<LocalDailyRollup> {
   final Value<String> userId;
   final Value<String> date;
   final Value<int> durationSeconds;
   final Value<int> rowid;
-  const LocalDailyRollupsCompanion({
+  const DailyRollupsCompanion({
     this.userId = const Value.absent(),
     this.date = const Value.absent(),
     this.durationSeconds = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  LocalDailyRollupsCompanion.insert({
+  DailyRollupsCompanion.insert({
     required String userId,
     required String date,
     this.durationSeconds = const Value.absent(),
@@ -1496,13 +1495,13 @@ class LocalDailyRollupsCompanion extends UpdateCompanion<LocalDailyRollup> {
     });
   }
 
-  LocalDailyRollupsCompanion copyWith({
+  DailyRollupsCompanion copyWith({
     Value<String>? userId,
     Value<String>? date,
     Value<int>? durationSeconds,
     Value<int>? rowid,
   }) {
-    return LocalDailyRollupsCompanion(
+    return DailyRollupsCompanion(
       userId: userId ?? this.userId,
       date: date ?? this.date,
       durationSeconds: durationSeconds ?? this.durationSeconds,
@@ -1530,7 +1529,7 @@ class LocalDailyRollupsCompanion extends UpdateCompanion<LocalDailyRollup> {
 
   @override
   String toString() {
-    return (StringBuffer('LocalDailyRollupsCompanion(')
+    return (StringBuffer('DailyRollupsCompanion(')
           ..write('userId: $userId, ')
           ..write('date: $date, ')
           ..write('durationSeconds: $durationSeconds, ')
@@ -1555,7 +1554,7 @@ class $ProjectRollupsTable extends ProjectRollups
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES local_users (id) ON UPDATE CASCADE ON DELETE CASCADE',
+      'REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _dateMeta = const VerificationMeta('date');
@@ -1885,7 +1884,7 @@ class $PendingChangesTable extends PendingChanges
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES local_users (id) ON UPDATE CASCADE ON DELETE CASCADE',
+      'REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE',
     ),
   );
   @override
@@ -2189,7 +2188,7 @@ class $PullCheckpointsTable extends PullCheckpoints
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES local_users (id) ON UPDATE CASCADE ON DELETE CASCADE',
+      'REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _lastProjectUpdatedAtMeta =
@@ -2478,11 +2477,10 @@ class PullCheckpointsCompanion extends UpdateCompanion<PullCheckpoint> {
 abstract class _$LocalDatabase extends GeneratedDatabase {
   _$LocalDatabase(QueryExecutor e) : super(e);
   $LocalDatabaseManager get managers => $LocalDatabaseManager(this);
-  late final $LocalUsersTable localUsers = $LocalUsersTable(this);
-  late final $LocalProjectsTable localProjects = $LocalProjectsTable(this);
-  late final $LocalSessionsTable localSessions = $LocalSessionsTable(this);
-  late final $LocalDailyRollupsTable localDailyRollups =
-      $LocalDailyRollupsTable(this);
+  late final $UsersTable users = $UsersTable(this);
+  late final $ProjectsTable projects = $ProjectsTable(this);
+  late final $SessionsTable sessions = $SessionsTable(this);
+  late final $DailyRollupsTable dailyRollups = $DailyRollupsTable(this);
   late final $ProjectRollupsTable projectRollups = $ProjectRollupsTable(this);
   late final $PendingChangesTable pendingChanges = $PendingChangesTable(this);
   late final $PullCheckpointsTable pullCheckpoints = $PullCheckpointsTable(
@@ -2490,16 +2488,12 @@ abstract class _$LocalDatabase extends GeneratedDatabase {
   );
   late final Index idxSessionsHistory = Index(
     'idx_sessions_history',
-    'CREATE INDEX idx_sessions_history ON local_sessions (user_id, started_at)',
+    'CREATE INDEX idx_sessions_history ON sessions (user_id, started_at)',
   );
-  late final LocalUsersDao localUsersDao = LocalUsersDao(this as LocalDatabase);
-  late final LocalProjectsDao localProjectsDao = LocalProjectsDao(
-    this as LocalDatabase,
-  );
-  late final LocalSessionsDao localSessionsDao = LocalSessionsDao(
-    this as LocalDatabase,
-  );
-  late final LocalDailyRollupsDao localDailyRollupsDao = LocalDailyRollupsDao(
+  late final UsersDao usersDao = UsersDao(this as LocalDatabase);
+  late final ProjectsDao projectsDao = ProjectsDao(this as LocalDatabase);
+  late final SessionsDao sessionsDao = SessionsDao(this as LocalDatabase);
+  late final DailyRollupsDao dailyRollupsDao = DailyRollupsDao(
     this as LocalDatabase,
   );
   late final ProjectRollupsDao projectRollupsDao = ProjectRollupsDao(
@@ -2516,10 +2510,10 @@ abstract class _$LocalDatabase extends GeneratedDatabase {
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
-    localUsers,
-    localProjects,
-    localSessions,
-    localDailyRollups,
+    users,
+    projects,
+    sessions,
+    dailyRollups,
     projectRollups,
     pendingChanges,
     pullCheckpoints,
@@ -2529,84 +2523,84 @@ abstract class _$LocalDatabase extends GeneratedDatabase {
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
     WritePropagation(
       on: TableUpdateQuery.onTableName(
-        'local_users',
+        'users',
         limitUpdateKind: UpdateKind.delete,
       ),
-      result: [TableUpdate('local_projects', kind: UpdateKind.delete)],
+      result: [TableUpdate('projects', kind: UpdateKind.delete)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
-        'local_users',
+        'users',
         limitUpdateKind: UpdateKind.update,
       ),
-      result: [TableUpdate('local_projects', kind: UpdateKind.update)],
+      result: [TableUpdate('projects', kind: UpdateKind.update)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
-        'local_users',
+        'users',
         limitUpdateKind: UpdateKind.delete,
       ),
-      result: [TableUpdate('local_sessions', kind: UpdateKind.delete)],
+      result: [TableUpdate('sessions', kind: UpdateKind.delete)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
-        'local_users',
+        'users',
         limitUpdateKind: UpdateKind.update,
       ),
-      result: [TableUpdate('local_sessions', kind: UpdateKind.update)],
+      result: [TableUpdate('sessions', kind: UpdateKind.update)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
-        'local_users',
+        'users',
         limitUpdateKind: UpdateKind.delete,
       ),
-      result: [TableUpdate('local_daily_rollups', kind: UpdateKind.delete)],
+      result: [TableUpdate('daily_rollups', kind: UpdateKind.delete)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
-        'local_users',
+        'users',
         limitUpdateKind: UpdateKind.update,
       ),
-      result: [TableUpdate('local_daily_rollups', kind: UpdateKind.update)],
+      result: [TableUpdate('daily_rollups', kind: UpdateKind.update)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
-        'local_users',
+        'users',
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('project_rollups', kind: UpdateKind.delete)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
-        'local_users',
+        'users',
         limitUpdateKind: UpdateKind.update,
       ),
       result: [TableUpdate('project_rollups', kind: UpdateKind.update)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
-        'local_users',
+        'users',
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('pending_changes', kind: UpdateKind.delete)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
-        'local_users',
+        'users',
         limitUpdateKind: UpdateKind.update,
       ),
       result: [TableUpdate('pending_changes', kind: UpdateKind.update)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
-        'local_users',
+        'users',
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('pull_checkpoints', kind: UpdateKind.delete)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
-        'local_users',
+        'users',
         limitUpdateKind: UpdateKind.update,
       ),
       result: [TableUpdate('pull_checkpoints', kind: UpdateKind.update)],
@@ -2617,7 +2611,7 @@ abstract class _$LocalDatabase extends GeneratedDatabase {
       const DriftDatabaseOptions(storeDateTimeAsText: true);
 }
 
-typedef $$LocalUsersTableCreateCompanionBuilder = LocalUsersCompanion Function({
+typedef $$UsersTableCreateCompanionBuilder = UsersCompanion Function({
   required String id,
   Value<String?> email,
   Value<String?> fullName,
@@ -2625,7 +2619,7 @@ typedef $$LocalUsersTableCreateCompanionBuilder = LocalUsersCompanion Function({
   Value<String?> historyResetAt,
   Value<int> rowid,
 });
-typedef $$LocalUsersTableUpdateCompanionBuilder = LocalUsersCompanion Function({
+typedef $$UsersTableUpdateCompanionBuilder = UsersCompanion Function({
   Value<String> id,
   Value<String?> email,
   Value<String?> fullName,
@@ -2634,62 +2628,59 @@ typedef $$LocalUsersTableUpdateCompanionBuilder = LocalUsersCompanion Function({
   Value<int> rowid,
 });
 
-final class $$LocalUsersTableReferences
-    extends BaseReferences<_$LocalDatabase, $LocalUsersTable, LocalUser> {
-  $$LocalUsersTableReferences(super.$_db, super.$_table, super.$_typedResult);
+final class $$UsersTableReferences
+    extends BaseReferences<_$LocalDatabase, $UsersTable, LocalUser> {
+  $$UsersTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static MultiTypedResultKey<$LocalProjectsTable, List<LocalProject>>
-  _localProjectsRefsTable(_$LocalDatabase db) => MultiTypedResultKey.fromTable(
-    db.localProjects,
-    aliasName: 'local_users__id__local_projects__user_id',
+  static MultiTypedResultKey<$ProjectsTable, List<LocalProject>>
+  _projectsRefsTable(_$LocalDatabase db) => MultiTypedResultKey.fromTable(
+    db.projects,
+    aliasName: 'users__id__projects__user_id',
   );
 
-  $$LocalProjectsTableProcessedTableManager get localProjectsRefs {
-    final manager = $$LocalProjectsTableTableManager(
+  $$ProjectsTableProcessedTableManager get projectsRefs {
+    final manager = $$ProjectsTableTableManager(
       $_db,
-      $_db.localProjects,
+      $_db.projects,
     ).filter((f) => f.userId.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_localProjectsRefsTable($_db));
+    final cache = $_typedResult.readTableOrNull(_projectsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
 
-  static MultiTypedResultKey<$LocalSessionsTable, List<LocalSession>>
-  _localSessionsRefsTable(_$LocalDatabase db) => MultiTypedResultKey.fromTable(
-    db.localSessions,
-    aliasName: 'local_users__id__local_sessions__user_id',
+  static MultiTypedResultKey<$SessionsTable, List<LocalSession>>
+  _sessionsRefsTable(_$LocalDatabase db) => MultiTypedResultKey.fromTable(
+    db.sessions,
+    aliasName: 'users__id__sessions__user_id',
   );
 
-  $$LocalSessionsTableProcessedTableManager get localSessionsRefs {
-    final manager = $$LocalSessionsTableTableManager(
+  $$SessionsTableProcessedTableManager get sessionsRefs {
+    final manager = $$SessionsTableTableManager(
       $_db,
-      $_db.localSessions,
+      $_db.sessions,
     ).filter((f) => f.userId.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_localSessionsRefsTable($_db));
+    final cache = $_typedResult.readTableOrNull(_sessionsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
 
-  static MultiTypedResultKey<$LocalDailyRollupsTable, List<LocalDailyRollup>>
-  _localDailyRollupsRefsTable(_$LocalDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.localDailyRollups,
-        aliasName: 'local_users__id__local_daily_rollups__user_id',
-      );
+  static MultiTypedResultKey<$DailyRollupsTable, List<LocalDailyRollup>>
+  _dailyRollupsRefsTable(_$LocalDatabase db) => MultiTypedResultKey.fromTable(
+    db.dailyRollups,
+    aliasName: 'users__id__daily_rollups__user_id',
+  );
 
-  $$LocalDailyRollupsTableProcessedTableManager get localDailyRollupsRefs {
-    final manager = $$LocalDailyRollupsTableTableManager(
+  $$DailyRollupsTableProcessedTableManager get dailyRollupsRefs {
+    final manager = $$DailyRollupsTableTableManager(
       $_db,
-      $_db.localDailyRollups,
+      $_db.dailyRollups,
     ).filter((f) => f.userId.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(
-      _localDailyRollupsRefsTable($_db),
-    );
+    final cache = $_typedResult.readTableOrNull(_dailyRollupsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -2698,7 +2689,7 @@ final class $$LocalUsersTableReferences
   static MultiTypedResultKey<$ProjectRollupsTable, List<ProjectRollup>>
   _projectRollupsRefsTable(_$LocalDatabase db) => MultiTypedResultKey.fromTable(
     db.projectRollups,
-    aliasName: 'local_users__id__project_rollups__user_id',
+    aliasName: 'users__id__project_rollups__user_id',
   );
 
   $$ProjectRollupsTableProcessedTableManager get projectRollupsRefs {
@@ -2716,7 +2707,7 @@ final class $$LocalUsersTableReferences
   static MultiTypedResultKey<$PendingChangesTable, List<PendingChange>>
   _pendingChangesRefsTable(_$LocalDatabase db) => MultiTypedResultKey.fromTable(
     db.pendingChanges,
-    aliasName: 'local_users__id__pending_changes__user_id',
+    aliasName: 'users__id__pending_changes__user_id',
   );
 
   $$PendingChangesTableProcessedTableManager get pendingChangesRefs {
@@ -2735,7 +2726,7 @@ final class $$LocalUsersTableReferences
   _pullCheckpointsRefsTable(_$LocalDatabase db) =>
       MultiTypedResultKey.fromTable(
         db.pullCheckpoints,
-        aliasName: 'local_users__id__pull_checkpoints__user_id',
+        aliasName: 'users__id__pull_checkpoints__user_id',
       );
 
   $$PullCheckpointsTableProcessedTableManager get pullCheckpointsRefs {
@@ -2753,9 +2744,9 @@ final class $$LocalUsersTableReferences
   }
 }
 
-class $$LocalUsersTableFilterComposer
-    extends Composer<_$LocalDatabase, $LocalUsersTable> {
-  $$LocalUsersTableFilterComposer({
+class $$UsersTableFilterComposer
+    extends Composer<_$LocalDatabase, $UsersTable> {
+  $$UsersTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -2787,22 +2778,22 @@ class $$LocalUsersTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  Expression<bool> localProjectsRefs(
-    Expression<bool> Function($$LocalProjectsTableFilterComposer f) f,
+  Expression<bool> projectsRefs(
+    Expression<bool> Function($$ProjectsTableFilterComposer f) f,
   ) {
-    final $$LocalProjectsTableFilterComposer composer = $composerBuilder(
+    final $$ProjectsTableFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.localProjects,
+      referencedTable: $db.projects,
       getReferencedColumn: (t) => t.userId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalProjectsTableFilterComposer(
+          }) => $$ProjectsTableFilterComposer(
             $db: $db,
-            $table: $db.localProjects,
+            $table: $db.projects,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -2812,22 +2803,22 @@ class $$LocalUsersTableFilterComposer
     return f(composer);
   }
 
-  Expression<bool> localSessionsRefs(
-    Expression<bool> Function($$LocalSessionsTableFilterComposer f) f,
+  Expression<bool> sessionsRefs(
+    Expression<bool> Function($$SessionsTableFilterComposer f) f,
   ) {
-    final $$LocalSessionsTableFilterComposer composer = $composerBuilder(
+    final $$SessionsTableFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.localSessions,
+      referencedTable: $db.sessions,
       getReferencedColumn: (t) => t.userId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalSessionsTableFilterComposer(
+          }) => $$SessionsTableFilterComposer(
             $db: $db,
-            $table: $db.localSessions,
+            $table: $db.sessions,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -2837,22 +2828,22 @@ class $$LocalUsersTableFilterComposer
     return f(composer);
   }
 
-  Expression<bool> localDailyRollupsRefs(
-    Expression<bool> Function($$LocalDailyRollupsTableFilterComposer f) f,
+  Expression<bool> dailyRollupsRefs(
+    Expression<bool> Function($$DailyRollupsTableFilterComposer f) f,
   ) {
-    final $$LocalDailyRollupsTableFilterComposer composer = $composerBuilder(
+    final $$DailyRollupsTableFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.localDailyRollups,
+      referencedTable: $db.dailyRollups,
       getReferencedColumn: (t) => t.userId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalDailyRollupsTableFilterComposer(
+          }) => $$DailyRollupsTableFilterComposer(
             $db: $db,
-            $table: $db.localDailyRollups,
+            $table: $db.dailyRollups,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -2938,9 +2929,9 @@ class $$LocalUsersTableFilterComposer
   }
 }
 
-class $$LocalUsersTableOrderingComposer
-    extends Composer<_$LocalDatabase, $LocalUsersTable> {
-  $$LocalUsersTableOrderingComposer({
+class $$UsersTableOrderingComposer
+    extends Composer<_$LocalDatabase, $UsersTable> {
+  $$UsersTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -2973,9 +2964,9 @@ class $$LocalUsersTableOrderingComposer
   );
 }
 
-class $$LocalUsersTableAnnotationComposer
-    extends Composer<_$LocalDatabase, $LocalUsersTable> {
-  $$LocalUsersTableAnnotationComposer({
+class $$UsersTableAnnotationComposer
+    extends Composer<_$LocalDatabase, $UsersTable> {
+  $$UsersTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -2999,22 +2990,22 @@ class $$LocalUsersTableAnnotationComposer
     builder: (column) => column,
   );
 
-  Expression<T> localProjectsRefs<T extends Object>(
-    Expression<T> Function($$LocalProjectsTableAnnotationComposer a) f,
+  Expression<T> projectsRefs<T extends Object>(
+    Expression<T> Function($$ProjectsTableAnnotationComposer a) f,
   ) {
-    final $$LocalProjectsTableAnnotationComposer composer = $composerBuilder(
+    final $$ProjectsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.localProjects,
+      referencedTable: $db.projects,
       getReferencedColumn: (t) => t.userId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalProjectsTableAnnotationComposer(
+          }) => $$ProjectsTableAnnotationComposer(
             $db: $db,
-            $table: $db.localProjects,
+            $table: $db.projects,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -3024,22 +3015,22 @@ class $$LocalUsersTableAnnotationComposer
     return f(composer);
   }
 
-  Expression<T> localSessionsRefs<T extends Object>(
-    Expression<T> Function($$LocalSessionsTableAnnotationComposer a) f,
+  Expression<T> sessionsRefs<T extends Object>(
+    Expression<T> Function($$SessionsTableAnnotationComposer a) f,
   ) {
-    final $$LocalSessionsTableAnnotationComposer composer = $composerBuilder(
+    final $$SessionsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.localSessions,
+      referencedTable: $db.sessions,
       getReferencedColumn: (t) => t.userId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalSessionsTableAnnotationComposer(
+          }) => $$SessionsTableAnnotationComposer(
             $db: $db,
-            $table: $db.localSessions,
+            $table: $db.sessions,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -3049,29 +3040,28 @@ class $$LocalUsersTableAnnotationComposer
     return f(composer);
   }
 
-  Expression<T> localDailyRollupsRefs<T extends Object>(
-    Expression<T> Function($$LocalDailyRollupsTableAnnotationComposer a) f,
+  Expression<T> dailyRollupsRefs<T extends Object>(
+    Expression<T> Function($$DailyRollupsTableAnnotationComposer a) f,
   ) {
-    final $$LocalDailyRollupsTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.localDailyRollups,
-          getReferencedColumn: (t) => t.userId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
+    final $$DailyRollupsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.dailyRollups,
+      getReferencedColumn: (t) => t.userId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DailyRollupsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.dailyRollups,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
                 $removeJoinBuilderFromRootComposer,
-              }) => $$LocalDailyRollupsTableAnnotationComposer(
-                $db: $db,
-                $table: $db.localDailyRollups,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
+          ),
+    );
     return f(composer);
   }
 
@@ -3151,39 +3141,39 @@ class $$LocalUsersTableAnnotationComposer
   }
 }
 
-class $$LocalUsersTableTableManager
+class $$UsersTableTableManager
     extends
         RootTableManager<
           _$LocalDatabase,
-          $LocalUsersTable,
+          $UsersTable,
           LocalUser,
-          $$LocalUsersTableFilterComposer,
-          $$LocalUsersTableOrderingComposer,
-          $$LocalUsersTableAnnotationComposer,
-          $$LocalUsersTableCreateCompanionBuilder,
-          $$LocalUsersTableUpdateCompanionBuilder,
-          (LocalUser, $$LocalUsersTableReferences),
+          $$UsersTableFilterComposer,
+          $$UsersTableOrderingComposer,
+          $$UsersTableAnnotationComposer,
+          $$UsersTableCreateCompanionBuilder,
+          $$UsersTableUpdateCompanionBuilder,
+          (LocalUser, $$UsersTableReferences),
           LocalUser,
           PrefetchHooks Function({
-            bool localProjectsRefs,
-            bool localSessionsRefs,
-            bool localDailyRollupsRefs,
+            bool projectsRefs,
+            bool sessionsRefs,
+            bool dailyRollupsRefs,
             bool projectRollupsRefs,
             bool pendingChangesRefs,
             bool pullCheckpointsRefs,
           })
         > {
-  $$LocalUsersTableTableManager(_$LocalDatabase db, $LocalUsersTable table)
+  $$UsersTableTableManager(_$LocalDatabase db, $UsersTable table)
     : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$LocalUsersTableFilterComposer($db: db, $table: table),
+              $$UsersTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $$LocalUsersTableOrderingComposer($db: db, $table: table),
+              $$UsersTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$LocalUsersTableAnnotationComposer($db: db, $table: table),
+              $$UsersTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
@@ -3192,7 +3182,7 @@ class $$LocalUsersTableTableManager
                 Value<String?> avatarUrl = const Value.absent(),
                 Value<String?> historyResetAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => LocalUsersCompanion(
+              }) => UsersCompanion(
                 id: id,
                 email: email,
                 fullName: fullName,
@@ -3208,7 +3198,7 @@ class $$LocalUsersTableTableManager
                 Value<String?> avatarUrl = const Value.absent(),
                 Value<String?> historyResetAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => LocalUsersCompanion.insert(
+              }) => UsersCompanion.insert(
                 id: id,
                 email: email,
                 fullName: fullName,
@@ -3219,16 +3209,16 @@ class $$LocalUsersTableTableManager
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable<$LocalUsersTable, LocalUser>(table),
-                  $$LocalUsersTableReferences(db, table, e),
+                  e.readTable<$UsersTable, LocalUser>(table),
+                  $$UsersTableReferences(db, table, e),
                 ),
               )
               .toList(),
           prefetchHooksCallback:
               ({
-                localProjectsRefs = false,
-                localSessionsRefs = false,
-                localDailyRollupsRefs = false,
+                projectsRefs = false,
+                sessionsRefs = false,
+                dailyRollupsRefs = false,
                 projectRollupsRefs = false,
                 pendingChangesRefs = false,
                 pullCheckpointsRefs = false,
@@ -3236,9 +3226,9 @@ class $$LocalUsersTableTableManager
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
-                    if (localProjectsRefs) db.localProjects,
-                    if (localSessionsRefs) db.localSessions,
-                    if (localDailyRollupsRefs) db.localDailyRollups,
+                    if (projectsRefs) db.projects,
+                    if (sessionsRefs) db.sessions,
+                    if (dailyRollupsRefs) db.dailyRollups,
                     if (projectRollupsRefs) db.projectRollups,
                     if (pendingChangesRefs) db.pendingChanges,
                     if (pullCheckpointsRefs) db.pullCheckpoints,
@@ -3246,63 +3236,63 @@ class $$LocalUsersTableTableManager
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
                     return [
-                      if (localProjectsRefs)
+                      if (projectsRefs)
                         await $_getPrefetchedData<
                           LocalUser,
-                          $LocalUsersTable,
+                          $UsersTable,
                           LocalProject
                         >(
                           currentTable: table,
-                          referencedTable: $$LocalUsersTableReferences
-                              ._localProjectsRefsTable(db),
+                          referencedTable: $$UsersTableReferences
+                              ._projectsRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $$LocalUsersTableReferences(
+                              $$UsersTableReferences(
                                 db,
                                 table,
                                 p0,
-                              ).localProjectsRefs,
+                              ).projectsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.userId == item.id,
                               ),
                           typedResults: items,
                         ),
-                      if (localSessionsRefs)
+                      if (sessionsRefs)
                         await $_getPrefetchedData<
                           LocalUser,
-                          $LocalUsersTable,
+                          $UsersTable,
                           LocalSession
                         >(
                           currentTable: table,
-                          referencedTable: $$LocalUsersTableReferences
-                              ._localSessionsRefsTable(db),
+                          referencedTable: $$UsersTableReferences
+                              ._sessionsRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $$LocalUsersTableReferences(
+                              $$UsersTableReferences(
                                 db,
                                 table,
                                 p0,
-                              ).localSessionsRefs,
+                              ).sessionsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.userId == item.id,
                               ),
                           typedResults: items,
                         ),
-                      if (localDailyRollupsRefs)
+                      if (dailyRollupsRefs)
                         await $_getPrefetchedData<
                           LocalUser,
-                          $LocalUsersTable,
+                          $UsersTable,
                           LocalDailyRollup
                         >(
                           currentTable: table,
-                          referencedTable: $$LocalUsersTableReferences
-                              ._localDailyRollupsRefsTable(db),
+                          referencedTable: $$UsersTableReferences
+                              ._dailyRollupsRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $$LocalUsersTableReferences(
+                              $$UsersTableReferences(
                                 db,
                                 table,
                                 p0,
-                              ).localDailyRollupsRefs,
+                              ).dailyRollupsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.userId == item.id,
@@ -3312,14 +3302,14 @@ class $$LocalUsersTableTableManager
                       if (projectRollupsRefs)
                         await $_getPrefetchedData<
                           LocalUser,
-                          $LocalUsersTable,
+                          $UsersTable,
                           ProjectRollup
                         >(
                           currentTable: table,
-                          referencedTable: $$LocalUsersTableReferences
+                          referencedTable: $$UsersTableReferences
                               ._projectRollupsRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $$LocalUsersTableReferences(
+                              $$UsersTableReferences(
                                 db,
                                 table,
                                 p0,
@@ -3333,14 +3323,14 @@ class $$LocalUsersTableTableManager
                       if (pendingChangesRefs)
                         await $_getPrefetchedData<
                           LocalUser,
-                          $LocalUsersTable,
+                          $UsersTable,
                           PendingChange
                         >(
                           currentTable: table,
-                          referencedTable: $$LocalUsersTableReferences
+                          referencedTable: $$UsersTableReferences
                               ._pendingChangesRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $$LocalUsersTableReferences(
+                              $$UsersTableReferences(
                                 db,
                                 table,
                                 p0,
@@ -3354,14 +3344,14 @@ class $$LocalUsersTableTableManager
                       if (pullCheckpointsRefs)
                         await $_getPrefetchedData<
                           LocalUser,
-                          $LocalUsersTable,
+                          $UsersTable,
                           PullCheckpoint
                         >(
                           currentTable: table,
-                          referencedTable: $$LocalUsersTableReferences
+                          referencedTable: $$UsersTableReferences
                               ._pullCheckpointsRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $$LocalUsersTableReferences(
+                              $$UsersTableReferences(
                                 db,
                                 table,
                                 p0,
@@ -3380,65 +3370,59 @@ class $$LocalUsersTableTableManager
       );
 }
 
-typedef $$LocalUsersTableProcessedTableManager =
+typedef $$UsersTableProcessedTableManager =
     ProcessedTableManager<
       _$LocalDatabase,
-      $LocalUsersTable,
+      $UsersTable,
       LocalUser,
-      $$LocalUsersTableFilterComposer,
-      $$LocalUsersTableOrderingComposer,
-      $$LocalUsersTableAnnotationComposer,
-      $$LocalUsersTableCreateCompanionBuilder,
-      $$LocalUsersTableUpdateCompanionBuilder,
-      (LocalUser, $$LocalUsersTableReferences),
+      $$UsersTableFilterComposer,
+      $$UsersTableOrderingComposer,
+      $$UsersTableAnnotationComposer,
+      $$UsersTableCreateCompanionBuilder,
+      $$UsersTableUpdateCompanionBuilder,
+      (LocalUser, $$UsersTableReferences),
       LocalUser,
       PrefetchHooks Function({
-        bool localProjectsRefs,
-        bool localSessionsRefs,
-        bool localDailyRollupsRefs,
+        bool projectsRefs,
+        bool sessionsRefs,
+        bool dailyRollupsRefs,
         bool projectRollupsRefs,
         bool pendingChangesRefs,
         bool pullCheckpointsRefs,
       })
     >;
-typedef $$LocalProjectsTableCreateCompanionBuilder =
-    LocalProjectsCompanion Function({
-      Value<String> id,
-      required String userId,
-      required String name,
-      required int colorId,
-      Value<DateTime> createdAt,
-      Value<DateTime?> deletedAt,
-      Value<int> rowid,
-    });
-typedef $$LocalProjectsTableUpdateCompanionBuilder =
-    LocalProjectsCompanion Function({
-      Value<String> id,
-      Value<String> userId,
-      Value<String> name,
-      Value<int> colorId,
-      Value<DateTime> createdAt,
-      Value<DateTime?> deletedAt,
-      Value<int> rowid,
-    });
+typedef $$ProjectsTableCreateCompanionBuilder = ProjectsCompanion Function({
+  Value<String> id,
+  required String userId,
+  required String name,
+  required int colorId,
+  Value<DateTime> createdAt,
+  Value<DateTime?> deletedAt,
+  Value<int> rowid,
+});
+typedef $$ProjectsTableUpdateCompanionBuilder = ProjectsCompanion Function({
+  Value<String> id,
+  Value<String> userId,
+  Value<String> name,
+  Value<int> colorId,
+  Value<DateTime> createdAt,
+  Value<DateTime?> deletedAt,
+  Value<int> rowid,
+});
 
-final class $$LocalProjectsTableReferences
-    extends BaseReferences<_$LocalDatabase, $LocalProjectsTable, LocalProject> {
-  $$LocalProjectsTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
+final class $$ProjectsTableReferences
+    extends BaseReferences<_$LocalDatabase, $ProjectsTable, LocalProject> {
+  $$ProjectsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static $LocalUsersTable _userIdTable(_$LocalDatabase db) =>
-      db.localUsers.createAlias('local_projects__user_id__local_users__id');
+  static $UsersTable _userIdTable(_$LocalDatabase db) =>
+      db.users.createAlias('projects__user_id__users__id');
 
-  $$LocalUsersTableProcessedTableManager get userId {
+  $$UsersTableProcessedTableManager get userId {
     final $_column = $_itemColumn<String>('user_id')!;
 
-    final manager = $$LocalUsersTableTableManager(
+    final manager = $$UsersTableTableManager(
       $_db,
-      $_db.localUsers,
+      $_db.users,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_userIdTable($_db));
     if (item == null) return manager;
@@ -3447,28 +3431,28 @@ final class $$LocalProjectsTableReferences
     );
   }
 
-  static MultiTypedResultKey<$LocalSessionsTable, List<LocalSession>>
-  _localSessionsRefsTable(_$LocalDatabase db) => MultiTypedResultKey.fromTable(
-    db.localSessions,
-    aliasName: 'local_projects__id__local_sessions__project_id',
+  static MultiTypedResultKey<$SessionsTable, List<LocalSession>>
+  _sessionsRefsTable(_$LocalDatabase db) => MultiTypedResultKey.fromTable(
+    db.sessions,
+    aliasName: 'projects__id__sessions__project_id',
   );
 
-  $$LocalSessionsTableProcessedTableManager get localSessionsRefs {
-    final manager = $$LocalSessionsTableTableManager(
+  $$SessionsTableProcessedTableManager get sessionsRefs {
+    final manager = $$SessionsTableTableManager(
       $_db,
-      $_db.localSessions,
+      $_db.sessions,
     ).filter((f) => f.projectId.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_localSessionsRefsTable($_db));
+    final cache = $_typedResult.readTableOrNull(_sessionsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
 }
 
-class $$LocalProjectsTableFilterComposer
-    extends Composer<_$LocalDatabase, $LocalProjectsTable> {
-  $$LocalProjectsTableFilterComposer({
+class $$ProjectsTableFilterComposer
+    extends Composer<_$LocalDatabase, $ProjectsTable> {
+  $$ProjectsTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -3500,20 +3484,20 @@ class $$LocalProjectsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  $$LocalUsersTableFilterComposer get userId {
-    final $$LocalUsersTableFilterComposer composer = $composerBuilder(
+  $$UsersTableFilterComposer get userId {
+    final $$UsersTableFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.userId,
-      referencedTable: $db.localUsers,
+      referencedTable: $db.users,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalUsersTableFilterComposer(
+          }) => $$UsersTableFilterComposer(
             $db: $db,
-            $table: $db.localUsers,
+            $table: $db.users,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -3523,22 +3507,22 @@ class $$LocalProjectsTableFilterComposer
     return composer;
   }
 
-  Expression<bool> localSessionsRefs(
-    Expression<bool> Function($$LocalSessionsTableFilterComposer f) f,
+  Expression<bool> sessionsRefs(
+    Expression<bool> Function($$SessionsTableFilterComposer f) f,
   ) {
-    final $$LocalSessionsTableFilterComposer composer = $composerBuilder(
+    final $$SessionsTableFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.localSessions,
+      referencedTable: $db.sessions,
       getReferencedColumn: (t) => t.projectId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalSessionsTableFilterComposer(
+          }) => $$SessionsTableFilterComposer(
             $db: $db,
-            $table: $db.localSessions,
+            $table: $db.sessions,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -3549,9 +3533,9 @@ class $$LocalProjectsTableFilterComposer
   }
 }
 
-class $$LocalProjectsTableOrderingComposer
-    extends Composer<_$LocalDatabase, $LocalProjectsTable> {
-  $$LocalProjectsTableOrderingComposer({
+class $$ProjectsTableOrderingComposer
+    extends Composer<_$LocalDatabase, $ProjectsTable> {
+  $$ProjectsTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -3583,20 +3567,20 @@ class $$LocalProjectsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  $$LocalUsersTableOrderingComposer get userId {
-    final $$LocalUsersTableOrderingComposer composer = $composerBuilder(
+  $$UsersTableOrderingComposer get userId {
+    final $$UsersTableOrderingComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.userId,
-      referencedTable: $db.localUsers,
+      referencedTable: $db.users,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalUsersTableOrderingComposer(
+          }) => $$UsersTableOrderingComposer(
             $db: $db,
-            $table: $db.localUsers,
+            $table: $db.users,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -3607,9 +3591,9 @@ class $$LocalProjectsTableOrderingComposer
   }
 }
 
-class $$LocalProjectsTableAnnotationComposer
-    extends Composer<_$LocalDatabase, $LocalProjectsTable> {
-  $$LocalProjectsTableAnnotationComposer({
+class $$ProjectsTableAnnotationComposer
+    extends Composer<_$LocalDatabase, $ProjectsTable> {
+  $$ProjectsTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -3631,20 +3615,20 @@ class $$LocalProjectsTableAnnotationComposer
   GeneratedColumn<DateTime> get deletedAt =>
       $composableBuilder(column: $table.deletedAt, builder: (column) => column);
 
-  $$LocalUsersTableAnnotationComposer get userId {
-    final $$LocalUsersTableAnnotationComposer composer = $composerBuilder(
+  $$UsersTableAnnotationComposer get userId {
+    final $$UsersTableAnnotationComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.userId,
-      referencedTable: $db.localUsers,
+      referencedTable: $db.users,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalUsersTableAnnotationComposer(
+          }) => $$UsersTableAnnotationComposer(
             $db: $db,
-            $table: $db.localUsers,
+            $table: $db.users,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -3654,22 +3638,22 @@ class $$LocalProjectsTableAnnotationComposer
     return composer;
   }
 
-  Expression<T> localSessionsRefs<T extends Object>(
-    Expression<T> Function($$LocalSessionsTableAnnotationComposer a) f,
+  Expression<T> sessionsRefs<T extends Object>(
+    Expression<T> Function($$SessionsTableAnnotationComposer a) f,
   ) {
-    final $$LocalSessionsTableAnnotationComposer composer = $composerBuilder(
+    final $$SessionsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.localSessions,
+      referencedTable: $db.sessions,
       getReferencedColumn: (t) => t.projectId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalSessionsTableAnnotationComposer(
+          }) => $$SessionsTableAnnotationComposer(
             $db: $db,
-            $table: $db.localSessions,
+            $table: $db.sessions,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -3680,34 +3664,32 @@ class $$LocalProjectsTableAnnotationComposer
   }
 }
 
-class $$LocalProjectsTableTableManager
+class $$ProjectsTableTableManager
     extends
         RootTableManager<
           _$LocalDatabase,
-          $LocalProjectsTable,
+          $ProjectsTable,
           LocalProject,
-          $$LocalProjectsTableFilterComposer,
-          $$LocalProjectsTableOrderingComposer,
-          $$LocalProjectsTableAnnotationComposer,
-          $$LocalProjectsTableCreateCompanionBuilder,
-          $$LocalProjectsTableUpdateCompanionBuilder,
-          (LocalProject, $$LocalProjectsTableReferences),
+          $$ProjectsTableFilterComposer,
+          $$ProjectsTableOrderingComposer,
+          $$ProjectsTableAnnotationComposer,
+          $$ProjectsTableCreateCompanionBuilder,
+          $$ProjectsTableUpdateCompanionBuilder,
+          (LocalProject, $$ProjectsTableReferences),
           LocalProject,
-          PrefetchHooks Function({bool userId, bool localSessionsRefs})
+          PrefetchHooks Function({bool userId, bool sessionsRefs})
         > {
-  $$LocalProjectsTableTableManager(
-    _$LocalDatabase db,
-    $LocalProjectsTable table,
-  ) : super(
+  $$ProjectsTableTableManager(_$LocalDatabase db, $ProjectsTable table)
+    : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$LocalProjectsTableFilterComposer($db: db, $table: table),
+              $$ProjectsTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $$LocalProjectsTableOrderingComposer($db: db, $table: table),
+              $$ProjectsTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$LocalProjectsTableAnnotationComposer($db: db, $table: table),
+              $$ProjectsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
@@ -3717,7 +3699,7 @@ class $$LocalProjectsTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => LocalProjectsCompanion(
+              }) => ProjectsCompanion(
                 id: id,
                 userId: userId,
                 name: name,
@@ -3735,7 +3717,7 @@ class $$LocalProjectsTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => LocalProjectsCompanion.insert(
+              }) => ProjectsCompanion.insert(
                 id: id,
                 userId: userId,
                 name: name,
@@ -3747,17 +3729,15 @@ class $$LocalProjectsTableTableManager
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable<$LocalProjectsTable, LocalProject>(table),
-                  $$LocalProjectsTableReferences(db, table, e),
+                  e.readTable<$ProjectsTable, LocalProject>(table),
+                  $$ProjectsTableReferences(db, table, e),
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({userId = false, localSessionsRefs = false}) {
+          prefetchHooksCallback: ({userId = false, sessionsRefs = false}) {
             return PrefetchHooks(
               db: db,
-              explicitlyWatchedTables: [
-                if (localSessionsRefs) db.localSessions,
-              ],
+              explicitlyWatchedTables: [if (sessionsRefs) db.sessions],
               addJoins:
                   <
                     T extends TableManagerState<
@@ -3778,9 +3758,10 @@ class $$LocalProjectsTableTableManager
                       state = state.withJoin(
                         currentTable: table,
                         currentColumn: table.userId,
-                        referencedTable: $$LocalProjectsTableReferences
-                            ._userIdTable(db),
-                        referencedColumn: $$LocalProjectsTableReferences
+                        referencedTable: $$ProjectsTableReferences._userIdTable(
+                          db,
+                        ),
+                        referencedColumn: $$ProjectsTableReferences
                             ._userIdTable(db)
                             .id,
                       ) as T;
@@ -3790,21 +3771,17 @@ class $$LocalProjectsTableTableManager
                   },
               getPrefetchedDataCallback: (items) async {
                 return [
-                  if (localSessionsRefs)
+                  if (sessionsRefs)
                     await $_getPrefetchedData<
                       LocalProject,
-                      $LocalProjectsTable,
+                      $ProjectsTable,
                       LocalSession
                     >(
                       currentTable: table,
-                      referencedTable: $$LocalProjectsTableReferences
-                          ._localSessionsRefsTable(db),
+                      referencedTable: $$ProjectsTableReferences
+                          ._sessionsRefsTable(db),
                       managerFromTypedResult: (p0) =>
-                          $$LocalProjectsTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).localSessionsRefs,
+                          $$ProjectsTableReferences(db, table, p0).sessionsRefs,
                       referencedItemsForCurrentItem: (item, referencedItems) =>
                           referencedItems.where((e) => e.projectId == item.id),
                       typedResults: items,
@@ -3817,60 +3794,54 @@ class $$LocalProjectsTableTableManager
       );
 }
 
-typedef $$LocalProjectsTableProcessedTableManager =
+typedef $$ProjectsTableProcessedTableManager =
     ProcessedTableManager<
       _$LocalDatabase,
-      $LocalProjectsTable,
+      $ProjectsTable,
       LocalProject,
-      $$LocalProjectsTableFilterComposer,
-      $$LocalProjectsTableOrderingComposer,
-      $$LocalProjectsTableAnnotationComposer,
-      $$LocalProjectsTableCreateCompanionBuilder,
-      $$LocalProjectsTableUpdateCompanionBuilder,
-      (LocalProject, $$LocalProjectsTableReferences),
+      $$ProjectsTableFilterComposer,
+      $$ProjectsTableOrderingComposer,
+      $$ProjectsTableAnnotationComposer,
+      $$ProjectsTableCreateCompanionBuilder,
+      $$ProjectsTableUpdateCompanionBuilder,
+      (LocalProject, $$ProjectsTableReferences),
       LocalProject,
-      PrefetchHooks Function({bool userId, bool localSessionsRefs})
+      PrefetchHooks Function({bool userId, bool sessionsRefs})
     >;
-typedef $$LocalSessionsTableCreateCompanionBuilder =
-    LocalSessionsCompanion Function({
-      Value<String> id,
-      required String userId,
-      Value<String?> projectId,
-      required DateTime startedAt,
-      required DateTime endedAt,
-      required int utcOffsetMinutes,
-      Value<DateTime?> deletedAt,
-      Value<int> rowid,
-    });
-typedef $$LocalSessionsTableUpdateCompanionBuilder =
-    LocalSessionsCompanion Function({
-      Value<String> id,
-      Value<String> userId,
-      Value<String?> projectId,
-      Value<DateTime> startedAt,
-      Value<DateTime> endedAt,
-      Value<int> utcOffsetMinutes,
-      Value<DateTime?> deletedAt,
-      Value<int> rowid,
-    });
+typedef $$SessionsTableCreateCompanionBuilder = SessionsCompanion Function({
+  Value<String> id,
+  required String userId,
+  Value<String?> projectId,
+  required DateTime startedAt,
+  required DateTime endedAt,
+  required int utcOffsetMinutes,
+  Value<DateTime?> deletedAt,
+  Value<int> rowid,
+});
+typedef $$SessionsTableUpdateCompanionBuilder = SessionsCompanion Function({
+  Value<String> id,
+  Value<String> userId,
+  Value<String?> projectId,
+  Value<DateTime> startedAt,
+  Value<DateTime> endedAt,
+  Value<int> utcOffsetMinutes,
+  Value<DateTime?> deletedAt,
+  Value<int> rowid,
+});
 
-final class $$LocalSessionsTableReferences
-    extends BaseReferences<_$LocalDatabase, $LocalSessionsTable, LocalSession> {
-  $$LocalSessionsTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
+final class $$SessionsTableReferences
+    extends BaseReferences<_$LocalDatabase, $SessionsTable, LocalSession> {
+  $$SessionsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static $LocalUsersTable _userIdTable(_$LocalDatabase db) =>
-      db.localUsers.createAlias('local_sessions__user_id__local_users__id');
+  static $UsersTable _userIdTable(_$LocalDatabase db) =>
+      db.users.createAlias('sessions__user_id__users__id');
 
-  $$LocalUsersTableProcessedTableManager get userId {
+  $$UsersTableProcessedTableManager get userId {
     final $_column = $_itemColumn<String>('user_id')!;
 
-    final manager = $$LocalUsersTableTableManager(
+    final manager = $$UsersTableTableManager(
       $_db,
-      $_db.localUsers,
+      $_db.users,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_userIdTable($_db));
     if (item == null) return manager;
@@ -3879,16 +3850,15 @@ final class $$LocalSessionsTableReferences
     );
   }
 
-  static $LocalProjectsTable _projectIdTable(_$LocalDatabase db) => db
-      .localProjects
-      .createAlias('local_sessions__project_id__local_projects__id');
+  static $ProjectsTable _projectIdTable(_$LocalDatabase db) =>
+      db.projects.createAlias('sessions__project_id__projects__id');
 
-  $$LocalProjectsTableProcessedTableManager? get projectId {
+  $$ProjectsTableProcessedTableManager? get projectId {
     final $_column = $_itemColumn<String>('project_id');
     if ($_column == null) return null;
-    final manager = $$LocalProjectsTableTableManager(
+    final manager = $$ProjectsTableTableManager(
       $_db,
-      $_db.localProjects,
+      $_db.projects,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_projectIdTable($_db));
     if (item == null) return manager;
@@ -3898,9 +3868,9 @@ final class $$LocalSessionsTableReferences
   }
 }
 
-class $$LocalSessionsTableFilterComposer
-    extends Composer<_$LocalDatabase, $LocalSessionsTable> {
-  $$LocalSessionsTableFilterComposer({
+class $$SessionsTableFilterComposer
+    extends Composer<_$LocalDatabase, $SessionsTable> {
+  $$SessionsTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -3932,20 +3902,20 @@ class $$LocalSessionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  $$LocalUsersTableFilterComposer get userId {
-    final $$LocalUsersTableFilterComposer composer = $composerBuilder(
+  $$UsersTableFilterComposer get userId {
+    final $$UsersTableFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.userId,
-      referencedTable: $db.localUsers,
+      referencedTable: $db.users,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalUsersTableFilterComposer(
+          }) => $$UsersTableFilterComposer(
             $db: $db,
-            $table: $db.localUsers,
+            $table: $db.users,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -3955,20 +3925,20 @@ class $$LocalSessionsTableFilterComposer
     return composer;
   }
 
-  $$LocalProjectsTableFilterComposer get projectId {
-    final $$LocalProjectsTableFilterComposer composer = $composerBuilder(
+  $$ProjectsTableFilterComposer get projectId {
+    final $$ProjectsTableFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.projectId,
-      referencedTable: $db.localProjects,
+      referencedTable: $db.projects,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalProjectsTableFilterComposer(
+          }) => $$ProjectsTableFilterComposer(
             $db: $db,
-            $table: $db.localProjects,
+            $table: $db.projects,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -3979,9 +3949,9 @@ class $$LocalSessionsTableFilterComposer
   }
 }
 
-class $$LocalSessionsTableOrderingComposer
-    extends Composer<_$LocalDatabase, $LocalSessionsTable> {
-  $$LocalSessionsTableOrderingComposer({
+class $$SessionsTableOrderingComposer
+    extends Composer<_$LocalDatabase, $SessionsTable> {
+  $$SessionsTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -4013,20 +3983,20 @@ class $$LocalSessionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  $$LocalUsersTableOrderingComposer get userId {
-    final $$LocalUsersTableOrderingComposer composer = $composerBuilder(
+  $$UsersTableOrderingComposer get userId {
+    final $$UsersTableOrderingComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.userId,
-      referencedTable: $db.localUsers,
+      referencedTable: $db.users,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalUsersTableOrderingComposer(
+          }) => $$UsersTableOrderingComposer(
             $db: $db,
-            $table: $db.localUsers,
+            $table: $db.users,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4036,20 +4006,20 @@ class $$LocalSessionsTableOrderingComposer
     return composer;
   }
 
-  $$LocalProjectsTableOrderingComposer get projectId {
-    final $$LocalProjectsTableOrderingComposer composer = $composerBuilder(
+  $$ProjectsTableOrderingComposer get projectId {
+    final $$ProjectsTableOrderingComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.projectId,
-      referencedTable: $db.localProjects,
+      referencedTable: $db.projects,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalProjectsTableOrderingComposer(
+          }) => $$ProjectsTableOrderingComposer(
             $db: $db,
-            $table: $db.localProjects,
+            $table: $db.projects,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4060,9 +4030,9 @@ class $$LocalSessionsTableOrderingComposer
   }
 }
 
-class $$LocalSessionsTableAnnotationComposer
-    extends Composer<_$LocalDatabase, $LocalSessionsTable> {
-  $$LocalSessionsTableAnnotationComposer({
+class $$SessionsTableAnnotationComposer
+    extends Composer<_$LocalDatabase, $SessionsTable> {
+  $$SessionsTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -4086,20 +4056,20 @@ class $$LocalSessionsTableAnnotationComposer
   GeneratedColumn<DateTime> get deletedAt =>
       $composableBuilder(column: $table.deletedAt, builder: (column) => column);
 
-  $$LocalUsersTableAnnotationComposer get userId {
-    final $$LocalUsersTableAnnotationComposer composer = $composerBuilder(
+  $$UsersTableAnnotationComposer get userId {
+    final $$UsersTableAnnotationComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.userId,
-      referencedTable: $db.localUsers,
+      referencedTable: $db.users,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalUsersTableAnnotationComposer(
+          }) => $$UsersTableAnnotationComposer(
             $db: $db,
-            $table: $db.localUsers,
+            $table: $db.users,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4109,20 +4079,20 @@ class $$LocalSessionsTableAnnotationComposer
     return composer;
   }
 
-  $$LocalProjectsTableAnnotationComposer get projectId {
-    final $$LocalProjectsTableAnnotationComposer composer = $composerBuilder(
+  $$ProjectsTableAnnotationComposer get projectId {
+    final $$ProjectsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.projectId,
-      referencedTable: $db.localProjects,
+      referencedTable: $db.projects,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalProjectsTableAnnotationComposer(
+          }) => $$ProjectsTableAnnotationComposer(
             $db: $db,
-            $table: $db.localProjects,
+            $table: $db.projects,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4133,34 +4103,32 @@ class $$LocalSessionsTableAnnotationComposer
   }
 }
 
-class $$LocalSessionsTableTableManager
+class $$SessionsTableTableManager
     extends
         RootTableManager<
           _$LocalDatabase,
-          $LocalSessionsTable,
+          $SessionsTable,
           LocalSession,
-          $$LocalSessionsTableFilterComposer,
-          $$LocalSessionsTableOrderingComposer,
-          $$LocalSessionsTableAnnotationComposer,
-          $$LocalSessionsTableCreateCompanionBuilder,
-          $$LocalSessionsTableUpdateCompanionBuilder,
-          (LocalSession, $$LocalSessionsTableReferences),
+          $$SessionsTableFilterComposer,
+          $$SessionsTableOrderingComposer,
+          $$SessionsTableAnnotationComposer,
+          $$SessionsTableCreateCompanionBuilder,
+          $$SessionsTableUpdateCompanionBuilder,
+          (LocalSession, $$SessionsTableReferences),
           LocalSession,
           PrefetchHooks Function({bool userId, bool projectId})
         > {
-  $$LocalSessionsTableTableManager(
-    _$LocalDatabase db,
-    $LocalSessionsTable table,
-  ) : super(
+  $$SessionsTableTableManager(_$LocalDatabase db, $SessionsTable table)
+    : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$LocalSessionsTableFilterComposer($db: db, $table: table),
+              $$SessionsTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $$LocalSessionsTableOrderingComposer($db: db, $table: table),
+              $$SessionsTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$LocalSessionsTableAnnotationComposer($db: db, $table: table),
+              $$SessionsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
@@ -4171,7 +4139,7 @@ class $$LocalSessionsTableTableManager
                 Value<int> utcOffsetMinutes = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => LocalSessionsCompanion(
+              }) => SessionsCompanion(
                 id: id,
                 userId: userId,
                 projectId: projectId,
@@ -4191,7 +4159,7 @@ class $$LocalSessionsTableTableManager
                 required int utcOffsetMinutes,
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => LocalSessionsCompanion.insert(
+              }) => SessionsCompanion.insert(
                 id: id,
                 userId: userId,
                 projectId: projectId,
@@ -4204,8 +4172,8 @@ class $$LocalSessionsTableTableManager
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable<$LocalSessionsTable, LocalSession>(table),
-                  $$LocalSessionsTableReferences(db, table, e),
+                  e.readTable<$SessionsTable, LocalSession>(table),
+                  $$SessionsTableReferences(db, table, e),
                 ),
               )
               .toList(),
@@ -4233,9 +4201,10 @@ class $$LocalSessionsTableTableManager
                       state = state.withJoin(
                         currentTable: table,
                         currentColumn: table.userId,
-                        referencedTable: $$LocalSessionsTableReferences
-                            ._userIdTable(db),
-                        referencedColumn: $$LocalSessionsTableReferences
+                        referencedTable: $$SessionsTableReferences._userIdTable(
+                          db,
+                        ),
+                        referencedColumn: $$SessionsTableReferences
                             ._userIdTable(db)
                             .id,
                       ) as T;
@@ -4244,9 +4213,9 @@ class $$LocalSessionsTableTableManager
                       state = state.withJoin(
                         currentTable: table,
                         currentColumn: table.projectId,
-                        referencedTable: $$LocalSessionsTableReferences
+                        referencedTable: $$SessionsTableReferences
                             ._projectIdTable(db),
-                        referencedColumn: $$LocalSessionsTableReferences
+                        referencedColumn: $$SessionsTableReferences
                             ._projectIdTable(db)
                             .id,
                       ) as T;
@@ -4263,57 +4232,49 @@ class $$LocalSessionsTableTableManager
       );
 }
 
-typedef $$LocalSessionsTableProcessedTableManager =
+typedef $$SessionsTableProcessedTableManager =
     ProcessedTableManager<
       _$LocalDatabase,
-      $LocalSessionsTable,
+      $SessionsTable,
       LocalSession,
-      $$LocalSessionsTableFilterComposer,
-      $$LocalSessionsTableOrderingComposer,
-      $$LocalSessionsTableAnnotationComposer,
-      $$LocalSessionsTableCreateCompanionBuilder,
-      $$LocalSessionsTableUpdateCompanionBuilder,
-      (LocalSession, $$LocalSessionsTableReferences),
+      $$SessionsTableFilterComposer,
+      $$SessionsTableOrderingComposer,
+      $$SessionsTableAnnotationComposer,
+      $$SessionsTableCreateCompanionBuilder,
+      $$SessionsTableUpdateCompanionBuilder,
+      (LocalSession, $$SessionsTableReferences),
       LocalSession,
       PrefetchHooks Function({bool userId, bool projectId})
     >;
-typedef $$LocalDailyRollupsTableCreateCompanionBuilder =
-    LocalDailyRollupsCompanion Function({
+typedef $$DailyRollupsTableCreateCompanionBuilder =
+    DailyRollupsCompanion Function({
       required String userId,
       required String date,
       Value<int> durationSeconds,
       Value<int> rowid,
     });
-typedef $$LocalDailyRollupsTableUpdateCompanionBuilder =
-    LocalDailyRollupsCompanion Function({
+typedef $$DailyRollupsTableUpdateCompanionBuilder =
+    DailyRollupsCompanion Function({
       Value<String> userId,
       Value<String> date,
       Value<int> durationSeconds,
       Value<int> rowid,
     });
 
-final class $$LocalDailyRollupsTableReferences
+final class $$DailyRollupsTableReferences
     extends
-        BaseReferences<
-          _$LocalDatabase,
-          $LocalDailyRollupsTable,
-          LocalDailyRollup
-        > {
-  $$LocalDailyRollupsTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
+        BaseReferences<_$LocalDatabase, $DailyRollupsTable, LocalDailyRollup> {
+  $$DailyRollupsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static $LocalUsersTable _userIdTable(_$LocalDatabase db) => db.localUsers
-      .createAlias('local_daily_rollups__user_id__local_users__id');
+  static $UsersTable _userIdTable(_$LocalDatabase db) =>
+      db.users.createAlias('daily_rollups__user_id__users__id');
 
-  $$LocalUsersTableProcessedTableManager get userId {
+  $$UsersTableProcessedTableManager get userId {
     final $_column = $_itemColumn<String>('user_id')!;
 
-    final manager = $$LocalUsersTableTableManager(
+    final manager = $$UsersTableTableManager(
       $_db,
-      $_db.localUsers,
+      $_db.users,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_userIdTable($_db));
     if (item == null) return manager;
@@ -4323,9 +4284,9 @@ final class $$LocalDailyRollupsTableReferences
   }
 }
 
-class $$LocalDailyRollupsTableFilterComposer
-    extends Composer<_$LocalDatabase, $LocalDailyRollupsTable> {
-  $$LocalDailyRollupsTableFilterComposer({
+class $$DailyRollupsTableFilterComposer
+    extends Composer<_$LocalDatabase, $DailyRollupsTable> {
+  $$DailyRollupsTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -4342,20 +4303,20 @@ class $$LocalDailyRollupsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  $$LocalUsersTableFilterComposer get userId {
-    final $$LocalUsersTableFilterComposer composer = $composerBuilder(
+  $$UsersTableFilterComposer get userId {
+    final $$UsersTableFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.userId,
-      referencedTable: $db.localUsers,
+      referencedTable: $db.users,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalUsersTableFilterComposer(
+          }) => $$UsersTableFilterComposer(
             $db: $db,
-            $table: $db.localUsers,
+            $table: $db.users,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4366,9 +4327,9 @@ class $$LocalDailyRollupsTableFilterComposer
   }
 }
 
-class $$LocalDailyRollupsTableOrderingComposer
-    extends Composer<_$LocalDatabase, $LocalDailyRollupsTable> {
-  $$LocalDailyRollupsTableOrderingComposer({
+class $$DailyRollupsTableOrderingComposer
+    extends Composer<_$LocalDatabase, $DailyRollupsTable> {
+  $$DailyRollupsTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -4385,20 +4346,20 @@ class $$LocalDailyRollupsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  $$LocalUsersTableOrderingComposer get userId {
-    final $$LocalUsersTableOrderingComposer composer = $composerBuilder(
+  $$UsersTableOrderingComposer get userId {
+    final $$UsersTableOrderingComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.userId,
-      referencedTable: $db.localUsers,
+      referencedTable: $db.users,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalUsersTableOrderingComposer(
+          }) => $$UsersTableOrderingComposer(
             $db: $db,
-            $table: $db.localUsers,
+            $table: $db.users,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4409,9 +4370,9 @@ class $$LocalDailyRollupsTableOrderingComposer
   }
 }
 
-class $$LocalDailyRollupsTableAnnotationComposer
-    extends Composer<_$LocalDatabase, $LocalDailyRollupsTable> {
-  $$LocalDailyRollupsTableAnnotationComposer({
+class $$DailyRollupsTableAnnotationComposer
+    extends Composer<_$LocalDatabase, $DailyRollupsTable> {
+  $$DailyRollupsTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -4426,20 +4387,20 @@ class $$LocalDailyRollupsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  $$LocalUsersTableAnnotationComposer get userId {
-    final $$LocalUsersTableAnnotationComposer composer = $composerBuilder(
+  $$UsersTableAnnotationComposer get userId {
+    final $$UsersTableAnnotationComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.userId,
-      referencedTable: $db.localUsers,
+      referencedTable: $db.users,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalUsersTableAnnotationComposer(
+          }) => $$UsersTableAnnotationComposer(
             $db: $db,
-            $table: $db.localUsers,
+            $table: $db.users,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4450,44 +4411,39 @@ class $$LocalDailyRollupsTableAnnotationComposer
   }
 }
 
-class $$LocalDailyRollupsTableTableManager
+class $$DailyRollupsTableTableManager
     extends
         RootTableManager<
           _$LocalDatabase,
-          $LocalDailyRollupsTable,
+          $DailyRollupsTable,
           LocalDailyRollup,
-          $$LocalDailyRollupsTableFilterComposer,
-          $$LocalDailyRollupsTableOrderingComposer,
-          $$LocalDailyRollupsTableAnnotationComposer,
-          $$LocalDailyRollupsTableCreateCompanionBuilder,
-          $$LocalDailyRollupsTableUpdateCompanionBuilder,
-          (LocalDailyRollup, $$LocalDailyRollupsTableReferences),
+          $$DailyRollupsTableFilterComposer,
+          $$DailyRollupsTableOrderingComposer,
+          $$DailyRollupsTableAnnotationComposer,
+          $$DailyRollupsTableCreateCompanionBuilder,
+          $$DailyRollupsTableUpdateCompanionBuilder,
+          (LocalDailyRollup, $$DailyRollupsTableReferences),
           LocalDailyRollup,
           PrefetchHooks Function({bool userId})
         > {
-  $$LocalDailyRollupsTableTableManager(
-    _$LocalDatabase db,
-    $LocalDailyRollupsTable table,
-  ) : super(
+  $$DailyRollupsTableTableManager(_$LocalDatabase db, $DailyRollupsTable table)
+    : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$LocalDailyRollupsTableFilterComposer($db: db, $table: table),
+              $$DailyRollupsTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $$LocalDailyRollupsTableOrderingComposer($db: db, $table: table),
+              $$DailyRollupsTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$LocalDailyRollupsTableAnnotationComposer(
-                $db: db,
-                $table: table,
-              ),
+              $$DailyRollupsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 Value<String> userId = const Value.absent(),
                 Value<String> date = const Value.absent(),
                 Value<int> durationSeconds = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => LocalDailyRollupsCompanion(
+              }) => DailyRollupsCompanion(
                 userId: userId,
                 date: date,
                 durationSeconds: durationSeconds,
@@ -4499,7 +4455,7 @@ class $$LocalDailyRollupsTableTableManager
                 required String date,
                 Value<int> durationSeconds = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => LocalDailyRollupsCompanion.insert(
+              }) => DailyRollupsCompanion.insert(
                 userId: userId,
                 date: date,
                 durationSeconds: durationSeconds,
@@ -4508,8 +4464,8 @@ class $$LocalDailyRollupsTableTableManager
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable<$LocalDailyRollupsTable, LocalDailyRollup>(table),
-                  $$LocalDailyRollupsTableReferences(db, table, e),
+                  e.readTable<$DailyRollupsTable, LocalDailyRollup>(table),
+                  $$DailyRollupsTableReferences(db, table, e),
                 ),
               )
               .toList(),
@@ -4537,9 +4493,9 @@ class $$LocalDailyRollupsTableTableManager
                       state = state.withJoin(
                         currentTable: table,
                         currentColumn: table.userId,
-                        referencedTable: $$LocalDailyRollupsTableReferences
+                        referencedTable: $$DailyRollupsTableReferences
                             ._userIdTable(db),
-                        referencedColumn: $$LocalDailyRollupsTableReferences
+                        referencedColumn: $$DailyRollupsTableReferences
                             ._userIdTable(db)
                             .id,
                       ) as T;
@@ -4556,17 +4512,17 @@ class $$LocalDailyRollupsTableTableManager
       );
 }
 
-typedef $$LocalDailyRollupsTableProcessedTableManager =
+typedef $$DailyRollupsTableProcessedTableManager =
     ProcessedTableManager<
       _$LocalDatabase,
-      $LocalDailyRollupsTable,
+      $DailyRollupsTable,
       LocalDailyRollup,
-      $$LocalDailyRollupsTableFilterComposer,
-      $$LocalDailyRollupsTableOrderingComposer,
-      $$LocalDailyRollupsTableAnnotationComposer,
-      $$LocalDailyRollupsTableCreateCompanionBuilder,
-      $$LocalDailyRollupsTableUpdateCompanionBuilder,
-      (LocalDailyRollup, $$LocalDailyRollupsTableReferences),
+      $$DailyRollupsTableFilterComposer,
+      $$DailyRollupsTableOrderingComposer,
+      $$DailyRollupsTableAnnotationComposer,
+      $$DailyRollupsTableCreateCompanionBuilder,
+      $$DailyRollupsTableUpdateCompanionBuilder,
+      (LocalDailyRollup, $$DailyRollupsTableReferences),
       LocalDailyRollup,
       PrefetchHooks Function({bool userId})
     >;
@@ -4596,15 +4552,15 @@ final class $$ProjectRollupsTableReferences
     super.$_typedResult,
   );
 
-  static $LocalUsersTable _userIdTable(_$LocalDatabase db) =>
-      db.localUsers.createAlias('project_rollups__user_id__local_users__id');
+  static $UsersTable _userIdTable(_$LocalDatabase db) =>
+      db.users.createAlias('project_rollups__user_id__users__id');
 
-  $$LocalUsersTableProcessedTableManager get userId {
+  $$UsersTableProcessedTableManager get userId {
     final $_column = $_itemColumn<String>('user_id')!;
 
-    final manager = $$LocalUsersTableTableManager(
+    final manager = $$UsersTableTableManager(
       $_db,
-      $_db.localUsers,
+      $_db.users,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_userIdTable($_db));
     if (item == null) return manager;
@@ -4638,20 +4594,20 @@ class $$ProjectRollupsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  $$LocalUsersTableFilterComposer get userId {
-    final $$LocalUsersTableFilterComposer composer = $composerBuilder(
+  $$UsersTableFilterComposer get userId {
+    final $$UsersTableFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.userId,
-      referencedTable: $db.localUsers,
+      referencedTable: $db.users,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalUsersTableFilterComposer(
+          }) => $$UsersTableFilterComposer(
             $db: $db,
-            $table: $db.localUsers,
+            $table: $db.users,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4686,20 +4642,20 @@ class $$ProjectRollupsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  $$LocalUsersTableOrderingComposer get userId {
-    final $$LocalUsersTableOrderingComposer composer = $composerBuilder(
+  $$UsersTableOrderingComposer get userId {
+    final $$UsersTableOrderingComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.userId,
-      referencedTable: $db.localUsers,
+      referencedTable: $db.users,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalUsersTableOrderingComposer(
+          }) => $$UsersTableOrderingComposer(
             $db: $db,
-            $table: $db.localUsers,
+            $table: $db.users,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4730,20 +4686,20 @@ class $$ProjectRollupsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  $$LocalUsersTableAnnotationComposer get userId {
-    final $$LocalUsersTableAnnotationComposer composer = $composerBuilder(
+  $$UsersTableAnnotationComposer get userId {
+    final $$UsersTableAnnotationComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.userId,
-      referencedTable: $db.localUsers,
+      referencedTable: $db.users,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalUsersTableAnnotationComposer(
+          }) => $$UsersTableAnnotationComposer(
             $db: $db,
-            $table: $db.localUsers,
+            $table: $db.users,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4901,15 +4857,15 @@ final class $$PendingChangesTableReferences
     super.$_typedResult,
   );
 
-  static $LocalUsersTable _userIdTable(_$LocalDatabase db) =>
-      db.localUsers.createAlias('pending_changes__user_id__local_users__id');
+  static $UsersTable _userIdTable(_$LocalDatabase db) =>
+      db.users.createAlias('pending_changes__user_id__users__id');
 
-  $$LocalUsersTableProcessedTableManager get userId {
+  $$UsersTableProcessedTableManager get userId {
     final $_column = $_itemColumn<String>('user_id')!;
 
-    final manager = $$LocalUsersTableTableManager(
+    final manager = $$UsersTableTableManager(
       $_db,
-      $_db.localUsers,
+      $_db.users,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_userIdTable($_db));
     if (item == null) return manager;
@@ -4944,20 +4900,20 @@ class $$PendingChangesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  $$LocalUsersTableFilterComposer get userId {
-    final $$LocalUsersTableFilterComposer composer = $composerBuilder(
+  $$UsersTableFilterComposer get userId {
+    final $$UsersTableFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.userId,
-      referencedTable: $db.localUsers,
+      referencedTable: $db.users,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalUsersTableFilterComposer(
+          }) => $$UsersTableFilterComposer(
             $db: $db,
-            $table: $db.localUsers,
+            $table: $db.users,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4992,20 +4948,20 @@ class $$PendingChangesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  $$LocalUsersTableOrderingComposer get userId {
-    final $$LocalUsersTableOrderingComposer composer = $composerBuilder(
+  $$UsersTableOrderingComposer get userId {
+    final $$UsersTableOrderingComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.userId,
-      referencedTable: $db.localUsers,
+      referencedTable: $db.users,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalUsersTableOrderingComposer(
+          }) => $$UsersTableOrderingComposer(
             $db: $db,
-            $table: $db.localUsers,
+            $table: $db.users,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -5034,20 +4990,20 @@ class $$PendingChangesTableAnnotationComposer
   GeneratedColumn<String> get entityId =>
       $composableBuilder(column: $table.entityId, builder: (column) => column);
 
-  $$LocalUsersTableAnnotationComposer get userId {
-    final $$LocalUsersTableAnnotationComposer composer = $composerBuilder(
+  $$UsersTableAnnotationComposer get userId {
+    final $$UsersTableAnnotationComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.userId,
-      referencedTable: $db.localUsers,
+      referencedTable: $db.users,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalUsersTableAnnotationComposer(
+          }) => $$UsersTableAnnotationComposer(
             $db: $db,
-            $table: $db.localUsers,
+            $table: $db.users,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -5203,15 +5159,15 @@ final class $$PullCheckpointsTableReferences
     super.$_typedResult,
   );
 
-  static $LocalUsersTable _userIdTable(_$LocalDatabase db) =>
-      db.localUsers.createAlias('pull_checkpoints__user_id__local_users__id');
+  static $UsersTable _userIdTable(_$LocalDatabase db) =>
+      db.users.createAlias('pull_checkpoints__user_id__users__id');
 
-  $$LocalUsersTableProcessedTableManager get userId {
+  $$UsersTableProcessedTableManager get userId {
     final $_column = $_itemColumn<String>('user_id')!;
 
-    final manager = $$LocalUsersTableTableManager(
+    final manager = $$UsersTableTableManager(
       $_db,
-      $_db.localUsers,
+      $_db.users,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_userIdTable($_db));
     if (item == null) return manager;
@@ -5240,20 +5196,20 @@ class $$PullCheckpointsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  $$LocalUsersTableFilterComposer get userId {
-    final $$LocalUsersTableFilterComposer composer = $composerBuilder(
+  $$UsersTableFilterComposer get userId {
+    final $$UsersTableFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.userId,
-      referencedTable: $db.localUsers,
+      referencedTable: $db.users,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalUsersTableFilterComposer(
+          }) => $$UsersTableFilterComposer(
             $db: $db,
-            $table: $db.localUsers,
+            $table: $db.users,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -5283,20 +5239,20 @@ class $$PullCheckpointsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  $$LocalUsersTableOrderingComposer get userId {
-    final $$LocalUsersTableOrderingComposer composer = $composerBuilder(
+  $$UsersTableOrderingComposer get userId {
+    final $$UsersTableOrderingComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.userId,
-      referencedTable: $db.localUsers,
+      referencedTable: $db.users,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalUsersTableOrderingComposer(
+          }) => $$UsersTableOrderingComposer(
             $db: $db,
-            $table: $db.localUsers,
+            $table: $db.users,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -5326,20 +5282,20 @@ class $$PullCheckpointsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  $$LocalUsersTableAnnotationComposer get userId {
-    final $$LocalUsersTableAnnotationComposer composer = $composerBuilder(
+  $$UsersTableAnnotationComposer get userId {
+    final $$UsersTableAnnotationComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.userId,
-      referencedTable: $db.localUsers,
+      referencedTable: $db.users,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$LocalUsersTableAnnotationComposer(
+          }) => $$UsersTableAnnotationComposer(
             $db: $db,
-            $table: $db.localUsers,
+            $table: $db.users,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -5471,14 +5427,14 @@ typedef $$PullCheckpointsTableProcessedTableManager =
 class $LocalDatabaseManager {
   final _$LocalDatabase _db;
   $LocalDatabaseManager(this._db);
-  $$LocalUsersTableTableManager get localUsers =>
-      $$LocalUsersTableTableManager(_db, _db.localUsers);
-  $$LocalProjectsTableTableManager get localProjects =>
-      $$LocalProjectsTableTableManager(_db, _db.localProjects);
-  $$LocalSessionsTableTableManager get localSessions =>
-      $$LocalSessionsTableTableManager(_db, _db.localSessions);
-  $$LocalDailyRollupsTableTableManager get localDailyRollups =>
-      $$LocalDailyRollupsTableTableManager(_db, _db.localDailyRollups);
+  $$UsersTableTableManager get users =>
+      $$UsersTableTableManager(_db, _db.users);
+  $$ProjectsTableTableManager get projects =>
+      $$ProjectsTableTableManager(_db, _db.projects);
+  $$SessionsTableTableManager get sessions =>
+      $$SessionsTableTableManager(_db, _db.sessions);
+  $$DailyRollupsTableTableManager get dailyRollups =>
+      $$DailyRollupsTableTableManager(_db, _db.dailyRollups);
   $$ProjectRollupsTableTableManager get projectRollups =>
       $$ProjectRollupsTableTableManager(_db, _db.projectRollups);
   $$PendingChangesTableTableManager get pendingChanges =>

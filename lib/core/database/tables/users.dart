@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
-class LocalUsers extends Table {
+@DataClassName('LocalUser')
+class Users extends Table {
   TextColumn get id => text()();
   TextColumn get email => text().nullable()();
   TextColumn get fullName => text().nullable()();

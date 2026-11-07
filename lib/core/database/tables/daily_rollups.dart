@@ -1,10 +1,11 @@
 import 'package:drift/drift.dart';
-import 'package:tarkeez/core/database/tables/local_users.dart';
+import 'package:tarkeez/core/database/tables/users.dart';
 
-/// Local-day totals. Written only by triggers on local_sessions.
-class LocalDailyRollups extends Table {
+/// Local-day totals. Written only by triggers on sessions.
+@DataClassName('LocalDailyRollup')
+class DailyRollups extends Table {
   TextColumn get userId => text().references(
-    LocalUsers,
+    Users,
     #id,
     onUpdate: KeyAction.cascade,
     onDelete: KeyAction.cascade,

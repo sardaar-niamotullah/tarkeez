@@ -97,8 +97,8 @@ class AuthRepositoryImpl implements AuthRepository {
 
     final model = UserModel.fromRow(row);
 
-    await _localDatabase.localUsersDao.upsertUser(
-      LocalUsersCompanion(
+    await _localDatabase.usersDao.upsertUser(
+      UsersCompanion(
         id: Value(model.id),
         email: Value(model.email),
         fullName: Value(model.fullName),

@@ -1,13 +1,13 @@
 import 'package:drift/drift.dart';
 import 'package:tarkeez/core/database/local_database.dart';
-import 'package:tarkeez/core/database/tables/local_projects.dart';
+import 'package:tarkeez/core/database/tables/projects.dart';
 import 'package:tarkeez/core/database/tables/project_rollups.dart';
 
 part 'project_rollups_dao.g.dart';
 
 /// Reads go through the `project_rollups_effective` view: a project that is
 /// missing or deleted is counted as "No Project" ('').
-@DriftAccessor(tables: [ProjectRollups, LocalProjects])
+@DriftAccessor(tables: [ProjectRollups, Projects])
 class ProjectRollupsDao extends DatabaseAccessor<LocalDatabase>
     with _$ProjectRollupsDaoMixin {
   ProjectRollupsDao(super.db);
@@ -49,7 +49,7 @@ class ProjectRollupsDao extends DatabaseAccessor<LocalDatabase>
       'SELECT user_id, date, project_id, duration_seconds FROM $_view '
       'WHERE ${where.join(' AND ')} ORDER BY date, project_id',
       variables: vars,
-      readsFrom: {projectRollups, localProjects},
+      readsFrom: {projectRollups, projects},
     ).map(_toRow);
   }
 
@@ -85,7 +85,7 @@ class ProjectRollupsDao extends DatabaseAccessor<LocalDatabase>
       Variable.withString(start),
       Variable.withString(end),
     ],
-    readsFrom: {projectRollups, localProjects},
+    readsFrom: {projectRollups, projects},
   );
 
   Map<String?, int> _mapTotals(List<QueryRow> rows) => {

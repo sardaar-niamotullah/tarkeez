@@ -4,7 +4,7 @@ part of 'pending_changes_dao.dart';
 
 // ignore_for_file: type=lint
 mixin _$PendingChangesDaoMixin on DatabaseAccessor<LocalDatabase> {
-  $LocalUsersTable get localUsers => attachedDatabase.localUsers;
+  $UsersTable get users => attachedDatabase.users;
   $PendingChangesTable get pendingChanges => attachedDatabase.pendingChanges;
   PendingChangesDaoManager get managers => PendingChangesDaoManager(this);
 }
@@ -12,8 +12,8 @@ mixin _$PendingChangesDaoMixin on DatabaseAccessor<LocalDatabase> {
 class PendingChangesDaoManager {
   final _$PendingChangesDaoMixin _db;
   PendingChangesDaoManager(this._db);
-  $$LocalUsersTableTableManager get localUsers =>
-      $$LocalUsersTableTableManager(_db.attachedDatabase, _db.localUsers);
+  $$UsersTableTableManager get users =>
+      $$UsersTableTableManager(_db.attachedDatabase, _db.users);
   $$PendingChangesTableTableManager get pendingChanges =>
       $$PendingChangesTableTableManager(
         _db.attachedDatabase,

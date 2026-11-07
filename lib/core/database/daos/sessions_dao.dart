@@ -1,32 +1,39 @@
 import 'package:drift/drift.dart';
 import 'package:tarkeez/core/database/local_database.dart';
-import 'package:tarkeez/core/database/tables/local_projects.dart';
+import 'package:tarkeez/core/database/tables/sessions.dart';
 import 'package:tarkeez/core/shared_files/enums/sync_entity.dart';
-import 'package:tarkeez/features/projects/data/models/project_model.dart';
+import 'package:tarkeez/features/sessions/data/models/session_model.dart';
 
-part 'local_projects_dao.g.dart';
+part 'sessions_dao.g.dart';
 
-@DriftAccessor(tables: [LocalProjects])
-class LocalProjectsDao extends DatabaseAccessor<LocalDatabase>
-    with _$LocalProjectsDaoMixin {
-  LocalProjectsDao(super.db);
+@DriftAccessor(tables: [Sessions])
+class SessionsDao extends DatabaseAccessor<LocalDatabase>
+    with _$SessionsDaoMixin {
+  SessionsDao(super.db);
 
   String get _uid => attachedDatabase.currentUserId;
 
   //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-  // CREATE
+  // CREATE (the triggers update the rollups, the queue starts the sync)
   //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-  Future<String> insertProject({required String name, required int colorId}) {
+  Future<String> insertSession({
+    required DateTime startedAt,
+    required DateTime endedAt,
+    required int utcOffsetMinutes,
+    String? projectId,
+  }) {
     return transaction(() async {
-      final row = await into(localProjects).insertReturning(
-        LocalProjectsCompanion.insert(
+      final row = await into(sessions).insertReturning(
+        SessionsCompanion.insert(
           userId: _uid,
-          name: name,
-          colorId: colorId,
+          startedAt: startedAt.toUtc(),
+          endedAt: endedAt.toUtc(),
+          utcOffsetMinutes: utcOffsetMinutes,
+          projectId: Value(projectId),
         ),
       );
       await attachedDatabase.pendingChangesDao.enqueue(
-        SyncEntity.project,
+        SyncEntity.session,
         row.id,
       );
       return row.id;
@@ -34,76 +41,57 @@ class LocalProjectsDao extends DatabaseAccessor<LocalDatabase>
   }
 
   //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-  // READ (deleted projects are hidden)
+  // READ (deleted sessions are hidden, newest first)
   //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-  Future<List<LocalProject>> getAllProjects() =>
-      (select(localProjects)
+  Future<List<LocalSession>> getAllSessions() =>
+      (select(sessions)
             ..where((t) => t.userId.equals(_uid) & t.deletedAt.isNull())
-            ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
+            ..orderBy([(t) => OrderingTerm.desc(t.startedAt)]))
           .get();
 
-  Future<LocalProject?> getProjectById(String id) =>
-      (select(localProjects)..where(
+  Future<LocalSession?> getSessionById(String id) =>
+      (select(sessions)..where(
             (t) =>
                 t.id.equals(id) & t.userId.equals(_uid) & t.deletedAt.isNull(),
           ))
           .getSingleOrNull();
 
-  Stream<List<LocalProject>> watchAllProjects() {
-    return (select(localProjects)
-          ..where((t) => t.userId.equals(_uid) & t.deletedAt.isNull())
-          ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
-        .watch();
-  }
+  /// Sessions that started in [startedAt, endedAt).
+  Future<List<LocalSession>> getAllSessionsInDateRange({
+    required DateTime startedAt,
+    required DateTime endedAt,
+  }) =>
+      (select(sessions)
+            ..where(
+              (t) =>
+                  t.userId.equals(_uid) &
+                  t.deletedAt.isNull() &
+                  t.startedAt.isBiggerOrEqualValue(startedAt.toUtc()) &
+                  t.startedAt.isSmallerThanValue(endedAt.toUtc()),
+            )
+            ..orderBy([(t) => OrderingTerm.desc(t.startedAt)]))
+          .get();
 
   //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-  // UPDATE
+  // DELETE (soft: sets the tombstone, the trigger subtracts the time)
   //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-  Future<bool> updateProject({
-    required String id,
-    required String name,
-    required int colorId,
-  }) {
+  Future<int> deleteSession(String id) {
     return transaction(() async {
       final rows =
-          await (update(localProjects)..where(
+          await (update(sessions)..where(
                 (t) =>
                     t.id.equals(id) &
                     t.userId.equals(_uid) &
                     t.deletedAt.isNull(),
               ))
               .write(
-                LocalProjectsCompanion(
-                  name: Value(name),
-                  colorId: Value(colorId),
-                ),
-              );
-      if (rows == 0) return false;
-      await attachedDatabase.pendingChangesDao.enqueue(SyncEntity.project, id);
-      return true;
-    });
-  }
-
-  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-  // DELETE (soft: sets the tombstone)
-  //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-  Future<int> deleteProject(String id) {
-    return transaction(() async {
-      final rows =
-          await (update(localProjects)..where(
-                (t) =>
-                    t.id.equals(id) &
-                    t.userId.equals(_uid) &
-                    t.deletedAt.isNull(),
-              ))
-              .write(
-                LocalProjectsCompanion(
+                SessionsCompanion(
                   deletedAt: Value(DateTime.now().toUtc()),
                 ),
               );
       if (rows > 0) {
         await attachedDatabase.pendingChangesDao.enqueue(
-          SyncEntity.project,
+          SyncEntity.session,
           id,
         );
       }
@@ -116,67 +104,81 @@ class LocalProjectsDao extends DatabaseAccessor<LocalDatabase>
   //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 
   /// Rows to push. Tombstones are included.
-  Future<List<LocalProject>> getProjectsForPush(Iterable<String> ids) =>
+  Future<List<LocalSession>> getSessionsForPush(Iterable<String> ids) =>
       (select(
-        localProjects,
+        sessions,
       )..where((t) => t.userId.equals(_uid) & t.id.isIn(ids))).get();
+
+  /// The cloud dropped these (they lost an overlap). Not queued again.
+  Future<void> markDropped(Iterable<String> ids) {
+    if (ids.isEmpty) return Future.value();
+    return (update(sessions)..where(
+          (t) => t.userId.equals(_uid) & t.id.isIn(ids) & t.deletedAt.isNull(),
+        ))
+        .write(
+          SessionsCompanion(deletedAt: Value(DateTime.now().toUtc())),
+        );
+  }
 
   /// Saves pulled rows. Returns true if something visible changed.
-  Future<bool> applyPulled(List<ProjectModel> rows) {
+  Future<bool> applyPulled(List<SessionModel> rows) {
     if (rows.isEmpty) return Future.value(false);
-
     return transaction(() async {
-      final ids = [for (final r in rows) r.id];
+      final ids = [for (final r in rows) r.id!];
       final pendingIds = await attachedDatabase.pendingChangesDao
-          .pendingEntityIds(SyncEntity.project, ids);
+          .pendingEntityIds(SyncEntity.session, ids);
+
       final existing = await (select(
-        localProjects,
+        sessions,
       )..where((t) => t.userId.equals(_uid) & t.id.isIn(ids))).get();
-      final existingById = {for (final p in existing) p.id: p};
+      final existingById = {for (final s in existing) s.id: s};
 
       var changed = false;
-      final companions = <LocalProjectsCompanion>[];
+      final companions = <SessionsCompanion>[];
 
       for (final r in rows) {
-        // A row with an unpushed local edit is never overwritten.
+        // A row with an unpushed local change is never overwritten.
         if (pendingIds.contains(r.id)) continue;
 
         final old = existingById[r.id];
-        // A tombstone is one-way: a pulled row never revives a deleted project.
+
+        // A tombstone is one-way: a pulled row never revives a deleted session.
         final deletedAt = old?.deletedAt ?? r.deletedAt;
 
-        changed |=
-            old == null ||
-            old.name != r.name ||
-            old.colorId != r.colorId ||
-            (old.deletedAt == null) != (deletedAt == null);
+        // Visible change: a new live session, or a live one that is now deleted.
+        changed |= old == null
+            ? deletedAt == null
+            : (old.deletedAt == null) != (deletedAt == null);
 
         companions.add(
-          LocalProjectsCompanion(
-            id: Value(r.id),
+          SessionsCompanion(
+            id: Value(r.id!),
             userId: Value(_uid),
-            name: Value(r.name),
-            colorId: Value(r.colorId),
-            createdAt: Value(r.createdAt),
+            projectId: Value(r.projectId),
+            startedAt: Value(r.startedAt),
+            endedAt: Value(r.endedAt),
+            utcOffsetMinutes: Value(r.utcOffsetMinutes),
             deletedAt: Value(deletedAt),
           ),
         );
       }
 
       await batch(
-        (b) => b.insertAllOnConflictUpdate(localProjects, companions),
+        (b) => b.insertAllOnConflictUpdate(sessions, companions),
       );
       return changed;
     });
   }
 
   //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-  // Hard delete. Used for rows the cloud rejected and for a history reset.
+  /// Hard delete. Used for rows the cloud rejected. Triggers do not fire for
+  /// this, so the caller rebuilds the rollups afterwards.
   //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   Future<void> hardDeleteByIds(Iterable<String> ids) => (delete(
-    localProjects,
+    sessions,
   )..where((t) => t.userId.equals(_uid) & t.id.isIn(ids))).go();
 
-  Future<int> wipeAllProjects() =>
-      (delete(localProjects)..where((t) => t.userId.equals(_uid))).go();
+  /// History reset. Rollups are wiped separately.
+  Future<int> wipeAllSessions() =>
+      (delete(sessions)..where((t) => t.userId.equals(_uid))).go();
 }

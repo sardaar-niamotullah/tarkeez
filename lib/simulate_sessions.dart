@@ -108,7 +108,7 @@ class _SimulateSessionsState extends State<SimulateSessions> {
 
       await db.transaction(() async {
         for (final session in chunk) {
-          await db.localSessionsDao.insertSession(
+          await db.sessionsDao.insertSession(
             startedAt: session.start,
             endedAt: session.end,
             utcOffsetMinutes: session.start.timeZoneOffset.inMinutes,

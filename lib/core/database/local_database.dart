@@ -1,17 +1,17 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
-import 'package:tarkeez/core/database/daos/local_daily_rollups_dao.dart';
-import 'package:tarkeez/core/database/daos/local_projects_dao.dart';
-import 'package:tarkeez/core/database/daos/local_sessions_dao.dart';
-import 'package:tarkeez/core/database/daos/local_users_dao.dart';
+import 'package:tarkeez/core/database/daos/daily_rollups_dao.dart';
+import 'package:tarkeez/core/database/daos/projects_dao.dart';
+import 'package:tarkeez/core/database/daos/sessions_dao.dart';
+import 'package:tarkeez/core/database/daos/users_dao.dart';
 import 'package:tarkeez/core/database/daos/pending_changes_dao.dart';
 import 'package:tarkeez/core/database/daos/project_rollups_dao.dart';
 import 'package:tarkeez/core/database/daos/pull_checkpoints_dao.dart';
 import 'package:tarkeez/core/database/migrations/app_migrations.dart';
-import 'package:tarkeez/core/database/tables/local_daily_rollups.dart';
-import 'package:tarkeez/core/database/tables/local_projects.dart';
-import 'package:tarkeez/core/database/tables/local_sessions.dart';
-import 'package:tarkeez/core/database/tables/local_users.dart';
+import 'package:tarkeez/core/database/tables/daily_rollups.dart';
+import 'package:tarkeez/core/database/tables/projects.dart';
+import 'package:tarkeez/core/database/tables/sessions.dart';
+import 'package:tarkeez/core/database/tables/users.dart';
 import 'package:tarkeez/core/database/tables/pending_changes.dart';
 import 'package:tarkeez/core/database/tables/project_rollups.dart';
 import 'package:tarkeez/core/database/tables/pull_checkpoints.dart';
@@ -26,19 +26,19 @@ part 'local_database.g.dart';
 
 @DriftDatabase(
   tables: [
-    LocalUsers,
-    LocalProjects,
-    LocalSessions,
-    LocalDailyRollups,
+    Users,
+    Projects,
+    Sessions,
+    DailyRollups,
     ProjectRollups,
     PendingChanges,
     PullCheckpoints,
   ],
   daos: [
-    LocalUsersDao,
-    LocalProjectsDao,
-    LocalSessionsDao,
-    LocalDailyRollupsDao,
+    UsersDao,
+    ProjectsDao,
+    SessionsDao,
+    DailyRollupsDao,
     ProjectRollupsDao,
     PendingChangesDao,
     PullCheckpointsDao,

@@ -1,0 +1,19 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'daily_rollups_dao.dart';
+
+// ignore_for_file: type=lint
+mixin _$DailyRollupsDaoMixin on DatabaseAccessor<LocalDatabase> {
+  $UsersTable get users => attachedDatabase.users;
+  $DailyRollupsTable get dailyRollups => attachedDatabase.dailyRollups;
+  DailyRollupsDaoManager get managers => DailyRollupsDaoManager(this);
+}
+
+class DailyRollupsDaoManager {
+  final _$DailyRollupsDaoMixin _db;
+  DailyRollupsDaoManager(this._db);
+  $$UsersTableTableManager get users =>
+      $$UsersTableTableManager(_db.attachedDatabase, _db.users);
+  $$DailyRollupsTableTableManager get dailyRollups =>
+      $$DailyRollupsTableTableManager(_db.attachedDatabase, _db.dailyRollups);
+}

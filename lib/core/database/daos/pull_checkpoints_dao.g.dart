@@ -4,7 +4,7 @@ part of 'pull_checkpoints_dao.dart';
 
 // ignore_for_file: type=lint
 mixin _$PullCheckpointsDaoMixin on DatabaseAccessor<LocalDatabase> {
-  $LocalUsersTable get localUsers => attachedDatabase.localUsers;
+  $UsersTable get users => attachedDatabase.users;
   $PullCheckpointsTable get pullCheckpoints => attachedDatabase.pullCheckpoints;
   PullCheckpointsDaoManager get managers => PullCheckpointsDaoManager(this);
 }
@@ -12,8 +12,8 @@ mixin _$PullCheckpointsDaoMixin on DatabaseAccessor<LocalDatabase> {
 class PullCheckpointsDaoManager {
   final _$PullCheckpointsDaoMixin _db;
   PullCheckpointsDaoManager(this._db);
-  $$LocalUsersTableTableManager get localUsers =>
-      $$LocalUsersTableTableManager(_db.attachedDatabase, _db.localUsers);
+  $$UsersTableTableManager get users =>
+      $$UsersTableTableManager(_db.attachedDatabase, _db.users);
   $$PullCheckpointsTableTableManager get pullCheckpoints =>
       $$PullCheckpointsTableTableManager(
         _db.attachedDatabase,

@@ -14,8 +14,8 @@ abstract interface class ProjectRepository {
 }
 
 class ProjectRepositoryImpl implements ProjectRepository {
-  const new(this._database);
-  final LocalDatabase _database;
+  const new(this._localDatabase);
+  final LocalDatabase _localDatabase;
 
   @override
   Future<Result<ProjectModel>> createProject({
@@ -23,11 +23,11 @@ class ProjectRepositoryImpl implements ProjectRepository {
     required int colorId,
   }) async {
     return resultGuard(() async {
-      final id = await _database.localProjectsDao.insertProject(
+      final id = await _localDatabase.projectsDao.insertProject(
         name: name,
         colorId: colorId,
       );
-      final row = await _database.localProjectsDao.getProjectById(id);
+      final row = await _localDatabase.projectsDao.getProjectById(id);
       if (row == null) {
         throw StateError('Failed to load created project');
       }
@@ -38,7 +38,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
   @override
   Future<Result<List<ProjectModel>>> fetchProjects() async {
     return resultGuard(() async {
-      final rows = await _database.localProjectsDao.getAllProjects();
+      final rows = await _localDatabase.projectsDao.getAllProjects();
       return rows.map(ProjectModel.fromLocal).toList();
     });
   }
@@ -46,7 +46,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
   @override
   Future<Result<ProjectModel>> updateProject(ProjectModel project) async {
     return resultGuard(() async {
-      final success = await _database.localProjectsDao.updateProject(
+      final success = await _localDatabase.projectsDao.updateProject(
         id: project.id,
         name: project.name,
         colorId: project.colorId,
@@ -61,7 +61,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
   @override
   Future<Result<void>> deleteProject(ProjectModel project) async {
     return resultGuard(() async {
-      await _database.localProjectsDao.deleteProject(project.id);
+      await _localDatabase.projectsDao.deleteProject(project.id);
     });
   }
 }

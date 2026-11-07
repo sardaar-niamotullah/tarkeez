@@ -10,13 +10,13 @@ abstract interface class DailyRollupRepository {
 }
 
 class DailyRollupRepositoryImpl implements DailyRollupRepository {
-  const new(this._database);
-  final LocalDatabase _database;
+  const new(this._localDatabase);
+  final LocalDatabase _localDatabase;
 
   @override
   Future<Result<List<DailyRollupModel>>> fetchAllRollups() async {
     return resultGuard(() async {
-      final rows = await _database.localDailyRollupsDao.getAllRollups();
+      final rows = await _localDatabase.dailyRollupsDao.getAllRollups();
       return rows.map(DailyRollupModel.fromRow).toList();
     });
   }
@@ -30,7 +30,7 @@ class DailyRollupRepositoryImpl implements DailyRollupRepository {
       final end = DateTime(now.year, now.month, now.day);
       final start = DateTime(end.year, end.month, end.day - days);
 
-      final rows = await _database.localDailyRollupsDao.getRollupsInRange(
+      final rows = await _localDatabase.dailyRollupsDao.getRollupsInRange(
         RollupDateUtils.format(start),
         RollupDateUtils.format(end),
       );

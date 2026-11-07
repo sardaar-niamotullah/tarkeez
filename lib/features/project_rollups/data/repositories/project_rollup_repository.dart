@@ -14,13 +14,13 @@ abstract interface class ProjectRollupRepository {
 }
 
 class ProjectRollupRepositoryImpl implements ProjectRollupRepository {
-  const new(this._database);
-  final LocalDatabase _database;
+  const new(this._localDatabase);
+  final LocalDatabase _localDatabase;
 
   @override
   Future<Result<List<ProjectRollupModel>>> fetchAllRollups() {
     return resultGuard(() async {
-      final rows = await _database.projectRollupsDao.getAllRollups();
+      final rows = await _localDatabase.projectRollupsDao.getAllRollups();
       return rows.map(ProjectRollupModel.fromRow).toList();
     });
   }
@@ -37,7 +37,7 @@ class ProjectRollupRepositoryImpl implements ProjectRollupRepository {
     DateTime end,
   ) {
     return resultGuard(() async {
-      final rows = await _database.projectRollupsDao.getRollupsInRange(
+      final rows = await _localDatabase.projectRollupsDao.getRollupsInRange(
         RollupDateUtils.format(start),
         RollupDateUtils.format(end),
       );

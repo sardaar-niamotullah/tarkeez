@@ -1,11 +1,12 @@
 import 'package:drift/drift.dart';
-import 'package:tarkeez/core/database/tables/local_users.dart';
+import 'package:tarkeez/core/database/tables/users.dart';
 import 'package:uuid/uuid.dart';
 
-class LocalProjects extends Table {
+@DataClassName('LocalProject')
+class Projects extends Table {
   TextColumn get id => text().clientDefault(() => const Uuid().v7())();
   TextColumn get userId => text().references(
-    LocalUsers,
+    Users,
     #id,
     onUpdate: KeyAction.cascade,
     onDelete: KeyAction.cascade,

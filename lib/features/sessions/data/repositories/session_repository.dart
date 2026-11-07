@@ -19,9 +19,9 @@ abstract interface class SessionRepository {
 }
 
 class SessionRepositoryImpl implements SessionRepository {
-  const new(this._database);
+  const new(this._localDatabase);
 
-  final LocalDatabase _database;
+  final LocalDatabase _localDatabase;
 
   static const _maxLength = Duration(hours: 24);
 
@@ -47,14 +47,14 @@ class SessionRepositoryImpl implements SessionRepository {
       }
 
       // One row per session. The triggers split it at midnight.
-      final id = await _database.localSessionsDao.insertSession(
+      final id = await _localDatabase.sessionsDao.insertSession(
         startedAt: start,
         endedAt: end,
         utcOffsetMinutes: startedAt.toLocal().timeZoneOffset.inMinutes,
         projectId: project?.id,
       );
 
-      final row = await _database.localSessionsDao.getSessionById(id);
+      final row = await _localDatabase.sessionsDao.getSessionById(id);
       if (row == null) {
         throw StateError('Failed to load created session');
       }
@@ -65,7 +65,7 @@ class SessionRepositoryImpl implements SessionRepository {
   @override
   Future<Result<List<SessionModel>>> fetchAllSessions() async {
     return resultGuard(() async {
-      final rows = await _database.localSessionsDao.getAllSessions();
+      final rows = await _localDatabase.sessionsDao.getAllSessions();
       return rows.map(SessionModel.fromLocal).toList();
     });
   }
@@ -76,7 +76,7 @@ class SessionRepositoryImpl implements SessionRepository {
     required DateTime endedAt,
   }) async {
     return resultGuard(() async {
-      final rows = await _database.localSessionsDao.getAllSessionsInDateRange(
+      final rows = await _localDatabase.sessionsDao.getAllSessionsInDateRange(
         startedAt: startedAt,
         endedAt: endedAt,
       );
@@ -87,7 +87,7 @@ class SessionRepositoryImpl implements SessionRepository {
   @override
   Future<Result<void>> deleteSession(SessionModel session) async {
     return resultGuard(() async {
-      await _database.localSessionsDao.deleteSession(session.id!);
+      await _localDatabase.sessionsDao.deleteSession(session.id!);
     });
   }
 }

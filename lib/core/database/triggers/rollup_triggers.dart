@@ -7,12 +7,12 @@ import 'package:drift/drift.dart';
 // ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 const rollupStreamRules = <WritePropagation>[
   WritePropagation(
-    on: TableUpdateQuery.onTableName('local_sessions'),
-    result: [TableUpdate('local_daily_rollups'), TableUpdate('project_rollups')],
+    on: TableUpdateQuery.onTableName('sessions'),
+    result: [TableUpdate('daily_rollups'), TableUpdate('project_rollups')],
   ),
   // A project edit or delete changes how project_rollups_effective reads.
   WritePropagation(
-    on: TableUpdateQuery.onTableName('local_projects'),
+    on: TableUpdateQuery.onTableName('projects'),
     result: [TableUpdate('project_rollups')],
   ),
 ];
@@ -53,11 +53,11 @@ String _slices(String source) => '''
   WHERE t.s_end > t.day_start AND t.s_start < t.day_start + 86400
 ''';
 
-/// Adds (or subtracts) the slices to local_daily_rollups.
+/// Adds (or subtracts) the slices to daily_rollups.
 String _applyToDaily(String source, {required bool add}) {
   final sign = add ? '' : '-';
   return '''
-    INSERT INTO local_daily_rollups (user_id, date, duration_seconds)
+    INSERT INTO daily_rollups (user_id, date, duration_seconds)
     SELECT s.user_id, s.day, ${sign}s.secs
     FROM (${_slices(source)}) AS s
     WHERE 1
@@ -82,23 +82,23 @@ String _applyToProjects(String source, {required bool add}) {
 
 /// Removes buckets that reached zero.
 String _cleanup(String r) => '''
-  DELETE FROM local_daily_rollups WHERE user_id = $r.user_id AND duration_seconds <= 0;
+  DELETE FROM daily_rollups WHERE user_id = $r.user_id AND duration_seconds <= 0;
   DELETE FROM project_rollups WHERE user_id = $r.user_id AND duration_seconds <= 0;
 ''';
 
 // ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-// Triggers: the ONLY writers of local_daily_rollups and project_rollups.
+// Triggers: the ONLY writers of daily_rollups and project_rollups.
 // Sessions never change except deleted_at, so only two triggers are needed.
 // ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 Future<void> createRollupTriggers(DatabaseConnectionUser db) async {
-  await db.customStatement('DROP TRIGGER IF EXISTS trg_local_sessions_ai;');
-  await db.customStatement('DROP TRIGGER IF EXISTS trg_local_sessions_au;');
+  await db.customStatement('DROP TRIGGER IF EXISTS trg_sessions_ai;');
+  await db.customStatement('DROP TRIGGER IF EXISTS trg_sessions_au;');
 
   // A live session is inserted: add its slices.
   // A tombstone that arrives already deleted adds nothing.
   await db.customStatement('''
-    CREATE TRIGGER trg_local_sessions_ai
-    AFTER INSERT ON local_sessions
+    CREATE TRIGGER trg_sessions_ai
+    AFTER INSERT ON sessions
     WHEN NEW.deleted_at IS NULL
     BEGIN
       ${_applyToDaily(_triggerRow('NEW'), add: true)}
@@ -108,8 +108,8 @@ Future<void> createRollupTriggers(DatabaseConnectionUser db) async {
 
   // deleted_at is set for the first time: subtract the same slices.
   await db.customStatement('''
-    CREATE TRIGGER trg_local_sessions_au
-    AFTER UPDATE OF deleted_at ON local_sessions
+    CREATE TRIGGER trg_sessions_au
+    AFTER UPDATE OF deleted_at ON sessions
     WHEN OLD.deleted_at IS NULL AND NEW.deleted_at IS NOT NULL
     BEGIN
       ${_applyToDaily(_triggerRow('OLD'), add: false)}
@@ -134,7 +134,7 @@ Future<void> createProjectRollupsEffectiveView(
                 THEN r.project_id ELSE '' END AS project_id,
            SUM(r.duration_seconds) AS duration_seconds
     FROM project_rollups AS r
-    LEFT JOIN local_projects AS p
+    LEFT JOIN projects AS p
       ON p.id = r.project_id AND p.user_id = r.user_id
     GROUP BY r.user_id, r.date, 3;
   ''');
@@ -145,7 +145,7 @@ Future<void> createProjectRollupsEffectiveView(
 // ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 Future<void> rebuildRollupData(DatabaseConnectionUser db, String userId) async {
   await db.customStatement(
-    'DELETE FROM local_daily_rollups WHERE user_id = ?;',
+    'DELETE FROM daily_rollups WHERE user_id = ?;',
     [userId],
   );
   await db.customStatement(
@@ -155,12 +155,12 @@ Future<void> rebuildRollupData(DatabaseConnectionUser db, String userId) async {
 
   const source = '''
     SELECT user_id, project_id, started_at, ended_at, utc_offset_minutes
-    FROM local_sessions
+    FROM sessions
     WHERE user_id = ? AND deleted_at IS NULL
   ''';
 
   await db.customStatement('''
-    INSERT INTO local_daily_rollups (user_id, date, duration_seconds)
+    INSERT INTO daily_rollups (user_id, date, duration_seconds)
     SELECT s.user_id, s.day, SUM(s.secs)
     FROM (${_slices(source)}) AS s
     GROUP BY s.user_id, s.day;

@@ -4,22 +4,22 @@ part of 'project_rollups_dao.dart';
 
 // ignore_for_file: type=lint
 mixin _$ProjectRollupsDaoMixin on DatabaseAccessor<LocalDatabase> {
-  $LocalUsersTable get localUsers => attachedDatabase.localUsers;
+  $UsersTable get users => attachedDatabase.users;
   $ProjectRollupsTable get projectRollups => attachedDatabase.projectRollups;
-  $LocalProjectsTable get localProjects => attachedDatabase.localProjects;
+  $ProjectsTable get projects => attachedDatabase.projects;
   ProjectRollupsDaoManager get managers => ProjectRollupsDaoManager(this);
 }
 
 class ProjectRollupsDaoManager {
   final _$ProjectRollupsDaoMixin _db;
   ProjectRollupsDaoManager(this._db);
-  $$LocalUsersTableTableManager get localUsers =>
-      $$LocalUsersTableTableManager(_db.attachedDatabase, _db.localUsers);
+  $$UsersTableTableManager get users =>
+      $$UsersTableTableManager(_db.attachedDatabase, _db.users);
   $$ProjectRollupsTableTableManager get projectRollups =>
       $$ProjectRollupsTableTableManager(
         _db.attachedDatabase,
         _db.projectRollups,
       );
-  $$LocalProjectsTableTableManager get localProjects =>
-      $$LocalProjectsTableTableManager(_db.attachedDatabase, _db.localProjects);
+  $$ProjectsTableTableManager get projects =>
+      $$ProjectsTableTableManager(_db.attachedDatabase, _db.projects);
 }

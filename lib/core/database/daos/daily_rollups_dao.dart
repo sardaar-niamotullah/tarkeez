@@ -1,18 +1,18 @@
 import 'package:drift/drift.dart';
 import 'package:tarkeez/core/database/local_database.dart';
-import 'package:tarkeez/core/database/tables/local_daily_rollups.dart';
+import 'package:tarkeez/core/database/tables/daily_rollups.dart';
 
-part 'local_daily_rollups_dao.g.dart';
+part 'daily_rollups_dao.g.dart';
 
-@DriftAccessor(tables: [LocalDailyRollups])
-class LocalDailyRollupsDao extends DatabaseAccessor<LocalDatabase>
-    with _$LocalDailyRollupsDaoMixin {
-  LocalDailyRollupsDao(super.db);
+@DriftAccessor(tables: [DailyRollups])
+class DailyRollupsDao extends DatabaseAccessor<LocalDatabase>
+    with _$DailyRollupsDaoMixin {
+  DailyRollupsDao(super.db);
 
   String get _uid => attachedDatabase.currentUserId;
 
-  SimpleSelectStatement<$LocalDailyRollupsTable, LocalDailyRollup> _mine() =>
-      select(localDailyRollups)..where((t) => t.userId.equals(_uid));
+  SimpleSelectStatement<$DailyRollupsTable, LocalDailyRollup> _mine() =>
+      select(dailyRollups)..where((t) => t.userId.equals(_uid));
 
   Future<List<LocalDailyRollup>> getAllRollups() =>
       (_mine()..orderBy([(t) => OrderingTerm.asc(t.date)])).get();
@@ -44,5 +44,5 @@ class LocalDailyRollupsDao extends DatabaseAccessor<LocalDatabase>
 
   /// History reset.
   Future<int> wipeAll() =>
-      (delete(localDailyRollups)..where((t) => t.userId.equals(_uid))).go();
+      (delete(dailyRollups)..where((t) => t.userId.equals(_uid))).go();
 }

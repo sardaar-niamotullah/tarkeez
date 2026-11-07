@@ -91,7 +91,7 @@ class SyncEngine {
         (entryIdsByProject[e.entityId] ??= []).add(e.id);
       }
 
-      final rows = await _db.localProjectsDao.getProjectsForPush(
+      final rows = await _db.projectsDao.getProjectsForPush(
         entryIdsByProject.keys,
       );
       final localIds = {for (final r in rows) r.id};
@@ -115,7 +115,7 @@ class SyncEngine {
 
       // Rejected rows were created before a history reset, or have bad data.
       // They are dropped, not requeued.
-      await _db.localProjectsDao.hardDeleteByIds(response.rejected);
+      await _db.projectsDao.hardDeleteByIds(response.rejected);
       await _db.pendingChangesDao.deleteByIds([
         for (final id in [...response.applied, ...response.rejected])
           ...?entryIdsByProject[id],
@@ -148,7 +148,7 @@ class SyncEngine {
         (entryIdsBySession[e.entityId] ??= []).add(e.id);
       }
 
-      final rows = await _db.localSessionsDao.getSessionsForPush(
+      final rows = await _db.sessionsDao.getSessionsForPush(
         entryIdsBySession.keys,
       );
       final localIds = {for (final r in rows) r.id};
@@ -172,11 +172,11 @@ class SyncEngine {
 
       // Lost an overlap: the cloud stored it as deleted. Do the same here now.
       // The trigger subtracts its time. Not queued again.
-      await _db.localSessionsDao.markDropped(response.dropped);
+      await _db.sessionsDao.markDropped(response.dropped);
 
       // Rejected (older than the last reset, or bad data): drop locally.
       if (response.rejected.isNotEmpty) {
-        await _db.localSessionsDao.hardDeleteByIds(response.rejected);
+        await _db.sessionsDao.hardDeleteByIds(response.rejected);
         removedRejected = true;
       }
 
@@ -214,8 +214,8 @@ class SyncEngine {
     final row = await _remote.fetchUserRow(_currentUser.id);
     final user = UserModel.fromRow(row);
 
-    await _db.localUsersDao.upsertUser(
-      LocalUsersCompanion(
+    await _db.usersDao.upsertUser(
+      UsersCompanion(
         id: Value(user.id),
         email: Value(user.email),
         fullName: Value(user.fullName),
@@ -225,7 +225,7 @@ class SyncEngine {
 
     final cloudResetAt = row['history_reset_at'] as String?;
     final localResetAt =
-        (await _db.localUsersDao.getUserById(user.id))?.historyResetAt;
+        (await _db.usersDao.getUserById(user.id))?.historyResetAt;
     syncLog('reset check: cloud=$cloudResetAt, local=$localResetAt');
 
     if (cloudResetAt == null) return false;
@@ -254,7 +254,7 @@ class SyncEngine {
       overlap = false;
       if (rows.isEmpty) break;
 
-      changed |= await _db.localProjectsDao.applyPulled(rows);
+      changed |= await _db.projectsDao.applyPulled(rows);
       total += rows.length;
       afterStamp = rows.last.updatedAt!;
       afterId = rows.last.id;
@@ -288,7 +288,7 @@ class SyncEngine {
       if (rows.isEmpty) break;
 
       // The local triggers rebuild the rollups. No rollup is downloaded.
-      changed |= await _db.localSessionsDao.applyPulled(rows);
+      changed |= await _db.sessionsDao.applyPulled(rows);
       total += rows.length;
       afterStamp = rows.last.updatedAt!;
       afterId = rows.last.id;
@@ -308,9 +308,9 @@ class SyncEngine {
   Future<void> _applyReset(String resetAt) async {
     await _db.transaction(() async {
       // Sessions first: they point at projects.
-      await _db.localSessionsDao.wipeAllSessions();
-      await _db.localProjectsDao.wipeAllProjects();
-      await _db.localDailyRollupsDao.wipeAll();
+      await _db.sessionsDao.wipeAllSessions();
+      await _db.projectsDao.wipeAllProjects();
+      await _db.dailyRollupsDao.wipeAll();
       await _db.projectRollupsDao.wipeAll();
 
       await _db.pendingChangesDao.clear(SyncEntity.session);
@@ -318,7 +318,7 @@ class SyncEngine {
       await _db.pullCheckpointsDao.clearSessionCheckpoint();
       await _db.pullCheckpointsDao.clearProjectCheckpoint();
 
-      await _db.localUsersDao.setHistoryResetAt(_currentUser.id, resetAt);
+      await _db.usersDao.setHistoryResetAt(_currentUser.id, resetAt);
     });
     syncLog('reset applied on this device (history_reset_at = $resetAt)');
   }
