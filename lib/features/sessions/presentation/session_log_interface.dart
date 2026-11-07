@@ -48,6 +48,7 @@ class SessionLogInterface extends StatelessWidget {
                     isRunning: s.isRunning,
                     colonVisible: s.colonVisible,
                     endsAt: s.endsAt,
+                    left: s.left,
                   )
                 : TodayTotalDurationDisplay(
                     isRunning: s.isRunning,
@@ -96,7 +97,7 @@ class SessionLogInterface extends StatelessWidget {
                       backgroundColor: context.md
                           ? scheme.onSurface
                           : scheme.surface,
-                      onTap: () {},
+                      onTap: timer.reset,
                     ),
                   ),
                 Positioned(
@@ -104,6 +105,7 @@ class SessionLogInterface extends StatelessWidget {
                   top: -10,
                   child: PausePlayButton(
                     isRunning: isRunning,
+                    pauses: isPomodoro,
                     onTap: () {
                       final tracking = context
                           .read<TrackingSettingsCubit>()

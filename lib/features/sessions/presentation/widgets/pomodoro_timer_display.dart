@@ -11,13 +11,17 @@ class PomodoroTimerDisplay extends StatelessWidget {
     required this.isRunning,
     required this.colonVisible,
     required this.endsAt,
+    required this.left,
   });
 
   final bool isRunning;
   final bool colonVisible;
 
-  /// Null when idle: the picked length is shown.
+  /// Running: when the countdown ends.
   final DateTime? endsAt;
+
+  /// Paused: the time left, frozen. Null and not running: the picked length.
+  final Duration? left;
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +29,10 @@ class PomodoroTimerDisplay extends StatelessWidget {
       (TrackingSettingsCubit c) => c.state.pomodoroMinutes,
     );
     final end = endsAt;
-    final leftMs = end == null
-        ? pickedMinutes * 60000
-        : end.difference(AppClock.now()).inMilliseconds;
+    final frozen = left;
+    final leftMs = end != null
+        ? end.difference(AppClock.now()).inMilliseconds
+        : frozen?.inMilliseconds ?? pickedMinutes * 60000;
     // Rounded up, so "120:00" holds for the first second and "0:01" for the last.
     final seconds = leftMs <= 0 ? 0 : (leftMs + 999) ~/ 1000;
 

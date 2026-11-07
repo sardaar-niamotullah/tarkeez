@@ -2,9 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 
 class PausePlayButton extends StatelessWidget {
-  const new({super.key, required this.isRunning, required this.onTap});
+  const new({
+    super.key,
+    required this.isRunning,
+    required this.onTap,
+    this.pauses = false,
+  });
   final bool isRunning;
   final VoidCallback onTap;
+    final bool pauses;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +50,10 @@ class PausePlayButton extends StatelessWidget {
               transitionBuilder: (child, animation) =>
                   ScaleTransition(scale: animation, child: child),
               child: Icon(
-                isRunning ? Icons.stop_rounded : Icons.play_arrow_rounded,
+                // isRunning ? Icons.stop_rounded : Icons.play_arrow_rounded,
+                isRunning
+                    ? (pauses ? Icons.pause_rounded : Icons.stop_rounded)
+                    : Icons.play_arrow_rounded,
                 key: ValueKey(isRunning),
                 color: Colors.white,
                 size: isRunning ? 44 : 48,

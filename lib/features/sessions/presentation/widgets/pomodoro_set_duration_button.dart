@@ -20,9 +20,7 @@ class PomodoroSetDurationButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     // The length is fixed while a pomodoro runs.
-    final isRunning = context.select(
-      (SessionTimerCubit c) => c.state.isRunning,
-    );
+    final timer = context.read<SessionTimerCubit>();
     final minutes = context.select(
       (TrackingSettingsCubit c) => c.state.pomodoroMinutes,
     );
@@ -34,13 +32,18 @@ class PomodoroSetDurationButton extends StatelessWidget {
         Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: !isPomodoroModeOn || isRunning
+            onTap: !isPomodoroModeOn
                 ? null
                 : () => showModalBottomSheet<void>(
                     context: context,
                     builder: (_) => SetPomodoroDurationBottomSheet(
                       initialMinutes: minutes,
-                      onDurationPicked: settings.setPomodoroMinutes,
+                      onDurationPicked: (picked) {
+                        // A running or paused pomodoro keeps what it has run:
+                        // the time left moves by the difference.
+                        timer.adjustLength(Duration(minutes: picked - minutes));
+                        settings.setPomodoroMinutes(picked);
+                      },
                     ),
                   ),
             mouseCursor: SystemMouseCursors.click,

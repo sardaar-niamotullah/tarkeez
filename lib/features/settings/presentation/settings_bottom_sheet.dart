@@ -34,8 +34,11 @@ class SettingsBottomSheet extends StatelessWidget {
           action: TrackingModeSwitchButton(
             value: mode,
             onChanged: (type) {
-              // The mode is fixed while a session runs.
-              if (context.read<SessionTimerCubit>().state.isRunning) return;
+              // Tapping the active option must not stop a running session.
+              if (type == mode) return;
+              // Switching stops and saves the running session. The new mode
+              // is started manually from the play button.
+              context.read<SessionTimerCubit>().reset();
               context.read<TrackingSettingsCubit>().setMode(type);
             },
           ),
