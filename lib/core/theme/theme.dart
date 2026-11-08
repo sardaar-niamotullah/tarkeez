@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
+import 'package:tarkeez/core/shared_files/enums/user_preference_enums.dart';
 
 class AppTheme {
   // ── Brand colors ──────────────────────────────────────

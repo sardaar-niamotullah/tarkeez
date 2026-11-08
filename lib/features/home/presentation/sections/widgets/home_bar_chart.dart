@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
-import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
+import 'package:tarkeez/core/shared_files/enums/user_preference_enums.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
@@ -13,7 +13,7 @@ import 'package:tarkeez/features/report/presentation/sections/widgets/time_visua
 import 'package:tarkeez/features/report/presentation/sections/widgets/time_visualizer_horizontal_line.dart';
 
 class HomeBarChart extends StatelessWidget {
-  const HomeBarChart({super.key});
+  const new({super.key});
 
   static const double labelAreaHeight = 12;
   static const double labelGap = 4;

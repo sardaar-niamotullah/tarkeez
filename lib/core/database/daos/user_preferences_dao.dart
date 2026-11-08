@@ -2,7 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:flutter/material.dart' show ThemeMode;
 import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/database/tables/user_preferences.dart';
-import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
+import 'package:tarkeez/core/shared_files/enums/user_preference_enums.dart';
 
 part 'user_preferences_dao.g.dart';
 

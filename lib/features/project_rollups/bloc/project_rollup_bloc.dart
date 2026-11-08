@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/foundation.dart' show listEquals;
-import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
+import 'package:tarkeez/core/shared_files/enums/user_preference_enums.dart';
 import 'package:tarkeez/core/utils/app_clock.dart';
 import 'package:tarkeez/core/utils/live_session_slices.dart';
 import 'package:tarkeez/core/utils/rollup_date_utils.dart';

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart' show ThemeMode;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/dependency_injection/di.dart';
-import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
+import 'package:tarkeez/core/shared_files/enums/user_preference_enums.dart';
 
 const _defaultPomodoroMinutes = 25;
 

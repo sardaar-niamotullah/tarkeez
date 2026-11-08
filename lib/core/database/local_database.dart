@@ -20,7 +20,7 @@ import 'package:tarkeez/core/database/tables/project_rollups.dart';
 import 'package:tarkeez/core/database/tables/pull_checkpoints.dart';
 import 'package:tarkeez/core/database/triggers/rollup_triggers.dart';
 import 'package:tarkeez/core/shared_files/enums/sync_entity.dart';
-import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
+import 'package:tarkeez/core/shared_files/enums/user_preference_enums.dart';
 import 'package:tarkeez/features/auth/current_user.dart';
 import 'package:uuid/uuid.dart';
 
