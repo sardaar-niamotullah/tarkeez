@@ -2474,6 +2474,524 @@ class PullCheckpointsCompanion extends UpdateCompanion<PullCheckpoint> {
   }
 }
 
+class $UserSettingsTable extends UserSettings
+    with TableInfo<$UserSettingsTable, UserSetting> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UserSettingsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES users (id) ON UPDATE CASCADE ON DELETE CASCADE',
+    ),
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<TrackingMode, String>
+  trackingMode = GeneratedColumn<String>(
+    'tracking_mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  ).withConverter<TrackingMode>($UserSettingsTable.$convertertrackingMode);
+  @override
+  late final GeneratedColumnWithTypeConverter<ThemeMode, String> themeMode =
+      GeneratedColumn<String>(
+        'theme_mode',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<ThemeMode>($UserSettingsTable.$converterthemeMode);
+  @override
+  late final GeneratedColumnWithTypeConverter<AppThemeColor, String>
+  themeColor = GeneratedColumn<String>(
+    'theme_color',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  ).withConverter<AppThemeColor>($UserSettingsTable.$converterthemeColor);
+  @override
+  late final GeneratedColumnWithTypeConverter<PeriodRange, String>
+  reportPeriod = GeneratedColumn<String>(
+    'report_period',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  ).withConverter<PeriodRange>($UserSettingsTable.$converterreportPeriod);
+  @override
+  late final GeneratedColumnWithTypeConverter<PeriodRange, String>
+  sessionPeriod = GeneratedColumn<String>(
+    'session_period',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  ).withConverter<PeriodRange>($UserSettingsTable.$convertersessionPeriod);
+  @override
+  late final GeneratedColumnWithTypeConverter<PeriodRange, String>
+  leaderboardPeriod = GeneratedColumn<String>(
+    'leaderboard_period',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  ).withConverter<PeriodRange>($UserSettingsTable.$converterleaderboardPeriod);
+  @override
+  List<GeneratedColumn> get $columns => [
+    userId,
+    trackingMode,
+    themeMode,
+    themeColor,
+    reportPeriod,
+    sessionPeriod,
+    leaderboardPeriod,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'user_settings';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<UserSetting> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {userId};
+  @override
+  UserSetting map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return UserSetting(
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      )!,
+      trackingMode: $UserSettingsTable.$convertertrackingMode.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}tracking_mode'],
+        )!,
+      ),
+      themeMode: $UserSettingsTable.$converterthemeMode.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}theme_mode'],
+        )!,
+      ),
+      themeColor: $UserSettingsTable.$converterthemeColor.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}theme_color'],
+        )!,
+      ),
+      reportPeriod: $UserSettingsTable.$converterreportPeriod.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}report_period'],
+        )!,
+      ),
+      sessionPeriod: $UserSettingsTable.$convertersessionPeriod.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}session_period'],
+        )!,
+      ),
+      leaderboardPeriod: $UserSettingsTable.$converterleaderboardPeriod.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}leaderboard_period'],
+        )!,
+      ),
+    );
+  }
+
+  @override
+  $UserSettingsTable createAlias(String alias) {
+    return $UserSettingsTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<TrackingMode, String, String>
+  $convertertrackingMode = const EnumNameConverter<TrackingMode>(
+    TrackingMode.values,
+  );
+  static JsonTypeConverter2<ThemeMode, String, String> $converterthemeMode =
+      const EnumNameConverter<ThemeMode>(ThemeMode.values);
+  static JsonTypeConverter2<AppThemeColor, String, String>
+  $converterthemeColor = const EnumNameConverter<AppThemeColor>(
+    AppThemeColor.values,
+  );
+  static JsonTypeConverter2<PeriodRange, String, String>
+  $converterreportPeriod = const EnumNameConverter<PeriodRange>(
+    PeriodRange.values,
+  );
+  static JsonTypeConverter2<PeriodRange, String, String>
+  $convertersessionPeriod = const EnumNameConverter<PeriodRange>(
+    PeriodRange.values,
+  );
+  static JsonTypeConverter2<PeriodRange, String, String>
+  $converterleaderboardPeriod = const EnumNameConverter<PeriodRange>(
+    PeriodRange.values,
+  );
+}
+
+class UserSetting extends DataClass implements Insertable<UserSetting> {
+  final String userId;
+  final TrackingMode trackingMode;
+  final ThemeMode themeMode;
+  final AppThemeColor themeColor;
+  final PeriodRange reportPeriod;
+  final PeriodRange sessionPeriod;
+  final PeriodRange leaderboardPeriod;
+  const UserSetting({
+    required this.userId,
+    required this.trackingMode,
+    required this.themeMode,
+    required this.themeColor,
+    required this.reportPeriod,
+    required this.sessionPeriod,
+    required this.leaderboardPeriod,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['user_id'] = Variable<String>(userId);
+    {
+      map['tracking_mode'] = Variable<String>(
+        $UserSettingsTable.$convertertrackingMode.toSql(trackingMode),
+      );
+    }
+    {
+      map['theme_mode'] = Variable<String>(
+        $UserSettingsTable.$converterthemeMode.toSql(themeMode),
+      );
+    }
+    {
+      map['theme_color'] = Variable<String>(
+        $UserSettingsTable.$converterthemeColor.toSql(themeColor),
+      );
+    }
+    {
+      map['report_period'] = Variable<String>(
+        $UserSettingsTable.$converterreportPeriod.toSql(reportPeriod),
+      );
+    }
+    {
+      map['session_period'] = Variable<String>(
+        $UserSettingsTable.$convertersessionPeriod.toSql(sessionPeriod),
+      );
+    }
+    {
+      map['leaderboard_period'] = Variable<String>(
+        $UserSettingsTable.$converterleaderboardPeriod.toSql(leaderboardPeriod),
+      );
+    }
+    return map;
+  }
+
+  UserSettingsCompanion toCompanion(bool nullToAbsent) {
+    return UserSettingsCompanion(
+      userId: Value(userId),
+      trackingMode: Value(trackingMode),
+      themeMode: Value(themeMode),
+      themeColor: Value(themeColor),
+      reportPeriod: Value(reportPeriod),
+      sessionPeriod: Value(sessionPeriod),
+      leaderboardPeriod: Value(leaderboardPeriod),
+    );
+  }
+
+  factory UserSetting.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return UserSetting(
+      userId: serializer.fromJson<String>(json['userId']),
+      trackingMode: $UserSettingsTable.$convertertrackingMode.fromJson(
+        serializer.fromJson<String>(json['trackingMode']),
+      ),
+      themeMode: $UserSettingsTable.$converterthemeMode.fromJson(
+        serializer.fromJson<String>(json['themeMode']),
+      ),
+      themeColor: $UserSettingsTable.$converterthemeColor.fromJson(
+        serializer.fromJson<String>(json['themeColor']),
+      ),
+      reportPeriod: $UserSettingsTable.$converterreportPeriod.fromJson(
+        serializer.fromJson<String>(json['reportPeriod']),
+      ),
+      sessionPeriod: $UserSettingsTable.$convertersessionPeriod.fromJson(
+        serializer.fromJson<String>(json['sessionPeriod']),
+      ),
+      leaderboardPeriod: $UserSettingsTable.$converterleaderboardPeriod
+          .fromJson(serializer.fromJson<String>(json['leaderboardPeriod'])),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'userId': serializer.toJson<String>(userId),
+      'trackingMode': serializer.toJson<String>(
+        $UserSettingsTable.$convertertrackingMode.toJson(trackingMode),
+      ),
+      'themeMode': serializer.toJson<String>(
+        $UserSettingsTable.$converterthemeMode.toJson(themeMode),
+      ),
+      'themeColor': serializer.toJson<String>(
+        $UserSettingsTable.$converterthemeColor.toJson(themeColor),
+      ),
+      'reportPeriod': serializer.toJson<String>(
+        $UserSettingsTable.$converterreportPeriod.toJson(reportPeriod),
+      ),
+      'sessionPeriod': serializer.toJson<String>(
+        $UserSettingsTable.$convertersessionPeriod.toJson(sessionPeriod),
+      ),
+      'leaderboardPeriod': serializer.toJson<String>(
+        $UserSettingsTable.$converterleaderboardPeriod.toJson(
+          leaderboardPeriod,
+        ),
+      ),
+    };
+  }
+
+  UserSetting copyWith({
+    String? userId,
+    TrackingMode? trackingMode,
+    ThemeMode? themeMode,
+    AppThemeColor? themeColor,
+    PeriodRange? reportPeriod,
+    PeriodRange? sessionPeriod,
+    PeriodRange? leaderboardPeriod,
+  }) => UserSetting(
+    userId: userId ?? this.userId,
+    trackingMode: trackingMode ?? this.trackingMode,
+    themeMode: themeMode ?? this.themeMode,
+    themeColor: themeColor ?? this.themeColor,
+    reportPeriod: reportPeriod ?? this.reportPeriod,
+    sessionPeriod: sessionPeriod ?? this.sessionPeriod,
+    leaderboardPeriod: leaderboardPeriod ?? this.leaderboardPeriod,
+  );
+  UserSetting copyWithCompanion(UserSettingsCompanion data) {
+    return UserSetting(
+      userId: data.userId.present ? data.userId.value : this.userId,
+      trackingMode: data.trackingMode.present
+          ? data.trackingMode.value
+          : this.trackingMode,
+      themeMode: data.themeMode.present ? data.themeMode.value : this.themeMode,
+      themeColor: data.themeColor.present
+          ? data.themeColor.value
+          : this.themeColor,
+      reportPeriod: data.reportPeriod.present
+          ? data.reportPeriod.value
+          : this.reportPeriod,
+      sessionPeriod: data.sessionPeriod.present
+          ? data.sessionPeriod.value
+          : this.sessionPeriod,
+      leaderboardPeriod: data.leaderboardPeriod.present
+          ? data.leaderboardPeriod.value
+          : this.leaderboardPeriod,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserSetting(')
+          ..write('userId: $userId, ')
+          ..write('trackingMode: $trackingMode, ')
+          ..write('themeMode: $themeMode, ')
+          ..write('themeColor: $themeColor, ')
+          ..write('reportPeriod: $reportPeriod, ')
+          ..write('sessionPeriod: $sessionPeriod, ')
+          ..write('leaderboardPeriod: $leaderboardPeriod')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    userId,
+    trackingMode,
+    themeMode,
+    themeColor,
+    reportPeriod,
+    sessionPeriod,
+    leaderboardPeriod,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UserSetting &&
+          other.userId == this.userId &&
+          other.trackingMode == this.trackingMode &&
+          other.themeMode == this.themeMode &&
+          other.themeColor == this.themeColor &&
+          other.reportPeriod == this.reportPeriod &&
+          other.sessionPeriod == this.sessionPeriod &&
+          other.leaderboardPeriod == this.leaderboardPeriod);
+}
+
+class UserSettingsCompanion extends UpdateCompanion<UserSetting> {
+  final Value<String> userId;
+  final Value<TrackingMode> trackingMode;
+  final Value<ThemeMode> themeMode;
+  final Value<AppThemeColor> themeColor;
+  final Value<PeriodRange> reportPeriod;
+  final Value<PeriodRange> sessionPeriod;
+  final Value<PeriodRange> leaderboardPeriod;
+  final Value<int> rowid;
+  const UserSettingsCompanion({
+    this.userId = const Value.absent(),
+    this.trackingMode = const Value.absent(),
+    this.themeMode = const Value.absent(),
+    this.themeColor = const Value.absent(),
+    this.reportPeriod = const Value.absent(),
+    this.sessionPeriod = const Value.absent(),
+    this.leaderboardPeriod = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  UserSettingsCompanion.insert({
+    required String userId,
+    required TrackingMode trackingMode,
+    required ThemeMode themeMode,
+    required AppThemeColor themeColor,
+    required PeriodRange reportPeriod,
+    required PeriodRange sessionPeriod,
+    required PeriodRange leaderboardPeriod,
+    this.rowid = const Value.absent(),
+  }) : userId = Value(userId),
+       trackingMode = Value(trackingMode),
+       themeMode = Value(themeMode),
+       themeColor = Value(themeColor),
+       reportPeriod = Value(reportPeriod),
+       sessionPeriod = Value(sessionPeriod),
+       leaderboardPeriod = Value(leaderboardPeriod);
+  static Insertable<UserSetting> custom({
+    Expression<String>? userId,
+    Expression<String>? trackingMode,
+    Expression<String>? themeMode,
+    Expression<String>? themeColor,
+    Expression<String>? reportPeriod,
+    Expression<String>? sessionPeriod,
+    Expression<String>? leaderboardPeriod,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (userId != null) 'user_id': userId,
+      if (trackingMode != null) 'tracking_mode': trackingMode,
+      if (themeMode != null) 'theme_mode': themeMode,
+      if (themeColor != null) 'theme_color': themeColor,
+      if (reportPeriod != null) 'report_period': reportPeriod,
+      if (sessionPeriod != null) 'session_period': sessionPeriod,
+      if (leaderboardPeriod != null) 'leaderboard_period': leaderboardPeriod,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  UserSettingsCompanion copyWith({
+    Value<String>? userId,
+    Value<TrackingMode>? trackingMode,
+    Value<ThemeMode>? themeMode,
+    Value<AppThemeColor>? themeColor,
+    Value<PeriodRange>? reportPeriod,
+    Value<PeriodRange>? sessionPeriod,
+    Value<PeriodRange>? leaderboardPeriod,
+    Value<int>? rowid,
+  }) {
+    return UserSettingsCompanion(
+      userId: userId ?? this.userId,
+      trackingMode: trackingMode ?? this.trackingMode,
+      themeMode: themeMode ?? this.themeMode,
+      themeColor: themeColor ?? this.themeColor,
+      reportPeriod: reportPeriod ?? this.reportPeriod,
+      sessionPeriod: sessionPeriod ?? this.sessionPeriod,
+      leaderboardPeriod: leaderboardPeriod ?? this.leaderboardPeriod,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (trackingMode.present) {
+      map['tracking_mode'] = Variable<String>(
+        $UserSettingsTable.$convertertrackingMode.toSql(trackingMode.value),
+      );
+    }
+    if (themeMode.present) {
+      map['theme_mode'] = Variable<String>(
+        $UserSettingsTable.$converterthemeMode.toSql(themeMode.value),
+      );
+    }
+    if (themeColor.present) {
+      map['theme_color'] = Variable<String>(
+        $UserSettingsTable.$converterthemeColor.toSql(themeColor.value),
+      );
+    }
+    if (reportPeriod.present) {
+      map['report_period'] = Variable<String>(
+        $UserSettingsTable.$converterreportPeriod.toSql(reportPeriod.value),
+      );
+    }
+    if (sessionPeriod.present) {
+      map['session_period'] = Variable<String>(
+        $UserSettingsTable.$convertersessionPeriod.toSql(sessionPeriod.value),
+      );
+    }
+    if (leaderboardPeriod.present) {
+      map['leaderboard_period'] = Variable<String>(
+        $UserSettingsTable.$converterleaderboardPeriod.toSql(
+          leaderboardPeriod.value,
+        ),
+      );
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserSettingsCompanion(')
+          ..write('userId: $userId, ')
+          ..write('trackingMode: $trackingMode, ')
+          ..write('themeMode: $themeMode, ')
+          ..write('themeColor: $themeColor, ')
+          ..write('reportPeriod: $reportPeriod, ')
+          ..write('sessionPeriod: $sessionPeriod, ')
+          ..write('leaderboardPeriod: $leaderboardPeriod, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$LocalDatabase extends GeneratedDatabase {
   _$LocalDatabase(QueryExecutor e) : super(e);
   $LocalDatabaseManager get managers => $LocalDatabaseManager(this);
@@ -2486,6 +3004,7 @@ abstract class _$LocalDatabase extends GeneratedDatabase {
   late final $PullCheckpointsTable pullCheckpoints = $PullCheckpointsTable(
     this,
   );
+  late final $UserSettingsTable userSettings = $UserSettingsTable(this);
   late final Index idxSessionsHistory = Index(
     'idx_sessions_history',
     'CREATE INDEX idx_sessions_history ON sessions (user_id, started_at)',
@@ -2505,6 +3024,9 @@ abstract class _$LocalDatabase extends GeneratedDatabase {
   late final PullCheckpointsDao pullCheckpointsDao = PullCheckpointsDao(
     this as LocalDatabase,
   );
+  late final UserSettingsDao userSettingsDao = UserSettingsDao(
+    this as LocalDatabase,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2517,6 +3039,7 @@ abstract class _$LocalDatabase extends GeneratedDatabase {
     projectRollups,
     pendingChanges,
     pullCheckpoints,
+    userSettings,
     idxSessionsHistory,
   ];
   @override
@@ -2604,6 +3127,20 @@ abstract class _$LocalDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.update,
       ),
       result: [TableUpdate('pull_checkpoints', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'users',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('user_settings', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'users',
+        limitUpdateKind: UpdateKind.update,
+      ),
+      result: [TableUpdate('user_settings', kind: UpdateKind.update)],
     ),
   ]);
   @override
@@ -2738,6 +3275,24 @@ final class $$UsersTableReferences
     final cache = $_typedResult.readTableOrNull(
       _pullCheckpointsRefsTable($_db),
     );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$UserSettingsTable, List<UserSetting>>
+  _userSettingsRefsTable(_$LocalDatabase db) => MultiTypedResultKey.fromTable(
+    db.userSettings,
+    aliasName: 'users__id__user_settings__user_id',
+  );
+
+  $$UserSettingsTableProcessedTableManager get userSettingsRefs {
+    final manager = $$UserSettingsTableTableManager(
+      $_db,
+      $_db.userSettings,
+    ).filter((f) => f.userId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_userSettingsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -2919,6 +3474,31 @@ class $$UsersTableFilterComposer
           }) => $$PullCheckpointsTableFilterComposer(
             $db: $db,
             $table: $db.pullCheckpoints,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> userSettingsRefs(
+    Expression<bool> Function($$UserSettingsTableFilterComposer f) f,
+  ) {
+    final $$UserSettingsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.userSettings,
+      getReferencedColumn: (t) => t.userId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UserSettingsTableFilterComposer(
+            $db: $db,
+            $table: $db.userSettings,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -3139,6 +3719,31 @@ class $$UsersTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> userSettingsRefs<T extends Object>(
+    Expression<T> Function($$UserSettingsTableAnnotationComposer a) f,
+  ) {
+    final $$UserSettingsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.userSettings,
+      getReferencedColumn: (t) => t.userId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UserSettingsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.userSettings,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$UsersTableTableManager
@@ -3161,6 +3766,7 @@ class $$UsersTableTableManager
             bool projectRollupsRefs,
             bool pendingChangesRefs,
             bool pullCheckpointsRefs,
+            bool userSettingsRefs,
           })
         > {
   $$UsersTableTableManager(_$LocalDatabase db, $UsersTable table)
@@ -3222,6 +3828,7 @@ class $$UsersTableTableManager
                 projectRollupsRefs = false,
                 pendingChangesRefs = false,
                 pullCheckpointsRefs = false,
+                userSettingsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -3232,6 +3839,7 @@ class $$UsersTableTableManager
                     if (projectRollupsRefs) db.projectRollups,
                     if (pendingChangesRefs) db.pendingChanges,
                     if (pullCheckpointsRefs) db.pullCheckpoints,
+                    if (userSettingsRefs) db.userSettings,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -3362,6 +3970,27 @@ class $$UsersTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (userSettingsRefs)
+                        await $_getPrefetchedData<
+                          LocalUser,
+                          $UsersTable,
+                          UserSetting
+                        >(
+                          currentTable: table,
+                          referencedTable: $$UsersTableReferences
+                              ._userSettingsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$UsersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).userSettingsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.userId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -3389,6 +4018,7 @@ typedef $$UsersTableProcessedTableManager =
         bool projectRollupsRefs,
         bool pendingChangesRefs,
         bool pullCheckpointsRefs,
+        bool userSettingsRefs,
       })
     >;
 typedef $$ProjectsTableCreateCompanionBuilder = ProjectsCompanion Function({
@@ -5423,6 +6053,380 @@ typedef $$PullCheckpointsTableProcessedTableManager =
       PullCheckpoint,
       PrefetchHooks Function({bool userId})
     >;
+typedef $$UserSettingsTableCreateCompanionBuilder =
+    UserSettingsCompanion Function({
+      required String userId,
+      required TrackingMode trackingMode,
+      required ThemeMode themeMode,
+      required AppThemeColor themeColor,
+      required PeriodRange reportPeriod,
+      required PeriodRange sessionPeriod,
+      required PeriodRange leaderboardPeriod,
+      Value<int> rowid,
+    });
+typedef $$UserSettingsTableUpdateCompanionBuilder =
+    UserSettingsCompanion Function({
+      Value<String> userId,
+      Value<TrackingMode> trackingMode,
+      Value<ThemeMode> themeMode,
+      Value<AppThemeColor> themeColor,
+      Value<PeriodRange> reportPeriod,
+      Value<PeriodRange> sessionPeriod,
+      Value<PeriodRange> leaderboardPeriod,
+      Value<int> rowid,
+    });
+
+final class $$UserSettingsTableReferences
+    extends BaseReferences<_$LocalDatabase, $UserSettingsTable, UserSetting> {
+  $$UserSettingsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $UsersTable _userIdTable(_$LocalDatabase db) =>
+      db.users.createAlias('user_settings__user_id__users__id');
+
+  $$UsersTableProcessedTableManager get userId {
+    final $_column = $_itemColumn<String>('user_id')!;
+
+    final manager = $$UsersTableTableManager(
+      $_db,
+      $_db.users,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_userIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$UserSettingsTableFilterComposer
+    extends Composer<_$LocalDatabase, $UserSettingsTable> {
+  $$UserSettingsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnWithTypeConverterFilters<TrackingMode, TrackingMode, String>
+  get trackingMode => $composableBuilder(
+    column: $table.trackingMode,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<ThemeMode, ThemeMode, String> get themeMode =>
+      $composableBuilder(
+        column: $table.themeMode,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnWithTypeConverterFilters<AppThemeColor, AppThemeColor, String>
+  get themeColor => $composableBuilder(
+    column: $table.themeColor,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<PeriodRange, PeriodRange, String>
+  get reportPeriod => $composableBuilder(
+    column: $table.reportPeriod,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<PeriodRange, PeriodRange, String>
+  get sessionPeriod => $composableBuilder(
+    column: $table.sessionPeriod,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<PeriodRange, PeriodRange, String>
+  get leaderboardPeriod => $composableBuilder(
+    column: $table.leaderboardPeriod,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  $$UsersTableFilterComposer get userId {
+    final $$UsersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableFilterComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$UserSettingsTableOrderingComposer
+    extends Composer<_$LocalDatabase, $UserSettingsTable> {
+  $$UserSettingsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get trackingMode => $composableBuilder(
+    column: $table.trackingMode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get themeMode => $composableBuilder(
+    column: $table.themeMode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get themeColor => $composableBuilder(
+    column: $table.themeColor,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get reportPeriod => $composableBuilder(
+    column: $table.reportPeriod,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sessionPeriod => $composableBuilder(
+    column: $table.sessionPeriod,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get leaderboardPeriod => $composableBuilder(
+    column: $table.leaderboardPeriod,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$UsersTableOrderingComposer get userId {
+    final $$UsersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableOrderingComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$UserSettingsTableAnnotationComposer
+    extends Composer<_$LocalDatabase, $UserSettingsTable> {
+  $$UserSettingsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumnWithTypeConverter<TrackingMode, String> get trackingMode =>
+      $composableBuilder(
+        column: $table.trackingMode,
+        builder: (column) => column,
+      );
+
+  GeneratedColumnWithTypeConverter<ThemeMode, String> get themeMode =>
+      $composableBuilder(column: $table.themeMode, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<AppThemeColor, String> get themeColor =>
+      $composableBuilder(
+        column: $table.themeColor,
+        builder: (column) => column,
+      );
+
+  GeneratedColumnWithTypeConverter<PeriodRange, String> get reportPeriod =>
+      $composableBuilder(
+        column: $table.reportPeriod,
+        builder: (column) => column,
+      );
+
+  GeneratedColumnWithTypeConverter<PeriodRange, String> get sessionPeriod =>
+      $composableBuilder(
+        column: $table.sessionPeriod,
+        builder: (column) => column,
+      );
+
+  GeneratedColumnWithTypeConverter<PeriodRange, String> get leaderboardPeriod =>
+      $composableBuilder(
+        column: $table.leaderboardPeriod,
+        builder: (column) => column,
+      );
+
+  $$UsersTableAnnotationComposer get userId {
+    final $$UsersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$UserSettingsTableTableManager
+    extends
+        RootTableManager<
+          _$LocalDatabase,
+          $UserSettingsTable,
+          UserSetting,
+          $$UserSettingsTableFilterComposer,
+          $$UserSettingsTableOrderingComposer,
+          $$UserSettingsTableAnnotationComposer,
+          $$UserSettingsTableCreateCompanionBuilder,
+          $$UserSettingsTableUpdateCompanionBuilder,
+          (UserSetting, $$UserSettingsTableReferences),
+          UserSetting,
+          PrefetchHooks Function({bool userId})
+        > {
+  $$UserSettingsTableTableManager(_$LocalDatabase db, $UserSettingsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$UserSettingsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UserSettingsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UserSettingsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> userId = const Value.absent(),
+                Value<TrackingMode> trackingMode = const Value.absent(),
+                Value<ThemeMode> themeMode = const Value.absent(),
+                Value<AppThemeColor> themeColor = const Value.absent(),
+                Value<PeriodRange> reportPeriod = const Value.absent(),
+                Value<PeriodRange> sessionPeriod = const Value.absent(),
+                Value<PeriodRange> leaderboardPeriod = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => UserSettingsCompanion(
+                userId: userId,
+                trackingMode: trackingMode,
+                themeMode: themeMode,
+                themeColor: themeColor,
+                reportPeriod: reportPeriod,
+                sessionPeriod: sessionPeriod,
+                leaderboardPeriod: leaderboardPeriod,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String userId,
+                required TrackingMode trackingMode,
+                required ThemeMode themeMode,
+                required AppThemeColor themeColor,
+                required PeriodRange reportPeriod,
+                required PeriodRange sessionPeriod,
+                required PeriodRange leaderboardPeriod,
+                Value<int> rowid = const Value.absent(),
+              }) => UserSettingsCompanion.insert(
+                userId: userId,
+                trackingMode: trackingMode,
+                themeMode: themeMode,
+                themeColor: themeColor,
+                reportPeriod: reportPeriod,
+                sessionPeriod: sessionPeriod,
+                leaderboardPeriod: leaderboardPeriod,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$UserSettingsTable, UserSetting>(table),
+                  $$UserSettingsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({userId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (userId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.userId,
+                        referencedTable: $$UserSettingsTableReferences
+                            ._userIdTable(db),
+                        referencedColumn: $$UserSettingsTableReferences
+                            ._userIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$UserSettingsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$LocalDatabase,
+      $UserSettingsTable,
+      UserSetting,
+      $$UserSettingsTableFilterComposer,
+      $$UserSettingsTableOrderingComposer,
+      $$UserSettingsTableAnnotationComposer,
+      $$UserSettingsTableCreateCompanionBuilder,
+      $$UserSettingsTableUpdateCompanionBuilder,
+      (UserSetting, $$UserSettingsTableReferences),
+      UserSetting,
+      PrefetchHooks Function({bool userId})
+    >;
 
 class $LocalDatabaseManager {
   final _$LocalDatabase _db;
@@ -5441,4 +6445,6 @@ class $LocalDatabaseManager {
       $$PendingChangesTableTableManager(_db, _db.pendingChanges);
   $$PullCheckpointsTableTableManager get pullCheckpoints =>
       $$PullCheckpointsTableTableManager(_db, _db.pullCheckpoints);
+  $$UserSettingsTableTableManager get userSettings =>
+      $$UserSettingsTableTableManager(_db, _db.userSettings);
 }

@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+import 'package:flutter/material.dart' show ThemeMode;
 import 'package:tarkeez/core/database/daos/daily_rollups_dao.dart';
 import 'package:tarkeez/core/database/daos/projects_dao.dart';
 import 'package:tarkeez/core/database/daos/sessions_dao.dart';
@@ -7,6 +8,7 @@ import 'package:tarkeez/core/database/daos/users_dao.dart';
 import 'package:tarkeez/core/database/daos/pending_changes_dao.dart';
 import 'package:tarkeez/core/database/daos/project_rollups_dao.dart';
 import 'package:tarkeez/core/database/daos/pull_checkpoints_dao.dart';
+import 'package:tarkeez/core/database/daos/user_settings_dao.dart';
 import 'package:tarkeez/core/database/migrations/app_migrations.dart';
 import 'package:tarkeez/core/database/tables/daily_rollups.dart';
 import 'package:tarkeez/core/database/tables/projects.dart';
@@ -15,7 +17,11 @@ import 'package:tarkeez/core/database/tables/users.dart';
 import 'package:tarkeez/core/database/tables/pending_changes.dart';
 import 'package:tarkeez/core/database/tables/project_rollups.dart';
 import 'package:tarkeez/core/database/tables/pull_checkpoints.dart';
+import 'package:tarkeez/core/database/tables/user_settings.dart';
 import 'package:tarkeez/core/database/triggers/rollup_triggers.dart';
+import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
+import 'package:tarkeez/core/shared_files/cubits/tracking_settings_cubit.dart';
+import 'package:tarkeez/core/shared_files/enums/period_range.dart';
 import 'package:tarkeez/core/shared_files/enums/sync_entity.dart';
 import 'package:tarkeez/features/auth/current_user.dart';
 import 'package:uuid/uuid.dart';
@@ -33,6 +39,7 @@ part 'local_database.g.dart';
     ProjectRollups,
     PendingChanges,
     PullCheckpoints,
+    UserSettings,
   ],
   daos: [
     UsersDao,
@@ -42,6 +49,7 @@ part 'local_database.g.dart';
     ProjectRollupsDao,
     PendingChangesDao,
     PullCheckpointsDao,
+    UserSettingsDao,
   ],
 )
 class LocalDatabase extends _$LocalDatabase {
@@ -52,7 +60,7 @@ class LocalDatabase extends _$LocalDatabase {
   String get currentUserId => _currentUser.id;
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => buildMigrationStrategy(this);

@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tarkeez/core/database/local_database.dart';
+import 'package:tarkeez/core/dependency_injection/di.dart';
 
 enum AppThemeColor { green, purple, pink, blue, teal }
 
 class ThemeState {
   const new({required this.mode, required this.color});
-  
+
   final ThemeMode mode;
   final AppThemeColor color;
-  
+
   bool get isDark => mode == ThemeMode.dark;
 
   ThemeState copyWith({ThemeMode? mode, AppThemeColor? color}) {
@@ -20,21 +21,25 @@ class ThemeState {
 class ThemeCubit extends Cubit<ThemeState> {
   new({required ThemeState initialState}) : super(initialState);
 
-  static const _modeKey = 'theme_mode';
-  static const _colorKey = 'theme_color';
+  final _dao = getIt<LocalDatabase>().userSettingsDao;
 
   bool get isDark => state.mode == ThemeMode.dark;
 
+  /// Loads the active account's saved theme (after sign-in or an account switch).
+  Future<void> load() async {
+    final settings = await _dao.getSettings();
+    if (isClosed) return;
+    emit(ThemeState(mode: settings.themeMode, color: settings.themeColor));
+  }
+
   Future<void> toggleTheme() async {
     final newMode = isDark ? ThemeMode.light : ThemeMode.dark;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_modeKey, newMode == ThemeMode.dark);
     emit(state.copyWith(mode: newMode));
+    await _dao.setThemeMode(newMode);
   }
 
   Future<void> setColor(AppThemeColor color) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_colorKey, color.index);
     emit(state.copyWith(color: color));
+    await _dao.setThemeColor(color);
   }
 }
