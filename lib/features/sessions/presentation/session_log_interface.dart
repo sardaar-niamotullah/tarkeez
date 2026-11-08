@@ -4,7 +4,6 @@ import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/action_button.dart';
 import 'package:tarkeez/core/shared_files/cubits/session_timer_cubit.dart';
-import 'package:tarkeez/core/shared_files/cubits/tracking_settings_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/session_log_interface_bottom_clipper.dart';
@@ -104,7 +103,7 @@ class SessionLogInterface extends StatelessWidget {
                     pauses: isPomodoro,
                     onTap: () {
                       final tracking = context
-                          .read<TrackingSettingsCubit>()
+                          .read<UserPreferencesCubit>()
                           .state;
                       timer.toggle(
                         countdown: tracking.isPomodoro

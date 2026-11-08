@@ -6,7 +6,7 @@ import 'package:tarkeez/core/shared_files/bottom_sheet/bottom_sheet_wrapper.dart
 import 'package:tarkeez/core/shared_files/buttons/theme_switch_button.dart';
 import 'package:tarkeez/core/shared_files/buttons/tracking_mode_switch_button.dart';
 import 'package:tarkeez/core/shared_files/cubits/session_timer_cubit.dart';
-import 'package:tarkeez/core/shared_files/cubits/tracking_settings_cubit.dart';
+import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/features/settings/presentation/widgets/settings_bottom_sheet_option_tile.dart';
 import 'package:tarkeez/features/settings/presentation/widgets/theme_color_switch_buttons_tile.dart';
 
@@ -15,7 +15,9 @@ class SettingsBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mode = context.select((TrackingSettingsCubit c) => c.state.mode);
+    final mode = context.select(
+      (UserPreferencesCubit c) => c.state.trackingMode,
+    );
 
     return BottomSheetWrapper(
       contents: [
@@ -39,7 +41,7 @@ class SettingsBottomSheet extends StatelessWidget {
               // Switching stops and saves the running session. The new mode
               // is started manually from the play button.
               context.read<SessionTimerCubit>().reset();
-              context.read<TrackingSettingsCubit>().setMode(type);
+              context.read<UserPreferencesCubit>().setTrackingMode(type);
             },
           ),
           isLastTile: true,
