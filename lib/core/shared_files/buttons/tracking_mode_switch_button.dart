@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:tarkeez/core/shared_files/cubits/tracking_settings_cubit.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
-enum TrackingType { linear, pomodoro }
-
-extension TrackingTypeLabel on TrackingType {
+extension TrackingModeLabel on TrackingMode {
   String label(String texts) {
     switch (this) {
-      case TrackingType.linear:
+      case TrackingMode.linear:
         return 'Linear';
-      case TrackingType.pomodoro:
+      case TrackingMode.pomodoro:
         return 'Pomodoro';
     }
   }
@@ -18,10 +17,10 @@ extension TrackingTypeLabel on TrackingType {
 class TrackingModeSwitchButton extends StatelessWidget {
   const new({super.key, required this.value, required this.onChanged});
 
-  final TrackingType value;
-  final ValueChanged<TrackingType> onChanged;
+  final TrackingMode value;
+  final ValueChanged<TrackingMode> onChanged;
 
-  static const List<TrackingType> _options = TrackingType.values;
+  static const List<TrackingMode> _options = TrackingMode.values;
 
   @override
   Widget build(BuildContext context) {
