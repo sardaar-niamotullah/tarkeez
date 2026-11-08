@@ -1,5 +1,5 @@
 import 'package:tarkeez/core/shared_files/buttons/theme_color_switch_button.dart';
-import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
+import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
@@ -7,13 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ThemeColorSwitchButtonsTile extends StatelessWidget {
-  const ThemeColorSwitchButtonsTile({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ThemeCubit, ThemeState>(
-      builder: (context, themeState) {
-        final cubit = context.read<ThemeCubit>();
+    return BlocBuilder<UserPreferencesCubit, UserPreferencesState>(
+      buildWhen: (a, b) => a.themeColor != b.themeColor,
+      builder: (context, preferences) {
+        final cubit = context.read<UserPreferencesCubit>();
         return Container(
           height: 30,
           width: 148,
@@ -26,28 +27,28 @@ class ThemeColorSwitchButtonsTile extends StatelessWidget {
             children: [
               ThemeColorSwitchButton(
                 themeColor: AppTheme.greenBright,
-                isActive: themeState.color == AppThemeColor.green,
-                onTap: () => cubit.setColor(AppThemeColor.green),
+                isActive: preferences.themeColor == AppThemeColor.green,
+                onTap: () => cubit.setThemeColor(AppThemeColor.green),
               ),
               ThemeColorSwitchButton(
                 themeColor: AppTheme.purpleBright,
-                isActive: themeState.color == AppThemeColor.purple,
-                onTap: () => cubit.setColor(AppThemeColor.purple),
+                isActive: preferences.themeColor == AppThemeColor.purple,
+                onTap: () => cubit.setThemeColor(AppThemeColor.purple),
               ),
               ThemeColorSwitchButton(
                 themeColor: AppTheme.pinkBright,
-                isActive: themeState.color == AppThemeColor.pink,
-                onTap: () => cubit.setColor(AppThemeColor.pink),
+                isActive: preferences.themeColor == AppThemeColor.pink,
+                onTap: () => cubit.setThemeColor(AppThemeColor.pink),
               ),
               ThemeColorSwitchButton(
                 themeColor: AppTheme.blueBright,
-                isActive: themeState.color == AppThemeColor.blue,
-                onTap: () => cubit.setColor(AppThemeColor.blue),
+                isActive: preferences.themeColor == AppThemeColor.blue,
+                onTap: () => cubit.setThemeColor(AppThemeColor.blue),
               ),
               ThemeColorSwitchButton(
                 themeColor: AppTheme.tealBright,
-                isActive: themeState.color == AppThemeColor.teal,
-                onTap: () => cubit.setColor(AppThemeColor.teal),
+                isActive: preferences.themeColor == AppThemeColor.teal,
+                onTap: () => cubit.setThemeColor(AppThemeColor.teal),
               ),
             ],
           ),

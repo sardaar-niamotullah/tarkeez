@@ -3,17 +3,18 @@ import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:flutter/material.dart';
 
 class ThemeColorSwitchButton extends StatelessWidget {
-  final Color themeColor;
-  final VoidCallback onTap;
-  final bool isActive;
-  final bool isLocked;
-  const ThemeColorSwitchButton({
+  const new({
     super.key,
     required this.themeColor,
     required this.onTap,
     this.isActive = false,
     this.isLocked = false,
   });
+  
+  final Color themeColor;
+  final VoidCallback onTap;
+  final bool isActive;
+  final bool isLocked;
 
   @override
   Widget build(BuildContext context) {

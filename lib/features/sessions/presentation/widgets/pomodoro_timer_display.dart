@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tarkeez/core/shared_files/cubits/tracking_settings_cubit.dart';
+import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/core/utils/app_clock.dart';
 import 'package:tarkeez/features/sessions/presentation/widgets/timer_digits.dart';
 
@@ -17,7 +17,7 @@ class PomodoroTimerDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final pickedMinutes = context.select(
-      (TrackingSettingsCubit c) => c.state.pomodoroMinutes,
+      (UserPreferencesCubit c) => c.state.pomodoroMinutes,
     );
     final end = endsAt;
     final frozen = left;

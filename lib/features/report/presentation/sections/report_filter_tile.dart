@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/custom_icon_button.dart';
-import 'package:tarkeez/core/shared_files/cubits/report_period_cubit.dart';
+import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/max_width_box.dart';
@@ -45,7 +45,12 @@ class ReportFilterTile extends StatelessWidget {
                 crossAxisAlignment: .center,
                 mainAxisAlignment: .spaceBetween,
                 children: [
-                  BlocBuilder<ReportPeriodCubit, PeriodRange>(
+                  BlocSelector<
+                    UserPreferencesCubit,
+                    UserPreferencesState,
+                    PeriodRange
+                  >(
+                    selector: (preferences) => preferences.reportPeriod,
                     builder: (context, period) => Text(
                       period.label,
                       style: TextUtils.paragraphBold(context),
