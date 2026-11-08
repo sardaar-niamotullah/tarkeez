@@ -1,5 +1,6 @@
 import 'package:tarkeez/core/shared_files/buttons/theme_color_switch_button.dart';
 import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
+import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:flutter/material.dart';

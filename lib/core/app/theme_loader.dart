@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/dependency_injection/di.dart';
 import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
+import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
 
 /// The theme for the first frame: the signed-in account's saved theme, or the
 /// defaults when nobody is signed in.

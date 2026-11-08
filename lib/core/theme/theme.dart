@@ -1,5 +1,5 @@
-import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
 
 class AppTheme {
   // ── Brand colors ──────────────────────────────────────

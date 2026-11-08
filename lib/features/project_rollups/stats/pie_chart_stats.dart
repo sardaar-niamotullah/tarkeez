@@ -1,5 +1,5 @@
 import 'package:tarkeez/core/extensions/period_range_extension.dart';
-import 'package:tarkeez/core/shared_files/enums/period_range.dart';
+import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
 import 'package:tarkeez/features/project_rollups/data/models/project_duration_model.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/core/utils/rollup_date_utils.dart';

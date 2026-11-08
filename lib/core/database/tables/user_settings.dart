@@ -1,9 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart' show ThemeMode;
 import 'package:tarkeez/core/database/tables/users.dart';
-import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
-import 'package:tarkeez/core/shared_files/cubits/tracking_settings_cubit.dart';
-import 'package:tarkeez/core/shared_files/enums/period_range.dart';
+import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
 
 /// One row per account on this device. Local only, never synced.
 /// Enums are stored as text (the enum name).

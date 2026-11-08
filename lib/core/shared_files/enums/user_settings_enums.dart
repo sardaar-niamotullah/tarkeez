@@ -1,3 +1,5 @@
+enum TrackingMode { linear, pomodoro }
+enum AppThemeColor { green, purple, pink, blue, teal }
 enum PeriodRange {
   // left column
   today('Today'),

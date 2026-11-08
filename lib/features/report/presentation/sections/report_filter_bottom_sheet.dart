@@ -8,7 +8,7 @@ import 'package:tarkeez/core/shared_files/bottom_sheet/duration_filter_bottom_sh
 import 'package:tarkeez/core/shared_files/buttons/cancel_button.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:tarkeez/core/shared_files/cubits/report_period_cubit.dart';
-import 'package:tarkeez/core/shared_files/enums/period_range.dart';
+import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
 
 class ReportFilterBottomSheet extends StatefulWidget {
   const ReportFilterBottomSheet({super.key});

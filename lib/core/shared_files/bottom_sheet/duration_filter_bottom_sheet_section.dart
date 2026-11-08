@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/shared_files/bottom_sheet/filter_duration_selector_button.dart';
-import 'package:tarkeez/core/shared_files/enums/period_range.dart';
+import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
 
 class DurationFilterBottomSheetSection extends StatelessWidget {
   const new({

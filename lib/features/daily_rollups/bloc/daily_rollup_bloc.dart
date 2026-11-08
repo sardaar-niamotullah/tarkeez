@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:tarkeez/core/extensions/period_range_extension.dart';
-import 'package:tarkeez/core/shared_files/enums/period_range.dart';
+import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
 import 'package:tarkeez/core/utils/rollup_date_utils.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:tarkeez/features/daily_rollups/data/models/personal_best_period.dart';

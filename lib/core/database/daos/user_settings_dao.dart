@@ -2,9 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:flutter/material.dart' show ThemeMode;
 import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/database/tables/user_settings.dart';
-import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
-import 'package:tarkeez/core/shared_files/cubits/tracking_settings_cubit.dart';
-import 'package:tarkeez/core/shared_files/enums/period_range.dart';
+import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
 
 part 'user_settings_dao.g.dart';
 

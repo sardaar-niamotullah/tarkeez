@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/dependency_injection/di.dart';
-import 'package:tarkeez/core/shared_files/enums/period_range.dart';
+import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
 
 class LeaderboardPeriodCubit extends Cubit<PeriodRange> {
   new() : super(PeriodRange.last3Days);

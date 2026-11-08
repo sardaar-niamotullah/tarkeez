@@ -2,9 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/dependency_injection/di.dart';
-
-
-enum TrackingMode { linear, pomodoro }
+import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
 
 class TrackingSettings extends Equatable {
   const new({this.mode = .linear, this.pomodoroMinutes = 25});

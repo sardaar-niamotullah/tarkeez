@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tarkeez/core/shared_files/cubits/tracking_settings_cubit.dart';
+import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 

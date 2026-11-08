@@ -4,7 +4,7 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/error/result.dart';
 import 'package:tarkeez/core/extensions/period_range_extension.dart';
-import 'package:tarkeez/core/shared_files/enums/period_range.dart';
+import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/sessions/data/models/session_model.dart';
 import 'package:tarkeez/features/sessions/data/repositories/session_repository.dart';

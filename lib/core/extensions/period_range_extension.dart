@@ -1,5 +1,5 @@
-import 'package:tarkeez/core/shared_files/enums/period_range.dart';
 import 'package:tarkeez/core/shared_files/enums/timeline_granularity.dart';
+import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
 
 extension PeriodRangeExtension on PeriodRange {
   (DateTime start, DateTime end)? dateRange({DateTime? now}) {

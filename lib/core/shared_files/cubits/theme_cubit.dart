@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/dependency_injection/di.dart';
-
-enum AppThemeColor { green, purple, pink, blue, teal }
+import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
 
 class ThemeState {
   const new({required this.mode, required this.color});
