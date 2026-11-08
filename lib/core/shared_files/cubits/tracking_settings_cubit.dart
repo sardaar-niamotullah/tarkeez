@@ -4,7 +4,7 @@ import 'package:tarkeez/core/shared_files/buttons/tracking_mode_switch_button.da
     show TrackingType;
 
 class TrackingSettings extends Equatable {
-  const new({this.mode = TrackingType.linear, this.pomodoroMinutes = 25});
+  const new({this.mode = .linear, this.pomodoroMinutes = 25});
 
   final TrackingType mode;
   final int pomodoroMinutes;
