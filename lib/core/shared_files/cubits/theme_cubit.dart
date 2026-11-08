@@ -5,12 +5,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 enum AppThemeColor { green, purple, pink, blue, teal }
 
 class ThemeState {
+  const new({required this.mode, required this.color});
+  
   final ThemeMode mode;
   final AppThemeColor color;
   
   bool get isDark => mode == ThemeMode.dark;
-
-  const ThemeState({required this.mode, required this.color});
 
   ThemeState copyWith({ThemeMode? mode, AppThemeColor? color}) {
     return ThemeState(mode: mode ?? this.mode, color: color ?? this.color);
@@ -18,10 +18,10 @@ class ThemeState {
 }
 
 class ThemeCubit extends Cubit<ThemeState> {
+  new({required ThemeState initialState}) : super(initialState);
+
   static const _modeKey = 'theme_mode';
   static const _colorKey = 'theme_color';
-
-  ThemeCubit({required ThemeState initialState}) : super(initialState);
 
   bool get isDark => state.mode == ThemeMode.dark;
 
