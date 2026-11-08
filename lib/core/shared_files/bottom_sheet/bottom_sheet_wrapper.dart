@@ -5,6 +5,7 @@ import 'package:tarkeez/core/utils/container_design_utils.dart';
 
 class BottomSheetWrapper extends StatelessWidget {
   const new({super.key, required this.contents, this.bottomMargin = 16});
+
   final List<Widget> contents;
   final double bottomMargin;
 
@@ -26,7 +27,7 @@ class BottomSheetWrapper extends StatelessWidget {
             children: [
               // Drag handle
               const SizedBox(height: 16),
-              BottomSheetDragHandle(),
+              const BottomSheetDragHandle(),
               const SizedBox(height: 16),
               ...contents,
               SizedBox(height: bottomMargin),
@@ -34,7 +35,7 @@ class BottomSheetWrapper extends StatelessWidget {
           ),
         ),
         // Close button
-        BottomSheetCloseButton(),
+        const BottomSheetCloseButton(),
       ],
     );
   }

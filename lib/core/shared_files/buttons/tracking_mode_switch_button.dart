@@ -59,16 +59,19 @@ class TrackingModeSwitchButton extends StatelessWidget {
                   children: [
                     for (final option in _options)
                       Expanded(
-                        child: GestureDetector(
-                          behavior: .opaque,
-                          onTap: () => onChanged(option),
-                          child: _Label(
-                            context: context,
-                            text: option.label('Linear'),
-                            active: option == value,
-                            activeColor: scheme.primary,
-                            inactiveColor: scheme.onTertiary.withValues(
-                              alpha: .9,
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () => onChanged(option),
+                            child: _Label(
+                              context: context,
+                              text: option.label('Linear'),
+                              active: option == value,
+                              activeColor: scheme.primary,
+                              inactiveColor: scheme.onTertiary.withValues(
+                                alpha: .9,
+                              ),
                             ),
                           ),
                         ),
@@ -92,7 +95,7 @@ class _Label extends StatelessWidget {
     required this.inactiveColor,
     required this.context,
   });
-  
+
   final String text;
   final bool active;
   final Color activeColor;
