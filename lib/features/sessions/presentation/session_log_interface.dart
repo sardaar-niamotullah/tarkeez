@@ -38,7 +38,7 @@ class SessionLogInterface extends StatelessWidget {
       ),
       child: Column(
         children: [
-          SizedBox(height: context.md ? 20 : 48),
+          SizedBox(height: context.md ? 20 : 36),
           // ──────────────────────────────────────────────
           // Timer (the only part that rebuilds on every tick)
           // ──────────────────────────────────────────────
