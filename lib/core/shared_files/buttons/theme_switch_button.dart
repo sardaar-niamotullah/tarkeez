@@ -1,24 +1,25 @@
-import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
+import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ThemeSwitchButton extends StatelessWidget {
-  const ThemeSwitchButton({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
-    return BlocBuilder<ThemeCubit, ThemeState>(
-      builder: (context, themeState) {
-        final isDark = themeState.mode == ThemeMode.dark;
-        final themeCubit = context.read<ThemeCubit>();
+    return BlocBuilder<UserPreferencesCubit, UserPreferencesState>(
+      buildWhen: (a, b) => a.themeMode != b.themeMode,
+      builder: (context, preferences) {
+        final isDark = preferences.isDark;
+        final preferencesCubit = context.read<UserPreferencesCubit>();
 
         return Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: () => themeCubit.toggleTheme(),
+            onTap: () => preferencesCubit.toggleTheme(),
             borderRadius: ContainerDesignUtils.allRadius,
             mouseCursor: SystemMouseCursors.click,
             child: Ink(

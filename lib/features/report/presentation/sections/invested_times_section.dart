@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/constants/img_paths.dart';
-import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
+import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/core/shared_files/widgets/section_image_lock_overlay.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
@@ -20,7 +20,8 @@ class InvestedTimesSection extends StatelessWidget {
       crossAxisAlignment: .start,
       children: [
         if (isLocked)
-          BlocBuilder<ThemeCubit, ThemeState>(
+          BlocBuilder<UserPreferencesCubit, UserPreferencesState>(
+            buildWhen: (a, b) => a.isDark != b.isDark,
             builder: (context, state) {
               return SectionImageLockOverlay(
                 imgLocation: state.isDark
