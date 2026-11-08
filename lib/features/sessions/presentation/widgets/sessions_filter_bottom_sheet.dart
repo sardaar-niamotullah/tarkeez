@@ -7,7 +7,7 @@ import 'package:tarkeez/core/shared_files/bottom_sheet/bottom_sheet_wrapper.dart
 import 'package:tarkeez/core/shared_files/bottom_sheet/duration_filter_bottom_sheet_section.dart';
 import 'package:tarkeez/core/shared_files/buttons/cancel_button.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
-import 'package:tarkeez/core/shared_files/cubits/session_period_cubit.dart';
+import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
 
 class SessionsFilterBottomSheet extends StatefulWidget {
@@ -24,14 +24,17 @@ class _SessionsFilterBottomSheetState extends State<SessionsFilterBottomSheet> {
   @override
   void initState() {
     super.initState();
-    _pending = context.read<SessionPeriodCubit>().state;
+    _pending = context.read<UserPreferencesCubit>().state.sessionPeriod;
   }
 
   @override
   Widget build(BuildContext context) {
     return BottomSheetWrapper(
       contents: [
-        BottomSheetTitleTile(title: 'Sessions filter', iconPath: SvgPaths.filter),
+        BottomSheetTitleTile(
+          title: 'Sessions filter',
+          iconPath: SvgPaths.filter,
+        ),
         const SizedBox(height: 16),
         DurationFilterBottomSheetSection(
           selected: _pending,
@@ -51,7 +54,7 @@ class _SessionsFilterBottomSheetState extends State<SessionsFilterBottomSheet> {
               child: PrimaryButton(
                 title: 'Apply',
                 onPressed: () {
-                  context.read<SessionPeriodCubit>().select(_pending);
+                  context.read<UserPreferencesCubit>().setSessionPeriod(_pending);
                   context.pop();
                 },
               ),
