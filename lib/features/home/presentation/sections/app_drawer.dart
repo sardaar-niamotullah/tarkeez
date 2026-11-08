@@ -177,10 +177,10 @@ class AppDrawer extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Version: 1.0.0',
+                    'v1.0.0',
                     style: TextUtils.paragraphSmallBold(
                       context,
-                      color: scheme.onTertiary.withValues(alpha: .25),
+                      color: scheme.onTertiary.withValues(alpha: .5),
                     ),
                   ),
                 ],
