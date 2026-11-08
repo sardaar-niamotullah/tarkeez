@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
-import 'package:tarkeez/core/extensions/period_range_extension.dart';
-import 'package:tarkeez/core/shared_files/cubits/report_period_cubit.dart';
+import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
@@ -12,6 +11,7 @@ import 'package:tarkeez/features/report/presentation/sections/widgets/chart_y_ax
 import 'package:tarkeez/features/report/presentation/sections/widgets/time_visualizer_bar.dart';
 import 'package:tarkeez/features/report/presentation/sections/widgets/time_visualizer_bar_label.dart';
 import 'package:tarkeez/features/report/presentation/sections/widgets/time_visualizer_horizontal_line.dart';
+import 'package:tarkeez/core/extensions/period_range_extension.dart';
 
 class ReportBarChart extends StatelessWidget {
   const new({super.key});
@@ -19,7 +19,9 @@ class ReportBarChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final periodRange = context.watch<ReportPeriodCubit>().state;
+    final periodRange = context.select(
+      (UserPreferencesCubit c) => c.state.reportPeriod,
+    );
     final granularity = periodRange.granularity;
 
     return BlocBuilder<DailyRollupBloc, DailyRollupState>(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/shared_files/buttons/custom_dropdown_button.dart';
-import 'package:tarkeez/core/shared_files/cubits/report_period_cubit.dart';
+import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/core/shared_files/enums/chart_type.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
@@ -23,7 +23,9 @@ class _TimelineSectionState extends State<TimelineSection> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final periodRange = context.watch<ReportPeriodCubit>().state;
+    final periodRange = context.select(
+      (UserPreferencesCubit c) => c.state.reportPeriod,
+    );
     return Column(
       crossAxisAlignment: .start,
       children: [

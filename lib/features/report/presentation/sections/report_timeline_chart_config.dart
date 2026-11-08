@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/constants/widget_measurement_consts.dart';
 import 'package:tarkeez/core/extensions/period_range_extension.dart';
-import 'package:tarkeez/core/shared_files/cubits/report_period_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/features/daily_rollups/data/models/timeline_model.dart';
 
@@ -88,7 +87,9 @@ class ReportTimelineChartConfig {
     required List<TimelineModel> entries,
     required double availableWidth,
   }) {
-    final granularity = context.watch<ReportPeriodCubit>().state.granularity;
+    final granularity = context.select(
+      (UserPreferencesCubit c) => c.state.reportPeriod.granularity,
+    );
 
     final dailyWidth = availableWidth / (context.lg ? 15 : 7);
     final monthlyWidth = availableWidth / (context.lg ? 12 : 5);
