@@ -5,7 +5,7 @@ import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
 
 /// One row per account on this device. Local only, never synced.
 /// Enums are stored as text (the enum name).
-class UserSettings extends Table {
+class UserPreferences extends Table {
   TextColumn get userId => text().references(
     Users,
     #id,

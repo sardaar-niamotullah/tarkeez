@@ -4,20 +4,20 @@ import 'package:flutter/material.dart' show ThemeMode;
 import 'package:tarkeez/core/database/daos/daily_rollups_dao.dart';
 import 'package:tarkeez/core/database/daos/projects_dao.dart';
 import 'package:tarkeez/core/database/daos/sessions_dao.dart';
+import 'package:tarkeez/core/database/daos/user_preferences_dao.dart';
 import 'package:tarkeez/core/database/daos/users_dao.dart';
 import 'package:tarkeez/core/database/daos/pending_changes_dao.dart';
 import 'package:tarkeez/core/database/daos/project_rollups_dao.dart';
 import 'package:tarkeez/core/database/daos/pull_checkpoints_dao.dart';
-import 'package:tarkeez/core/database/daos/user_settings_dao.dart';
 import 'package:tarkeez/core/database/migrations/app_migrations.dart';
 import 'package:tarkeez/core/database/tables/daily_rollups.dart';
 import 'package:tarkeez/core/database/tables/projects.dart';
 import 'package:tarkeez/core/database/tables/sessions.dart';
+import 'package:tarkeez/core/database/tables/user_preferences.dart';
 import 'package:tarkeez/core/database/tables/users.dart';
 import 'package:tarkeez/core/database/tables/pending_changes.dart';
 import 'package:tarkeez/core/database/tables/project_rollups.dart';
 import 'package:tarkeez/core/database/tables/pull_checkpoints.dart';
-import 'package:tarkeez/core/database/tables/user_settings.dart';
 import 'package:tarkeez/core/database/triggers/rollup_triggers.dart';
 import 'package:tarkeez/core/shared_files/enums/sync_entity.dart';
 import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
@@ -37,7 +37,7 @@ part 'local_database.g.dart';
     ProjectRollups,
     PendingChanges,
     PullCheckpoints,
-    UserSettings,
+    UserPreferences,
   ],
   daos: [
     UsersDao,
@@ -47,7 +47,7 @@ part 'local_database.g.dart';
     ProjectRollupsDao,
     PendingChangesDao,
     PullCheckpointsDao,
-    UserSettingsDao,
+    UserPreferencesDao,
   ],
 )
 class LocalDatabase extends _$LocalDatabase {
@@ -58,7 +58,7 @@ class LocalDatabase extends _$LocalDatabase {
   String get currentUserId => _currentUser.id;
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => buildMigrationStrategy(this);

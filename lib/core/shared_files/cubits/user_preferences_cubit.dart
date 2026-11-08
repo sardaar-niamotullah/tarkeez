@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter/material.dart' show ThemeMode;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/database/local_database.dart';
@@ -8,8 +9,8 @@ import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
 const _defaultPomodoroMinutes = 25;
 
 /// All settings of the active account. The defaults are what a new account
-/// starts with (keep them in step with `UserSettingsDao`).
-class UserSettingsState extends Equatable {
+/// starts with (keep them in step with `UserPreferencesDao`).
+class UserPreferencesState extends Equatable {
   const new({
     this.themeMode = ThemeMode.system,
     this.themeColor = AppThemeColor.green,
@@ -34,10 +35,10 @@ class UserSettingsState extends Equatable {
   bool get isDark => themeMode == ThemeMode.dark;
   bool get isPomodoro => trackingMode == TrackingMode.pomodoro;
 
-  factory UserSettingsState.fromRow(
-    UserSetting row, {
+  factory UserPreferencesState.fromRow(
+    UserPreference row, {
     int pomodoroMinutes = _defaultPomodoroMinutes,
-  }) => UserSettingsState(
+  }) => UserPreferencesState(
     themeMode: row.themeMode,
     themeColor: row.themeColor,
     trackingMode: row.trackingMode,
@@ -47,7 +48,7 @@ class UserSettingsState extends Equatable {
     leaderboardPeriod: row.leaderboardPeriod,
   );
 
-  UserSettingsState copyWith({
+  UserPreferencesState copyWith({
     ThemeMode? themeMode,
     AppThemeColor? themeColor,
     TrackingMode? trackingMode,
@@ -55,7 +56,7 @@ class UserSettingsState extends Equatable {
     PeriodRange? reportPeriod,
     PeriodRange? sessionPeriod,
     PeriodRange? leaderboardPeriod,
-  }) => UserSettingsState(
+  }) => UserPreferencesState(
     themeMode: themeMode ?? this.themeMode,
     themeColor: themeColor ?? this.themeColor,
     trackingMode: trackingMode ?? this.trackingMode,
@@ -77,18 +78,23 @@ class UserSettingsState extends Equatable {
   ];
 }
 
-class UserSettingsCubit extends Cubit<UserSettingsState> {
-  new({required UserSettingsState initialState}) : super(initialState);
+class UserPreferencesCubit extends Cubit<UserPreferencesState> {
+  new() : super(const UserPreferencesState());
 
-  final _dao = getIt<LocalDatabase>().userSettingsDao;
+  final _dao = getIt<LocalDatabase>().userPreferencesDao;
 
-  /// Loads the active account's settings (after sign-in or an account switch).
+  /// Loads the active account's settings: at startup, after sign-in and after
+  /// an account switch. If it fails, the current values stay.
   Future<void> load() async {
-    final row = await _dao.getSettings();
-    if (isClosed) return;
-    emit(
-      UserSettingsState.fromRow(row, pomodoroMinutes: state.pomodoroMinutes),
-    );
+    try {
+      final row = await _dao.getPreferences();
+      if (isClosed) return;
+      emit(
+        UserPreferencesState.fromRow(row, pomodoroMinutes: state.pomodoroMinutes),
+      );
+    } catch (e) {
+      debugPrint('Could not load the saved settings: $e');
+    }
   }
 
   // THEME

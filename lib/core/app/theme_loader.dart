@@ -15,9 +15,9 @@ Future<ThemeState> loadInitialTheme() async {
   if (Supabase.instance.client.auth.currentSession == null) return fallback;
 
   try {
-    final settings = await getIt<LocalDatabase>().userSettingsDao
-        .getSettings();
-    return ThemeState(mode: settings.themeMode, color: settings.themeColor);
+    final preferences = await getIt<LocalDatabase>().userPreferencesDao
+        .getPreferences();
+    return ThemeState(mode: preferences.themeMode, color: preferences.themeColor);
   } catch (e) {
     debugPrint('Could not load the saved theme: $e');
     return fallback; // a cosmetic setting must never block startup

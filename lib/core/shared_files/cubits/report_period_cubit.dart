@@ -6,10 +6,10 @@ import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
 class ReportPeriodCubit extends Cubit<PeriodRange> {
   new() : super(PeriodRange.last7Days);
 
-  final _dao = getIt<LocalDatabase>().userSettingsDao;
+  final _dao = getIt<LocalDatabase>().userPreferencesDao;
 
   Future<void> load() async {
-    final settings = await _dao.getSettings();
+    final settings = await _dao.getPreferences();
     if (isClosed) return;
     emit(settings.reportPeriod);
   }

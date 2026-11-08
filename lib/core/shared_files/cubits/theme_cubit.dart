@@ -20,13 +20,13 @@ class ThemeState {
 class ThemeCubit extends Cubit<ThemeState> {
   new({required ThemeState initialState}) : super(initialState);
 
-  final _dao = getIt<LocalDatabase>().userSettingsDao;
+  final _dao = getIt<LocalDatabase>().userPreferencesDao;
 
   bool get isDark => state.mode == ThemeMode.dark;
 
   /// Loads the active account's saved theme (after sign-in or an account switch).
   Future<void> load() async {
-    final settings = await _dao.getSettings();
+    final settings = await _dao.getPreferences();
     if (isClosed) return;
     emit(ThemeState(mode: settings.themeMode, color: settings.themeColor));
   }

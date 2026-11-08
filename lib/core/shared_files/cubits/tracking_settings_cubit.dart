@@ -19,11 +19,11 @@ class TrackingSettings extends Equatable {
 class TrackingSettingsCubit extends Cubit<TrackingSettings> {
   new() : super(const TrackingSettings());
 
-  final _dao = getIt<LocalDatabase>().userSettingsDao;
+  final _dao = getIt<LocalDatabase>().userPreferencesDao;
 
   /// Loads the active account's tracking mode (after sign-in or an account switch).
   Future<void> load() async {
-    final settings = await _dao.getSettings();
+    final settings = await _dao.getPreferences();
     if (isClosed) return;
     emit(
       TrackingSettings(

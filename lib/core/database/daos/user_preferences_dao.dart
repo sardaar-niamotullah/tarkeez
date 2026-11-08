@@ -1,15 +1,15 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart' show ThemeMode;
 import 'package:tarkeez/core/database/local_database.dart';
-import 'package:tarkeez/core/database/tables/user_settings.dart';
+import 'package:tarkeez/core/database/tables/user_preferences.dart';
 import 'package:tarkeez/core/shared_files/enums/user_settings_enums.dart';
 
-part 'user_settings_dao.g.dart';
+part 'user_preferences_dao.g.dart';
 
-@DriftAccessor(tables: [UserSettings])
-class UserSettingsDao extends DatabaseAccessor<LocalDatabase>
-    with _$UserSettingsDaoMixin {
-  UserSettingsDao(super.db);
+@DriftAccessor(tables: [UserPreferences])
+class UserPreferencesDao extends DatabaseAccessor<LocalDatabase>
+    with _$UserPreferencesDaoMixin {
+  UserPreferencesDao(super.db);
 
   String get _uid => attachedDatabase.currentUserId;
 
@@ -17,12 +17,12 @@ class UserSettingsDao extends DatabaseAccessor<LocalDatabase>
   // READ
   //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 
-  /// The active account's settings. The row is created with the default
+  /// The active account's preferences. The row is created with the default
   /// values the first time it is needed.
-  Future<UserSetting> getSettings() async {
+  Future<UserPreference> getPreferences() async {
     await _ensureRow();
     return (select(
-      userSettings,
+      userPreferences,
     )..where((t) => t.userId.equals(_uid))).getSingle();
   }
 
@@ -30,34 +30,34 @@ class UserSettingsDao extends DatabaseAccessor<LocalDatabase>
   // WRITE (each setter changes one column)
   //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   Future<void> setTrackingMode(TrackingMode value) =>
-      _save(UserSettingsCompanion(trackingMode: Value(value)));
+      _save(UserPreferencesCompanion(trackingMode: Value(value)));
 
   Future<void> setThemeMode(ThemeMode value) =>
-      _save(UserSettingsCompanion(themeMode: Value(value)));
+      _save(UserPreferencesCompanion(themeMode: Value(value)));
 
   Future<void> setThemeColor(AppThemeColor value) =>
-      _save(UserSettingsCompanion(themeColor: Value(value)));
+      _save(UserPreferencesCompanion(themeColor: Value(value)));
 
   Future<void> setReportPeriod(PeriodRange value) =>
-      _save(UserSettingsCompanion(reportPeriod: Value(value)));
+      _save(UserPreferencesCompanion(reportPeriod: Value(value)));
 
   Future<void> setSessionPeriod(PeriodRange value) =>
-      _save(UserSettingsCompanion(sessionPeriod: Value(value)));
+      _save(UserPreferencesCompanion(sessionPeriod: Value(value)));
 
   Future<void> setLeaderboardPeriod(PeriodRange value) =>
-      _save(UserSettingsCompanion(leaderboardPeriod: Value(value)));
+      _save(UserPreferencesCompanion(leaderboardPeriod: Value(value)));
 
-  Future<void> _save(UserSettingsCompanion values) async {
+  Future<void> _save(UserPreferencesCompanion values) async {
     await _ensureRow();
     await (update(
-      userSettings,
+      userPreferences,
     )..where((t) => t.userId.equals(_uid))).write(values);
   }
 
   /// Default values for a new account. Keep them in step with the initial
   /// states of the settings cubits.
-  Future<void> _ensureRow() => into(userSettings).insert(
-    UserSettingsCompanion.insert(
+  Future<void> _ensureRow() => into(userPreferences).insert(
+    UserPreferencesCompanion.insert(
       userId: _uid,
       trackingMode: TrackingMode.linear,
       themeMode: ThemeMode.system,
