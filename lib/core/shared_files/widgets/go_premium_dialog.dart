@@ -8,12 +8,12 @@ import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class GoPremiumDialog extends StatelessWidget {
-  const GoPremiumDialog({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
     return DialogBoxWrapper(
-      title: '',
+      title: 'Premium',
       iconPath: SvgPaths.medal,
       iconColor: AppTheme.fireTone,
       content: Column(

@@ -1,5 +1,7 @@
 enum TrackingMode { linear, pomodoro }
+
 enum AppThemeColor { green, purple, pink, blue, teal }
+
 enum PeriodRange {
   // left column
   today('Today'),
@@ -16,7 +18,7 @@ enum PeriodRange {
   last30Days('Last 30 days'),
   lastMonth('Last month'),
   lastYear('Last year'),
-  allTime('All time');
+  allTime('All time', isLocked: true);
 
   // ignore: unused_element_parameter
   const new(this.label, {this.isLocked = false});
