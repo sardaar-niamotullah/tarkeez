@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/cubits/session_timer_cubit.dart';
-import 'package:tarkeez/core/shared_files/cubits/tracking_settings_cubit.dart';
+import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/date_time_formatter.dart';
@@ -22,9 +22,9 @@ class PomodoroSetDurationButton extends StatelessWidget {
     // The length is fixed while a pomodoro runs.
     final timer = context.read<SessionTimerCubit>();
     final minutes = context.select(
-      (TrackingSettingsCubit c) => c.state.pomodoroMinutes,
+      (UserPreferencesCubit c) => c.state.pomodoroMinutes,
     );
-    final settings = context.read<TrackingSettingsCubit>();
+    final prefs = context.read<UserPreferencesCubit>();
 
     return Row(
       mainAxisAlignment: .center,
@@ -42,7 +42,7 @@ class PomodoroSetDurationButton extends StatelessWidget {
                         // A running or paused pomodoro keeps what it has run:
                         // the time left moves by the difference.
                         timer.adjustLength(Duration(minutes: picked - minutes));
-                        settings.setPomodoroMinutes(picked);
+                        prefs.setPomodoroMinutes(picked);
                       },
                     ),
                   ),

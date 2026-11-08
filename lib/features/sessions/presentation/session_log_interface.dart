@@ -5,6 +5,7 @@ import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/action_button.dart';
 import 'package:tarkeez/core/shared_files/cubits/session_timer_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/tracking_settings_cubit.dart';
+import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/session_log_interface_bottom_clipper.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/select_project_button.dart';
@@ -26,7 +27,7 @@ class SessionLogInterface extends StatelessWidget {
     );
     final project = context.select((SessionTimerCubit c) => c.state.project);
     final isPomodoro = context.select(
-      (TrackingSettingsCubit c) => c.state.isPomodoro,
+      (UserPreferencesCubit c) => c.state.isPomodoro,
     );
 
     return Container(

@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:tarkeez/core/dependency_injection/di.dart';
-import 'package:tarkeez/core/shared_files/cubits/session_period_cubit.dart';
+import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
 import 'package:tarkeez/features/project_rollups/bloc/project_rollup_bloc.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
 
 class AppStartupTasks {
-  const AppStartupTasks();
+  const new();
 
   Future<void> run() async {
     final stopwatch = Stopwatch()..start();
@@ -35,7 +35,7 @@ class AppStartupTasks {
   Future<void> _preloadSessions() async {
     final bloc = getIt<SessionBloc>();
     if (bloc.state is SessionLoaded) return;
-    final period = getIt<SessionPeriodCubit>().state;
+    final period = getIt<UserPreferencesCubit>().state.sessionPeriod;
     bloc.add(FetchSessionsForPeriodRequested(period));
     await bloc.stream.firstWhere((s) => s is! SessionLoading);
   }

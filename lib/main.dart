@@ -6,10 +6,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tarkeez/core/app/app.dart';
 import 'package:tarkeez/core/app/app_bloc_observer.dart';
 import 'package:tarkeez/core/app/app_startup_tasks.dart';
-import 'package:tarkeez/core/app/theme_loader.dart';
 import 'package:tarkeez/core/constants/secret_keys.dart';
 import 'package:tarkeez/core/dependency_injection/di.dart';
 import 'package:tarkeez/core/services/sync_service.dart';
+import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 
 Future<void> main() async {
   final stopwatch = Stopwatch()..start();
@@ -28,7 +28,9 @@ Future<void> main() async {
 
   if (kDebugMode) Bloc.observer = AppBlocObserver();
 
-  final initialTheme = await loadInitialTheme();
+  if (Supabase.instance.client.auth.currentSession != null) {
+    await getIt<UserPreferencesCubit>().load();
+  }
 
   await const AppStartupTasks().run();
 
@@ -38,5 +40,5 @@ Future<void> main() async {
   stopwatch.stop();
   debugPrint('🟨 ⏱️ Total Startup time: ${stopwatch.elapsedMilliseconds}ms');
 
-  runApp(App(initialTheme: initialTheme));
+  runApp(const App());
 }

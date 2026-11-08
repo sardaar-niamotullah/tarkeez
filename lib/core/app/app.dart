@@ -1,29 +1,28 @@
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/app/app_providers.dart';
 import 'package:tarkeez/core/routes/app_router.dart';
-import 'package:tarkeez/core/shared_files/cubits/theme_cubit.dart';
+import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class App extends StatelessWidget {
-  const new({super.key, required this.initialTheme});
-
-  final ThemeState initialTheme;
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
     return AppProviders(
-      initialTheme: initialTheme,
-      child: BlocBuilder<ThemeCubit, ThemeState>(
-        builder: (context, themeState) {
+      child: BlocBuilder<UserPreferencesCubit, UserPreferencesState>(
+        buildWhen: (a, b) =>
+            a.themeMode != b.themeMode || a.themeColor != b.themeColor,
+        builder: (context, preferences) {
           return MaterialApp.router(
             title: 'Tarkeez',
             routerConfig: router,
-            themeMode: themeState.mode,
+            themeMode: preferences.themeMode,
             debugShowCheckedModeBanner: false,
-            theme: AppTheme.lightTheme(themeState.color),
-            darkTheme: AppTheme.darkTheme(themeState.color),
+            theme: AppTheme.lightTheme(preferences.themeColor),
+            darkTheme: AppTheme.darkTheme(preferences.themeColor),
             builder: (context, child) {
               final size = context.screenSize;
               debugPrint('🟦 Screen size (width, height): $size');
