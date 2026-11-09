@@ -5,15 +5,15 @@ import 'package:tarkeez/core/shared_files/widgets/section_overlay_lock_message_b
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 
 class SectionImageLockOverlay extends StatelessWidget {
-  const SectionImageLockOverlay({
+  const new({
     super.key,
     required this.imgLocation,
     required this.height,
     required this.lockedTopicName,
   });
 
-  final String imgLocation, lockedTopicName;
   final double height;
+  final String imgLocation, lockedTopicName;
 
   @override
   Widget build(BuildContext context) {

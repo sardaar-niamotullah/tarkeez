@@ -1,12 +1,15 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/routes/route_names.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class SectionOverlayLockMessageBox extends StatelessWidget {
-  const SectionOverlayLockMessageBox({super.key, required this.title});
+  const new({super.key, required this.title});
 
   final String title;
 
@@ -34,6 +37,8 @@ class SectionOverlayLockMessageBox extends StatelessWidget {
                     context,
                     color: AppTheme.fireTone,
                   ),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () => context.push(RouteNames.subscriptionPage),
                 ),
                 TextSpan(text: 'to unlock \n$title insight'),
               ],
