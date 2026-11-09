@@ -1,6 +1,22 @@
-enum TrackingMode { linear, pomodoro }
+enum TrackingMode {
+  linear(isLocked: false),
+  pomodoro(isLocked: true);
 
-enum AppThemeColor { green, purple, pink, blue, teal }
+  const TrackingMode({this.isLocked = false});
+
+  final bool isLocked;
+}
+
+enum AppThemeColor {
+  green(isLocked: false),
+  purple(isLocked: false),
+  pink(isLocked: false),
+  blue(isLocked: false);
+
+  const AppThemeColor({this.isLocked = false});
+
+  final bool isLocked;
+}
 
 enum PeriodRange {
   // left column

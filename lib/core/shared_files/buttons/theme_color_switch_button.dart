@@ -10,7 +10,7 @@ class ThemeColorSwitchButton extends StatelessWidget {
     this.isActive = false,
     this.isLocked = false,
   });
-  
+
   final Color themeColor;
   final VoidCallback onTap;
   final bool isActive;
@@ -29,16 +29,26 @@ class ThemeColorSwitchButton extends StatelessWidget {
           width: 22,
           decoration: BoxDecoration(color: themeColor, shape: .circle),
           child: Center(
-            child: SvgPicture.asset(
-              height: 12,
-              width: 12,
-              SvgPaths.doneOutline,
-              colorFilter: .mode(
-                Theme.of(context).colorScheme.onTertiary
-                    .withValues(alpha: isActive ? 1 : 0),
-                .srcIn,
-              ),
-            ),
+            child: !isLocked
+                ? SvgPicture.asset(
+                    height: 12,
+                    width: 12,
+                    SvgPaths.doneOutline,
+                    colorFilter: .mode(
+                      Theme.of(context).colorScheme.onTertiary
+                          .withValues(alpha: isActive ? 1 : 0),
+                      .srcIn,
+                    ),
+                  )
+                : SvgPicture.asset(
+                    height: 10,
+                    width: 10,
+                    SvgPaths.lock,
+                    colorFilter: .mode(
+                      Theme.of(context).colorScheme.onTertiary,
+                      .srcIn,
+                    ),
+                  ),
           ),
         ),
       ),

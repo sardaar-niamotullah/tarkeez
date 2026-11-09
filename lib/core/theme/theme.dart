@@ -11,8 +11,6 @@ class AppTheme {
   static const Color pinkBright = Colors.pinkAccent;
   static const Color blue = Colors.blue;
   static const Color blueBright = Colors.lightBlueAccent;
-  static const Color teal = Colors.teal;
-  static const Color tealBright = Colors.tealAccent;
   static const Color red = Colors.red;
   static const Color redBright = Colors.redAccent;
 
@@ -51,7 +49,6 @@ class AppTheme {
       AppThemeColor.purple => (purple, purpleBright),
       AppThemeColor.pink => (pink, pinkBright),
       AppThemeColor.blue => (blue, blueBright),
-      AppThemeColor.teal => (teal, tealBright),
     };
   }
 

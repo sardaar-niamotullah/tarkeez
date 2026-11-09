@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/shared_files/enums/user_preference_enums.dart';
+import 'package:tarkeez/core/shared_files/widgets/go_premium_dialog.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
@@ -63,7 +64,17 @@ class TrackingModeSwitchButton extends StatelessWidget {
                           cursor: SystemMouseCursors.click,
                           child: GestureDetector(
                             behavior: HitTestBehavior.opaque,
-                            onTap: () => onChanged(option),
+                            onTap: () {
+                              if (option.isLocked) {
+                                showDialog<void>(
+                                  context: context,
+                                  builder: (_) => const GoPremiumDialog(),
+                                );
+                                return;
+                              }
+
+                              onChanged(option);
+                            },
                             child: _Label(
                               context: context,
                               text: option.label('Linear'),
