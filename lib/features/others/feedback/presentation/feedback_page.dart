@@ -15,20 +15,66 @@ class FeedbackPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StandAlonePageOuterStructure(
-      title: 'Feedback',
-      actions: [ActionPageIcon(iconPath: SvgPaths.penLine)],
+      title: 'Error report',
+      actions: [ActionPageIcon(iconPath: SvgPaths.bugMagnifer)],
       isLoading: false,
       content: SliverScrollMaxWidthBox(
         slivers: [
           SliverList.list(
             children: [
               const SizedBox(height: 16),
-              feedbackSection(context),
+              errorReportSection(context),
               const SizedBox(height: 16),
               reviewSection(context),
               const SizedBox(height: 24),
             ],
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget errorReportSection(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: .all(ContainerDesignUtils.padding),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: .topLeft,
+          end: .bottomRight,
+          colors: [
+            scheme.error.withValues(alpha: .1),
+            AppTheme.crimsonTab.withValues(alpha: .1),
+          ],
+        ),
+        borderRadius: ContainerDesignUtils.allRadius,
+      ),
+      child: Column(
+        crossAxisAlignment: .start,
+        children: [
+          Text(
+            'Report an issue',
+            style: TextUtils.title1(context, color: scheme.error),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Your feedback matters to us. Whether it\'s a bug you\'ve noticed or an idea for improvement, your valuable feedback can help us understand what\'s working well and what needs to be improved.',
+            style: TextUtils.paragraph(context),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Please use the form below to describe the issue you encountered.',
+            style: TextUtils.paragraph(context),
+          ),
+          const SizedBox(height: 24),
+          PrimaryButton(
+            title: 'Report link',
+            onPressed: () {},
+            iconPath: SvgPaths.document,
+            backgroundColorLeft: AppTheme.red,
+            backgroundColorRight: scheme.error,
+          ),
+          const SizedBox(height: 8),
         ],
       ),
     );
