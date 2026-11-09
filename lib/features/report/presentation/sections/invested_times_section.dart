@@ -25,8 +25,12 @@ class InvestedTimesSection extends StatelessWidget {
             builder: (context, state) {
               return SectionImageLockOverlay(
                 imgLocation: state.isDark
-                    ? ImgPaths.investedTimesLockBackdropsDark
-                    : ImgPaths.investedTimesLockBackdropsLight,
+                    ? context.sm
+                          ? ImgPaths.itLgD
+                          : ImgPaths.itD
+                    : context.sm
+                    ? ImgPaths.itLgL
+                    : ImgPaths.itL,
                 height: 116,
                 lockedTopicName: 'invested times',
               );

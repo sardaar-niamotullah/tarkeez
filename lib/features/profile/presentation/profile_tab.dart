@@ -85,7 +85,7 @@ class ProfileTab extends StatelessWidget {
                                           ),
                                           Expanded(
                                             flex: 5,
-                                            child: Heatmap(isLocked: false),
+                                            child: Heatmap(isLocked: true),
                                           ),
                                         ],
                                       ),
@@ -97,7 +97,7 @@ class ProfileTab extends StatelessWidget {
                                             height:
                                                 ContainerDesignUtils.padding,
                                           ),
-                                          Heatmap(isLocked: false),
+                                          Heatmap(isLocked: true),
                                         ],
                                       ),
                                     SizedBox(height: 16),
@@ -108,6 +108,23 @@ class ProfileTab extends StatelessWidget {
                                       style: TextUtils.title2(context),
                                     ),
                                     const SizedBox(height: 8),
+                                    if (!context.lg)
+                                      Column(
+                                        crossAxisAlignment: .start,
+                                        children: [
+                                          InvestedTimesSection(isLocked: true),
+                                          SizedBox(
+                                            height:
+                                                ContainerDesignUtils.padding,
+                                          ),
+                                          SyncButton(),
+                                          SizedBox(
+                                            height: ContainerDesignUtils
+                                                .halfPadding,
+                                          ),
+                                          EraseAllDataButton(isLocked: false),
+                                        ],
+                                      ),
                                     if (context.lg)
                                       Row(
                                         crossAxisAlignment: .start,
@@ -129,23 +146,7 @@ class ProfileTab extends StatelessWidget {
                                           ),
                                         ],
                                       ),
-                                    if (!context.lg)
-                                      Column(
-                                        crossAxisAlignment: .start,
-                                        children: [
-                                          InvestedTimesSection(isLocked: false),
-                                          SizedBox(
-                                            height:
-                                                ContainerDesignUtils.padding,
-                                          ),
-                                          SyncButton(),
-                                          SizedBox(
-                                            height: ContainerDesignUtils
-                                                .halfPadding,
-                                          ),
-                                          EraseAllDataButton(isLocked: false),
-                                        ],
-                                      ),
+
                                     SizedBox(height: 80),
                                   ],
                                 ),
