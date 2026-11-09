@@ -27,8 +27,12 @@ class PersonalBestsSection extends StatelessWidget {
             builder: (context, state) {
               return SectionImageLockOverlay(
                 imgLocation: state.isDark
-                    ? ImgPaths.personalBestLockBackdropsDark
-                    : ImgPaths.personalBestLockBackdropsLight,
+                    ? context.md
+                          ? ImgPaths.pbLgDark
+                          : ImgPaths.pbDark
+                    : context.md
+                    ? ImgPaths.pbLgLight
+                    : ImgPaths.pbLight,
                 height: 116,
                 lockedTopicName: 'personal bests',
               );

@@ -101,7 +101,7 @@ class ProfileTab extends StatelessWidget {
                                         ],
                                       ),
                                     SizedBox(height: 16),
-                                    PersonalBestsSection(isLocked: false),
+                                    PersonalBestsSection(isLocked: true),
                                     SizedBox(height: 16),
                                     Text(
                                       'Invested times',
