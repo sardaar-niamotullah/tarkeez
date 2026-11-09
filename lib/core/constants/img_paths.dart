@@ -20,6 +20,10 @@ class ImgPaths {
       'assets/images/locked_backdrops/personal_bests_dark.webp';
   static const String pbL =
       'assets/images/locked_backdrops/personal_bests_light.webp';
+  static const String pbMD=
+      'assets/images/locked_backdrops/personal_bests_md_dark.webp';
+  static const String pbML =
+      'assets/images/locked_backdrops/personal_bests_md_light.webp';
   static const String pbLgD=
       'assets/images/locked_backdrops/personal_bests_lg_dark.webp';
   static const String pbLgL =

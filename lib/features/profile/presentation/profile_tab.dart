@@ -117,7 +117,7 @@ class ProfileTab extends StatelessWidget {
                                             height:
                                                 ContainerDesignUtils.padding,
                                           ),
-                                          SyncButton(),
+                                          const SyncButton(),
                                           SizedBox(
                                             height: ContainerDesignUtils
                                                 .halfPadding,
