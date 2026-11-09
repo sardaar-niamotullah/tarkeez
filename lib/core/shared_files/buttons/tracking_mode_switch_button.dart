@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/enums/user_preference_enums.dart';
 import 'package:tarkeez/core/shared_files/widgets/go_premium_dialog.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
@@ -25,12 +27,12 @@ class TrackingModeSwitchButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final count = _options.length;
     final scheme = Theme.of(context).colorScheme;
     final selectedIndex = _options.indexOf(value);
-    final count = _options.length;
 
     return SizedBox(
-      width: 180,
+      width: 208,
       child: Container(
         decoration: BoxDecoration(
           color: scheme.onSurface,
@@ -79,6 +81,7 @@ class TrackingModeSwitchButton extends StatelessWidget {
                               context: context,
                               text: option.label('Linear'),
                               active: option == value,
+                              isLocked: option.isLocked,
                               activeColor: scheme.primary,
                               inactiveColor: scheme.onTertiary.withValues(
                                 alpha: .9,
@@ -105,10 +108,11 @@ class _Label extends StatelessWidget {
     required this.activeColor,
     required this.inactiveColor,
     required this.context,
+    required this.isLocked,
   });
 
   final String text;
-  final bool active;
+  final bool active, isLocked;
   final Color activeColor;
   final Color inactiveColor;
   final BuildContext context;
@@ -122,7 +126,27 @@ class _Label extends StatelessWidget {
       child: AnimatedDefaultTextStyle(
         duration: const Duration(milliseconds: 150),
         style: TextUtils.paragraphSmallBold(context, color: targetColor),
-        child: Text(text, textAlign: .center, overflow: .ellipsis),
+        child: Row(
+          mainAxisAlignment: .center,
+          children: [
+            Text(text, textAlign: .center, overflow: .ellipsis),
+            if (isLocked) ...[
+              const SizedBox(width: 6),
+              Transform.translate(
+                offset: Offset(0, -1),
+                child: SvgPicture.asset(
+                  height: 10,
+                  width: 10,
+                  SvgPaths.lock,
+                  colorFilter: .mode(
+                    Theme.of(context).colorScheme.onTertiary,
+                    .srcIn,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }

@@ -1,5 +1,15 @@
+enum ChartType {
+  bar('Bar chart'),
+  line('Line chart', isLocked: true);
+
+  const new(this.label, {this.isLocked = false});
+
+  final String label;
+  final bool isLocked;
+}
+
 enum TrackingMode {
-  linear(isLocked: false),
+  linear,
   pomodoro(isLocked: true);
 
   const TrackingMode({this.isLocked = false});
@@ -8,10 +18,10 @@ enum TrackingMode {
 }
 
 enum AppThemeColor {
-  green(isLocked: false),
-  purple(isLocked: false),
-  pink(isLocked: false),
-  blue(isLocked: false);
+  green,
+  purple(isLocked: true),
+  pink(isLocked: true),
+  blue(isLocked: true);
 
   const AppThemeColor({this.isLocked = false});
 

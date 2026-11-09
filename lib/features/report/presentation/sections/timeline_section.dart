@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/shared_files/buttons/custom_dropdown_button.dart';
 import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
-import 'package:tarkeez/core/shared_files/enums/chart_type.dart';
+import 'package:tarkeez/core/shared_files/enums/user_preference_enums.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
@@ -46,10 +46,11 @@ class _TimelineSectionState extends State<TimelineSection> {
             mainAxisAlignment: .spaceBetween,
             children: [
               CustomDropdownButton<ChartType>(
-                items: ChartType.values,
                 buttonWidth: 130,
+                items: ChartType.values,
                 buttonColor: scheme.surface,
                 initialValue: _selectedChartType,
+                isLocked: (type) => type.isLocked,
                 labelBuilder: (type) => type.label,
                 onChanged: (value) {
                   setState(() => _selectedChartType = value);
