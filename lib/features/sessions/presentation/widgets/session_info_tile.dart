@@ -17,6 +17,7 @@ import 'package:tarkeez/features/home/presentation/sections/widgets/session_proj
 
 class SessionInfoTile extends StatelessWidget {
   const new({super.key, required this.session, required this.backgroundColor});
+
   final SessionModel session;
   final Color backgroundColor;
 
@@ -95,14 +96,12 @@ class SessionInfoTile extends StatelessWidget {
                     context.pop();
                   }
                 },
-                builder: (context, state) {
-                  return DeleteDialog(
-                    isLoading: state is SessionLoading,
-                    onDeleteTap: () => context.read<SessionBloc>().add(
-                      DeleteSessionRequested(session),
-                    ),
-                  );
-                },
+                builder: (context, state) => DeleteDialog(
+                  isLoading: state is SessionLoading,
+                  onDeleteTap: () => context.read<SessionBloc>().add(
+                    DeleteSessionRequested(session),
+                  ),
+                ),
               ),
             ),
           ),

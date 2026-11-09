@@ -19,8 +19,7 @@ Future<void> main() async {
 
   await Supabase.initialize(
     url: dotenv.get(SecretKeys.supabaseURL),
-    // ignore: deprecated_member_use
-    anonKey: dotenv.get(SecretKeys.supabaseAnonKey),
+    publishableKey: dotenv.get(SecretKeys.supabasePublishableKey),
     authOptions: const FlutterAuthClientOptions(authFlowType: .pkce),
   );
 
