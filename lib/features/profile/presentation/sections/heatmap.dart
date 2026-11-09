@@ -43,8 +43,8 @@ class Heatmap extends StatelessWidget {
               builder: (context, state) {
                 return SectionImageLockOverlay(
                   imgLocation: state.isDark
-                      ? ImgPaths.heatmapLockedBackdropsDark
-                      : ImgPaths.heatmapLockedBackdropsLight,
+                      ? ImgPaths.heatmapLgDark
+                      : ImgPaths.heatmapLgLight,
                   height: 110,
                   lockedTopicName: 'heatmap',
                 );

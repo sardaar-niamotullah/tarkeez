@@ -10,7 +10,7 @@ class HeatmapPoint extends StatelessWidget {
     this.date,
     this.paintHeatmap = true,
   });
-  
+
   final int seconds;
   final DateTime? date;
   final bool paintHeatmap;

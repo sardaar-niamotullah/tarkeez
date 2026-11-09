@@ -4,10 +4,14 @@ class ImgPaths {
       'assets/images/freemium_profile_cover.png';
 
   // Locked backdrops
-  static const String heatmapLockedBackdropsDark =
+  static const String heatmapDark =
       'assets/images/locked_backdrops/heatmap_dark.png';
-  static const String heatmapLockedBackdropsLight =
+  static const String heatmapLight =
       'assets/images/locked_backdrops/heatmap_light.png';
+  static const String heatmapLgDark =
+      'assets/images/locked_backdrops/heatmap_lg_dark.png';
+  static const String heatmapLgLight =
+      'assets/images/locked_backdrops/heatmap_lg_light.png';
   static const String personalBestLockBackdropsDark =
       'assets/images/locked_backdrops/personal_bests_dark.png';
   static const String personalBestLockBackdropsLight =

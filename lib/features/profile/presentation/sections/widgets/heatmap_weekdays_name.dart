@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class HeatmapWeekdaysName extends StatelessWidget {
-  const HeatmapWeekdaysName({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,11 +12,11 @@ class HeatmapWeekdaysName extends StatelessWidget {
         crossAxisAlignment: .start,
         children: [
           buildWeekdaysNname(context, ''),
-          buildWeekdaysNname(context, 'Mon'),
+          buildWeekdaysNname(context, 'Tue'),
           buildWeekdaysNname(context, ''),
-          buildWeekdaysNname(context, 'Wed'),
+          buildWeekdaysNname(context, 'Thu'),
           buildWeekdaysNname(context, ''),
-          buildWeekdaysNname(context, 'Fri'),
+          buildWeekdaysNname(context, 'Sat'),
           buildWeekdaysNname(context, ''),
         ],
       ),
