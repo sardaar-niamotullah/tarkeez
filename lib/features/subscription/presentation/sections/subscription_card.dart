@@ -124,10 +124,10 @@ class SubscriptionCard extends StatelessWidget {
                             Row(
                               children: [
                                 Text(
-                                  'Expires in: ',
+                                  'Expires in ',
                                   style: TextUtils.paragraphSmall(
                                     context,
-                                    color: AppTheme.white,
+                                    color: AppTheme.white.withValues(alpha: .7),
                                   ),
                                 ),
                                 DurationTextUtils(

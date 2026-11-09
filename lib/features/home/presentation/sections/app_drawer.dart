@@ -95,8 +95,8 @@ class AppDrawer extends StatelessWidget {
                         onTap: () => context.push(RouteNames.userManualPage),
                       ),
                       AppDrawerItem(
-                        title: 'Feedback',
-                        iconPath: SvgPaths.penLine,
+                        title: 'Error report',
+                        iconPath: SvgPaths.bugMagnifer,
                         onTap: () => context.push(RouteNames.feedbackPage),
                       ),
                       AppDrawerItem(

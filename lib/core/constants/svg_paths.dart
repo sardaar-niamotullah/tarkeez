@@ -10,6 +10,7 @@ class SvgPaths {
   static const String arrowDown = 'assets/svgs/arrow_down.svg';
   static const String arrowNext = 'assets/svgs/arrow_next.svg';
   static const String bag = 'assets/svgs/bag.svg';
+  static const String bugMagnifer = 'assets/svgs/magnifer_bug.svg';
   static const String bagBold = 'assets/svgs/bag_bold.svg';
   static const String bell = 'assets/svgs/bell.svg';
   static const String bellBold = 'assets/svgs/bell_bold.svg';
