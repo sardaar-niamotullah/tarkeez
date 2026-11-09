@@ -10,13 +10,14 @@ class DurationTextUtils extends StatelessWidget {
     this.fontColorPrimary,
     this.fontColorSecondary,
     this.showOnlyHour = false,
+    this.showDayHour = false,
     this.middleGap = 3,
   });
-  
+
   final int durationInSeconds;
   final double? fontSizePrimary, fontSizeSeconday;
   final Color? fontColorPrimary, fontColorSecondary;
-  final bool showOnlyHour;
+  final bool showOnlyHour, showDayHour;
   final double middleGap;
 
   @override
@@ -36,8 +37,14 @@ class DurationTextUtils extends StatelessWidget {
       return Text(hourText, style: primaryStyle);
     }
 
-    final hours = durationInMinutes ~/ 60;
-    final mins = durationInMinutes % 60;
+    final totalHours = durationInMinutes ~/ 60;
+    final useDays = showDayHour && totalHours >= 24;
+
+    // Two units are shown: d + h when useDays, otherwise h + m.
+    final first = useDays ? totalHours ~/ 24 : totalHours;
+    final second = useDays ? totalHours % 24 : durationInMinutes % 60;
+    final firstUnit = useDays ? 'd' : 'h';
+    final secondUnit = useDays ? 'h' : 'm';
 
     final secondaryStyle = TextUtils.paragraphSmallBold(
       context,
@@ -45,15 +52,18 @@ class DurationTextUtils extends StatelessWidget {
     ).copyWith(fontSize: fontSizeSeconday, color: fontColorSecondary);
 
     final children = <Widget>[];
-    if (hours > 0) {
-      children.add(Text('${hours}h', style: primaryStyle));
+    if (first > 0) {
+      children.add(Text('$first$firstUnit', style: primaryStyle));
     }
-    if (hours > 0 && mins > 0) {
+    if (first > 0 && second > 0) {
       children.add(SizedBox(width: middleGap));
     }
-    if (mins > 0 || hours == 0) {
+    if (second > 0 || first == 0) {
       children.add(
-        Text('${mins}m', style: hours > 0 ? secondaryStyle : primaryStyle),
+        Text(
+          '$second$secondUnit',
+          style: first > 0 ? secondaryStyle : primaryStyle,
+        ),
       );
     }
 

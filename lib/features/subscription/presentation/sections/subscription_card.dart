@@ -6,12 +6,13 @@ import 'package:flutter_svg/svg.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
+import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class SubscriptionCard extends StatelessWidget {
-  const new({super.key, this.needToPopAppDrawer = true});
-  
-  final bool needToPopAppDrawer;
+  const new({super.key, required this.isPremiumMember});
+
+  final bool isPremiumMember;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,7 @@ class SubscriptionCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: () {
-          if (needToPopAppDrawer) context.pop();
+          context.pop();
           context.push(RouteNames.subscriptionPage);
         },
         mouseCursor: SystemMouseCursors.click,
@@ -98,18 +99,50 @@ class SubscriptionCard extends StatelessWidget {
                 ),
 
                 // ── Content ──────────────────────────────────────
-                ListTile(
-                  dense: true,
-                  leading: SvgPicture.asset(
-                    SvgPaths.medalBold,
-                    colorFilter: .mode(AppTheme.white, .srcIn),
-                  ),
-                  title: Text(
-                    'Go premium',
-                    style: TextUtils.paragraphBold(
-                      context,
-                      color: AppTheme.white,
-                    ),
+                Container(
+                  padding: .all(12),
+                  child: Row(
+                    children: [
+                      SvgPicture.asset(
+                        SvgPaths.medalBold,
+                        colorFilter: .mode(AppTheme.white, .srcIn),
+                      ),
+                      const SizedBox(width: 6),
+                      Column(
+                        crossAxisAlignment: .start,
+                        children: [
+                          Text(
+                            isPremiumMember
+                                ? 'Premium membership'
+                                : ' Go premium',
+                            style: TextUtils.paragraphBold(
+                              context,
+                              color: AppTheme.white,
+                            ),
+                          ),
+                          if (isPremiumMember)
+                            Row(
+                              children: [
+                                Text(
+                                  'Expires in: ',
+                                  style: TextUtils.paragraphSmall(
+                                    context,
+                                    color: AppTheme.white,
+                                  ),
+                                ),
+                                DurationTextUtils(
+                                  showDayHour: true,
+                                  durationInSeconds: 123456,
+                                  fontSizePrimary: 12,
+                                  fontSizeSeconday: 10,
+                                  fontColorPrimary: AppTheme.white,
+                                  fontColorSecondary: AppTheme.white,
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ],
