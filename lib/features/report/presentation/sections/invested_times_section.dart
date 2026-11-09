@@ -31,7 +31,7 @@ class InvestedTimesSection extends StatelessWidget {
                     : context.sm
                     ? ImgPaths.itLgL
                     : ImgPaths.itL,
-                height: 116,
+                height: context.md ? 124 : 116,
                 lockedTopicName: 'invested times',
               );
             },
