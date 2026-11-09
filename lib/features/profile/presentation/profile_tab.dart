@@ -42,7 +42,7 @@ class ProfileTab extends StatelessWidget {
                       Transform.translate(
                         offset: Offset(0, context.md ? 5 : 0),
                         child: AvatarCircle(
-                          radius: 18,
+                          radius: context.md ? 18 : 16,
                           isEditable: false,
                           name: user?.fullName,
                           imageUrl: user?.avatarUrl,
@@ -83,7 +83,7 @@ class ProfileTab extends StatelessWidget {
                                             height:
                                                 ContainerDesignUtils.padding,
                                           ),
-                                          Heatmap(isLocked: true),
+                                          Heatmap(isLocked: false),
                                         ],
                                       ),
                                     if (context.sm)
@@ -96,13 +96,13 @@ class ProfileTab extends StatelessWidget {
                                           ),
                                           Expanded(
                                             flex: 5,
-                                            child: Heatmap(isLocked: true),
+                                            child: Heatmap(isLocked: false),
                                           ),
                                         ],
                                       ),
 
                                     SizedBox(height: 16),
-                                    PersonalBestsSection(isLocked: true),
+                                    PersonalBestsSection(isLocked: false),
                                     SizedBox(height: 16),
                                     Text(
                                       'Invested times',
@@ -113,7 +113,7 @@ class ProfileTab extends StatelessWidget {
                                       Column(
                                         crossAxisAlignment: .start,
                                         children: [
-                                          InvestedTimesSection(isLocked: true),
+                                          InvestedTimesSection(isLocked: false),
                                           SizedBox(
                                             height:
                                                 ContainerDesignUtils.padding,
@@ -132,7 +132,7 @@ class ProfileTab extends StatelessWidget {
                                         children: [
                                           Expanded(
                                             child: InvestedTimesSection(
-                                              isLocked: true,
+                                              isLocked: false,
                                             ),
                                           ),
                                           SizedBox(

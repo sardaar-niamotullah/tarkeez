@@ -17,9 +17,9 @@ class HeatmapPoint extends StatelessWidget {
 
   double getOpacity(num seconds) {
     final s = seconds.toDouble();
-    const thirtyMin = 30 * 60 + 6000;
-    const fiveHours = 5 * 60 * 60 + 6000;
-    const tenHours = 10 * 60 * 60 + 6000;
+    const thirtyMin = 30 * 60;
+    const fiveHours = 5 * 60 * 60;
+    const tenHours = 10 * 60 * 60;
 
     if (s < thirtyMin) {
       return 0.0; // 0 – 29 min
