@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:tarkeez/core/shared_files/buttons/action_button.dart';
 import 'package:tarkeez/core/shared_files/buttons/theme_switch_button.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:flutter/material.dart';
@@ -11,9 +10,9 @@ import 'package:tarkeez/core/routes/route_names.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/auth/bloc/auth_bloc.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/app_drawer_item.dart';
+import 'package:tarkeez/features/home/presentation/sections/widgets/social_links.dart';
 import 'package:tarkeez/features/settings/presentation/settings_bottom_sheet.dart';
 import 'package:tarkeez/features/subscription/presentation/sections/subscription_card.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AppDrawer extends StatelessWidget {
   const new({super.key});
@@ -114,49 +113,7 @@ class AppDrawer extends StatelessWidget {
                 onTap: () => context.read<AuthBloc>().add(SignOutRequested()),
               ),
               const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: .spaceBetween,
-                children: [
-                  ActionButton(
-                    iconPath: SvgPaths.instagram,
-                    onTap: () async {
-                      await launchUrl(
-                        Uri.parse('https://www.instagram.com/tarkeez247/'),
-                        mode: .externalApplication,
-                      );
-                    },
-                  ),
-                  ActionButton(
-                    iconPath: SvgPaths.x,
-                    onTap: () async {
-                      await launchUrl(
-                        Uri.parse('https://x.com/tarkeez247'),
-                        mode: .externalApplication,
-                      );
-                    },
-                  ),
-                  ActionButton(
-                    iconPath: SvgPaths.linkedin,
-                    onTap: () async {
-                      await launchUrl(
-                        Uri.parse('https://www.linkedin.com/company/tarkeeez/'),
-                        mode: .externalApplication,
-                      );
-                    },
-                  ),
-                  ActionButton(
-                    iconPath: SvgPaths.facebook,
-                    onTap: () async {
-                      await launchUrl(
-                        Uri.parse(
-                          'https://www.facebook.com/profile.php?id=61596176576164',
-                        ),
-                        mode: .externalApplication,
-                      );
-                    },
-                  ),
-                ],
-              ),
+              const SocialLinks(),
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: .spaceBetween,
