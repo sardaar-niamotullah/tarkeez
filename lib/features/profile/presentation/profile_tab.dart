@@ -85,7 +85,7 @@ class ProfileTab extends StatelessWidget {
                                           ),
                                           Expanded(
                                             flex: 5,
-                                            child: Heatmap(isLocked: true),
+                                            child: Heatmap(isLocked: false),
                                           ),
                                         ],
                                       ),
@@ -97,7 +97,7 @@ class ProfileTab extends StatelessWidget {
                                             height:
                                                 ContainerDesignUtils.padding,
                                           ),
-                                          Heatmap(isLocked: true),
+                                          Heatmap(isLocked: false),
                                         ],
                                       ),
                                     SizedBox(height: 16),

@@ -104,35 +104,50 @@ class Heatmap extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 2),
-                              Row(
-                                children: List.generate(
-                                  HeatmapStats.weeksToShow,
-                                  (columnIndex) {
-                                    final columnStart =
-                                        grid[columnIndex *
-                                                HeatmapStats.daysPerWeek]
-                                            .date;
-                                    final label =
-                                        HeatmapStats.monthLabelForColumn(
-                                          columnStart,
-                                        );
-                                    return SizedBox(
-                                      width: 12,
-                                      child: Center(
-                                        child: Text(
-                                          label ?? '',
-                                          maxLines: 1,
-                                          softWrap: false,
-                                          overflow: TextOverflow.visible,
-                                          style: TextUtils.paragraphSmall(
-                                            context,
-                                          ).copyWith(fontSize: 10),
-                                        ),
+                              SizedBox(
+                                width: HeatmapStats.weeksToShow * 12.0,
+                                child: Row(
+                                  mainAxisAlignment: .spaceBetween,
+                                  children: [
+                                    for (final month
+                                        in HeatmapStats.monthLabels())
+                                      Text(
+                                        month,
+                                        style: TextUtils.paragraphSmall(context)
+                                            .copyWith(fontSize: 10),
                                       ),
-                                    );
-                                  },
+                                  ],
                                 ),
                               ),
+                              // Row(
+                              //   children: List.generate(
+                              //     HeatmapStats.weeksToShow,
+                              //     (columnIndex) {
+                              //       final columnStart =
+                              //           grid[columnIndex *
+                              //                   HeatmapStats.daysPerWeek]
+                              //               .date;
+                              //       final label =
+                              //           HeatmapStats.monthLabelForColumn(
+                              //             columnStart,
+                              //           );
+                              //       return SizedBox(
+                              //         width: 12,
+                              //         child: Center(
+                              //           child: Text(
+                              //             label ?? '',
+                              //             maxLines: 1,
+                              //             softWrap: false,
+                              //             overflow: TextOverflow.visible,
+                              //             style: TextUtils.paragraphSmall(
+                              //               context,
+                              //             ).copyWith(fontSize: 10),
+                              //           ),
+                              //         ),
+                              //       );
+                              //     },
+                              //   ),
+                              // ),
                             ],
                           ),
                         ),

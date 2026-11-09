@@ -4,7 +4,7 @@ import 'package:tarkeez/features/daily_rollups/data/models/heatmap_day.dart';
 class HeatmapStats {
   HeatmapStats._();
 
-  static const int weeksToShow = 53;
+  static const int weeksToShow = 52;
   static const int daysPerWeek = 7;
   static const int totalDays = weeksToShow * daysPerWeek;
 
@@ -32,21 +32,19 @@ class HeatmapStats {
     });
   }
 
-  /// Month label for the column starting at columnStart, or null when
-  /// this column isn't the start of a month (only the week containing a
-  /// month's first 7 days gets a label).
-  static String? monthLabelForColumn(DateTime columnStart) {
-    if (columnStart.day > 7) return null;
-    return RollupDateUtils.monthNames[columnStart.month - 1];
+  /// The last 12 months, oldest first, ending with the current month.
+  /// In November: Dec, Jan, ... Nov.
+  static List<String> monthLabels({DateTime? now}) {
+    final month = (now ?? DateTime.now()).month;
+    return [
+      for (var i = 0; i < 12; i++) RollupDateUtils.monthNames[(month + i) % 12],
+    ];
   }
 
   static DateTime _dateOnly(DateTime date) =>
       DateTime(date.year, date.month, date.day);
 
-  /// Sunday is the first row in the grid.
-  static DateTime _startOfWeek(DateTime date) {
-    const sundayIndex = DateTime.sunday;
-    final diff = (date.weekday + daysPerWeek - sundayIndex) % daysPerWeek;
-    return date.subtract(Duration(days: diff));
-  }
+  /// Monday is the first row in the grid.
+  static DateTime _startOfWeek(DateTime date) =>
+      date.subtract(Duration(days: date.weekday - DateTime.monday));
 }
