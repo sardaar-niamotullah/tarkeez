@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:tarkeez/core/constants/img_paths.dart';
-import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
-import 'package:tarkeez/core/shared_files/widgets/section_image_lock_overlay.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
 import 'package:tarkeez/features/sessions/data/models/dummy_session.dart';
 import 'package:tarkeez/features/sessions/presentation/widgets/session_info_tile.dart';
 
 class SessionsSection extends StatelessWidget {
-  const new({super.key, required this.isLocked});
-  final bool isLocked;
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,78 +23,61 @@ class SessionsSection extends StatelessWidget {
         };
         return SliverMainAxisGroup(
           slivers: [
-            if (isLocked) ...[
-              BlocBuilder<UserPreferencesCubit, UserPreferencesState>(
-                buildWhen: (a, b) => a.isDark != b.isDark,
-                builder: (context, state) {
-                  return SliverToBoxAdapter(
-                    child: SectionImageLockOverlay(
-                      imgLocation: state.isDark
-                          ? ImgPaths.sessionLockBackdropsDark
-                          : ImgPaths.sessionLockBackdropsLight,
-                      height: 124,
-                      lockedTopicName: 'sessions',
-                    ),
+            if (sessions.isNotEmpty)
+              SliverList.builder(
+                itemCount: sessions.length,
+                itemBuilder: (context, index) {
+                  return SessionInfoTile(
+                    session: sessions[index],
+                    backgroundColor: index.isEven
+                        ? scheme.surface
+                        : scheme.onSurface,
                   );
                 },
               ),
-            ] else ...[
-              if (sessions.isNotEmpty)
-                SliverList.builder(
-                  itemCount: sessions.length,
-                  itemBuilder: (context, index) {
-                    return SessionInfoTile(
-                      session: sessions[index],
-                      backgroundColor: index.isEven
-                          ? scheme.surface
-                          : scheme.onSurface,
-                    );
-                  },
-                ),
-              if (sessions.isEmpty &&
-                  !isInitialLoading &&
-                  state is! SessionFailure)
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const .only(top: 184),
-                    child: Text(
-                      'No sessions to show for this period',
-                      style: TextUtils.paragraph(
-                        context,
-                        color: scheme.onTertiary.withValues(alpha: .7),
-                      ),
-                      textAlign: .center,
+            if (sessions.isEmpty &&
+                !isInitialLoading &&
+                state is! SessionFailure)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const .only(top: 184),
+                  child: Text(
+                    'No sessions to show for this period',
+                    style: TextUtils.paragraph(
+                      context,
+                      color: scheme.onTertiary.withValues(alpha: .7),
                     ),
+                    textAlign: .center,
                   ),
                 ),
-              if (state is SessionFailure)
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const .only(top: 128),
-                    child: Text(
-                      state.errorMessage,
-                      style: TextUtils.paragraph(
-                        context,
-                        color: scheme.onTertiary.withValues(alpha: .7),
-                      ),
-                      textAlign: .center,
+              ),
+            if (state is SessionFailure)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const .only(top: 128),
+                  child: Text(
+                    state.errorMessage,
+                    style: TextUtils.paragraph(
+                      context,
+                      color: scheme.onTertiary.withValues(alpha: .7),
                     ),
+                    textAlign: .center,
                   ),
                 ),
-              if (isInitialLoading)
-                SliverSkeletonizer(
-                  enabled: true,
-                  child: SliverList.builder(
-                    itemCount: 4,
-                    itemBuilder: (context, i) => SessionInfoTile(
-                      session: DummySession.session,
-                      backgroundColor: i.isEven
-                          ? scheme.onSurface
-                          : scheme.surface,
-                    ),
+              ),
+            if (isInitialLoading)
+              SliverSkeletonizer(
+                enabled: true,
+                child: SliverList.builder(
+                  itemCount: 4,
+                  itemBuilder: (context, i) => SessionInfoTile(
+                    session: DummySession.session,
+                    backgroundColor: i.isEven
+                        ? scheme.onSurface
+                        : scheme.surface,
                   ),
                 ),
-            ],
+              ),
             const SliverToBoxAdapter(child: SizedBox(height: 32)),
           ],
         );

@@ -23,7 +23,7 @@ class FreemiumProfileCover extends StatelessWidget {
             child: Image.asset(
               fit: .cover,
               alignment: .bottomCenter,
-              ImgPaths.freemiumProfileCover,
+              ImgPaths.heroImage,
             ),
           ),
           Container(

@@ -27,7 +27,7 @@ class SessionsPage extends StatelessWidget {
             padding: .symmetric(
               horizontal: context.lg ? 0 : ContainerDesignUtils.padding,
             ),
-            sliver: const SessionsSection(isLocked: false),
+            sliver: const SessionsSection(),
           ),
         ],
       ),

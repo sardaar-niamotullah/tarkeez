@@ -43,8 +43,12 @@ class Heatmap extends StatelessWidget {
               builder: (context, state) {
                 return SectionImageLockOverlay(
                   imgLocation: state.isDark
-                      ? ImgPaths.heatmapLgDark
-                      : ImgPaths.heatmapLgLight,
+                      ? context.xs
+                            ? ImgPaths.hLgD
+                            : ImgPaths.hD
+                      : context.xs
+                      ? ImgPaths.hLgL
+                      : ImgPaths.hL,
                   height: 110,
                   lockedTopicName: 'heatmap',
                 );
@@ -121,35 +125,6 @@ class Heatmap extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              // Row(
-                              //   children: List.generate(
-                              //     HeatmapStats.weeksToShow,
-                              //     (columnIndex) {
-                              //       final columnStart =
-                              //           grid[columnIndex *
-                              //                   HeatmapStats.daysPerWeek]
-                              //               .date;
-                              //       final label =
-                              //           HeatmapStats.monthLabelForColumn(
-                              //             columnStart,
-                              //           );
-                              //       return SizedBox(
-                              //         width: 12,
-                              //         child: Center(
-                              //           child: Text(
-                              //             label ?? '',
-                              //             maxLines: 1,
-                              //             softWrap: false,
-                              //             overflow: TextOverflow.visible,
-                              //             style: TextUtils.paragraphSmall(
-                              //               context,
-                              //             ).copyWith(fontSize: 10),
-                              //           ),
-                              //         ),
-                              //       );
-                              //     },
-                              //   ),
-                              // ),
                             ],
                           ),
                         ),

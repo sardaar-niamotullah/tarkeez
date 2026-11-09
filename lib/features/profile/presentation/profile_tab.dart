@@ -75,6 +75,17 @@ class ProfileTab extends StatelessWidget {
                                 sliver: SliverList.list(
                                   children: [
                                     SizedBox(height: 16),
+                                    if (!context.sm)
+                                      Column(
+                                        children: [
+                                          Streaks(),
+                                          SizedBox(
+                                            height:
+                                                ContainerDesignUtils.padding,
+                                          ),
+                                          Heatmap(isLocked: true),
+                                        ],
+                                      ),
                                     if (context.sm)
                                       Row(
                                         crossAxisAlignment: .start,
@@ -85,21 +96,11 @@ class ProfileTab extends StatelessWidget {
                                           ),
                                           Expanded(
                                             flex: 5,
-                                            child: Heatmap(isLocked: false),
+                                            child: Heatmap(isLocked: true),
                                           ),
                                         ],
                                       ),
-                                    if (!context.sm)
-                                      Column(
-                                        children: [
-                                          Streaks(),
-                                          SizedBox(
-                                            height:
-                                                ContainerDesignUtils.padding,
-                                          ),
-                                          Heatmap(isLocked: false),
-                                        ],
-                                      ),
+
                                     SizedBox(height: 16),
                                     PersonalBestsSection(isLocked: true),
                                     SizedBox(height: 16),
