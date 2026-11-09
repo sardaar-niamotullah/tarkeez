@@ -131,6 +131,7 @@ class ProfileTab extends StatelessWidget {
                                         crossAxisAlignment: .start,
                                         children: [
                                           Expanded(
+                                            flex: 3,
                                             child: InvestedTimesSection(
                                               isLocked: false,
                                             ),
@@ -139,6 +140,7 @@ class ProfileTab extends StatelessWidget {
                                             width: ContainerDesignUtils.padding,
                                           ),
                                           Expanded(
+                                            flex: 2,
                                             child: Column(
                                               children: [
                                                 SyncButton(),

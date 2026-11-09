@@ -10,6 +10,7 @@ import 'package:tarkeez/core/utils/text_utils.dart';
 
 class SubscriptionCard extends StatelessWidget {
   const new({super.key, this.needToPopAppDrawer = true});
+  
   final bool needToPopAppDrawer;
 
   @override
