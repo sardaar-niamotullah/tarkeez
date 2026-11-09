@@ -12,6 +12,7 @@ import 'package:tarkeez/features/sessions/presentation/session_log_interface.dar
 
 class HomeTab extends StatelessWidget {
   const new({super.key, required this.onMenuTap});
+  
   final VoidCallback onMenuTap;
 
   @override

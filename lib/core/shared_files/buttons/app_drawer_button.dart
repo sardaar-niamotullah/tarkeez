@@ -7,6 +7,7 @@ import 'package:tarkeez/core/utils/text_utils.dart';
 
 class AppDrawerButton extends StatelessWidget {
   const new({super.key, required this.onTap});
+
   final VoidCallback onTap;
 
   @override
@@ -26,7 +27,7 @@ class AppDrawerButton extends StatelessWidget {
             mainAxisSize: .min,
             crossAxisAlignment: .center,
             children: [
-              if (!context.md) ...[
+              if (!context.sm) ...[
                 SvgPicture.asset(
                   height: 26,
                   SvgPaths.hamburger,

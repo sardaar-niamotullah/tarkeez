@@ -4,7 +4,7 @@ import 'package:tarkeez/features/daily_rollups/data/models/heatmap_day.dart';
 class HeatmapStats {
   HeatmapStats._();
 
-  static const int weeksToShow = 52;
+  static const int weeksToShow = 53;
   static const int daysPerWeek = 7;
   static const int totalDays = weeksToShow * daysPerWeek;
 
@@ -32,14 +32,15 @@ class HeatmapStats {
     });
   }
 
-  /// The last 12 months, oldest first, ending with the current month.
-  /// In November: Dec, Jan, ... Nov.
-  static List<String> monthLabels({DateTime? now}) {
-    final month = (now ?? DateTime.now()).month;
-    return [
-      for (var i = 0; i < 12; i++) RollupDateUtils.monthNames[(month + i) % 12],
-    ];
-  }
+  /// Month labels, oldest first: the first column's month (even if only part
+  /// of it is visible) plus every column whose first day is within days 1–7.
+  /// 13 labels, or 12 when the first column already starts a month and the
+  /// last column does not.
+  static List<String> monthLabels(List<HeatmapDay> grid) => [
+    for (var c = 0; c < weeksToShow; c++)
+      if (c == 0 || grid[c * daysPerWeek].date.day <= 7)
+        RollupDateUtils.monthNames[grid[c * daysPerWeek].date.month - 1],
+  ];
 
   static DateTime _dateOnly(DateTime date) =>
       DateTime(date.year, date.month, date.day);

@@ -54,6 +54,7 @@ class Heatmap extends StatelessWidget {
             BlocBuilder<DailyRollupBloc, DailyRollupState>(
               builder: (context, state) {
                 final grid = _resolveGrid(state);
+                final months = HeatmapStats.monthLabels(grid);
                 return Container(
                   width: .infinity,
                   padding: .only(
@@ -107,10 +108,11 @@ class Heatmap extends StatelessWidget {
                               SizedBox(
                                 width: HeatmapStats.weeksToShow * 12.0,
                                 child: Row(
-                                  mainAxisAlignment: .spaceBetween,
+                                  mainAxisAlignment: months.length > 12
+                                      ? .spaceBetween
+                                      : .spaceAround,
                                   children: [
-                                    for (final month
-                                        in HeatmapStats.monthLabels())
+                                    for (final month in months)
                                       Text(
                                         month,
                                         style: TextUtils.paragraphSmall(context)
