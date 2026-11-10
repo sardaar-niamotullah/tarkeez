@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:skeletonizer/skeletonizer.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
+import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
-import 'package:tarkeez/features/sessions/data/models/dummy_session.dart';
 import 'package:tarkeez/features/sessions/presentation/widgets/session_info_tile.dart';
 
 class SessionsSection extends StatelessWidget {
@@ -25,15 +25,28 @@ class SessionsSection extends StatelessWidget {
         };
         return SliverMainAxisGroup(
           slivers: [
+            if (isInitialLoading)
+              SliverToBoxAdapter(
+                child: LinearProgressIndicator(
+                  minHeight: 3,
+                  borderRadius: ContainerDesignUtils.allRadius,
+                  backgroundColor: scheme.surface,
+                ),
+              ),
             if (sessions.isNotEmpty)
               SliverList.builder(
                 itemCount: sessions.length,
                 itemBuilder: (context, index) {
-                  return SessionInfoTile(
-                    session: sessions[index],
-                    backgroundColor: index.isEven
-                        ? scheme.surface
-                        : scheme.onSurface,
+                  return Padding(
+                    padding: .symmetric(
+                      horizontal: context.lg ? 0 : ContainerDesignUtils.padding,
+                    ),
+                    child: SessionInfoTile(
+                      session: sessions[index],
+                      backgroundColor: index.isEven
+                          ? scheme.surface
+                          : scheme.onSurface,
+                    ),
                   );
                 },
               ),
@@ -42,7 +55,11 @@ class SessionsSection extends StatelessWidget {
                 state is! SessionFailure)
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const .only(top: 184),
+                  padding: .only(
+                    top: 184,
+                    left: context.lg ? 0 : ContainerDesignUtils.padding,
+                    right: context.lg ? 0 : ContainerDesignUtils.padding,
+                  ),
                   child: Text(
                     'No sessions to show for this period',
                     style: TextUtils.paragraph(
@@ -56,7 +73,11 @@ class SessionsSection extends StatelessWidget {
             if (state is SessionFailure)
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const .only(top: 128),
+                  padding: .only(
+                    top: 128,
+                    left: context.lg ? 0 : ContainerDesignUtils.padding,
+                    right: context.lg ? 0 : ContainerDesignUtils.padding,
+                  ),
                   child: Text(
                     state.errorMessage,
                     style: TextUtils.paragraph(
@@ -67,19 +88,7 @@ class SessionsSection extends StatelessWidget {
                   ),
                 ),
               ),
-            if (isInitialLoading)
-              SliverSkeletonizer(
-                enabled: true,
-                child: SliverList.builder(
-                  itemCount: 4,
-                  itemBuilder: (context, i) => SessionInfoTile(
-                    session: DummySession.session,
-                    backgroundColor: i.isEven
-                        ? scheme.onSurface
-                        : scheme.surface,
-                  ),
-                ),
-              ),
+
             const SliverToBoxAdapter(child: SizedBox(height: 32)),
           ],
         );
