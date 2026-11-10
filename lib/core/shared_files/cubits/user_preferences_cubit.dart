@@ -17,7 +17,6 @@ class UserPreferencesState extends Equatable {
     this.trackingMode = TrackingMode.linear,
     this.pomodoroMinutes = _defaultPomodoroMinutes,
     this.reportPeriod = PeriodRange.last7Days,
-    this.leaderboardPeriod = PeriodRange.last3Days,
   });
 
   final ThemeMode themeMode;
@@ -28,7 +27,6 @@ class UserPreferencesState extends Equatable {
   final int pomodoroMinutes;
 
   final PeriodRange reportPeriod;
-  final PeriodRange leaderboardPeriod;
 
   bool get isDark => themeMode == ThemeMode.dark;
   bool get isPomodoro => trackingMode == TrackingMode.pomodoro;
@@ -42,7 +40,6 @@ class UserPreferencesState extends Equatable {
     trackingMode: row.trackingMode,
     pomodoroMinutes: pomodoroMinutes,
     reportPeriod: row.reportPeriod,
-    leaderboardPeriod: row.leaderboardPeriod,
   );
 
   UserPreferencesState copyWith({
@@ -51,14 +48,12 @@ class UserPreferencesState extends Equatable {
     TrackingMode? trackingMode,
     int? pomodoroMinutes,
     PeriodRange? reportPeriod,
-    PeriodRange? leaderboardPeriod,
   }) => UserPreferencesState(
     themeMode: themeMode ?? this.themeMode,
     themeColor: themeColor ?? this.themeColor,
     trackingMode: trackingMode ?? this.trackingMode,
     pomodoroMinutes: pomodoroMinutes ?? this.pomodoroMinutes,
     reportPeriod: reportPeriod ?? this.reportPeriod,
-    leaderboardPeriod: leaderboardPeriod ?? this.leaderboardPeriod,
   );
 
   @override
@@ -68,7 +63,6 @@ class UserPreferencesState extends Equatable {
     trackingMode,
     pomodoroMinutes,
     reportPeriod,
-    leaderboardPeriod,
   ];
 }
 
@@ -122,11 +116,5 @@ class UserPreferencesCubit extends Cubit<UserPreferencesState> {
     if (period.isLocked) return;
     emit(state.copyWith(reportPeriod: period));
     await _dao.setReportPeriod(period);
-  }
-
-  Future<void> setLeaderboardPeriod(PeriodRange period) async {
-    if (period.isLocked) return;
-    emit(state.copyWith(leaderboardPeriod: period));
-    await _dao.setLeaderboardPeriod(period);
   }
 }

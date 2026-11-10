@@ -17,8 +17,6 @@ class UserPreferences extends Table {
   TextColumn get themeMode => textEnum<ThemeMode>()();
   TextColumn get themeColor => textEnum<AppThemeColor>()();
   TextColumn get reportPeriod => textEnum<PeriodRange>()();
-  TextColumn get sessionPeriod => textEnum<PeriodRange>()();
-  TextColumn get leaderboardPeriod => textEnum<PeriodRange>()();
 
   @override
   Set<Column> get primaryKey => {userId};

@@ -2529,35 +2529,12 @@ class $UserPreferencesTable extends UserPreferences
     requiredDuringInsert: true,
   ).withConverter<PeriodRange>($UserPreferencesTable.$converterreportPeriod);
   @override
-  late final GeneratedColumnWithTypeConverter<PeriodRange, String>
-  sessionPeriod = GeneratedColumn<String>(
-    'session_period',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  ).withConverter<PeriodRange>($UserPreferencesTable.$convertersessionPeriod);
-  @override
-  late final GeneratedColumnWithTypeConverter<PeriodRange, String>
-  leaderboardPeriod =
-      GeneratedColumn<String>(
-        'leaderboard_period',
-        aliasedName,
-        false,
-        type: DriftSqlType.string,
-        requiredDuringInsert: true,
-      ).withConverter<PeriodRange>(
-        $UserPreferencesTable.$converterleaderboardPeriod,
-      );
-  @override
   List<GeneratedColumn> get $columns => [
     userId,
     trackingMode,
     themeMode,
     themeColor,
     reportPeriod,
-    sessionPeriod,
-    leaderboardPeriod,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2616,19 +2593,6 @@ class $UserPreferencesTable extends UserPreferences
           data['${effectivePrefix}report_period'],
         )!,
       ),
-      sessionPeriod: $UserPreferencesTable.$convertersessionPeriod.fromSql(
-        attachedDatabase.typeMapping.read(
-          DriftSqlType.string,
-          data['${effectivePrefix}session_period'],
-        )!,
-      ),
-      leaderboardPeriod: $UserPreferencesTable.$converterleaderboardPeriod
-          .fromSql(
-            attachedDatabase.typeMapping.read(
-              DriftSqlType.string,
-              data['${effectivePrefix}leaderboard_period'],
-            )!,
-          ),
     );
   }
 
@@ -2651,14 +2615,6 @@ class $UserPreferencesTable extends UserPreferences
   $converterreportPeriod = const EnumNameConverter<PeriodRange>(
     PeriodRange.values,
   );
-  static JsonTypeConverter2<PeriodRange, String, String>
-  $convertersessionPeriod = const EnumNameConverter<PeriodRange>(
-    PeriodRange.values,
-  );
-  static JsonTypeConverter2<PeriodRange, String, String>
-  $converterleaderboardPeriod = const EnumNameConverter<PeriodRange>(
-    PeriodRange.values,
-  );
 }
 
 class UserPreference extends DataClass implements Insertable<UserPreference> {
@@ -2667,16 +2623,12 @@ class UserPreference extends DataClass implements Insertable<UserPreference> {
   final ThemeMode themeMode;
   final AppThemeColor themeColor;
   final PeriodRange reportPeriod;
-  final PeriodRange sessionPeriod;
-  final PeriodRange leaderboardPeriod;
   const UserPreference({
     required this.userId,
     required this.trackingMode,
     required this.themeMode,
     required this.themeColor,
     required this.reportPeriod,
-    required this.sessionPeriod,
-    required this.leaderboardPeriod,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2702,18 +2654,6 @@ class UserPreference extends DataClass implements Insertable<UserPreference> {
         $UserPreferencesTable.$converterreportPeriod.toSql(reportPeriod),
       );
     }
-    {
-      map['session_period'] = Variable<String>(
-        $UserPreferencesTable.$convertersessionPeriod.toSql(sessionPeriod),
-      );
-    }
-    {
-      map['leaderboard_period'] = Variable<String>(
-        $UserPreferencesTable.$converterleaderboardPeriod.toSql(
-          leaderboardPeriod,
-        ),
-      );
-    }
     return map;
   }
 
@@ -2724,8 +2664,6 @@ class UserPreference extends DataClass implements Insertable<UserPreference> {
       themeMode: Value(themeMode),
       themeColor: Value(themeColor),
       reportPeriod: Value(reportPeriod),
-      sessionPeriod: Value(sessionPeriod),
-      leaderboardPeriod: Value(leaderboardPeriod),
     );
   }
 
@@ -2748,11 +2686,6 @@ class UserPreference extends DataClass implements Insertable<UserPreference> {
       reportPeriod: $UserPreferencesTable.$converterreportPeriod.fromJson(
         serializer.fromJson<String>(json['reportPeriod']),
       ),
-      sessionPeriod: $UserPreferencesTable.$convertersessionPeriod.fromJson(
-        serializer.fromJson<String>(json['sessionPeriod']),
-      ),
-      leaderboardPeriod: $UserPreferencesTable.$converterleaderboardPeriod
-          .fromJson(serializer.fromJson<String>(json['leaderboardPeriod'])),
     );
   }
   @override
@@ -2772,14 +2705,6 @@ class UserPreference extends DataClass implements Insertable<UserPreference> {
       'reportPeriod': serializer.toJson<String>(
         $UserPreferencesTable.$converterreportPeriod.toJson(reportPeriod),
       ),
-      'sessionPeriod': serializer.toJson<String>(
-        $UserPreferencesTable.$convertersessionPeriod.toJson(sessionPeriod),
-      ),
-      'leaderboardPeriod': serializer.toJson<String>(
-        $UserPreferencesTable.$converterleaderboardPeriod.toJson(
-          leaderboardPeriod,
-        ),
-      ),
     };
   }
 
@@ -2789,16 +2714,12 @@ class UserPreference extends DataClass implements Insertable<UserPreference> {
     ThemeMode? themeMode,
     AppThemeColor? themeColor,
     PeriodRange? reportPeriod,
-    PeriodRange? sessionPeriod,
-    PeriodRange? leaderboardPeriod,
   }) => UserPreference(
     userId: userId ?? this.userId,
     trackingMode: trackingMode ?? this.trackingMode,
     themeMode: themeMode ?? this.themeMode,
     themeColor: themeColor ?? this.themeColor,
     reportPeriod: reportPeriod ?? this.reportPeriod,
-    sessionPeriod: sessionPeriod ?? this.sessionPeriod,
-    leaderboardPeriod: leaderboardPeriod ?? this.leaderboardPeriod,
   );
   UserPreference copyWithCompanion(UserPreferencesCompanion data) {
     return UserPreference(
@@ -2813,12 +2734,6 @@ class UserPreference extends DataClass implements Insertable<UserPreference> {
       reportPeriod: data.reportPeriod.present
           ? data.reportPeriod.value
           : this.reportPeriod,
-      sessionPeriod: data.sessionPeriod.present
-          ? data.sessionPeriod.value
-          : this.sessionPeriod,
-      leaderboardPeriod: data.leaderboardPeriod.present
-          ? data.leaderboardPeriod.value
-          : this.leaderboardPeriod,
     );
   }
 
@@ -2829,23 +2744,14 @@ class UserPreference extends DataClass implements Insertable<UserPreference> {
           ..write('trackingMode: $trackingMode, ')
           ..write('themeMode: $themeMode, ')
           ..write('themeColor: $themeColor, ')
-          ..write('reportPeriod: $reportPeriod, ')
-          ..write('sessionPeriod: $sessionPeriod, ')
-          ..write('leaderboardPeriod: $leaderboardPeriod')
+          ..write('reportPeriod: $reportPeriod')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-    userId,
-    trackingMode,
-    themeMode,
-    themeColor,
-    reportPeriod,
-    sessionPeriod,
-    leaderboardPeriod,
-  );
+  int get hashCode =>
+      Object.hash(userId, trackingMode, themeMode, themeColor, reportPeriod);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2854,9 +2760,7 @@ class UserPreference extends DataClass implements Insertable<UserPreference> {
           other.trackingMode == this.trackingMode &&
           other.themeMode == this.themeMode &&
           other.themeColor == this.themeColor &&
-          other.reportPeriod == this.reportPeriod &&
-          other.sessionPeriod == this.sessionPeriod &&
-          other.leaderboardPeriod == this.leaderboardPeriod);
+          other.reportPeriod == this.reportPeriod);
 }
 
 class UserPreferencesCompanion extends UpdateCompanion<UserPreference> {
@@ -2865,8 +2769,6 @@ class UserPreferencesCompanion extends UpdateCompanion<UserPreference> {
   final Value<ThemeMode> themeMode;
   final Value<AppThemeColor> themeColor;
   final Value<PeriodRange> reportPeriod;
-  final Value<PeriodRange> sessionPeriod;
-  final Value<PeriodRange> leaderboardPeriod;
   final Value<int> rowid;
   const UserPreferencesCompanion({
     this.userId = const Value.absent(),
@@ -2874,8 +2776,6 @@ class UserPreferencesCompanion extends UpdateCompanion<UserPreference> {
     this.themeMode = const Value.absent(),
     this.themeColor = const Value.absent(),
     this.reportPeriod = const Value.absent(),
-    this.sessionPeriod = const Value.absent(),
-    this.leaderboardPeriod = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   UserPreferencesCompanion.insert({
@@ -2884,24 +2784,18 @@ class UserPreferencesCompanion extends UpdateCompanion<UserPreference> {
     required ThemeMode themeMode,
     required AppThemeColor themeColor,
     required PeriodRange reportPeriod,
-    required PeriodRange sessionPeriod,
-    required PeriodRange leaderboardPeriod,
     this.rowid = const Value.absent(),
   }) : userId = Value(userId),
        trackingMode = Value(trackingMode),
        themeMode = Value(themeMode),
        themeColor = Value(themeColor),
-       reportPeriod = Value(reportPeriod),
-       sessionPeriod = Value(sessionPeriod),
-       leaderboardPeriod = Value(leaderboardPeriod);
+       reportPeriod = Value(reportPeriod);
   static Insertable<UserPreference> custom({
     Expression<String>? userId,
     Expression<String>? trackingMode,
     Expression<String>? themeMode,
     Expression<String>? themeColor,
     Expression<String>? reportPeriod,
-    Expression<String>? sessionPeriod,
-    Expression<String>? leaderboardPeriod,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2910,8 +2804,6 @@ class UserPreferencesCompanion extends UpdateCompanion<UserPreference> {
       if (themeMode != null) 'theme_mode': themeMode,
       if (themeColor != null) 'theme_color': themeColor,
       if (reportPeriod != null) 'report_period': reportPeriod,
-      if (sessionPeriod != null) 'session_period': sessionPeriod,
-      if (leaderboardPeriod != null) 'leaderboard_period': leaderboardPeriod,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2922,8 +2814,6 @@ class UserPreferencesCompanion extends UpdateCompanion<UserPreference> {
     Value<ThemeMode>? themeMode,
     Value<AppThemeColor>? themeColor,
     Value<PeriodRange>? reportPeriod,
-    Value<PeriodRange>? sessionPeriod,
-    Value<PeriodRange>? leaderboardPeriod,
     Value<int>? rowid,
   }) {
     return UserPreferencesCompanion(
@@ -2932,8 +2822,6 @@ class UserPreferencesCompanion extends UpdateCompanion<UserPreference> {
       themeMode: themeMode ?? this.themeMode,
       themeColor: themeColor ?? this.themeColor,
       reportPeriod: reportPeriod ?? this.reportPeriod,
-      sessionPeriod: sessionPeriod ?? this.sessionPeriod,
-      leaderboardPeriod: leaderboardPeriod ?? this.leaderboardPeriod,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2964,20 +2852,6 @@ class UserPreferencesCompanion extends UpdateCompanion<UserPreference> {
         $UserPreferencesTable.$converterreportPeriod.toSql(reportPeriod.value),
       );
     }
-    if (sessionPeriod.present) {
-      map['session_period'] = Variable<String>(
-        $UserPreferencesTable.$convertersessionPeriod.toSql(
-          sessionPeriod.value,
-        ),
-      );
-    }
-    if (leaderboardPeriod.present) {
-      map['leaderboard_period'] = Variable<String>(
-        $UserPreferencesTable.$converterleaderboardPeriod.toSql(
-          leaderboardPeriod.value,
-        ),
-      );
-    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2992,8 +2866,6 @@ class UserPreferencesCompanion extends UpdateCompanion<UserPreference> {
           ..write('themeMode: $themeMode, ')
           ..write('themeColor: $themeColor, ')
           ..write('reportPeriod: $reportPeriod, ')
-          ..write('sessionPeriod: $sessionPeriod, ')
-          ..write('leaderboardPeriod: $leaderboardPeriod, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -6073,8 +5945,6 @@ typedef $$UserPreferencesTableCreateCompanionBuilder =
       required ThemeMode themeMode,
       required AppThemeColor themeColor,
       required PeriodRange reportPeriod,
-      required PeriodRange sessionPeriod,
-      required PeriodRange leaderboardPeriod,
       Value<int> rowid,
     });
 typedef $$UserPreferencesTableUpdateCompanionBuilder =
@@ -6084,8 +5954,6 @@ typedef $$UserPreferencesTableUpdateCompanionBuilder =
       Value<ThemeMode> themeMode,
       Value<AppThemeColor> themeColor,
       Value<PeriodRange> reportPeriod,
-      Value<PeriodRange> sessionPeriod,
-      Value<PeriodRange> leaderboardPeriod,
       Value<int> rowid,
     });
 
@@ -6149,18 +6017,6 @@ class $$UserPreferencesTableFilterComposer
     builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
-  ColumnWithTypeConverterFilters<PeriodRange, PeriodRange, String>
-  get sessionPeriod => $composableBuilder(
-    column: $table.sessionPeriod,
-    builder: (column) => ColumnWithTypeConverterFilters(column),
-  );
-
-  ColumnWithTypeConverterFilters<PeriodRange, PeriodRange, String>
-  get leaderboardPeriod => $composableBuilder(
-    column: $table.leaderboardPeriod,
-    builder: (column) => ColumnWithTypeConverterFilters(column),
-  );
-
   $$UsersTableFilterComposer get userId {
     final $$UsersTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -6211,16 +6067,6 @@ class $$UserPreferencesTableOrderingComposer
 
   ColumnOrderings<String> get reportPeriod => $composableBuilder(
     column: $table.reportPeriod,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get sessionPeriod => $composableBuilder(
-    column: $table.sessionPeriod,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get leaderboardPeriod => $composableBuilder(
-    column: $table.leaderboardPeriod,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -6275,18 +6121,6 @@ class $$UserPreferencesTableAnnotationComposer
   GeneratedColumnWithTypeConverter<PeriodRange, String> get reportPeriod =>
       $composableBuilder(
         column: $table.reportPeriod,
-        builder: (column) => column,
-      );
-
-  GeneratedColumnWithTypeConverter<PeriodRange, String> get sessionPeriod =>
-      $composableBuilder(
-        column: $table.sessionPeriod,
-        builder: (column) => column,
-      );
-
-  GeneratedColumnWithTypeConverter<PeriodRange, String> get leaderboardPeriod =>
-      $composableBuilder(
-        column: $table.leaderboardPeriod,
         builder: (column) => column,
       );
 
@@ -6349,8 +6183,6 @@ class $$UserPreferencesTableTableManager
                 Value<ThemeMode> themeMode = const Value.absent(),
                 Value<AppThemeColor> themeColor = const Value.absent(),
                 Value<PeriodRange> reportPeriod = const Value.absent(),
-                Value<PeriodRange> sessionPeriod = const Value.absent(),
-                Value<PeriodRange> leaderboardPeriod = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UserPreferencesCompanion(
                 userId: userId,
@@ -6358,8 +6190,6 @@ class $$UserPreferencesTableTableManager
                 themeMode: themeMode,
                 themeColor: themeColor,
                 reportPeriod: reportPeriod,
-                sessionPeriod: sessionPeriod,
-                leaderboardPeriod: leaderboardPeriod,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -6369,8 +6199,6 @@ class $$UserPreferencesTableTableManager
                 required ThemeMode themeMode,
                 required AppThemeColor themeColor,
                 required PeriodRange reportPeriod,
-                required PeriodRange sessionPeriod,
-                required PeriodRange leaderboardPeriod,
                 Value<int> rowid = const Value.absent(),
               }) => UserPreferencesCompanion.insert(
                 userId: userId,
@@ -6378,8 +6206,6 @@ class $$UserPreferencesTableTableManager
                 themeMode: themeMode,
                 themeColor: themeColor,
                 reportPeriod: reportPeriod,
-                sessionPeriod: sessionPeriod,
-                leaderboardPeriod: leaderboardPeriod,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

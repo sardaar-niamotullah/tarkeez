@@ -41,12 +41,6 @@ class UserPreferencesDao extends DatabaseAccessor<LocalDatabase>
   Future<void> setReportPeriod(PeriodRange value) =>
       _save(UserPreferencesCompanion(reportPeriod: Value(value)));
 
-  Future<void> setSessionPeriod(PeriodRange value) =>
-      _save(UserPreferencesCompanion(sessionPeriod: Value(value)));
-
-  Future<void> setLeaderboardPeriod(PeriodRange value) =>
-      _save(UserPreferencesCompanion(leaderboardPeriod: Value(value)));
-
   Future<void> _save(UserPreferencesCompanion values) async {
     await _ensureRow();
     await (update(
@@ -62,9 +56,7 @@ class UserPreferencesDao extends DatabaseAccessor<LocalDatabase>
       trackingMode: TrackingMode.linear,
       themeMode: ThemeMode.system,
       themeColor: AppThemeColor.green,
-      reportPeriod: PeriodRange.last7Days,
-      sessionPeriod: PeriodRange.last3Days,
-      leaderboardPeriod: PeriodRange.last3Days,
+      reportPeriod: PeriodRange.last5Days,
     ),
     mode: InsertMode.insertOrIgnore,
   );
