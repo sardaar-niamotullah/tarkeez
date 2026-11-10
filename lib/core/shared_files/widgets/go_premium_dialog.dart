@@ -13,8 +13,8 @@ class GoPremiumDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DialogBoxWrapper(
-      title: 'Premium',
-      iconPath: SvgPaths.medal,
+      title: 'Locked',
+      iconPath: SvgPaths.lock,
       iconColor: AppTheme.fireTone,
       content: Column(
         children: [

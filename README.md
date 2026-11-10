@@ -316,7 +316,7 @@ flowchart TB
 - `pending_changes` lists the rows to push. It stores no copy of the data. Every change is an upsert, and a delete is `deleted_at` being set. Push reads it 200 entries at a time, oldest first, and removes the entries the cloud answered. A non-empty table is what starts a sync when the device is online.
 - `pull_checkpoints` stores, per account, the biggest `updated_at` received for projects and for sessions. A pull asks for rows stamped after them, starting 2 minutes before.
 - `user_settings` holds one row per account on this device, created with default values at sign-in. It never syncs, so each device keeps its own settings. A history reset leaves it untouched, and deleting the `users` row deletes it.
-- The enum columns of `user_settings` are stored as text. `report_period`, `session_period` and `leaderboard_period` each hold one period range: `today`, `yesterday`, `thisWeek`, `lastWeek`, `last3Days`, `last5Days`, `last7Days`, `last30Days`, `thisMonth`, `lastMonth`, `thisYear`, `lastYear`, `last12Months` or `allTime`.
+- The enum columns of `user_settings` are stored as text. `report_period` hold one period range: `today`, `yesterday`, `thisWeek`, `lastWeek`, `last3Days`, `last5Days`, `last7Days`, `last30Days`, `thisMonth`, `lastMonth`, `thisYear`, `lastYear`, `last12Months` or `allTime`.
 - A history reset wipes the account's `sessions`, `projects`, `daily_rollups`, `project_rollups` and `pending_changes`, in that order for the first two (sessions point at projects), and clears both checkpoints. Triggers do not run for this wipe.
 
 ```mermaid
@@ -384,8 +384,6 @@ erDiagram
     theme_mode text "system, light or dark"
     theme_color text "green, purple, pink, blue or teal"
     report_period text "period period"
-    session_period text "period period"
-    leaderboard_period text "period period"
   }
 ```
 
