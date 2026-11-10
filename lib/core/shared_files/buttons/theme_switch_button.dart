@@ -9,79 +9,74 @@ class ThemeSwitchButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return BlocBuilder<UserPreferencesCubit, UserPreferencesState>(
-      buildWhen: (a, b) => a.themeMode != b.themeMode,
-      builder: (context, preferences) {
-        final isDark = preferences.isDark;
-        final preferencesCubit = context.read<UserPreferencesCubit>();
-
-        return Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: () => preferencesCubit.toggleTheme(),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => context.read<UserPreferencesCubit>().setThemeMode(
+          isDark ? ThemeMode.light : ThemeMode.dark,
+        ),
+        borderRadius: ContainerDesignUtils.allRadius,
+        mouseCursor: SystemMouseCursors.click,
+        child: Ink(
+          width: 60,
+          height: 30,
+          decoration: BoxDecoration(
+            color: isDark ? scheme.onSurface : scheme.tertiary,
             borderRadius: ContainerDesignUtils.allRadius,
-            mouseCursor: SystemMouseCursors.click,
-            child: Ink(
-              width: 60,
-              height: 30,
-              decoration: BoxDecoration(
-                color: isDark ? scheme.onSurface : scheme.tertiary,
-                borderRadius: ContainerDesignUtils.allRadius,
-              ),
-              child: Stack(
-                alignment: .center,
-                children: [
-                  // Bright mode icon
-                  Positioned(
-                    left: 10,
-                    child: Icon(
-                      Icons.light_mode_outlined,
-                      color: scheme.onTertiary,
-                      size: 14,
-                    ),
-                  ),
-
-                  // Dark mode icon
-                  Positioned(
-                    right: 10,
-                    child: Icon(
-                      Icons.dark_mode_outlined,
-                      color: scheme.onTertiary,
-                      size: 14,
-                    ),
-                  ),
-
-                  // Sliding circle
-                  AnimatedAlign(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                    alignment: isDark ? .centerRight : .centerLeft,
-                    child: Container(
-                      margin: const .all(4),
-                      width: 24,
-                      height: 24,
-                      decoration: BoxDecoration(
-                        color: scheme.primaryContainer,
-                        shape: .circle,
-                      ),
-                      child: Center(
-                        child: Icon(
-                          isDark
-                              ? Icons.dark_mode_outlined
-                              : Icons.light_mode_outlined,
-                          color: scheme.tertiary,
-                          size: 14,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ),
-        );
-      },
+          child: Stack(
+            alignment: .center,
+            children: [
+              // Bright mode icon
+              Positioned(
+                left: 10,
+                child: Icon(
+                  Icons.light_mode_outlined,
+                  color: scheme.onTertiary,
+                  size: 14,
+                ),
+              ),
+
+              // Dark mode icon
+              Positioned(
+                right: 10,
+                child: Icon(
+                  Icons.dark_mode_outlined,
+                  color: scheme.onTertiary,
+                  size: 14,
+                ),
+              ),
+
+              // Sliding circle
+              AnimatedAlign(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                alignment: isDark ? .centerRight : .centerLeft,
+                child: Container(
+                  margin: const .all(4),
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: scheme.primaryContainer,
+                    shape: .circle,
+                  ),
+                  child: Center(
+                    child: Icon(
+                      isDark
+                          ? Icons.dark_mode_outlined
+                          : Icons.light_mode_outlined,
+                      color: scheme.tertiary,
+                      size: 14,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
