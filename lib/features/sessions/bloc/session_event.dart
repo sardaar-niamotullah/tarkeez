@@ -29,3 +29,5 @@ final class DeleteSessionRequested extends SessionEvent {
 
 /// A pull or a history reset changed the local sessions.
 final class SessionsSynced extends SessionEvent {}
+
+final class SessionsCleared extends SessionEvent {}

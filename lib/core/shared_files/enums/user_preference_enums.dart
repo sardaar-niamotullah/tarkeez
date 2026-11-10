@@ -44,7 +44,7 @@ enum PeriodRange {
   last30Days('Last 30 days', isLocked: true),
   lastMonth('Last month', isLocked: true),
   lastYear('Last year', isLocked: true),
-  allTime('All time', isLocked: true);
+  allTime('All time', isLocked: false);
 
   // ignore: unused_element_parameter
   const new(this.label, {this.isLocked = false});

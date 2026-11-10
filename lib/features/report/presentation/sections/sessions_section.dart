@@ -14,7 +14,9 @@ class SessionsSection extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return BlocBuilder<SessionBloc, SessionState>(
       builder: (context, state) {
-        final isInitialLoading = state is SessionLoading && state.isInitialLoad;
+        final isInitialLoading =
+            state is SessionInitial ||
+            (state is SessionLoading && state.isInitialLoad);
         final sessions = switch (state) {
           SessionLoaded(:final sessions) => sessions,
           SessionLoading(:final sessions) => sessions,

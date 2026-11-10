@@ -3,10 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/custom_icon_button.dart';
-import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
-import 'package:tarkeez/core/shared_files/enums/user_preference_enums.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
+import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
 import 'package:tarkeez/features/sessions/presentation/widgets/sessions_filter_bottom_sheet.dart';
 
 class SessionsFilterTile extends StatelessWidget {
@@ -37,15 +36,23 @@ class SessionsFilterTile extends StatelessWidget {
             crossAxisAlignment: .center,
             mainAxisAlignment: .spaceBetween,
             children: [
-              BlocSelector<
-                UserPreferencesCubit,
-                UserPreferencesState,
-                PeriodRange
-              >(
-                selector: (preferences) => preferences.sessionPeriod,
-                builder: (context, period) =>
-                    Text(period.label, style: TextUtils.paragraphBold(context)),
+              // BlocSelector<
+              //   UserPreferencesCubit,
+              //   UserPreferencesState,
+              //   PeriodRange
+              // >(
+              //   selector: (preferences) => preferences.sessionPeriod,
+              //   builder: (context, period) =>
+              //       Text(period.label, style: TextUtils.paragraphBold(context)),
+              // ),
+
+              BlocBuilder<SessionBloc, SessionState>(
+                builder: (context, _) => Text(
+                  context.read<SessionBloc>().period.label,
+                  style: TextUtils.paragraphBold(context),
+                ),
               ),
+              
               Row(
                 children: [
                   CustomIconButton(

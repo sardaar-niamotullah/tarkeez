@@ -20,6 +20,7 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
       transformer: restartable(),
     );
     on<DeleteSessionRequested>(_onDeleteSessionRequested);
+    on<SessionsCleared>(_onSessionsCleared);
     on<SessionsSynced>(_onSessionsSynced, transformer: restartable());
 
     _syncSub = syncedSessions.listen((_) => add(SessionsSynced()));
@@ -28,7 +29,11 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
   final SessionRepository _repository;
   late final StreamSubscription<void> _syncSub;
 
-  PeriodRange _period = PeriodRange.last7Days;
+  PeriodRange _period = PeriodRange.last3Days;
+  PeriodRange get period => _period;
+
+  /// True only while the sessions page is open.
+  bool _isPageOpen = false;
 
   // ── Private helpers ─────────────────────────────────────────────────────
   List<SessionModel> get _currentSessions => state is SessionLoaded
@@ -51,6 +56,12 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     bool deleted = false,
     bool isInitialLoad = false,
   }) async {
+    // Page closed (e.g. a session entered from the timer): keep nothing in memory.
+    if (!_isPageOpen) {
+      emit(SessionLoaded(const [], isEntered: entered, isDeleted: deleted));
+      return;
+    }
+
     final previousSessions = state is SessionLoaded
         ? (state as SessionLoaded).sessions
         : null;
@@ -63,6 +74,7 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     );
 
     final result = await _fetchForCurrentPeriod();
+    if (!_isPageOpen) return;
 
     result.fold(
       onSuccess: (sessions) =>
@@ -98,6 +110,7 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     Emitter<SessionState> emit,
   ) async {
     _period = event.period;
+    _isPageOpen = true;
     await _refreshSessions(emit, isInitialLoad: true);
   }
 
@@ -119,11 +132,20 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     SessionsSynced event,
     Emitter<SessionState> emit,
   ) async {
+    if (!_isPageOpen) return;
     final result = await _fetchForCurrentPeriod();
+    if (!_isPageOpen) return;
     result.fold(
       onSuccess: (sessions) => emit(SessionLoaded.plain(sessions)),
       onFailure: (_) {},
     );
+  }
+
+  /// The sessions page was closed: drop the data and reset the period.
+  void _onSessionsCleared(SessionsCleared event, Emitter<SessionState> emit) {
+    _isPageOpen = false;
+    _period = PeriodRange.last3Days;
+    emit(SessionInitial());
   }
 
   @override

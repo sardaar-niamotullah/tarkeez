@@ -17,7 +17,6 @@ class UserPreferencesState extends Equatable {
     this.trackingMode = TrackingMode.linear,
     this.pomodoroMinutes = _defaultPomodoroMinutes,
     this.reportPeriod = PeriodRange.last7Days,
-    this.sessionPeriod = PeriodRange.last3Days,
     this.leaderboardPeriod = PeriodRange.last3Days,
   });
 
@@ -29,7 +28,6 @@ class UserPreferencesState extends Equatable {
   final int pomodoroMinutes;
 
   final PeriodRange reportPeriod;
-  final PeriodRange sessionPeriod;
   final PeriodRange leaderboardPeriod;
 
   bool get isDark => themeMode == ThemeMode.dark;
@@ -44,7 +42,6 @@ class UserPreferencesState extends Equatable {
     trackingMode: row.trackingMode,
     pomodoroMinutes: pomodoroMinutes,
     reportPeriod: row.reportPeriod,
-    sessionPeriod: row.sessionPeriod,
     leaderboardPeriod: row.leaderboardPeriod,
   );
 
@@ -54,7 +51,6 @@ class UserPreferencesState extends Equatable {
     TrackingMode? trackingMode,
     int? pomodoroMinutes,
     PeriodRange? reportPeriod,
-    PeriodRange? sessionPeriod,
     PeriodRange? leaderboardPeriod,
   }) => UserPreferencesState(
     themeMode: themeMode ?? this.themeMode,
@@ -62,7 +58,6 @@ class UserPreferencesState extends Equatable {
     trackingMode: trackingMode ?? this.trackingMode,
     pomodoroMinutes: pomodoroMinutes ?? this.pomodoroMinutes,
     reportPeriod: reportPeriod ?? this.reportPeriod,
-    sessionPeriod: sessionPeriod ?? this.sessionPeriod,
     leaderboardPeriod: leaderboardPeriod ?? this.leaderboardPeriod,
   );
 
@@ -73,7 +68,6 @@ class UserPreferencesState extends Equatable {
     trackingMode,
     pomodoroMinutes,
     reportPeriod,
-    sessionPeriod,
     leaderboardPeriod,
   ];
 }
@@ -90,7 +84,10 @@ class UserPreferencesCubit extends Cubit<UserPreferencesState> {
       final row = await _dao.getPreferences();
       if (isClosed) return;
       emit(
-        UserPreferencesState.fromRow(row, pomodoroMinutes: state.pomodoroMinutes),
+        UserPreferencesState.fromRow(
+          row,
+          pomodoroMinutes: state.pomodoroMinutes,
+        ),
       );
     } catch (e) {
       debugPrint('Could not load the saved settings: $e');
@@ -125,12 +122,6 @@ class UserPreferencesCubit extends Cubit<UserPreferencesState> {
     if (period.isLocked) return;
     emit(state.copyWith(reportPeriod: period));
     await _dao.setReportPeriod(period);
-  }
-
-  Future<void> setSessionPeriod(PeriodRange period) async {
-    if (period.isLocked) return;
-    emit(state.copyWith(sessionPeriod: period));
-    await _dao.setSessionPeriod(period);
   }
 
   Future<void> setLeaderboardPeriod(PeriodRange period) async {
