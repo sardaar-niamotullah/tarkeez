@@ -11,7 +11,7 @@ import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/core/shared_files/enums/user_preference_enums.dart';
 
 class SessionsFilterBottomSheet extends StatefulWidget {
-  const SessionsFilterBottomSheet({super.key});
+  const new({super.key});
 
   @override
   State<SessionsFilterBottomSheet> createState() =>
