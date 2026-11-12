@@ -11,7 +11,7 @@ class AppDrawerItem extends StatelessWidget {
     required this.iconPath,
     required this.onTap,
   });
-  
+
   final String title;
   final String iconPath;
   final VoidCallback onTap;

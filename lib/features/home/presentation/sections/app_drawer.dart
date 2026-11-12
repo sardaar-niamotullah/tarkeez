@@ -11,6 +11,7 @@ import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/auth/bloc/auth_bloc.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/app_drawer_item.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/social_links.dart';
+import 'package:tarkeez/features/home/presentation/sections/widgets/version_and_terms_tile.dart';
 import 'package:tarkeez/features/settings/presentation/settings_bottom_sheet.dart';
 import 'package:tarkeez/features/subscription/presentation/sections/subscription_card.dart';
 
@@ -115,33 +116,7 @@ class AppDrawer extends StatelessWidget {
               const SizedBox(height: 16),
               const SocialLinks(),
               const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: .spaceBetween,
-                children: [
-                  CupertinoButton(
-                    onPressed: () =>
-                        context.push(RouteNames.termsAndConditionsPage),
-                    padding: .zero,
-                    sizeStyle: .small,
-                    alignment: .centerLeft,
-                    mouseCursor: SystemMouseCursors.click,
-                    child: Text(
-                      'Terms and conditions',
-                      style: TextUtils.paragraphSmallBold(
-                        context,
-                        color: scheme.onTertiary.withValues(alpha: .5),
-                      ),
-                    ),
-                  ),
-                  Text(
-                    'v1.0.0',
-                    style: TextUtils.paragraphSmallBold(
-                      context,
-                      color: scheme.onTertiary.withValues(alpha: .5),
-                    ),
-                  ),
-                ],
-              ),
+              const VersionAndTermsTile(),
             ],
           ),
         ),
