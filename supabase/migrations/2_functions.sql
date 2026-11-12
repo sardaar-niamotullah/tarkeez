@@ -198,8 +198,103 @@ BEGIN
 END;
 $$;
 
+-- =================================================================
+-- rebuild_premium: recompute users.premium_until from all purchases
+--   premium_until = max(paid_at, premium_until) + months * 1 month + months * 1 hour
+-- Calendar months are added first (Jan 31 + 1 month = Feb 28), then the bonus hours. All in UTC.
+-- =================================================================
+CREATE OR REPLACE FUNCTION public.rebuild_premium(p_user UUID)
+RETURNS TIMESTAMPTZ
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_until TIMESTAMPTZ;
+  r       RECORD;
+BEGIN
+  -- one rebuild per user at a time
+  PERFORM 1 FROM public.users WHERE id = p_user FOR NO KEY UPDATE;
+
+  FOR r IN
+    SELECT paid_at, months FROM public.purchases
+    WHERE user_id = p_user AND refunded_at IS NULL
+    ORDER BY paid_at, id
+  LOOP
+    v_until := (GREATEST(v_until, r.paid_at) AT TIME ZONE 'UTC'
+                + make_interval(months => r.months, hours => r.months)) AT TIME ZONE 'UTC';
+  END LOOP;
+
+  UPDATE public.users SET premium_until = v_until WHERE id = p_user;
+  RETURN v_until;
+END;
+$$;
+
+-- =================================================================
+-- grant_purchase: save one payment, then rebuild premium_until
+-- A duplicate (same source + store_ref) is ignored. A store_ref that belongs
+-- to another account is rejected.
+-- =================================================================
+CREATE OR REPLACE FUNCTION public.grant_purchase(
+  p_user      UUID,
+  p_source    TEXT,
+  p_store_ref TEXT,
+  p_amount    NUMERIC,
+  p_currency  TEXT,
+  p_months    INT,
+  p_paid_at   TIMESTAMPTZ
+)
+RETURNS TIMESTAMPTZ
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  INSERT INTO public.purchases (user_id, source, store_ref, amount, currency, months, paid_at)
+  VALUES (p_user, p_source, p_store_ref, p_amount, p_currency, p_months, p_paid_at)
+  ON CONFLICT (source, store_ref) DO NOTHING;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM public.purchases
+    WHERE source = p_source AND store_ref = p_store_ref AND user_id = p_user
+  ) THEN
+    RAISE EXCEPTION 'purchase belongs to another account';
+  END IF;
+
+  RETURN public.rebuild_premium(p_user);
+END;
+$$;
+
+-- =================================================================
+-- refund_purchase: mark one payment refunded (once), then rebuild premium_until
+-- =================================================================
+CREATE OR REPLACE FUNCTION public.refund_purchase(p_source TEXT, p_store_ref TEXT)
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_user UUID;
+BEGIN
+  UPDATE public.purchases
+  SET refunded_at = NOW()
+  WHERE source = p_source AND store_ref = p_store_ref AND refunded_at IS NULL
+  RETURNING user_id INTO v_user;
+
+  IF v_user IS NOT NULL THEN
+    PERFORM public.rebuild_premium(v_user);
+  END IF;
+END;
+$$;
+
 -- These must not be callable from the app (Supabase grants new functions to these roles).
 REVOKE ALL ON FUNCTION public.apply_session_to_rollups(UUID, UUID, TIMESTAMPTZ, TIMESTAMPTZ, INT, INT)
   FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.sessions_to_rollups() FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.rebuild_rollups(UUID) FROM PUBLIC, anon, authenticated;
+
+REVOKE ALL ON FUNCTION public.rebuild_premium(UUID) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.grant_purchase(UUID, TEXT, TEXT, NUMERIC, TEXT, INT, TIMESTAMPTZ)
+  FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.refund_purchase(TEXT, TEXT) FROM PUBLIC, anon, authenticated;

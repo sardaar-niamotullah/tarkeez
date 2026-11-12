@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS public.users (
     email TEXT,
     full_name TEXT,
     avatar_url TEXT,
-    history_reset_at TIMESTAMPTZ
+    history_reset_at TIMESTAMPTZ,
+    premium_until TIMESTAMPTZ
 );
 
 -- CONSTRAINTS
@@ -34,6 +35,11 @@ FOR UPDATE
 TO authenticated
 USING (id = (SELECT auth.uid()))
 WITH CHECK (id = (SELECT auth.uid()));
+
+-- The app may only change full_name and avatar_url.
+-- Backend functions write premium_until and history_reset_at.
+REVOKE UPDATE ON public.users FROM authenticated;
+GRANT UPDATE (full_name, avatar_url) ON public.users TO authenticated;
 
 -- =================================================================
 -- PROJECTS
@@ -233,4 +239,51 @@ ALTER TABLE public.utc_daily_rollups ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "allow_select_own_utc_daily_rollups" ON public.utc_daily_rollups;
 CREATE POLICY "allow_select_own_utc_daily_rollups"
 ON public.utc_daily_rollups FOR SELECT TO authenticated
+USING (user_id = (SELECT auth.uid()));
+
+-- =================================================================
+-- PURCHASES (written only by backend functions)
+-- =================================================================
+
+-- TABLE
+CREATE TABLE IF NOT EXISTS public.purchases (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES public.users(id),
+    source TEXT NOT NULL,
+    store_ref TEXT NOT NULL,
+    amount NUMERIC NOT NULL,
+    currency TEXT NOT NULL,
+    months INT NOT NULL,
+    paid_at TIMESTAMPTZ NOT NULL,
+    refunded_at TIMESTAMPTZ
+);
+
+-- INDEX
+CREATE INDEX IF NOT EXISTS idx_purchases_user_paid
+  ON public.purchases (user_id, paid_at);
+
+-- CONSTRAINTS
+ALTER TABLE public.purchases DROP CONSTRAINT IF EXISTS purchases_source_check;
+ALTER TABLE public.purchases
+ADD CONSTRAINT purchases_source_check
+CHECK (source IN ('google', 'apple', 'web'));
+
+ALTER TABLE public.purchases DROP CONSTRAINT IF EXISTS purchases_months_check;
+ALTER TABLE public.purchases
+ADD CONSTRAINT purchases_months_check
+CHECK (months IN (1, 3, 6, 12));
+
+ALTER TABLE public.purchases DROP CONSTRAINT IF EXISTS purchases_store_ref_unique;
+ALTER TABLE public.purchases
+ADD CONSTRAINT purchases_store_ref_unique
+UNIQUE (source, store_ref);
+
+-- RLS: read only. There is no insert, update or delete policy, so the app cannot write.
+ALTER TABLE public.purchases ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "allow_select_own_purchases" ON public.purchases;
+CREATE POLICY "allow_select_own_purchases"
+ON public.purchases
+FOR SELECT
+TO authenticated
 USING (user_id = (SELECT auth.uid()));
