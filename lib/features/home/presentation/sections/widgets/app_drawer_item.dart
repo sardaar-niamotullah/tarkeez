@@ -24,25 +24,16 @@ class AppDrawerItem extends StatelessWidget {
         context.pop();
         onTap();
       },
-      mouseCursor: SystemMouseCursors.click,
       borderRadius: ContainerDesignUtils.allRadius,
-      child: Padding(
-        padding: .symmetric(
-          horizontal: ContainerDesignUtils.padding,
-          vertical: ContainerDesignUtils.halfPadding,
+      child: ListTile(
+        mouseCursor: SystemMouseCursors.click,
+        leading: SvgPicture.asset(
+          iconPath,
+          colorFilter: .mode(scheme.onTertiary, .srcIn),
         ),
-        child: Row(
-          children: [
-            SvgPicture.asset(
-              iconPath,
-              colorFilter: .mode(scheme.onTertiary, .srcIn),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              title,
-              style: TextUtils.paragraphBold(context, color: scheme.onTertiary),
-            ),
-          ],
+        title: Text(
+          title,
+          style: TextUtils.paragraphBold(context, color: scheme.onTertiary),
         ),
       ),
     );

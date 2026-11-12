@@ -153,7 +153,6 @@ class ProfileTab extends StatelessWidget {
                                           ),
                                         ],
                                       ),
-
                                     SizedBox(height: 80),
                                   ],
                                 ),
