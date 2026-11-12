@@ -59,6 +59,17 @@ class $UsersTable extends Users with TableInfo<$UsersTable, LocalUser> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _premiumUntilMeta = const VerificationMeta(
+    'premiumUntil',
+  );
+  @override
+  late final GeneratedColumn<String> premiumUntil = GeneratedColumn<String>(
+    'premium_until',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -66,6 +77,7 @@ class $UsersTable extends Users with TableInfo<$UsersTable, LocalUser> {
     fullName,
     avatarUrl,
     historyResetAt,
+    premiumUntil,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -111,6 +123,15 @@ class $UsersTable extends Users with TableInfo<$UsersTable, LocalUser> {
         ),
       );
     }
+    if (data.containsKey('premium_until')) {
+      context.handle(
+        _premiumUntilMeta,
+        premiumUntil.isAcceptableOrUnknown(
+          data['premium_until']!,
+          _premiumUntilMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -140,6 +161,10 @@ class $UsersTable extends Users with TableInfo<$UsersTable, LocalUser> {
         DriftSqlType.string,
         data['${effectivePrefix}history_reset_at'],
       ),
+      premiumUntil: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}premium_until'],
+      ),
     );
   }
 
@@ -155,12 +180,14 @@ class LocalUser extends DataClass implements Insertable<LocalUser> {
   final String? fullName;
   final String? avatarUrl;
   final String? historyResetAt;
+  final String? premiumUntil;
   const LocalUser({
     required this.id,
     this.email,
     this.fullName,
     this.avatarUrl,
     this.historyResetAt,
+    this.premiumUntil,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -177,6 +204,9 @@ class LocalUser extends DataClass implements Insertable<LocalUser> {
     }
     if (!nullToAbsent || historyResetAt != null) {
       map['history_reset_at'] = Variable<String>(historyResetAt);
+    }
+    if (!nullToAbsent || premiumUntil != null) {
+      map['premium_until'] = Variable<String>(premiumUntil);
     }
     return map;
   }
@@ -196,6 +226,9 @@ class LocalUser extends DataClass implements Insertable<LocalUser> {
       historyResetAt: historyResetAt == null && nullToAbsent
           ? const Value.absent()
           : Value(historyResetAt),
+      premiumUntil: premiumUntil == null && nullToAbsent
+          ? const Value.absent()
+          : Value(premiumUntil),
     );
   }
 
@@ -210,6 +243,7 @@ class LocalUser extends DataClass implements Insertable<LocalUser> {
       fullName: serializer.fromJson<String?>(json['fullName']),
       avatarUrl: serializer.fromJson<String?>(json['avatarUrl']),
       historyResetAt: serializer.fromJson<String?>(json['historyResetAt']),
+      premiumUntil: serializer.fromJson<String?>(json['premiumUntil']),
     );
   }
   @override
@@ -221,6 +255,7 @@ class LocalUser extends DataClass implements Insertable<LocalUser> {
       'fullName': serializer.toJson<String?>(fullName),
       'avatarUrl': serializer.toJson<String?>(avatarUrl),
       'historyResetAt': serializer.toJson<String?>(historyResetAt),
+      'premiumUntil': serializer.toJson<String?>(premiumUntil),
     };
   }
 
@@ -230,6 +265,7 @@ class LocalUser extends DataClass implements Insertable<LocalUser> {
     Value<String?> fullName = const Value.absent(),
     Value<String?> avatarUrl = const Value.absent(),
     Value<String?> historyResetAt = const Value.absent(),
+    Value<String?> premiumUntil = const Value.absent(),
   }) => LocalUser(
     id: id ?? this.id,
     email: email.present ? email.value : this.email,
@@ -238,6 +274,7 @@ class LocalUser extends DataClass implements Insertable<LocalUser> {
     historyResetAt: historyResetAt.present
         ? historyResetAt.value
         : this.historyResetAt,
+    premiumUntil: premiumUntil.present ? premiumUntil.value : this.premiumUntil,
   );
   LocalUser copyWithCompanion(UsersCompanion data) {
     return LocalUser(
@@ -248,6 +285,9 @@ class LocalUser extends DataClass implements Insertable<LocalUser> {
       historyResetAt: data.historyResetAt.present
           ? data.historyResetAt.value
           : this.historyResetAt,
+      premiumUntil: data.premiumUntil.present
+          ? data.premiumUntil.value
+          : this.premiumUntil,
     );
   }
 
@@ -258,14 +298,15 @@ class LocalUser extends DataClass implements Insertable<LocalUser> {
           ..write('email: $email, ')
           ..write('fullName: $fullName, ')
           ..write('avatarUrl: $avatarUrl, ')
-          ..write('historyResetAt: $historyResetAt')
+          ..write('historyResetAt: $historyResetAt, ')
+          ..write('premiumUntil: $premiumUntil')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode =>
-      Object.hash(id, email, fullName, avatarUrl, historyResetAt);
+      Object.hash(id, email, fullName, avatarUrl, historyResetAt, premiumUntil);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -274,7 +315,8 @@ class LocalUser extends DataClass implements Insertable<LocalUser> {
           other.email == this.email &&
           other.fullName == this.fullName &&
           other.avatarUrl == this.avatarUrl &&
-          other.historyResetAt == this.historyResetAt);
+          other.historyResetAt == this.historyResetAt &&
+          other.premiumUntil == this.premiumUntil);
 }
 
 class UsersCompanion extends UpdateCompanion<LocalUser> {
@@ -283,6 +325,7 @@ class UsersCompanion extends UpdateCompanion<LocalUser> {
   final Value<String?> fullName;
   final Value<String?> avatarUrl;
   final Value<String?> historyResetAt;
+  final Value<String?> premiumUntil;
   final Value<int> rowid;
   const UsersCompanion({
     this.id = const Value.absent(),
@@ -290,6 +333,7 @@ class UsersCompanion extends UpdateCompanion<LocalUser> {
     this.fullName = const Value.absent(),
     this.avatarUrl = const Value.absent(),
     this.historyResetAt = const Value.absent(),
+    this.premiumUntil = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   UsersCompanion.insert({
@@ -298,6 +342,7 @@ class UsersCompanion extends UpdateCompanion<LocalUser> {
     this.fullName = const Value.absent(),
     this.avatarUrl = const Value.absent(),
     this.historyResetAt = const Value.absent(),
+    this.premiumUntil = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id);
   static Insertable<LocalUser> custom({
@@ -306,6 +351,7 @@ class UsersCompanion extends UpdateCompanion<LocalUser> {
     Expression<String>? fullName,
     Expression<String>? avatarUrl,
     Expression<String>? historyResetAt,
+    Expression<String>? premiumUntil,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -314,6 +360,7 @@ class UsersCompanion extends UpdateCompanion<LocalUser> {
       if (fullName != null) 'full_name': fullName,
       if (avatarUrl != null) 'avatar_url': avatarUrl,
       if (historyResetAt != null) 'history_reset_at': historyResetAt,
+      if (premiumUntil != null) 'premium_until': premiumUntil,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -324,6 +371,7 @@ class UsersCompanion extends UpdateCompanion<LocalUser> {
     Value<String?>? fullName,
     Value<String?>? avatarUrl,
     Value<String?>? historyResetAt,
+    Value<String?>? premiumUntil,
     Value<int>? rowid,
   }) {
     return UsersCompanion(
@@ -332,6 +380,7 @@ class UsersCompanion extends UpdateCompanion<LocalUser> {
       fullName: fullName ?? this.fullName,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       historyResetAt: historyResetAt ?? this.historyResetAt,
+      premiumUntil: premiumUntil ?? this.premiumUntil,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -354,6 +403,9 @@ class UsersCompanion extends UpdateCompanion<LocalUser> {
     if (historyResetAt.present) {
       map['history_reset_at'] = Variable<String>(historyResetAt.value);
     }
+    if (premiumUntil.present) {
+      map['premium_until'] = Variable<String>(premiumUntil.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -368,6 +420,7 @@ class UsersCompanion extends UpdateCompanion<LocalUser> {
           ..write('fullName: $fullName, ')
           ..write('avatarUrl: $avatarUrl, ')
           ..write('historyResetAt: $historyResetAt, ')
+          ..write('premiumUntil: $premiumUntil, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -3036,6 +3089,7 @@ typedef $$UsersTableCreateCompanionBuilder = UsersCompanion Function({
   Value<String?> fullName,
   Value<String?> avatarUrl,
   Value<String?> historyResetAt,
+  Value<String?> premiumUntil,
   Value<int> rowid,
 });
 typedef $$UsersTableUpdateCompanionBuilder = UsersCompanion Function({
@@ -3044,6 +3098,7 @@ typedef $$UsersTableUpdateCompanionBuilder = UsersCompanion Function({
   Value<String?> fullName,
   Value<String?> avatarUrl,
   Value<String?> historyResetAt,
+  Value<String?> premiumUntil,
   Value<int> rowid,
 });
 
@@ -3215,6 +3270,11 @@ class $$UsersTableFilterComposer
 
   ColumnFilters<String> get historyResetAt => $composableBuilder(
     column: $table.historyResetAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get premiumUntil => $composableBuilder(
+    column: $table.premiumUntil,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3427,6 +3487,11 @@ class $$UsersTableOrderingComposer
     column: $table.historyResetAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get premiumUntil => $composableBuilder(
+    column: $table.premiumUntil,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$UsersTableAnnotationComposer
@@ -3452,6 +3517,11 @@ class $$UsersTableAnnotationComposer
 
   GeneratedColumn<String> get historyResetAt => $composableBuilder(
     column: $table.historyResetAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get premiumUntil => $composableBuilder(
+    column: $table.premiumUntil,
     builder: (column) => column,
   );
 
@@ -3672,6 +3742,7 @@ class $$UsersTableTableManager
                 Value<String?> fullName = const Value.absent(),
                 Value<String?> avatarUrl = const Value.absent(),
                 Value<String?> historyResetAt = const Value.absent(),
+                Value<String?> premiumUntil = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UsersCompanion(
                 id: id,
@@ -3679,6 +3750,7 @@ class $$UsersTableTableManager
                 fullName: fullName,
                 avatarUrl: avatarUrl,
                 historyResetAt: historyResetAt,
+                premiumUntil: premiumUntil,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -3688,6 +3760,7 @@ class $$UsersTableTableManager
                 Value<String?> fullName = const Value.absent(),
                 Value<String?> avatarUrl = const Value.absent(),
                 Value<String?> historyResetAt = const Value.absent(),
+                Value<String?> premiumUntil = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UsersCompanion.insert(
                 id: id,
@@ -3695,6 +3768,7 @@ class $$UsersTableTableManager
                 fullName: fullName,
                 avatarUrl: avatarUrl,
                 historyResetAt: historyResetAt,
+                premiumUntil: premiumUntil,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

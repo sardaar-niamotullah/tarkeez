@@ -7,6 +7,7 @@ class Users extends Table {
   TextColumn get fullName => text().nullable()();
   TextColumn get avatarUrl => text().nullable()();
   TextColumn get historyResetAt => text().nullable()();
+  TextColumn get premiumUntil => text().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};

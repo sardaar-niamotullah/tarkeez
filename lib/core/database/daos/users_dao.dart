@@ -5,8 +5,7 @@ import 'package:tarkeez/core/database/tables/users.dart';
 part 'users_dao.g.dart';
 
 @DriftAccessor(tables: [Users])
-class UsersDao extends DatabaseAccessor<LocalDatabase>
-    with _$UsersDaoMixin {
+class UsersDao extends DatabaseAccessor<LocalDatabase> with _$UsersDaoMixin {
   UsersDao(super.db);
 
   Future<void> upsertUser(UsersCompanion user) =>
@@ -24,5 +23,10 @@ class UsersDao extends DatabaseAccessor<LocalDatabase>
   Future<void> setHistoryResetAt(String id, String? value) =>
       (update(users)..where((t) => t.id.equals(id))).write(
         UsersCompanion(historyResetAt: Value(value)),
+      );
+      
+  Future<void> setPremiumUntil(String id, String? value) =>
+      (update(users)..where((t) => t.id.equals(id))).write(
+        UsersCompanion(premiumUntil: Value(value)),
       );
 }
