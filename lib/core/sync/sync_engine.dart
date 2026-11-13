@@ -220,18 +220,21 @@ class SyncEngine {
         email: Value(user.email),
         fullName: Value(user.fullName),
         avatarUrl: Value(user.avatarUrl),
+        premiumUntil: Value(user.premiumUntil),
       ),
     );
 
     final cloudResetAt = row['history_reset_at'] as String?;
-    final localResetAt =
-        (await _db.usersDao.getUserById(user.id))?.historyResetAt;
+    final localResetAt = (await _db.usersDao.getUserById(user.id))
+        ?.historyResetAt;
     syncLog('reset check: cloud=$cloudResetAt, local=$localResetAt');
 
     if (cloudResetAt == null) return false;
     if (!_isNewer(cloudResetAt, localResetAt)) return false;
 
-    syncLog('reset check: the cloud was reset after this device, wiping local data');
+    syncLog(
+      'reset check: the cloud was reset after this device, wiping local data',
+    );
     await _applyReset(cloudResetAt);
     return true;
   }
@@ -258,10 +261,10 @@ class SyncEngine {
       total += rows.length;
       afterStamp = rows.last.updatedAt!;
       afterId = rows.last.id;
-      syncLog(
-        'pull projects: ${rows.length} rows, checkpoint $afterStamp',
-      );
-      await checkpoints.advanceProjectCheckpoint(afterStamp); // save after each page
+      syncLog('pull projects: ${rows.length} rows, checkpoint $afterStamp');
+      await checkpoints.advanceProjectCheckpoint(
+        afterStamp,
+      ); // save after each page
       if (rows.length < _pageSize) break;
     }
 
@@ -292,9 +295,7 @@ class SyncEngine {
       total += rows.length;
       afterStamp = rows.last.updatedAt!;
       afterId = rows.last.id;
-      syncLog(
-        'pull sessions: ${rows.length} rows, checkpoint $afterStamp',
-      );
+      syncLog('pull sessions: ${rows.length} rows, checkpoint $afterStamp');
       await checkpoints.advanceSessionCheckpoint(afterStamp);
       if (rows.length < _pageSize) break;
     }
