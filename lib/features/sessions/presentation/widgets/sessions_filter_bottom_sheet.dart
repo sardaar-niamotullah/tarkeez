@@ -7,6 +7,7 @@ import 'package:tarkeez/core/shared_files/bottom_sheet/bottom_sheet_wrapper.dart
 import 'package:tarkeez/core/shared_files/bottom_sheet/duration_filter_bottom_sheet_section.dart';
 import 'package:tarkeez/core/shared_files/buttons/cancel_button.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
+import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/shared_files/enums/user_preference_enums.dart';
 import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
 
@@ -27,13 +28,10 @@ class _SessionsFilterBottomSheetState extends State<SessionsFilterBottomSheet> {
     _pending = context.read<SessionBloc>().period;
   }
 
-  // void initState() {
-  //   super.initState();
-  //   _pending = context.read<UserPreferencesCubit>().state.sessionPeriod;
-  // }
-
   @override
   Widget build(BuildContext context) {
+    final isPremiumUser = context.select((PremiumCubit c) => c.isPremium);
+    
     return BottomSheetWrapper(
       contents: [
         BottomSheetTitleTile(
@@ -46,7 +44,7 @@ class _SessionsFilterBottomSheetState extends State<SessionsFilterBottomSheet> {
           onSelected: (period) {
             // Locked options already trigger GoPremiumDialog inside
             // FilterDurationSelectorButton and never reach here selectable.
-            if (period.isPremium) return;
+            if (period.isPremium && !isPremiumUser) return;
             setState(() => _pending = period);
           },
         ),
