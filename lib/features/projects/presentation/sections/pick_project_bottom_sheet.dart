@@ -1,11 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tarkeez/core/constants/freemium_limits.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/bottom_sheet/bottom_sheet_wrapper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_icon_button.dart';
 import 'package:tarkeez/core/shared_files/cubits/navigation_cubit.dart';
+import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
@@ -13,7 +15,7 @@ import 'package:tarkeez/features/projects/presentation/sections/widgets/project_
 
 class ProjectSelectionResult {
   const new(this.project);
-  
+
   final ProjectModel? project;
 }
 
@@ -32,11 +34,13 @@ class _PickProjectBottomSheetState extends State<PickProjectBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final isPremium = context.select((PremiumCubit c) => c.isPremium);
+
     return BlocBuilder<ProjectBloc, ProjectState>(
       builder: (context, state) {
-        final projects = state is ProjectLoaded
-            ? state.projects
-            : <ProjectModel>[];
+        final all = state is ProjectLoaded ? state.projects : <ProjectModel>[];
+        // Newest first. A free account can pick only the newest ones.
+        final projects = isPremium ? all : all.take(freeProjectLimit).toList();
 
         // Seed selectedIndex from the currently selected project the first
         // time we have the project list, so the picker opens on the right item.

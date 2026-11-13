@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:tarkeez/core/constants/freemium_limits.dart';
+import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/projects/data/models/dummy_project.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
@@ -20,6 +23,7 @@ class ProjectsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final isPremium = context.select((PremiumCubit c) => c.isPremium);
     Color tileColor(int i) => i % 2 == 0 ? scheme.onSurface : scheme.surface;
     if (isInitialLoading) {
       return SliverSkeletonizer(
@@ -72,6 +76,9 @@ class ProjectsList extends StatelessWidget {
         child: ProjectInfoTile(
           project: projects[i],
           tileColor: scheme.onSurface,
+          // Newest first. Past the limit, a free account cannot pick it for
+          // a session. Edit and delete stay available.
+          isLocked: !isPremium && i >= freeProjectLimit,
         ),
       ),
     );

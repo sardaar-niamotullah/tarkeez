@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:tarkeez/core/constants/freemium_limits.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
+import 'package:tarkeez/core/shared_files/widgets/go_premium_dialog.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
+import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/features/projects/presentation/sections/add_or_update_project_dialog.dart';
 
 class CreateNewProjectButton extends StatelessWidget {
@@ -15,10 +20,23 @@ class CreateNewProjectButton extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => showDialog(
-          context: context,
-          builder: (_) => const AddOrUpdateProjectDialog(),
-        ),
+        onTap: () {
+          final projectState = context.read<ProjectBloc>().state;
+          final count = switch (projectState) {
+            ProjectLoaded s => s.projects.length,
+            ProjectLoading s => s.projects?.length ?? 0,
+            _ => 0,
+          };
+          final canAdd =
+              context.read<PremiumCubit>().isPremium ||
+              count < freeProjectLimit;
+
+          showDialog(
+            context: context,
+            builder: (_) =>
+                canAdd ? const AddOrUpdateProjectDialog() : GoPremiumDialog(),
+          );
+        },
         mouseCursor: SystemMouseCursors.click,
         borderRadius: ContainerDesignUtils.allRadius,
         child: Ink(

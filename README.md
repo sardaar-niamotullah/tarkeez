@@ -645,6 +645,10 @@ A store refund notification or the gateway webhook calls `refund_purchase`. A re
 
 `isPremiumUser` is `premium_until > now`, computed from the local `users` row. It works offline and expires on its own. Locked sections use it, for example `Heatmap(isLocked: !isPremiumUser)`. The check uses the device clock, so moving the clock back while offline extends access until the next sync.
 
+### Projects 
+
+a free account can create a project only while it has fewer than 2. Premium has no limit. After premium ends, only the 2 newest projects can be picked for a session. All projects can still be edited and deleted. When one of the two newest is deleted, the next newest takes its place.
+
 ## Design notes
 
 - **`updated_at` (cloud `projects` and `sessions`):** set by the database and used for pull checkpoints. A device-written time would not work: a session recorded offline on Monday and pushed on Wednesday would carry a Monday time, and a device whose checkpoint is already at Tuesday would miss it.
