@@ -17,7 +17,7 @@ class UserPreferencesState extends Equatable {
     this.themeColor = AppThemeColor.green,
     this.trackingMode = TrackingMode.linear,
     this.pomodoroMinutes = _defaultPomodoroMinutes,
-    this.reportPeriod = PeriodRange.last7Days,
+    this.reportPeriod = PeriodRange.last5Days,
   });
 
   final ThemeMode themeMode;
@@ -85,8 +85,23 @@ class UserPreferencesCubit extends Cubit<UserPreferencesState> {
           pomodoroMinutes: state.pomodoroMinutes,
         ),
       );
+      await resetPremiumSettings();
     } catch (e) {
       debugPrint('Could not load the saved settings: $e');
+    }
+  }
+
+  /// Puts premium-only settings back to the free defaults.
+  /// Does nothing while the user is premium.
+  Future<void> resetPremiumSettings() async {
+    if (_isPremiumUser) return;
+    const defaults = UserPreferencesState();
+    if (state.themeColor.isPremium) await setThemeColor(defaults.themeColor);
+    if (state.trackingMode.isPremium) {
+      await setTrackingMode(defaults.trackingMode);
+    }
+    if (state.reportPeriod.isPremium) {
+      await setReportPeriod(defaults.reportPeriod);
     }
   }
 
@@ -115,7 +130,6 @@ class UserPreferencesCubit extends Cubit<UserPreferencesState> {
 
   // PERIODS
   Future<void> setReportPeriod(PeriodRange period) async {
-    if (period.isPremium && !_isPremiumUser) return;
     emit(state.copyWith(reportPeriod: period));
     await _dao.setReportPeriod(period);
   }

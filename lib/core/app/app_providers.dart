@@ -73,6 +73,12 @@ class AppProviders extends StatelessWidget {
               );
             },
           ),
+          // Premium end date changed (refund, or a new date from sync): put
+          // premium-only settings back to the free defaults. Does nothing while premium.
+          BlocListener<PremiumCubit, DateTime?>(
+            listener: (context, _) =>
+                context.read<UserPreferencesCubit>().resetPremiumSettings(),
+          ),
         ],
         child: child,
       ),

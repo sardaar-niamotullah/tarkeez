@@ -29,8 +29,8 @@ Future<void> main() async {
   if (kDebugMode) Bloc.observer = AppBlocObserver();
 
   if (Supabase.instance.client.auth.currentSession != null) {
-    await getIt<UserPreferencesCubit>().load();
     await getIt<PremiumCubit>().load();
+    await getIt<UserPreferencesCubit>().load();
   }
 
   await const AppStartupTasks().run();

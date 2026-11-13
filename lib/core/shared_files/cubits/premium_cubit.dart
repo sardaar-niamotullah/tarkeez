@@ -15,7 +15,11 @@ class PremiumCubit extends Cubit<DateTime?> {
   /// Call it again after an account switch or a history erase.
   Future<void> load() async {
     await _sub?.cancel();
-    _sub = _usersDao.watchPremiumUntil().listen(emit);
+    final stream = _usersDao.watchPremiumUntil();
+    final first = await stream.first;
+    if (isClosed) return;
+    emit(first);
+    _sub = stream.listen(emit);
   }
 
   @override

@@ -1,5 +1,6 @@
 import 'package:tarkeez/core/dependency_injection/di.dart';
 import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
+import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
 import 'package:tarkeez/features/project_rollups/bloc/project_rollup_bloc.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
@@ -12,7 +13,7 @@ import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
 class UserDataReloader {
   const new();
 
-  void reload() {
+  Future<void> reload() async {
     // Silent refresh: the same events sync uses when it changes local data.
     getIt<ProjectBloc>().add(ProjectsSynced());
     getIt<SessionBloc>().add(SessionsSynced());
@@ -20,6 +21,8 @@ class UserDataReloader {
     getIt<DailyRollupBloc>().add(FetchDailyRollupRequested());
     getIt<ProjectRollupBloc>().add(FetchProjectRollupRequested());
 
-    getIt<PremiumCubit>().load();
+    // Preferences read the premium state, so premium loads first.
+    await getIt<PremiumCubit>().load();
+    await getIt<UserPreferencesCubit>().load();
   }
 }

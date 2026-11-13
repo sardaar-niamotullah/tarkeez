@@ -110,7 +110,7 @@ class SubscriptionCard extends StatelessWidget {
                         SvgPaths.medalBold,
                         colorFilter: .mode(AppTheme.white, .srcIn),
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: isPremiumUser ? 8 : 6),
                       Column(
                         crossAxisAlignment: .start,
                         children: [
