@@ -31,6 +31,7 @@ class _ReportFilterBottomSheetState extends State<ReportFilterBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final isPremiumUser = context.select((PremiumCubit c) => c.isPremium);
+    
     return BottomSheetWrapper(
       contents: [
         BottomSheetTitleTile(title: 'Report filter', iconPath: SvgPaths.filter),
