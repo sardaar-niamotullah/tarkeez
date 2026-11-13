@@ -1,4 +1,5 @@
 import 'package:tarkeez/core/dependency_injection/di.dart';
+import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
 import 'package:tarkeez/features/project_rollups/bloc/project_rollup_bloc.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
@@ -18,5 +19,7 @@ class UserDataReloader {
 
     getIt<DailyRollupBloc>().add(FetchDailyRollupRequested());
     getIt<ProjectRollupBloc>().add(FetchProjectRollupRequested());
+
+    getIt<PremiumCubit>().load();
   }
 }

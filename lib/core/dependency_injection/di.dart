@@ -7,6 +7,7 @@ import 'package:tarkeez/core/services/auth_session_service.dart';
 import 'package:tarkeez/core/services/connectivity_service.dart';
 import 'package:tarkeez/core/services/sound_service.dart';
 import 'package:tarkeez/core/services/sync_service.dart';
+import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/core/sync/bloc/sync_bloc.dart';
 import 'package:tarkeez/core/sync/sync_engine.dart';
@@ -47,6 +48,11 @@ Future<void> injectDependencies() async {
   // ── Preferences ──────────────────────────────────────────────────────
   getIt.registerLazySingleton<UserPreferencesCubit>(
     () => UserPreferencesCubit(),
+  );
+
+  // ── Premium ──────────────────────────────────────────────────────────
+  getIt.registerLazySingleton<PremiumCubit>(
+    () => PremiumCubit(getIt<LocalDatabase>().usersDao),
   );
 
   // ── Sync ─────────────────────────────────────────────────────────────
@@ -107,8 +113,6 @@ Future<void> injectDependencies() async {
       getIt<SyncService>().sessionsChanged,
     ),
   );
-
-  // getIt.registerLazySingleton<SessionPeriodCubit>(() => SessionPeriodCubit());
 
   // ── Daily Rollups ────────────────────────────────────────────────────
   getIt.registerLazySingleton<DailyRollupRepository>(

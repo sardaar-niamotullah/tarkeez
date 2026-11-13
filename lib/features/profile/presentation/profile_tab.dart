@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/shared_files/buttons/go_premium_button.dart';
+import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/shared_files/widgets/avatar_circle.dart';
 import 'package:tarkeez/core/shared_files/widgets/custom_app_bar.dart';
 import 'package:tarkeez/core/shared_files/widgets/floating_action_button_wrapper.dart';
@@ -24,6 +25,7 @@ class ProfileTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final isPremium = context.select((PremiumCubit c) => c.state);
 
     return Stack(
       children: [
@@ -83,7 +85,7 @@ class ProfileTab extends StatelessWidget {
                                             height:
                                                 ContainerDesignUtils.padding,
                                           ),
-                                          Heatmap(isLocked: false),
+                                          Heatmap(isLocked: !isPremium),
                                         ],
                                       ),
                                     if (context.sm)
@@ -96,13 +98,15 @@ class ProfileTab extends StatelessWidget {
                                           ),
                                           Expanded(
                                             flex: 5,
-                                            child: Heatmap(isLocked: false),
+                                            child: Heatmap(
+                                              isLocked: !isPremium,
+                                            ),
                                           ),
                                         ],
                                       ),
 
                                     SizedBox(height: 16),
-                                    PersonalBestsSection(isLocked: false),
+                                    PersonalBestsSection(isLocked: !isPremium),
                                     SizedBox(height: 16),
                                     Text(
                                       'Invested times',
@@ -113,7 +117,9 @@ class ProfileTab extends StatelessWidget {
                                       Column(
                                         crossAxisAlignment: .start,
                                         children: [
-                                          InvestedTimesSection(isLocked: false),
+                                          InvestedTimesSection(
+                                            isLocked: !isPremium,
+                                          ),
                                           SizedBox(
                                             height:
                                                 ContainerDesignUtils.padding,
@@ -123,7 +129,9 @@ class ProfileTab extends StatelessWidget {
                                             height: ContainerDesignUtils
                                                 .halfPadding,
                                           ),
-                                          EraseAllDataButton(isLocked: false),
+                                          EraseAllDataButton(
+                                            isLocked: !isPremium,
+                                          ),
                                         ],
                                       ),
                                     if (context.lg)
@@ -133,7 +141,7 @@ class ProfileTab extends StatelessWidget {
                                           Expanded(
                                             flex: 3,
                                             child: InvestedTimesSection(
-                                              isLocked: false,
+                                              isLocked: !isPremium,
                                             ),
                                           ),
                                           SizedBox(
@@ -146,7 +154,7 @@ class ProfileTab extends StatelessWidget {
                                                 SyncButton(),
                                                 SizedBox(height: 11),
                                                 EraseAllDataButton(
-                                                  isLocked: false,
+                                                  isLocked: !isPremium,
                                                 ),
                                               ],
                                             ),
@@ -168,7 +176,8 @@ class ProfileTab extends StatelessWidget {
             ],
           ),
         ),
-        const FloatingActionButtonWrapper(actionButton: GoPremiumButton()),
+        if (!isPremium)
+          const FloatingActionButtonWrapper(actionButton: GoPremiumButton()),
       ],
     );
   }
