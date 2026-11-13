@@ -67,7 +67,7 @@ class TrackingModeSwitchButton extends StatelessWidget {
                           child: GestureDetector(
                             behavior: HitTestBehavior.opaque,
                             onTap: () {
-                              if (option.isLocked) {
+                              if (option.isPremium) {
                                 showDialog<void>(
                                   context: context,
                                   builder: (_) => const GoPremiumDialog(),
@@ -81,7 +81,7 @@ class TrackingModeSwitchButton extends StatelessWidget {
                               context: context,
                               text: option.label('Linear'),
                               active: option == value,
-                              isLocked: option.isLocked,
+                              isLocked: option.isPremium,
                               activeColor: scheme.primary,
                               inactiveColor: scheme.onTertiary.withValues(
                                 alpha: .9,

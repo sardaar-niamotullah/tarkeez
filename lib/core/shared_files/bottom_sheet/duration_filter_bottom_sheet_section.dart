@@ -48,7 +48,7 @@ class DurationFilterBottomSheetSection extends StatelessWidget {
     return FilterDurationSelectorButton(
       title: option.label,
       isSelected: option == selected,
-      isLocked: option.isLocked,
+      isLocked: option.isPremium,
       onTap: () => onSelected(option),
     );
   }

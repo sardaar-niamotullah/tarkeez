@@ -11,7 +11,7 @@ class ThemeColorSwitchButtonsTile extends StatelessWidget {
   const new({super.key});
 
   void _onThemeColorTap(BuildContext context, AppThemeColor themeColor) {
-    if (themeColor.isLocked) {
+    if (themeColor.isPremium) {
       showDialog<void>(
         context: context,
         builder: (_) => const GoPremiumDialog(),
@@ -38,25 +38,25 @@ class ThemeColorSwitchButtonsTile extends StatelessWidget {
             children: [
               ThemeColorSwitchButton(
                 themeColor: AppTheme.greenBright,
-                isLocked: AppThemeColor.green.isLocked,
+                isLocked: AppThemeColor.green.isPremium,
                 isActive: preferences.themeColor == AppThemeColor.green,
                 onTap: () => _onThemeColorTap(context, AppThemeColor.green),
               ),
               ThemeColorSwitchButton(
                 themeColor: AppTheme.purpleBright,
-                isLocked: AppThemeColor.purple.isLocked,
+                isLocked: AppThemeColor.purple.isPremium,
                 isActive: preferences.themeColor == AppThemeColor.purple,
                 onTap: () => _onThemeColorTap(context, AppThemeColor.purple),
               ),
               ThemeColorSwitchButton(
                 themeColor: AppTheme.pinkBright,
-                isLocked: AppThemeColor.pink.isLocked,
+                isLocked: AppThemeColor.pink.isPremium,
                 isActive: preferences.themeColor == AppThemeColor.pink,
                 onTap: () => _onThemeColorTap(context, AppThemeColor.pink),
               ),
               ThemeColorSwitchButton(
                 themeColor: AppTheme.blueBright,
-                isLocked: AppThemeColor.blue.isLocked,
+                isLocked: AppThemeColor.blue.isPremium,
                 isActive: preferences.themeColor == AppThemeColor.blue,
                 onTap: () => _onThemeColorTap(context, AppThemeColor.blue),
               ),

@@ -50,7 +50,7 @@ class _TimelineSectionState extends State<TimelineSection> {
                 items: ChartType.values,
                 buttonColor: scheme.surface,
                 initialValue: _selectedChartType,
-                isLocked: (type) => type.isLocked,
+                isLocked: (type) => type.isPremium,
                 labelBuilder: (type) => type.label,
                 onChanged: (value) {
                   setState(() => _selectedChartType = value);

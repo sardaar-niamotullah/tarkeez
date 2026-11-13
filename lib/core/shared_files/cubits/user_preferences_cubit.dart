@@ -113,7 +113,7 @@ class UserPreferencesCubit extends Cubit<UserPreferencesState> {
 
   // PERIODS
   Future<void> setReportPeriod(PeriodRange period) async {
-    if (period.isLocked) return;
+    if (period.isPremium) return;
     emit(state.copyWith(reportPeriod: period));
     await _dao.setReportPeriod(period);
   }

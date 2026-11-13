@@ -1,31 +1,31 @@
 enum ChartType {
   bar('Bar chart'),
-  line('Line chart', isLocked: true);
+  line('Line chart', isPremium: true);
 
-  const new(this.label, {this.isLocked = false});
+  const new(this.label, {this.isPremium = false});
 
   final String label;
-  final bool isLocked;
+  final bool isPremium;
 }
 
 enum TrackingMode {
   linear,
-  pomodoro(isLocked: true);
+  pomodoro(isPremium: true);
 
-  const TrackingMode({this.isLocked = false});
+  const TrackingMode({this.isPremium = false});
 
-  final bool isLocked;
+  final bool isPremium;
 }
 
 enum AppThemeColor {
   green,
-  purple(isLocked: true),
-  pink(isLocked: true),
-  blue(isLocked: true);
+  purple(isPremium: true),
+  pink(isPremium: true),
+  blue(isPremium: true);
 
-  const AppThemeColor({this.isLocked = false});
+  const AppThemeColor({this.isPremium = false});
 
-  final bool isLocked;
+  final bool isPremium;
 }
 
 enum PeriodRange {
@@ -33,22 +33,21 @@ enum PeriodRange {
   today('Today'),
   thisWeek('This week'),
   last3Days('Last 3 days'),
-  last7Days('Last 7 days', isLocked: true),
-  thisMonth('This month', isLocked: true),
-  thisYear('This year', isLocked: true),
-  last12Months('Last 12 months', isLocked: true),
+  last7Days('Last 7 days', isPremium: true),
+  thisMonth('This month', isPremium: true),
+  thisYear('This year', isPremium: true),
+  last12Months('Last 12 months', isPremium: true),
   // right column
   yesterday('Yesterday'),
   lastWeek('Last week'),
   last5Days('Last 5 days'),
-  last30Days('Last 30 days', isLocked: true),
-  lastMonth('Last month', isLocked: true),
-  lastYear('Last year', isLocked: true),
-  allTime('All time', isLocked: false);
+  last30Days('Last 30 days', isPremium: true),
+  lastMonth('Last month', isPremium: true),
+  lastYear('Last year', isPremium: true),
+  allTime('All time', isPremium: true);
 
-  // ignore: unused_element_parameter
-  const new(this.label, {this.isLocked = false});
+  const new(this.label, {this.isPremium = false});
 
   final String label;
-  final bool isLocked;
+  final bool isPremium;
 }

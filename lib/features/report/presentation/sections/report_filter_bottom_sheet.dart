@@ -38,7 +38,7 @@ class _ReportFilterBottomSheetState extends State<ReportFilterBottomSheet> {
           onSelected: (period) {
             // Locked options already trigger GoPremiumDialog inside
             // FilterDurationSelectorButton and never reach here selectable.
-            if (period.isLocked) return;
+            if (period.isPremium) return;
             setState(() => _pending = period);
           },
         ),
