@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/constants/img_paths.dart';
-import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/core/shared_files/widgets/section_image_lock_overlay.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
@@ -29,6 +28,7 @@ class Heatmap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return SizedBox(
       width: 680,
@@ -38,22 +38,18 @@ class Heatmap extends StatelessWidget {
           const HeatmapTitleAndGuideTile(),
           const SizedBox(height: 8),
           if (isLocked)
-            BlocBuilder<UserPreferencesCubit, UserPreferencesState>(
-              buildWhen: (a, b) => a.isDark != b.isDark,
-              builder: (context, state) {
-                return SectionImageLockOverlay(
-                  imgLocation: state.isDark
-                      ? context.xs
-                            ? ImgPaths.hLgD
-                            : ImgPaths.hD
-                      : context.xs
-                      ? ImgPaths.hLgL
-                      : ImgPaths.hL,
-                  height: 110,
-                  lockedTopicName: 'heatmap',
-                );
-              },
+            SectionImageLockOverlay(
+              imgLocation: isDark
+                  ? context.xs
+                        ? ImgPaths.hLgD
+                        : ImgPaths.hD
+                  : context.xs
+                  ? ImgPaths.hLgL
+                  : ImgPaths.hL,
+              height: 110,
+              lockedTopicName: 'heatmap',
             ),
+            
           if (!isLocked)
             BlocBuilder<DailyRollupBloc, DailyRollupState>(
               builder: (context, state) {

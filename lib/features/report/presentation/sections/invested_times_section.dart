@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/constants/img_paths.dart';
-import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/core/shared_files/widgets/section_image_lock_overlay.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
@@ -16,26 +15,23 @@ class InvestedTimesSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: .start,
       children: [
         if (isLocked)
-          BlocBuilder<UserPreferencesCubit, UserPreferencesState>(
-            buildWhen: (a, b) => a.isDark != b.isDark,
-            builder: (context, state) {
-              return SectionImageLockOverlay(
-                imgLocation: state.isDark
-                    ? context.sm
-                          ? ImgPaths.itLgD
-                          : ImgPaths.itD
-                    : context.sm
-                    ? ImgPaths.itLgL
-                    : ImgPaths.itL,
-                height: context.md ? 124 : 116,
-                lockedTopicName: 'invested times',
-              );
-            },
+          SectionImageLockOverlay(
+            imgLocation: isDark
+                ? context.sm
+                      ? ImgPaths.itLgD
+                      : ImgPaths.itD
+                : context.sm
+                ? ImgPaths.itLgL
+                : ImgPaths.itL,
+            height: context.md ? 124 : 116,
+            lockedTopicName: 'invested times',
           ),
+          
         if (!isLocked)
           BlocBuilder<DailyRollupBloc, DailyRollupState>(
             buildWhen: (previous, current) => current is DailyRollupLoaded,

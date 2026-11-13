@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/constants/img_paths.dart';
-import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/core/shared_files/widgets/section_image_lock_overlay.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
@@ -16,32 +15,29 @@ class PersonalBestsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: .start,
       children: [
         Text('Personal bests', style: TextUtils.title2(context)),
         const SizedBox(height: 8),
         if (isLocked)
-          BlocBuilder<UserPreferencesCubit, UserPreferencesState>(
-            buildWhen: (a, b) => a.isDark != b.isDark,
-            builder: (context, state) {
-              return SectionImageLockOverlay(
-                imgLocation: state.isDark
-                    ? context.minWidth(950)
-                          ? ImgPaths.pbLgD
-                          : context.minWidth(540)
-                          ? ImgPaths.pbMD
-                          : ImgPaths.pbD
-                    : context.minWidth(950)
-                    ? ImgPaths.pbLgL
-                    : context.minWidth(540)
-                    ? ImgPaths.pbML
-                    : ImgPaths.pbL,
-                height: 116,
-                lockedTopicName: 'personal bests',
-              );
-            },
+          SectionImageLockOverlay(
+            imgLocation: isDark
+                ? context.minWidth(950)
+                      ? ImgPaths.pbLgD
+                      : context.minWidth(540)
+                      ? ImgPaths.pbMD
+                      : ImgPaths.pbD
+                : context.minWidth(950)
+                ? ImgPaths.pbLgL
+                : context.minWidth(540)
+                ? ImgPaths.pbML
+                : ImgPaths.pbL,
+            height: 116,
+            lockedTopicName: 'personal bests',
           ),
+
         if (!isLocked)
           BlocBuilder<DailyRollupBloc, DailyRollupState>(
             buildWhen: (previous, current) => current is DailyRollupLoaded,
