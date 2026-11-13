@@ -36,16 +36,6 @@ class SessionsFilterTile extends StatelessWidget {
             crossAxisAlignment: .center,
             mainAxisAlignment: .spaceBetween,
             children: [
-              // BlocSelector<
-              //   UserPreferencesCubit,
-              //   UserPreferencesState,
-              //   PeriodRange
-              // >(
-              //   selector: (preferences) => preferences.sessionPeriod,
-              //   builder: (context, period) =>
-              //       Text(period.label, style: TextUtils.paragraphBold(context)),
-              // ),
-
               BlocBuilder<SessionBloc, SessionState>(
                 builder: (context, _) => Text(
                   context.read<SessionBloc>().period.label,

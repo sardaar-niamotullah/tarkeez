@@ -3,6 +3,8 @@ import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
+import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
+import 'package:tarkeez/core/shared_files/widgets/go_premium_dialog.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
@@ -31,6 +33,7 @@ class SessionInfoTile extends StatelessWidget {
     final resolvedProject = projects?.firstWhereOrNull(
       (p) => p.id == session.projectId,
     );
+    final isPremiumUser = context.select((PremiumCubit c) => c.isPremium);
 
     return Container(
       padding: .symmetric(
@@ -88,22 +91,28 @@ class SessionInfoTile extends StatelessWidget {
             iconColor: scheme.error,
             iconPath: SvgPaths.delete,
             backgroundColor: scheme.error.withValues(alpha: .1),
-            onTap: () => showDialog(
-              context: context,
-              builder: (_) => BlocConsumer<SessionBloc, SessionState>(
-                listener: (context, state) {
-                  if (state is SessionLoaded || state is SessionFailure) {
-                    context.pop();
-                  }
-                },
-                builder: (context, state) => DeleteDialog(
-                  isLoading: state is SessionLoading,
-                  onDeleteTap: () => context.read<SessionBloc>().add(
-                    DeleteSessionRequested(session),
+            onTap: () {
+              if (!isPremiumUser) {
+                showDialog(context: context, builder: (_) => GoPremiumDialog());
+                return;
+              }
+              showDialog(
+                context: context,
+                builder: (_) => BlocConsumer<SessionBloc, SessionState>(
+                  listener: (context, state) {
+                    if (state is SessionLoaded || state is SessionFailure) {
+                      context.pop();
+                    }
+                  },
+                  builder: (context, state) => DeleteDialog(
+                    isLoading: state is SessionLoading,
+                    onDeleteTap: () => context.read<SessionBloc>().add(
+                      DeleteSessionRequested(session),
+                    ),
                   ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
         ],
       ),
