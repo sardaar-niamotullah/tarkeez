@@ -64,7 +64,7 @@ class AppDrawer extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 40),
-              const SubscriptionCard(isPremiumMember: true),
+              const SubscriptionCard(),
               const SizedBox(height: 80),
 
               // ──────────────────────────────────────────────

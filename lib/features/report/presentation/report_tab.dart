@@ -1,5 +1,7 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/shared_files/buttons/go_premium_button.dart';
+import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/shared_files/widgets/floating_action_button_wrapper.dart';
 import 'package:tarkeez/core/utils/max_width_box.dart';
 import 'package:tarkeez/core/utils/primary_page_margin.dart';
@@ -19,6 +21,7 @@ class ReportTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final isPremium = context.select((PremiumCubit c) => c.isPremium);
     return Stack(
       children: [
         const Positioned.fill(child: HeroImageBackgroundLayer()),
@@ -78,7 +81,8 @@ class ReportTab extends StatelessWidget {
             ],
           ),
         ),
-        const FloatingActionButtonWrapper(actionButton: GoPremiumButton()),
+        if (!isPremium)
+          const FloatingActionButtonWrapper(actionButton: GoPremiumButton()),
       ],
     );
   }

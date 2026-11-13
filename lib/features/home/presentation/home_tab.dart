@@ -1,5 +1,7 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/shared_files/buttons/go_premium_button.dart';
+import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/shared_files/widgets/floating_action_button_wrapper.dart';
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
@@ -12,12 +14,13 @@ import 'package:tarkeez/features/sessions/presentation/session_log_interface.dar
 
 class HomeTab extends StatelessWidget {
   const new({super.key, required this.onMenuTap});
-  
+
   final VoidCallback onMenuTap;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final isPremium = context.select((PremiumCubit c) => c.isPremium);
     return Stack(
       children: [
         const Positioned.fill(child: HeroImageBackgroundLayer()),
@@ -81,7 +84,8 @@ class HomeTab extends StatelessWidget {
             ),
           ],
         ),
-        const FloatingActionButtonWrapper(actionButton: GoPremiumButton()),
+        if (!isPremium)
+          const FloatingActionButtonWrapper(actionButton: GoPremiumButton()),
       ],
     );
   }

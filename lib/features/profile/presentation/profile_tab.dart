@@ -25,7 +25,7 @@ class ProfileTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final isPremium = context.select((PremiumCubit c) => c.state);
+    final isPremium = context.select((PremiumCubit c) => c.isPremium);
 
     return Stack(
       children: [

@@ -1,7 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/database/tables/users.dart';
-import 'package:tarkeez/core/database/extensions/local_user_premium.dart';
 
 part 'users_dao.g.dart';
 
@@ -28,9 +27,9 @@ class UsersDao extends DatabaseAccessor<LocalDatabase> with _$UsersDaoMixin {
         UsersCompanion(historyResetAt: Value(value)),
       );
 
-  Stream<bool> watchIsPremium() =>
+  Stream<DateTime?> watchPremiumUntil() =>
       (select(users)..where((t) => t.id.equals(_uid))).watchSingleOrNull().map(
-        (u) => u?.isPremium ?? false,
+        (u) => DateTime.tryParse(u?.premiumUntil ?? ''),
       );
 
   Future<void> setPremiumUntil(String? value) =>

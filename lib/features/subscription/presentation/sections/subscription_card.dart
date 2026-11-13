@@ -1,5 +1,7 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tarkeez/core/routes/route_names.dart';
+import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/shared_files/widgets/bubble_decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -10,13 +12,14 @@ import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class SubscriptionCard extends StatelessWidget {
-  const new({super.key, required this.isPremiumMember});
-
-  final bool isPremiumMember;
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final premiumUntil = context.select((PremiumCubit c) => c.state);
+    final secondsLeft = premiumUntil?.difference(DateTime.now()).inSeconds ?? 0;
+    final isPremium = secondsLeft > 0;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -112,15 +115,13 @@ class SubscriptionCard extends StatelessWidget {
                         crossAxisAlignment: .start,
                         children: [
                           Text(
-                            isPremiumMember
-                                ? 'Premium membership'
-                                : ' Go premium',
+                            isPremium ? 'Premium membership' : ' Go premium',
                             style: TextUtils.paragraphBold(
                               context,
                               color: AppTheme.white,
                             ),
                           ),
-                          if (isPremiumMember)
+                          if (isPremium)
                             Row(
                               children: [
                                 Text(
@@ -132,7 +133,7 @@ class SubscriptionCard extends StatelessWidget {
                                 ),
                                 DurationTextUtils(
                                   showDayHour: true,
-                                  durationInSeconds: 123456,
+                                  durationInSeconds: secondsLeft,
                                   fontSizePrimary: 12,
                                   fontSizeSeconday: 10,
                                   fontColorPrimary: AppTheme.white,
