@@ -22,7 +22,7 @@ class _SessionsPageState extends State<SessionsPage> {
   @override
   void initState() {
     super.initState();
-    _bloc.add(FetchSessionsForPeriodRequested(PeriodRange.last3Days));
+    _bloc.add(FetchSessionsForPeriodRequested(PeriodRange.last5Days));
   }
 
   @override
