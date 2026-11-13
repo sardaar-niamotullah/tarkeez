@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/shared_files/buttons/custom_dropdown_button.dart';
+import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/core/shared_files/enums/user_preference_enums.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
@@ -26,6 +27,7 @@ class _TimelineSectionState extends State<TimelineSection> {
     final periodRange = context.select(
       (UserPreferencesCubit c) => c.state.reportPeriod,
     );
+    final isPremiumUser = context.select((PremiumCubit c) => c.isPremium);
     return Column(
       crossAxisAlignment: .start,
       children: [
@@ -50,7 +52,7 @@ class _TimelineSectionState extends State<TimelineSection> {
                 items: ChartType.values,
                 buttonColor: scheme.surface,
                 initialValue: _selectedChartType,
-                isLocked: (type) => type.isPremium,
+                isLocked: (type) => type.isPremium && !isPremiumUser,
                 labelBuilder: (type) => type.label,
                 onChanged: (value) {
                   setState(() => _selectedChartType = value);
