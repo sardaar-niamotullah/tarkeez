@@ -11,6 +11,7 @@ import 'package:tarkeez/features/projects/presentation/sections/pick_project_bot
 
 class SelectProjectButton extends StatelessWidget {
   const new({super.key, this.selectedProject, required this.onProjectSelected});
+  
   final ProjectModel? selectedProject;
   final ValueChanged<ProjectModel?> onProjectSelected;
 

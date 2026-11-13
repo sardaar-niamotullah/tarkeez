@@ -9,7 +9,7 @@ import 'package:tarkeez/features/projects/data/models/project_model.dart';
 part 'project_form_state.dart';
 
 class ProjectFormCubit extends Cubit<ProjectFormState> {
-  ProjectFormCubit() : super(const ProjectFormState()) {
+  new() : super(const ProjectFormState()) {
     nameController.addListener(() => _onChanged('name'));
   }
   final nameController = TextEditingController();

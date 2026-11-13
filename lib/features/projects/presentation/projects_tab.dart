@@ -87,7 +87,9 @@ class ProjectsTab extends StatelessWidget {
                 ],
               ),
             ),
-            FloatingActionButtonWrapper(actionButton: CreateNewProjectButton()),
+            const FloatingActionButtonWrapper(
+              actionButton: CreateNewProjectButton(),
+            ),
           ],
         );
       },

@@ -13,11 +13,13 @@ import 'package:tarkeez/features/projects/presentation/sections/widgets/project_
 
 class ProjectSelectionResult {
   const new(this.project);
+  
   final ProjectModel? project;
 }
 
 class PickProjectBottomSheet extends StatefulWidget {
   const new({super.key, this.selectedProject});
+
   final ProjectModel? selectedProject;
 
   @override
