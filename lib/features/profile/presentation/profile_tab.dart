@@ -25,7 +25,7 @@ class ProfileTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final isPremium = context.select((PremiumCubit c) => c.isPremium);
+    final isPremiumUser = context.select((PremiumCubit c) => c.isPremium);
 
     return Stack(
       children: [
@@ -85,7 +85,7 @@ class ProfileTab extends StatelessWidget {
                                             height:
                                                 ContainerDesignUtils.padding,
                                           ),
-                                          Heatmap(isLocked: !isPremium),
+                                          Heatmap(isLocked: !isPremiumUser),
                                         ],
                                       ),
                                     if (context.sm)
@@ -99,14 +99,14 @@ class ProfileTab extends StatelessWidget {
                                           Expanded(
                                             flex: 5,
                                             child: Heatmap(
-                                              isLocked: !isPremium,
+                                              isLocked: !isPremiumUser,
                                             ),
                                           ),
                                         ],
                                       ),
 
                                     SizedBox(height: 16),
-                                    PersonalBestsSection(isLocked: !isPremium),
+                                    PersonalBestsSection(isLocked: !isPremiumUser),
                                     SizedBox(height: 16),
                                     Text(
                                       'Invested times',
@@ -118,7 +118,7 @@ class ProfileTab extends StatelessWidget {
                                         crossAxisAlignment: .start,
                                         children: [
                                           InvestedTimesSection(
-                                            isLocked: !isPremium,
+                                            isLocked: !isPremiumUser,
                                           ),
                                           SizedBox(
                                             height:
@@ -130,7 +130,7 @@ class ProfileTab extends StatelessWidget {
                                                 .halfPadding,
                                           ),
                                           EraseAllDataButton(
-                                            isLocked: !isPremium,
+                                            isLocked: !isPremiumUser,
                                           ),
                                         ],
                                       ),
@@ -141,7 +141,7 @@ class ProfileTab extends StatelessWidget {
                                           Expanded(
                                             flex: 3,
                                             child: InvestedTimesSection(
-                                              isLocked: !isPremium,
+                                              isLocked: !isPremiumUser,
                                             ),
                                           ),
                                           SizedBox(
@@ -154,7 +154,7 @@ class ProfileTab extends StatelessWidget {
                                                 SyncButton(),
                                                 SizedBox(height: 11),
                                                 EraseAllDataButton(
-                                                  isLocked: !isPremium,
+                                                  isLocked: !isPremiumUser,
                                                 ),
                                               ],
                                             ),
@@ -176,7 +176,7 @@ class ProfileTab extends StatelessWidget {
             ],
           ),
         ),
-        if (!isPremium)
+        if (!isPremiumUser)
           const FloatingActionButtonWrapper(actionButton: GoPremiumButton()),
       ],
     );

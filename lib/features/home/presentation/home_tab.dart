@@ -20,7 +20,7 @@ class HomeTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final isPremium = context.select((PremiumCubit c) => c.isPremium);
+    final isPremiumUser = context.select((PremiumCubit c) => c.isPremium);
     return Stack(
       children: [
         const Positioned.fill(child: HeroImageBackgroundLayer()),
@@ -84,7 +84,7 @@ class HomeTab extends StatelessWidget {
             ),
           ],
         ),
-        if (!isPremium)
+        if (!isPremiumUser)
           const FloatingActionButtonWrapper(actionButton: GoPremiumButton()),
       ],
     );

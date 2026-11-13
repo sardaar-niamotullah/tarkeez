@@ -19,7 +19,7 @@ class SubscriptionCard extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final premiumUntil = context.select((PremiumCubit c) => c.state);
     final secondsLeft = premiumUntil?.difference(DateTime.now()).inSeconds ?? 0;
-    final isPremium = secondsLeft > 0;
+    final isPremiumUser = secondsLeft > 0;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -115,13 +115,13 @@ class SubscriptionCard extends StatelessWidget {
                         crossAxisAlignment: .start,
                         children: [
                           Text(
-                            isPremium ? 'Premium membership' : ' Go premium',
+                            isPremiumUser ? 'Premium membership' : ' Go premium',
                             style: TextUtils.paragraphBold(
                               context,
                               color: AppTheme.white,
                             ),
                           ),
-                          if (isPremium)
+                          if (isPremiumUser)
                             Row(
                               children: [
                                 Text(
@@ -132,8 +132,8 @@ class SubscriptionCard extends StatelessWidget {
                                   ),
                                 ),
                                 DurationTextUtils(
-                                  showDayHour: true,
                                   durationInSeconds: secondsLeft,
+                                  showDayHour: true,
                                   fontSizePrimary: 12,
                                   fontSizeSeconday: 10,
                                   fontColorPrimary: AppTheme.white,
