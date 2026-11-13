@@ -4,6 +4,7 @@ import 'package:flutter/material.dart' show ThemeMode;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/dependency_injection/di.dart';
+import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/shared_files/enums/user_preference_enums.dart';
 
 const _defaultPomodoroMinutes = 25;
@@ -70,6 +71,7 @@ class UserPreferencesCubit extends Cubit<UserPreferencesState> {
   new() : super(const UserPreferencesState());
 
   final _dao = getIt<LocalDatabase>().userPreferencesDao;
+  bool get _isPremiumUser => getIt<PremiumCubit>().isPremium;
 
   /// Loads the active account's settings: at startup, after sign-in and after
   /// an account switch. If it fails, the current values stay.
@@ -113,7 +115,7 @@ class UserPreferencesCubit extends Cubit<UserPreferencesState> {
 
   // PERIODS
   Future<void> setReportPeriod(PeriodRange period) async {
-    if (period.isPremium) return;
+    if (period.isPremium && !_isPremiumUser) return;
     emit(state.copyWith(reportPeriod: period));
     await _dao.setReportPeriod(period);
   }
