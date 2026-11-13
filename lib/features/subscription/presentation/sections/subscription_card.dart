@@ -110,12 +110,14 @@ class SubscriptionCard extends StatelessWidget {
                         SvgPaths.medalBold,
                         colorFilter: .mode(AppTheme.white, .srcIn),
                       ),
-                      const SizedBox(width: 6),
+                      const SizedBox(width: 8),
                       Column(
                         crossAxisAlignment: .start,
                         children: [
                           Text(
-                            isPremiumUser ? 'Premium membership' : ' Go premium',
+                            isPremiumUser
+                                ? 'Premium membership'
+                                : ' Go premium',
                             style: TextUtils.paragraphBold(
                               context,
                               color: AppTheme.white,
@@ -124,18 +126,23 @@ class SubscriptionCard extends StatelessWidget {
                           if (isPremiumUser)
                             Row(
                               children: [
-                                Text(
-                                  'Expires in ',
-                                  style: TextUtils.paragraphSmall(
-                                    context,
-                                    color: AppTheme.white.withValues(alpha: .7),
+                                Transform.translate(
+                                  offset: Offset(0, 1),
+                                  child: Text(
+                                    'Expires in ',
+                                    style: TextUtils.paragraphSmall(
+                                      context,
+                                      color: AppTheme.white.withValues(
+                                        alpha: .8,
+                                      ),
+                                    ),
                                   ),
                                 ),
                                 DurationTextUtils(
                                   durationInSeconds: secondsLeft,
                                   showDayHour: true,
-                                  fontSizePrimary: 12,
-                                  fontSizeSeconday: 10,
+                                  fontSizePrimary: 14,
+                                  fontSizeSeconday: 12,
                                   fontColorPrimary: AppTheme.white,
                                   fontColorSecondary: AppTheme.white,
                                 ),

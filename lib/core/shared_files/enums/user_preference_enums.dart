@@ -9,11 +9,12 @@ enum ChartType {
 }
 
 enum TrackingMode {
-  linear,
-  pomodoro(isPremium: true);
+  linear('Linear'),
+  pomodoro('Pomodoro', isPremium: true);
 
-  const TrackingMode({this.isPremium = false});
+  const new(this.label, {this.isPremium = false});
 
+  final String label;
   final bool isPremium;
 }
 
@@ -23,7 +24,7 @@ enum AppThemeColor {
   pink(isPremium: true),
   blue(isPremium: true);
 
-  const AppThemeColor({this.isPremium = false});
+  const new({this.isPremium = false});
 
   final bool isPremium;
 }

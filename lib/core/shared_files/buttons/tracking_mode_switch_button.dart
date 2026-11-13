@@ -1,35 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
+import 'package:tarkeez/core/shared_files/cubits/session_timer_cubit.dart';
+import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/core/shared_files/enums/user_preference_enums.dart';
 import 'package:tarkeez/core/shared_files/widgets/go_premium_dialog.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
-extension TrackingModeLabel on TrackingMode {
-  String label(String texts) {
-    switch (this) {
-      case TrackingMode.linear:
-        return 'Linear';
-      case TrackingMode.pomodoro:
-        return 'Pomodoro';
-    }
-  }
-}
-
 class TrackingModeSwitchButton extends StatelessWidget {
-  const new({super.key, required this.value, required this.onChanged});
-
-  final TrackingMode value;
-  final ValueChanged<TrackingMode> onChanged;
+  const new({super.key});
 
   static const List<TrackingMode> _options = TrackingMode.values;
 
   @override
   Widget build(BuildContext context) {
+    final isPremiumUser = context.select((PremiumCubit c) => c.isPremium);
+    final mode = context.select(
+      (UserPreferencesCubit c) => c.state.trackingMode,
+    );
     final count = _options.length;
     final scheme = Theme.of(context).colorScheme;
-    final selectedIndex = _options.indexOf(value);
+    final selectedIndex = _options.indexOf(mode);
 
     return SizedBox(
       width: 208,
@@ -42,6 +36,7 @@ class TrackingModeSwitchButton extends StatelessWidget {
         child: LayoutBuilder(
           builder: (context, constraints) {
             final segmentWidth = constraints.maxWidth / count;
+
             return Stack(
               children: [
                 AnimatedPositioned(
@@ -53,7 +48,7 @@ class TrackingModeSwitchButton extends StatelessWidget {
                   width: segmentWidth,
                   child: Container(
                     decoration: BoxDecoration(
-                      color: scheme.surface.withValues(alpha: 1),
+                      color: scheme.surface,
                       borderRadius: ContainerDesignUtils.allRadius,
                     ),
                   ),
@@ -67,21 +62,27 @@ class TrackingModeSwitchButton extends StatelessWidget {
                           child: GestureDetector(
                             behavior: HitTestBehavior.opaque,
                             onTap: () {
-                              if (option.isPremium) {
+                              if (option.isPremium && !isPremiumUser) {
                                 showDialog<void>(
                                   context: context,
                                   builder: (_) => const GoPremiumDialog(),
                                 );
                                 return;
                               }
-
-                              onChanged(option);
+                              // Tapping the active option must not stop a running session.
+                              if (option == mode) return;
+                              // Stop and save the current session before switching modes.
+                              context.read<SessionTimerCubit>().reset();
+                              context
+                                  .read<UserPreferencesCubit>()
+                                  .setTrackingMode(option);
                             },
+
                             child: _Label(
                               context: context,
-                              text: option.label('Linear'),
-                              active: option == value,
-                              isLocked: option.isPremium,
+                              text: option.label,
+                              active: option == mode,
+                              isLocked: option.isPremium && !isPremiumUser,
                               activeColor: scheme.primary,
                               inactiveColor: scheme.onTertiary.withValues(
                                 alpha: .9,
