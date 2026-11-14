@@ -80,7 +80,7 @@ class ProfileTab extends StatelessWidget {
                                     if (!context.sm)
                                       Column(
                                         children: [
-                                          Streaks(),
+                                          const Streaks(),
                                           SizedBox(
                                             height:
                                                 ContainerDesignUtils.padding,

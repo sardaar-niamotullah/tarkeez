@@ -14,7 +14,7 @@ class Streaks extends StatelessWidget {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        Text('Streaks', style: TextUtils.title2(context)),
+        Text('Streaks ', style: TextUtils.title2(context)),
         const SizedBox(height: 8),
         //––––––––––––––––––––––––––––––––––––––––––––––––––––––
         // Streak cards

@@ -4,12 +4,7 @@ import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/profile/presentation/sections/widgets/emoji_badge.dart';
 
 class StreakCard extends StatelessWidget {
-  final MainAxisAlignment mainAxisAlignment;
-  final CrossAxisAlignment crossAxisAlignment;
-  final String title;
-  final int streak;
-  final String emoji;
-  const StreakCard({
+  const new({
     super.key,
     required this.title,
     required this.streak,
@@ -17,6 +12,12 @@ class StreakCard extends StatelessWidget {
     this.mainAxisAlignment = .start,
     this.crossAxisAlignment = .start,
   });
+
+  final MainAxisAlignment mainAxisAlignment;
+  final CrossAxisAlignment crossAxisAlignment;
+  final String title;
+  final int streak;
+  final String emoji;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +51,7 @@ class StreakCard extends StatelessWidget {
                           .copyWith(fontWeight: .bold),
                     ),
                     Text(
-                      'day',
+                      streak < 1 ? ' day' : ' days',
                       style: TextUtils.paragraphBold(
                         context,
                         color: scheme.onTertiary.withValues(alpha: 0.6),
