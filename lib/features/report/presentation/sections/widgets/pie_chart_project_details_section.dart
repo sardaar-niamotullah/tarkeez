@@ -20,11 +20,13 @@ class PieChartProjectDetailsSection extends StatelessWidget {
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, i) {
           final entry = projectDurations[i];
-          final tileColor = i.isEven ? scheme.surface : scheme.onSurface;
-          return ProjectInfoTile(
-            project: entry.project,
-            tileColor: tileColor,
-            durationInSeconds: entry.durationInSeconds,
+          return Container(
+            margin: const .only(bottom: 8),
+            child: ProjectInfoTile(
+              project: entry.project,
+              tileColor: scheme.surface,
+              durationInSeconds: entry.durationInSeconds,
+            ),
           );
         },
       ),

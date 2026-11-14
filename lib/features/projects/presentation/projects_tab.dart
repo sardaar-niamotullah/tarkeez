@@ -67,10 +67,10 @@ class ProjectsTab extends StatelessWidget {
                               const ProjectPageInfoTile(),
                               const SizedBox(height: 16),
                               Text(
-                                'Your projects',
+                                'My projects',
                                 style: TextUtils.title2(context),
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: 10),
                             ],
                           ),
                           ProjectsList(

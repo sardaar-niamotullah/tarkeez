@@ -11,7 +11,7 @@ class TimeVisualizerBar extends StatelessWidget {
   final double slotWidth;
   final bool showOnlyHour;
 
-  const TimeVisualizerBar({
+  const new({
     super.key,
     required this.entry,
     required this.minutesPerPixel,
@@ -24,8 +24,10 @@ class TimeVisualizerBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final durationInMinutes = entry.seconds ~/ 60;
-    final barHeight = durationInMinutes <= 0
+    final barHeight = entry.seconds == 0
         ? 0.0
+        : durationInMinutes <= 1
+        ? 1.0
         : (durationInMinutes / minutesPerPixel).clamp(1.0, barAreaHeight);
 
     return SizedBox(
