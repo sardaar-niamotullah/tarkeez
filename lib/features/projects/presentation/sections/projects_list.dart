@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tarkeez/core/constants/freemium_limits.dart';
 import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
+import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/projects/data/models/dummy_project.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
@@ -24,16 +25,13 @@ class ProjectsList extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final isPremium = context.select((PremiumCubit c) => c.isPremium);
-    Color tileColor(int i) => i % 2 == 0 ? scheme.onSurface : scheme.surface;
+
     if (isInitialLoading) {
-      return SliverSkeletonizer(
-        enabled: true,
-        child: SliverList.builder(
-          itemCount: 4,
-          itemBuilder: (context, i) => ProjectInfoTile(
-            project: DummyProject.project,
-            tileColor: tileColor(i),
-          ),
+      return SliverToBoxAdapter(
+        child: LinearProgressIndicator(
+          minHeight: 3,
+          backgroundColor: scheme.surface,
+          borderRadius: ContainerDesignUtils.allRadius,
         ),
       );
     }

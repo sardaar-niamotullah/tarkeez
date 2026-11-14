@@ -29,8 +29,8 @@ class SessionsSection extends StatelessWidget {
               SliverToBoxAdapter(
                 child: LinearProgressIndicator(
                   minHeight: 3,
-                  borderRadius: ContainerDesignUtils.allRadius,
                   backgroundColor: scheme.surface,
+                  borderRadius: ContainerDesignUtils.allRadius,
                 ),
               ),
             if (sessions.isNotEmpty)

@@ -63,7 +63,7 @@ class ProjectsTab extends StatelessWidget {
                           SliverList.list(
                             children: [
                               const SizedBox(height: 16),
-                              const SimulationPart(),
+                              // const SimulationPart(),
                               const ProjectPageInfoTile(),
                               const SizedBox(height: 16),
                               Text(
