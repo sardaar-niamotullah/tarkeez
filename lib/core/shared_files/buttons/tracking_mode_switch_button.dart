@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:tarkeez/core/constants/freemium_limits.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/session_timer_cubit.dart';
@@ -65,7 +66,9 @@ class TrackingModeSwitchButton extends StatelessWidget {
                               if (option.isPremium && !isPremiumUser) {
                                 showDialog<void>(
                                   context: context,
-                                  builder: (_) => const GoPremiumDialog(),
+                                  builder: (_) => const GoPremiumDialog(
+                                    message: pomodoroLockedMessage,
+                                  ),
                                 );
                                 return;
                               }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:tarkeez/core/constants/freemium_limits.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/widgets/go_premium_dialog.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
@@ -27,7 +28,11 @@ class FilterDurationSelectorButton extends StatelessWidget {
       child: InkWell(
         onTap: () {
           if (isLocked) {
-            showDialog(context: context, builder: (_) => GoPremiumDialog());
+            showDialog(
+              context: context,
+              builder: (_) =>
+                  GoPremiumDialog(message: filterOptionLockedMessage),
+            );
             return;
           }
           onTap();

@@ -41,7 +41,11 @@ class _SessionsPageState extends State<SessionsPage> {
       // Body content.
       // ──────────────────────────────────────────────────────────
       content: SliverScrollMaxWidthBox(
-        slivers: [const SessionsFilterTile(), const SessionsSection()],
+        slivers: [
+          const SessionsFilterTile(),
+          SliverToBoxAdapter(child: const SizedBox(height: 4)),
+          const SessionsSection(),
+        ],
       ),
     );
   }

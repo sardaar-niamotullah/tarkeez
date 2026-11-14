@@ -76,7 +76,7 @@ class ProfileTab extends StatelessWidget {
                                 ),
                                 sliver: SliverList.list(
                                   children: [
-                                    SizedBox(height: 16),
+                                    const SizedBox(height: 16),
                                     if (!context.sm)
                                       Column(
                                         children: [
@@ -105,9 +105,11 @@ class ProfileTab extends StatelessWidget {
                                         ],
                                       ),
 
-                                    SizedBox(height: 16),
-                                    PersonalBestsSection(isLocked: !isPremiumUser),
-                                    SizedBox(height: 16),
+                                    const SizedBox(height: 16),
+                                    PersonalBestsSection(
+                                      isLocked: !isPremiumUser,
+                                    ),
+                                    const SizedBox(height: 16),
                                     Text(
                                       'Invested times',
                                       style: TextUtils.title2(context),
@@ -129,9 +131,7 @@ class ProfileTab extends StatelessWidget {
                                             height: ContainerDesignUtils
                                                 .halfPadding,
                                           ),
-                                          EraseAllDataButton(
-                                            isLocked: !isPremiumUser,
-                                          ),
+                                          const EraseAllDataButton(),
                                         ],
                                       ),
                                     if (context.lg)
@@ -151,17 +151,15 @@ class ProfileTab extends StatelessWidget {
                                             flex: 2,
                                             child: Column(
                                               children: [
-                                                SyncButton(),
+                                                const SyncButton(),
                                                 SizedBox(height: 11),
-                                                EraseAllDataButton(
-                                                  isLocked: !isPremiumUser,
-                                                ),
+                                                const EraseAllDataButton(),
                                               ],
                                             ),
                                           ),
                                         ],
                                       ),
-                                    SizedBox(height: 80),
+                                    const SizedBox(height: 80),
                                   ],
                                 ),
                               ),

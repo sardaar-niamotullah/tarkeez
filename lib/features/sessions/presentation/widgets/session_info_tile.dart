@@ -3,6 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
+import 'package:tarkeez/core/constants/freemium_limits.dart';
 import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/shared_files/widgets/go_premium_dialog.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
@@ -18,10 +19,9 @@ import 'package:tarkeez/features/sessions/data/models/session_model.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/session_project_pill.dart';
 
 class SessionInfoTile extends StatelessWidget {
-  const new({super.key, required this.session, required this.backgroundColor});
+  const new({super.key, required this.session});
 
   final SessionModel session;
-  final Color backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +36,13 @@ class SessionInfoTile extends StatelessWidget {
     final isPremiumUser = context.select((PremiumCubit c) => c.isPremium);
 
     return Container(
+      margin: const .symmetric(vertical: 4),
       padding: .symmetric(
         horizontal: ContainerDesignUtils.padding,
         vertical: ContainerDesignUtils.halfPadding,
       ),
       decoration: BoxDecoration(
-        color: backgroundColor,
+        color: scheme.onSurface,
         borderRadius: ContainerDesignUtils.allRadius,
       ),
       child: Row(
@@ -93,7 +94,11 @@ class SessionInfoTile extends StatelessWidget {
             backgroundColor: scheme.error.withValues(alpha: .1),
             onTap: () {
               if (!isPremiumUser) {
-                showDialog(context: context, builder: (_) => GoPremiumDialog());
+                showDialog(
+                  context: context,
+                  builder: (_) =>
+                      GoPremiumDialog(message: deleteSessionLockedMessage),
+                );
                 return;
               }
               showDialog(

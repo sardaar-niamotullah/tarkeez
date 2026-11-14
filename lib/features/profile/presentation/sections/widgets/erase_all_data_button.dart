@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:tarkeez/core/constants/freemium_limits.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
+import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
 import 'package:tarkeez/core/shared_files/widgets/delete_dialog.dart';
 import 'package:tarkeez/core/shared_files/widgets/go_premium_dialog.dart';
@@ -12,35 +14,12 @@ import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class EraseAllDataButton extends StatelessWidget {
-  const new({super.key, required this.isLocked});
-
-  final bool isLocked;
-
-  void _onErasePressed(BuildContext context) {
-    if (isLocked) {
-      showDialog(context: context, builder: (_) => GoPremiumDialog());
-      return;
-    }
-
-    final syncBloc = context.read<SyncBloc>();
-    showDialog(
-      context: context,
-      builder: (dialogContext) => DeleteDialog(
-        message:
-            'This will permanently delete all your Tarkeez data, including projects, sessions, and stats.\n\n'
-            'If you have a Premium subscription, it will remain active, so you can start fresh as a Premium member.',
-        onDeleteTap: () {
-          // Navigator.of(dialogContext).pop();
-          dialogContext.pop();
-          syncBloc.add(const HistoryResetRequested());
-        },
-      ),
-    );
-  }
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final isPremiumUser = context.select((PremiumCubit c) => c.isPremium);
 
     return BlocConsumer<SyncBloc, SyncState>(
       // Only the answer to an erase.
@@ -60,14 +39,12 @@ class EraseAllDataButton extends StatelessWidget {
           case SyncPhase.resetOffline:
             showErrorSnackBar(
               context,
-              message:
-                  'No internet connection. Connect to the internet and try again.',
+              message: 'No internet connection. Connect to the internet and try again.',
             );
           default:
             showErrorSnackBar(
               context,
-              message:
-                  'Could not confirm the erase. Please check your connection and try again.',
+              message: 'Could not confirm the erase. Please check your connection and try again.',
             );
         }
       },
@@ -75,7 +52,6 @@ class EraseAllDataButton extends StatelessWidget {
         final isErasing = state.status.phase == SyncPhase.resetting;
 
         return Container(
-          // height: context.md ? 121 : null,
           padding: const .symmetric(
             horizontal: ContainerDesignUtils.padding,
             vertical: 6,
@@ -102,7 +78,31 @@ class EraseAllDataButton extends StatelessWidget {
                     isLoading: isErasing,
                     backgroundColorRight: scheme.error,
                     backgroundColorLeft: AppTheme.errorBright,
-                    onPressed: () => _onErasePressed(context),
+                    onPressed: () {
+                      if (!isPremiumUser) {
+                        showDialog(
+                          context: context,
+                          builder: (_) => GoPremiumDialog(
+                            message: eraseAllDataLockedMessage,
+                          ),
+                        );
+                        return;
+                      }
+
+                      final syncBloc = context.read<SyncBloc>();
+                      showDialog(
+                        context: context,
+                        builder: (dialogContext) => DeleteDialog(
+                          message:
+                              'This will permanently delete all your Tarkeez data, including projects, sessions, and stats.\n\n'
+                              'If you have a Premium subscription, it will remain active, so you can start fresh as a Premium member.',
+                          onDeleteTap: () {
+                            dialogContext.pop();
+                            syncBloc.add(const HistoryResetRequested());
+                          },
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

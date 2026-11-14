@@ -41,12 +41,7 @@ class SessionsSection extends StatelessWidget {
                     padding: .symmetric(
                       horizontal: context.lg ? 0 : ContainerDesignUtils.padding,
                     ),
-                    child: SessionInfoTile(
-                      session: sessions[index],
-                      backgroundColor: index.isEven
-                          ? scheme.surface
-                          : scheme.onSurface,
-                    ),
+                    child: SessionInfoTile(session: sessions[index]),
                   );
                 },
               ),

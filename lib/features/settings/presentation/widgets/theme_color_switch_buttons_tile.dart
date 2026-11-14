@@ -1,3 +1,4 @@
+import 'package:tarkeez/core/constants/freemium_limits.dart';
 import 'package:tarkeez/core/shared_files/buttons/theme_color_switch_button.dart';
 import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
@@ -19,7 +20,7 @@ class ThemeColorSwitchButtonsTile extends StatelessWidget {
     if (themeColor.isPremium && !isPremiumUser) {
       showDialog<void>(
         context: context,
-        builder: (_) => const GoPremiumDialog(),
+        builder: (_) => const GoPremiumDialog(message: themeColorLockedMessage),
       );
       return;
     }
