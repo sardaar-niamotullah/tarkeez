@@ -33,8 +33,9 @@ class CreateNewProjectButton extends StatelessWidget {
 
           showDialog(
             context: context,
-            builder: (_) =>
-                canAdd ? const AddOrUpdateProjectDialog() : GoPremiumDialog(),
+            builder: (_) => canAdd
+                ? const AddOrUpdateProjectDialog()
+                : GoPremiumDialog(message: projectLimitMessage),
           );
         },
         mouseCursor: SystemMouseCursors.click,

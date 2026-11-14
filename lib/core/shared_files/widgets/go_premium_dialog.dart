@@ -8,7 +8,9 @@ import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class GoPremiumDialog extends StatelessWidget {
-  const new({super.key});
+  const new({super.key, this.message});
+
+  final String? message;
 
   @override
   Widget build(BuildContext context) {
@@ -22,8 +24,9 @@ class GoPremiumDialog extends StatelessWidget {
           // Message
           // ──────────────────────────────────────────────
           Text(
-            'Unlock this and all other Premium features to get the most out of your Tarkeez experience.\n\n'
-            'Upgrade to Premium today and take your productivity to the next level.',
+            message ??
+                'Unlock this and all other Premium features to get the most out of your Tarkeez experience.\n\n'
+                    'Upgrade to Premium today and take your productivity to the next level.',
             style: TextUtils.paragraph(context),
           ),
           const SizedBox(height: 16),

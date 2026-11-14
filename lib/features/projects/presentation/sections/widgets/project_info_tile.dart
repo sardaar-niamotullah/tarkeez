@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tarkeez/core/constants/freemium_limits.dart';
 import 'package:tarkeez/core/constants/project_colors.dart';
 import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/action_button.dart';
+import 'package:tarkeez/core/shared_files/widgets/go_premium_dialog.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
@@ -18,7 +20,7 @@ class ProjectInfoTile extends StatelessWidget {
     required this.tileColor,
     this.isLocked = false,
   });
-  
+
   final ProjectModel? project;
   final int? durationInSeconds;
   final Color tileColor;
@@ -59,7 +61,7 @@ class ProjectInfoTile extends StatelessWidget {
                   : Center(
                       child: SvgPicture.asset(
                         SvgPaths.lock,
-                        height: 16,
+                        height: 12,
                         colorFilter: .mode(scheme.onTertiary, .srcIn),
                       ),
                     ),
@@ -84,7 +86,9 @@ class ProjectInfoTile extends StatelessWidget {
                   backgroundColor: scheme.primary.withValues(alpha: .1),
                   onTap: () => showDialog(
                     context: context,
-                    builder: (_) => AddOrUpdateProjectDialog(project: project),
+                    builder: (_) => isLocked
+                        ? GoPremiumDialog(message: projectLimitMessage)
+                        : AddOrUpdateProjectDialog(project: project),
                   ),
                 ),
                 const SizedBox(width: 6),

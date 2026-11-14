@@ -647,7 +647,7 @@ A store refund notification or the gateway webhook calls `refund_purchase`. A re
 
 ### Projects 
 
-a free account can create a project only while it has fewer than 2. Premium has no limit. After premium ends, only the 2 newest projects can be picked for a session. All projects can still be edited and deleted. When one of the two newest is deleted, the next newest takes its place.
+A free account can create a project only while it has fewer than 2. Premium has no limit. After premium ends, only the 2 newest projects stay active: they can be edited and picked for a session. Older projects are locked and can only be deleted. When an active project is deleted, the next newest takes its place.
 
 ## Design notes
 

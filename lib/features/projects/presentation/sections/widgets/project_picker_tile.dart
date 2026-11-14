@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:tarkeez/core/constants/project_colors.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 
 class ProjectPickerTile extends StatelessWidget {
   const new({super.key, required this.index, this.project});
-  
+
   final int index;
   final ProjectModel? project;
 
@@ -19,7 +17,6 @@ class ProjectPickerTile extends StatelessWidget {
     final resolvedColor = project != null
         ? projectColors[project!.colorId]
         : scheme.onTertiary;
-    final bool isLocked = true;
 
     return Row(
       children: [
@@ -48,16 +45,6 @@ class ProjectPickerTile extends StatelessWidget {
             width: 20,
             height: 20,
             decoration: BoxDecoration(shape: .circle, color: resolvedColor),
-            child: !isLocked
-                // ignore: dead_code
-                ? null
-                : Center(
-                    child: SvgPicture.asset(
-                      SvgPaths.lock,
-                      height: 10,
-                      colorFilter: .mode(scheme.onTertiary, .srcIn),
-                    ),
-                  ),
           ),
         ),
         const SizedBox(width: 28),
