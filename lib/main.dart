@@ -8,6 +8,7 @@ import 'package:tarkeez/core/app/app_bloc_observer.dart';
 import 'package:tarkeez/core/app/app_startup_tasks.dart';
 import 'package:tarkeez/core/constants/secret_keys.dart';
 import 'package:tarkeez/core/dependency_injection/di.dart';
+import 'package:tarkeez/core/services/session_notification_service.dart';
 import 'package:tarkeez/core/services/sync_service.dart';
 import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
@@ -16,6 +17,7 @@ Future<void> main() async {
   final stopwatch = Stopwatch()..start();
 
   WidgetsFlutterBinding.ensureInitialized();
+  SessionNotificationService.init(); 
   await dotenv.load();
 
   await Supabase.initialize(

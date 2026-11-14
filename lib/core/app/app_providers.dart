@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/dependency_injection/di.dart';
+import 'package:tarkeez/core/services/session_notification_service.dart';
 import 'package:tarkeez/core/services/sound_service.dart';
 import 'package:tarkeez/core/shared_files/cubits/navigation_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
@@ -32,8 +33,20 @@ class AppProviders extends StatelessWidget {
         BlocProvider(create: (_) => getIt<DailyRollupBloc>()),
         BlocProvider(create: (_) => getIt<ProjectRollupBloc>()),
         BlocProvider(
-          create: (_) =>
-              SessionTimerCubit(getIt<SessionBloc>(), getIt<SoundService>()),
+          create: (_) {
+            final timer = SessionTimerCubit(
+              getIt<SessionBloc>(),
+              getIt<SoundService>(),
+            );
+            // Keeps itself alive through its stream subscriptions and cleans up
+            // when the cubit closes.
+            SessionNotificationService(
+              timer,
+              getIt<UserPreferencesCubit>(),
+              getIt<DailyRollupBloc>(),
+            );
+            return timer;
+          },
         ),
       ],
       child: MultiBlocListener(
