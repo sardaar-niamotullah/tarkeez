@@ -8,9 +8,10 @@ import 'package:tarkeez/core/utils/sliver_scroll_max_width_box.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/others/hire_us/presentation/widgets/hiring_term_tile.dart';
 import 'package:tarkeez/features/others/hire_us/presentation/widgets/tech_platfrom_card.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HireUsPage extends StatelessWidget {
-  const HireUsPage({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +22,13 @@ class HireUsPage extends StatelessWidget {
       actions: [ActionPageIcon(iconPath: SvgPaths.appStore)],
       bottomNavContent: PrimaryButton(
         title: 'Form link',
-        onPressed: () {},
         iconPath: SvgPaths.document,
+        onPressed: () async {
+          await launchUrl(
+            Uri.parse('https://forms.gle/u26n8KfPU6FwCbpNA'),
+            mode: .externalApplication,
+          );
+        },
       ),
       // ──────────────────────────────────────────────────────────
       // Body content.
