@@ -72,8 +72,8 @@ class EraseAllDataButton extends StatelessWidget {
                 mainAxisAlignment: .center,
                 children: [
                   PrimaryButton(
-                    title: 'Erase',
-                    width: 96,
+                    title: 'Erase all',
+                    width: 108,
                     enable: !isErasing,
                     isLoading: isErasing,
                     backgroundColorRight: scheme.error,

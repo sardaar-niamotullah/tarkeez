@@ -131,7 +131,7 @@ class ProfileTab extends StatelessWidget {
                                             child: Column(
                                               children: [
                                                 const SyncButton(),
-                                                SizedBox(height: 11),
+                                                const SizedBox(height: 11),
                                                 const EraseAllDataButton(),
                                               ],
                                             ),

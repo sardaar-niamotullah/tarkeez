@@ -27,16 +27,20 @@ class SyncButton extends StatelessWidget {
         final s = state.status;
         switch (s.phase) {
           case SyncPhase.succeeded:
-            showSuccessSnackBar(context, message: 'Everything is up to date.');
+            showSuccessSnackBar(
+              context,
+              message: 'Your data is safely backed up.',
+            );
           case SyncPhase.offline:
             showErrorSnackBar(
               context,
-              message: 'No internet connection. Try again when you are online.',
+              message: 'No internet connection. Connect to the internet and try again.',
             );
           case SyncPhase.failed:
             showErrorSnackBar(
               context,
-              message: s.message ?? 'Sync failed. Please try again.',
+              message:
+                  s.message ?? 'Couldn\'t back up your data. Please try again.',
             );
           default:
             break;
@@ -59,15 +63,15 @@ class SyncButton extends StatelessWidget {
             mainAxisAlignment: .spaceBetween,
             children: [
               Text(
-                'Sync data to cloud.',
+                'Back up your data online.',
                 style: TextUtils.paragraphBold(context),
               ),
               Column(
                 mainAxisAlignment: .center,
                 children: [
                   PrimaryButton(
-                    title: 'Sync',
-                    width: 96,
+                    title: 'Back up',
+                    width: 108,
                     // Also disabled while an erase is running.
                     enable: !state.status.isBusy,
                     isLoading: isSyncing,
