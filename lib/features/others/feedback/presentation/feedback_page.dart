@@ -8,6 +8,7 @@ import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/sliver_scroll_max_width_box.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class FeedbackPage extends StatelessWidget {
   const new({super.key});
@@ -69,10 +70,15 @@ class FeedbackPage extends StatelessWidget {
           const SizedBox(height: 24),
           PrimaryButton(
             title: 'Report link',
-            onPressed: () {},
             iconPath: SvgPaths.document,
-            backgroundColorLeft: AppTheme.red,
             backgroundColorRight: scheme.error,
+            backgroundColorLeft: AppTheme.red,
+            onPressed: () async {
+              await launchUrl(
+                Uri.parse('https://forms.gle/SiYznKHjdeCtEQ5x9'),
+                mode: .externalApplication,
+              );
+            },
           ),
           const SizedBox(height: 8),
         ],
