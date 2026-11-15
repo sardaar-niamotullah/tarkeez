@@ -12,6 +12,7 @@ import 'package:tarkeez/features/auth/bloc/auth_bloc.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/app_drawer_item.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/social_links.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/version_and_terms_tile.dart';
+import 'package:tarkeez/features/others/user_manual/presentation/user_manual_bottom_sheet.dart';
 import 'package:tarkeez/features/settings/presentation/settings_bottom_sheet.dart';
 import 'package:tarkeez/features/subscription/presentation/sections/subscription_card.dart';
 
@@ -92,7 +93,12 @@ class AppDrawer extends StatelessWidget {
                       AppDrawerItem(
                         title: 'User manual',
                         iconPath: SvgPaths.book,
-                        onTap: () => context.push(RouteNames.userManualPage),
+                        onTap: () => showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          builder: (BuildContext context) =>
+                              const UserManualBottomSheet(),
+                        ),
                       ),
                       AppDrawerItem(
                         title: 'Error report',

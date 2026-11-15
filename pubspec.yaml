@@ -47,6 +47,7 @@ dependencies:
   url_launcher: ^6.3.3
   flutter_foreground_task: ^11.0.3
   package_info_plus: ^10.2.2
+  youtube_player_iframe: ^6.0.2
 
 dev_dependencies:
   flutter_test:
