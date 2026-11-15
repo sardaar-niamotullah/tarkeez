@@ -9,21 +9,25 @@ import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/core/utils/app_clock.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
 
-typedef _Content = ({
-  String title,
-  String text,
-  List<NotificationButton> buttons,
-});
+typedef _Content = ({String title, List<NotificationButton> buttons});
+
+// Notification buttons only take text, so these are characters, not icons.
+const _pause = '⏸️';
+const _play = '▶️';
+const _reset = '🔄';
+const _close = '❌';
 
 /// Shows a notification while a session runs. It is a foreground service,
 /// so Android keeps the app alive when it is minimized.
+/// It stays after a stop or reset (with a play button) until the user closes it.
 class SessionNotificationService {
-  SessionNotificationService(this._timer, this._prefs, this._daily) {
+  new(this._timer, this._prefs, this._daily) {
     if (!Platform.isAndroid) return;
     FlutterForegroundTask.addTaskDataCallback(_onButton);
     _subs.addAll([
       _timer.stream.listen((_) => _sync(), onDone: dispose),
       _prefs.stream.listen((_) => _sync()),
+      _daily.stream.listen((_) => _sync()),
     ]);
   }
 
@@ -34,6 +38,9 @@ class SessionNotificationService {
   final _subs = <StreamSubscription<dynamic>>[];
   Future<void> _queue = Future.value();
   String? _lastKey;
+
+  /// True from the first running session until the user taps close.
+  bool _pinned = false;
 
   /// Call once in main(), before runApp.
   static void init() {
@@ -63,45 +70,55 @@ class SessionNotificationService {
   _Content? _content() {
     final s = _timer.state;
     final project = s.project?.name ?? 'No project';
+    const reset = NotificationButton(id: 'reset', text: _reset);
+    const close = NotificationButton(id: 'close', text: _close);
+    NotificationButton toggle(String symbol) =>
+        NotificationButton(id: 'toggle', text: symbol);
 
     if (_prefs.state.isPomodoro) {
-      final paused = !s.isRunning && s.left != null;
-      if (!s.isRunning && !paused) return null;
+      final left = s.left;
+      final paused = !s.isRunning && left != null && left > Duration.zero;
+      if (!s.isRunning && !paused && !_pinned) return null;
 
-      final end = s.endsAt;
-      final leftMs = end != null
-          ? end.difference(AppClock.now()).inMilliseconds
-          : s.left?.inMilliseconds ?? 0;
-      final seconds = leftMs <= 0 ? 0 : (leftMs + 999) ~/ 1000;
+      final int seconds;
+      if (s.isRunning) {
+        final ms = s.endsAt?.difference(AppClock.now()).inMilliseconds ?? 0;
+        seconds = ms <= 0 ? 0 : (ms + 999) ~/ 1000;
+      } else if (paused) {
+        seconds = (left.inMilliseconds + 999) ~/ 1000;
+      } else {
+        seconds = _prefs.state.pomodoroMinutes * 60; // idle: the picked length
+      }
 
       return (
-        title: '${seconds ~/ 60}:${_two(seconds % 60)}',
-        text: paused ? 'Paused · $project' : project,
+        title: '${seconds ~/ 60}:${_two(seconds % 60)} · $project',
         buttons: [
-          NotificationButton(id: 'toggle', text: paused ? 'Resume' : 'Pause'),
-          const NotificationButton(id: 'reset', text: 'Reset'),
+          toggle(s.isRunning ? _pause : _play),
+          if (s.isRunning || paused) reset,
+          close,
         ],
       );
     }
 
-    if (!s.isRunning) return null;
+    if (!s.isRunning && !_pinned) return null;
     final today = switch (_daily.state) {
       DailyRollupLoaded d => d.today,
       _ => 0,
     };
     final total = Duration(seconds: today);
     return (
-      title: '${total.inHours}:${_two(total.inMinutes % 60)}',
-      text: project,
-      buttons: const [NotificationButton(id: 'toggle', text: 'Stop')],
+      title: '${total.inHours}:${_two(total.inMinutes % 60)} · $project',
+      buttons: [toggle(s.isRunning ? _pause : _play), close],
     );
   }
 
   static String _two(int n) => n.toString().padLeft(2, '0');
 
-  // Runs on every timer tick, but only talks to Android when the text changes:
-  // once a minute in linear mode, once a second in pomodoro mode.
+  // Runs on every timer tick, but only talks to Android when the title or the
+  // buttons change: once a minute in linear mode, once a second in pomodoro mode.
   void _sync() {
+    if (_timer.state.isRunning) _pinned = true;
+
     final c = _content();
     if (c == null) {
       if (_lastKey != null) {
@@ -110,8 +127,7 @@ class SessionNotificationService {
       }
       return;
     }
-    final key =
-        '${c.title}|${c.text}|${c.buttons.map((b) => b.text).join(',')}';
+    final key = '${c.title}|${c.buttons.map((b) => b.text).join(',')}';
     if (key == _lastKey) return;
     _lastKey = key;
     _run(() => _show(c));
@@ -121,11 +137,15 @@ class SessionNotificationService {
     if (await FlutterForegroundTask.isRunningService) {
       await FlutterForegroundTask.updateService(
         notificationTitle: c.title,
-        notificationText: c.text,
+        notificationText: '',
         notificationButtons: c.buttons,
       );
       return;
     }
+    // Starting the service is heavy. Wait until the play/pause animation is
+    // done, so the button does not stutter.
+    await Future<void>.delayed(const Duration(milliseconds: 400));
+
     // Android 13+: without this permission the notification stays hidden.
     if (await FlutterForegroundTask.checkNotificationPermission() !=
         NotificationPermission.granted) {
@@ -134,7 +154,7 @@ class SessionNotificationService {
     await FlutterForegroundTask.startService(
       serviceId: 256,
       notificationTitle: c.title,
-      notificationText: c.text,
+      notificationText: '',
       notificationButtons: c.buttons,
       callback: sessionTaskCallback,
     );
@@ -165,11 +185,17 @@ class SessionNotificationService {
         );
       case 'reset':
         _timer.reset();
+      case 'close':
+        // Stops and saves a running session, then removes the notification.
+        _pinned = false;
+        _timer.reset();
+        _sync(); // reset emits nothing when already idle
     }
   }
 
   Future<void> dispose() async {
     if (!Platform.isAndroid) return;
+    _pinned = false;
     for (final s in _subs) {
       await s.cancel();
     }

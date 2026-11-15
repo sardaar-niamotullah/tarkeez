@@ -37,7 +37,7 @@ class _CoreProjectPieChartState extends State<CoreProjectPieChart> {
     const touchedExtra = 5.0;
     return PieChart(
       PieChartData(
-        sectionsSpace: 2,
+        sectionsSpace: 4,
         centerSpaceRadius: centerRadius,
         borderData: FlBorderData(show: true),
         sections: _showingSections(
