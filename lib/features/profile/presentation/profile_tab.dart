@@ -4,16 +4,14 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/shared_files/buttons/go_premium_button.dart';
 import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
-import 'package:tarkeez/core/shared_files/widgets/avatar_circle.dart';
-import 'package:tarkeez/core/shared_files/widgets/custom_app_bar.dart';
 import 'package:tarkeez/core/shared_files/widgets/floating_action_button_wrapper.dart';
 import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/sliver_scroll_max_width_box.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
-import 'package:tarkeez/features/auth/bloc/auth_bloc.dart';
 import 'package:tarkeez/features/profile/presentation/sections/heatmap.dart';
 import 'package:tarkeez/features/profile/presentation/sections/personal_bests_section.dart';
+import 'package:tarkeez/features/profile/presentation/sections/profile_app_bar.dart';
 import 'package:tarkeez/features/profile/presentation/sections/streaks.dart';
 import 'package:tarkeez/features/profile/presentation/sections/widgets/erase_all_data_button.dart';
 import 'package:tarkeez/features/profile/presentation/sections/widgets/sync_button.dart';
@@ -34,26 +32,7 @@ class ProfileTab extends StatelessWidget {
           bottom: false,
           child: Column(
             children: [
-              BlocBuilder<AuthBloc, AuthState>(
-                builder: (context, state) {
-                  final user = state is AuthSuccess ? state.user : null;
-                  return CustomAppBar(
-                    title: user?.fullName ?? 'Profile',
-                    isBackButtonEnabled: false,
-                    actions: [
-                      Transform.translate(
-                        offset: Offset(0, context.md ? 5 : 0),
-                        child: AvatarCircle(
-                          radius: context.md ? 18 : 16,
-                          isEditable: false,
-                          name: user?.fullName,
-                          imageUrl: user?.avatarUrl,
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
+              const ProfileAppBar(),
               Expanded(
                 child: Skeletonizer(
                   enabled: false,

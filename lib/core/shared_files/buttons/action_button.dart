@@ -47,21 +47,22 @@ class _ActionButtonState extends State<ActionButton> {
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: widget.onTap,
-          customBorder: const CircleBorder(),
-          mouseCursor: SystemMouseCursors.click,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeInOut,
-            height: widget.boxSize,
-            width: widget.boxSize,
-            decoration: BoxDecoration(
-              color: targetBackgroundColor,
-              shape: BoxShape.circle,
-            ),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        height: widget.boxSize,
+        width: widget.boxSize,
+        decoration: BoxDecoration(
+          color: targetBackgroundColor,
+          shape: BoxShape.circle,
+        ),
+        child: Material(
+          color: Colors.transparent,
+          shape: const CircleBorder(),
+          child: InkWell(
+            onTap: widget.onTap,
+            customBorder: const CircleBorder(),
+            mouseCursor: SystemMouseCursors.click,
             child: Center(
               child: TweenAnimationBuilder<Color?>(
                 tween: ColorTween(end: targetIconColor),
