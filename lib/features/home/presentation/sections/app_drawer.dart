@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tarkeez/core/shared_files/buttons/theme_switch_button.dart';
+import 'package:tarkeez/core/shared_files/widgets/update_app_card.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -114,6 +115,7 @@ class AppDrawer extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               const SocialLinks(),
+              const UpdateAppCard(),
               const SizedBox(height: 8),
               const VersionAndTermsTile(),
             ],

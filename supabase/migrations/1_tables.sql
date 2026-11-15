@@ -1,4 +1,87 @@
 -- =================================================================
+-- APP VERSIONS
+-- =================================================================
+
+-- TABLE
+CREATE TABLE IF NOT EXISTS public.app_versions (
+    platform TEXT PRIMARY KEY,
+    latest_version TEXT NOT NULL,
+    latest_build INTEGER NOT NULL,
+    minimum_supported_build INTEGER NOT NULL,
+    store_url TEXT NOT NULL,
+    release_notes TEXT,
+    update_notification_enabled BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+-- CONSTRAINTS
+ALTER TABLE public.app_versions DROP CONSTRAINT IF EXISTS app_versions_platform_check;
+ALTER TABLE public.app_versions
+ADD CONSTRAINT app_versions_platform_check
+CHECK (platform IN ('android', 'ios', 'macos', 'windows', 'linux', 'web'));
+
+-- Format: 1.2.3
+ALTER TABLE public.app_versions DROP CONSTRAINT IF EXISTS app_versions_latest_version_check;
+ALTER TABLE public.app_versions
+ADD CONSTRAINT app_versions_latest_version_check
+CHECK (latest_version ~ '^[0-9]+\.[0-9]+\.[0-9]+$');
+
+ALTER TABLE public.app_versions DROP CONSTRAINT IF EXISTS app_versions_latest_build_check;
+ALTER TABLE public.app_versions
+ADD CONSTRAINT app_versions_latest_build_check
+CHECK (latest_build >= 1);
+
+-- The oldest build that may still run can never be newer than the latest build.
+ALTER TABLE public.app_versions DROP CONSTRAINT IF EXISTS app_versions_minimum_supported_build_check;
+ALTER TABLE public.app_versions
+ADD CONSTRAINT app_versions_minimum_supported_build_check
+CHECK (minimum_supported_build BETWEEN 1 AND latest_build);
+
+ALTER TABLE public.app_versions DROP CONSTRAINT IF EXISTS app_versions_store_url_check;
+ALTER TABLE public.app_versions
+ADD CONSTRAINT app_versions_store_url_check
+CHECK (store_url ~ '^https://');
+
+ALTER TABLE public.app_versions DROP CONSTRAINT IF EXISTS app_versions_release_notes_length_check;
+ALTER TABLE public.app_versions
+ADD CONSTRAINT app_versions_release_notes_length_check
+CHECK (release_notes IS NULL OR char_length(trim(release_notes)) BETWEEN 1 AND 1000);
+
+-- RLS
+ALTER TABLE public.app_versions ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "allow_select_app_versions" ON public.app_versions;
+CREATE POLICY "allow_select_app_versions"
+ON public.app_versions
+FOR SELECT
+TO authenticated
+USING (true);
+
+-- The app may only read. Rows are changed from the Supabase dashboard or the SQL editor.
+REVOKE ALL ON public.app_versions FROM anon, authenticated;
+GRANT SELECT ON public.app_versions TO authenticated;
+
+-- SEED
+-- Replace the URLs with the real store links.
+INSERT INTO public.app_versions
+    (platform, latest_version, latest_build, minimum_supported_build, store_url)
+VALUES
+    ('android', '1.0.0', 1, 1, 'https://play.google.com/store/apps/details?id=YOUR_PACKAGE_ID'),
+    ('ios',     '1.0.0', 1, 1, 'https://apps.apple.com/app/idYOUR_APP_ID'),
+    ('macos',   '1.0.0', 1, 1, 'https://apps.apple.com/app/idYOUR_APP_ID'),
+    ('windows', '1.0.0', 1, 1, 'https://example.com'),
+    ('linux',   '1.0.0', 1, 1, 'https://example.com'),
+    ('web',     '1.0.0', 1, 1, 'https://example.com')
+ON CONFLICT (platform) DO NOTHING;
+
+-- RELEASING A NEW VERSION (example)
+-- UPDATE public.app_versions
+-- SET latest_version = '1.1.0',
+--     latest_build = 2,
+--     release_notes = 'Pomodoro mode and a faster sync.'
+-- WHERE platform = 'android';
+
+
+-- =================================================================
 -- USERS
 -- =================================================================
 
