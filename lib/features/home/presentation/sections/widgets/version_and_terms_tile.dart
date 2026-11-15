@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tarkeez/core/routes/route_names.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
@@ -13,6 +14,14 @@ class VersionAndTermsTile extends StatefulWidget {
 
 class _VersionAndTermsTileState extends State<VersionAndTermsTile> {
   bool _isHovered = false;
+
+  late final Future<PackageInfo> _packageInfo;
+
+  @override
+  void initState() {
+    super.initState();
+    _packageInfo = PackageInfo.fromPlatform();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,12 +52,18 @@ class _VersionAndTermsTileState extends State<VersionAndTermsTile> {
             ),
           ),
         ),
-        Text(
-          'v1.0.0',
-          style: TextUtils.paragraphSmallBold(
-            context,
-            color: scheme.onTertiary.withValues(alpha: .5),
-          ),
+        FutureBuilder<PackageInfo>(
+          future: _packageInfo,
+          builder: (context, snapshot) {
+            final version = snapshot.data?.version;
+            return Text(
+              version == null ? '' : 'v$version',
+              style: TextUtils.paragraphSmallBold(
+                context,
+                color: scheme.onTertiary.withValues(alpha: .5),
+              ),
+            );
+          },
         ),
       ],
     );
