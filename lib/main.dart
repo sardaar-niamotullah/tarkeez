@@ -7,7 +7,7 @@ import 'package:tarkeez/core/app/app.dart';
 import 'package:tarkeez/core/app/app_bloc_observer.dart';
 import 'package:tarkeez/core/app/app_startup_tasks.dart';
 import 'package:tarkeez/core/constants/secret_keys.dart';
-import 'package:tarkeez/core/dependency_injection/di.dart';
+import 'package:tarkeez/core/app/dependency_injection.dart';
 import 'package:tarkeez/core/services/session_notification_service.dart';
 import 'package:tarkeez/core/services/sync_service.dart';
 import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';

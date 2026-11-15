@@ -1,4 +1,4 @@
-import 'package:tarkeez/core/dependency_injection/di.dart';
+import 'package:tarkeez/core/app/dependency_injection.dart';
 import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';

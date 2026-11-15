@@ -1,5 +1,5 @@
 import 'package:go_router/go_router.dart';
-import 'package:tarkeez/core/dependency_injection/di.dart';
+import 'package:tarkeez/core/app/dependency_injection.dart';
 import 'package:tarkeez/core/routes/route_names.dart';
 import 'package:tarkeez/core/routes/router_refresh_stream.dart';
 import 'package:tarkeez/features/auth/bloc/auth_bloc.dart';
