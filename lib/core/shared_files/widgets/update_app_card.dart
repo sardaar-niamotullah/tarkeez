@@ -1,5 +1,5 @@
-import 'package:go_router/go_router.dart';
-import 'package:tarkeez/core/routes/route_names.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tarkeez/core/shared_files/cubits/app_update_cubit.dart';
 import 'package:tarkeez/core/shared_files/widgets/bubble_decorations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -7,6 +7,7 @@ import 'package:tarkeez/core/constants/svg_paths.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class UpdateAppCard extends StatelessWidget {
   const new({super.key});
@@ -14,16 +15,18 @@ class UpdateAppCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final storeUrl = context.watch<AppUpdateCubit>().state;
+    if (storeUrl == null) return const SizedBox.shrink();
 
     return Container(
       margin: const .only(top: 12),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {
-            // context.pop();
-            // context.push(RouteNames.subscriptionPage);
-          },
+          onTap: () => launchUrl(
+            Uri.parse(storeUrl),
+            mode: LaunchMode.externalApplication,
+          ),
           mouseCursor: SystemMouseCursors.click,
           borderRadius: ContainerDesignUtils.allRadius,
           child: Ink(

@@ -120,4 +120,10 @@ class SyncRemoteSource {
   static List<String> _ids(Object? raw) => [
     for (final id in (raw as List? ?? const [])) id as String,
   ];
+
+  Future<Map<String, dynamic>> fetchAppVersion(String platform) => _client
+      .from('app_versions')
+      .select('latest_build, store_url, update_notification_enabled')
+      .eq('platform', platform)
+      .single();
 }

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/dependency_injection/di.dart';
 import 'package:tarkeez/core/services/session_notification_service.dart';
 import 'package:tarkeez/core/services/sound_service.dart';
+import 'package:tarkeez/core/shared_files/cubits/app_update_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/navigation_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/session_timer_cubit.dart';
@@ -32,6 +33,7 @@ class AppProviders extends StatelessWidget {
         BlocProvider(create: (_) => getIt<SessionBloc>()),
         BlocProvider(create: (_) => getIt<DailyRollupBloc>()),
         BlocProvider(create: (_) => getIt<ProjectRollupBloc>()),
+        BlocProvider(create: (_) => getIt<AppUpdateCubit>()),
         BlocProvider(
           create: (_) {
             final timer = SessionTimerCubit(
