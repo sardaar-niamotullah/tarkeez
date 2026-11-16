@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tarkeez/core/constants/app_limits.dart';
 import 'package:tarkeez/core/services/sound_service.dart';
 import 'package:tarkeez/core/utils/app_clock.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
@@ -194,6 +195,17 @@ class SessionTimerCubit extends Cubit<SessionTimerState> {
       _finish();
       return;
     }
+
+    // Time limit: save exactly the limit, even if this tick came late.
+    final limitEnd = startedAt.add(maxRunningSession);
+    if (!now.isBefore(limitEnd)) {
+      _save(startedAt, limitEnd);
+      _sound.playBell();
+      _timer?.cancel();
+      emit(SessionTimerState.idle(state.project));
+      return;
+    }
+
     emit(
       state.copyWith(
         tick: (now.difference(anchor).inMilliseconds / 500).floor(),
