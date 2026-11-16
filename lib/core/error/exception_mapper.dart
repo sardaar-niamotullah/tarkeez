@@ -1,5 +1,5 @@
 import 'package:tarkeez/core/error/app_exception.dart';
-import 'package:tarkeez/core/logger/app_logger.dart';
+import 'package:tarkeez/core/error/app_logger.dart';
 import 'package:http/http.dart' show ClientException;
 import 'package:supabase_flutter/supabase_flutter.dart'
     as supabase

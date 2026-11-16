@@ -1,5 +1,5 @@
 import 'package:tarkeez/core/error/app_exception.dart';
-import 'package:tarkeez/core/logger/app_logger.dart';
+import 'package:tarkeez/core/error/app_logger.dart';
 
 sealed class Result<T> {
   const Result();
