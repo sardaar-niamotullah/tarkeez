@@ -5,6 +5,7 @@ import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
 import 'package:tarkeez/core/utils/app_clock.dart';
 import 'package:tarkeez/core/utils/date_time_formatter.dart';
+import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/simulate_sessions.dart';
 
 class SimulationPart extends StatelessWidget {
@@ -53,6 +54,41 @@ class SimulationPart extends StatelessWidget {
         ),
         SizedBox(height: 16),
       ],
+    );
+  }
+}
+
+class FakeClockText extends StatefulWidget {
+  const new({super.key});
+
+  @override
+  State<FakeClockText> createState() => _FakeClockTextState();
+}
+
+class _FakeClockTextState extends State<FakeClockText> {
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      '🕰️ fake clock: ${DateTimeFormatter.readableDateTime(AppClock.now())}',
+      style: TextUtils.paragraphBold(context),
+      textAlign: .center,
     );
   }
 }

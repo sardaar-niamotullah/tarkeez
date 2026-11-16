@@ -70,6 +70,7 @@ class HomeTab extends StatelessWidget {
                                 const SessionLogInterface(),
                                 const HomeBarChartSection(),
                               ],
+                              // FakeClockText(),
                               const SizedBox(height: 16),
                               const RecentProjectRollupsSection(),
                               const SizedBox(height: 48),

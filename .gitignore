@@ -1,4 +1,6 @@
 .env
+screenshots
+screenshots/
 
 # Miscellaneous
 *.class
