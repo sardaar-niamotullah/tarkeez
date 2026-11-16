@@ -1,6 +1,7 @@
 import 'package:flutter_svg/svg.dart';
 import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:flutter/material.dart';
+import 'package:tarkeez/core/theme/theme.dart';
 
 class ThemeColorSwitchButton extends StatelessWidget {
   const new({
@@ -32,22 +33,16 @@ class ThemeColorSwitchButton extends StatelessWidget {
             child: !isLocked
                 ? SvgPicture.asset(
                     height: 12,
-                    width: 12,
                     AssetPaths.doneOutline,
                     colorFilter: .mode(
-                      Theme.of(context).colorScheme.onTertiary
-                          .withValues(alpha: isActive ? 1 : 0),
+                      AppTheme.white.withValues(alpha: isActive ? 1 : 0),
                       .srcIn,
                     ),
                   )
                 : SvgPicture.asset(
                     height: 10,
-                    width: 10,
                     AssetPaths.lock,
-                    colorFilter: .mode(
-                      Theme.of(context).colorScheme.onTertiary,
-                      .srcIn,
-                    ),
+                    colorFilter: .mode(AppTheme.white, .srcIn),
                   ),
           ),
         ),

@@ -55,8 +55,8 @@ class AddOrUpdateProjectDialog extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   ProjectColorOptionsSection(
-                    selectedColorId: formState.selectedColorId,
                     onColorSelected: formCubit.selectColor,
+                    selectedColorId: formState.selectedColorId,
                   ),
                   const SizedBox(height: 24),
                   BlocSelector<ProjectBloc, ProjectState, bool>(

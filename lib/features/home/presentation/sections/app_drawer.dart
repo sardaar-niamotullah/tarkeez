@@ -65,9 +65,9 @@ class AppDrawer extends StatelessWidget {
                   const ThemeSwitchButton(),
                 ],
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 36),
               const SubscriptionCard(),
-              const SizedBox(height: 80),
+              const SizedBox(height: 64),
 
               // ──────────────────────────────────────────────
               // Drawer items

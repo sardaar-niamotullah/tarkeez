@@ -24,7 +24,7 @@ class SimulationPart extends StatelessWidget {
                 title: 'Fake time',
                 onPressed: () {
                   AppClock.fakeCurrentTime(
-                    DateTime(2026, 9, 12, 03, 00),
+                    DateTime(2026, 11, 16, 23, 30),
                     speed: 60,
                   );
                   showSuccessSnackBar(

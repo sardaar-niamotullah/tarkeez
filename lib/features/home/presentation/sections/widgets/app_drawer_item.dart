@@ -26,6 +26,7 @@ class AppDrawerItem extends StatelessWidget {
       },
       borderRadius: ContainerDesignUtils.allRadius,
       child: ListTile(
+        dense: true,
         mouseCursor: SystemMouseCursors.click,
         leading: SvgPicture.asset(
           iconPath,

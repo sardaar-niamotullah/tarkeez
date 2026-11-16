@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class SettingsBottomSheetOptionTile extends StatelessWidget {
-  final String title;
-  final Widget action;
-  final bool isLastTile;
-
-  const SettingsBottomSheetOptionTile({
+  const new({
     super.key,
     required this.title,
     required this.action,
     this.isLastTile = false,
   });
+
+  final String title;
+  final Widget action;
+  final bool isLastTile;
 
   @override
   Widget build(BuildContext context) {
