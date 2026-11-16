@@ -1,6 +1,6 @@
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_overlay_initializer.dart';
 import 'package:flutter/material.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 
 // ──────────────────────────────────────────────
@@ -11,7 +11,7 @@ void showSuccessSnackBar(BuildContext context, {required String message}) {
     context,
     title: 'Success',
     message: message,
-    iconPath: SvgPaths.doneBold,
+    iconPath: AssetPaths.doneBold,
     backgroundColor: Theme.of(context).colorScheme.primary,
     backgroundColorBright: Theme.of(context).colorScheme.primaryContainer,
     textColor: AppTheme.white,
@@ -24,7 +24,7 @@ void showWarningSnackBar(BuildContext context, {required String message}) {
     context,
     title: 'Warning',
     message: message,
-    iconPath: SvgPaths.exclamation,
+    iconPath: AssetPaths.exclamation,
     backgroundColor: Theme.of(context).colorScheme.secondary,
     backgroundColorBright: Theme.of(context).colorScheme.secondaryContainer,
     textColor: AppTheme.black,
@@ -37,7 +37,7 @@ void showErrorSnackBar(BuildContext context, {required String message}) {
     context,
     title: 'Error',
     message: message,
-    iconPath: SvgPaths.exclamation,
+    iconPath: AssetPaths.exclamation,
     backgroundColor: AppTheme.error,
     backgroundColorBright: AppTheme.errorBright,
     textColor: AppTheme.white,

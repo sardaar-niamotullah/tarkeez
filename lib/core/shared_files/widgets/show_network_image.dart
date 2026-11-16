@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -31,7 +31,7 @@ class ShowNetworkImage extends StatelessWidget {
       ),
       errorWidget: (context, url, error) => Center(
         child: SvgPicture.asset(
-          SvgPaths.exclamation,
+          AssetPaths.exclamation,
           height: size / 1.5,
           width: size / 1.5,
           colorFilter: .mode(Theme.of(context).colorScheme.onSurface, .srcIn),

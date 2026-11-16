@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:tarkeez/core/constants/freemium_limits.dart';
+import 'package:tarkeez/core/constants/app_limits.dart';
 import 'package:tarkeez/core/constants/project_colors.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/action_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/go_premium_dialog.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
@@ -60,7 +60,7 @@ class ProjectInfoTile extends StatelessWidget {
                   ? null
                   : Center(
                       child: SvgPicture.asset(
-                        SvgPaths.lock,
+                        AssetPaths.lock,
                         height: 12,
                         colorFilter: .mode(scheme.onTertiary, .srcIn),
                       ),
@@ -81,7 +81,7 @@ class ProjectInfoTile extends StatelessWidget {
             Row(
               children: [
                 ActionButton(
-                  iconPath: SvgPaths.editPen,
+                  iconPath: AssetPaths.editPen,
                   iconColor: scheme.primary,
                   backgroundColor: scheme.primary.withValues(alpha: .1),
                   onTap: () => showDialog(

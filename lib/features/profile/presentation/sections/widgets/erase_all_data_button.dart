@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tarkeez/core/constants/freemium_limits.dart';
+import 'package:tarkeez/core/constants/app_limits.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';

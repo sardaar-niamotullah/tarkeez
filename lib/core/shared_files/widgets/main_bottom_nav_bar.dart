@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/shared_files/cubits/navigation_cubit.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/bottom_nav_bar_icon.dart';
@@ -64,7 +64,7 @@ class MainBottomNavBar extends StatelessWidget {
                 // ────────────────────────────────────────────────────────────
                 BottomNavigationBarItem(
                   icon: BottomNavBarIcon(
-                    iconPath: SvgPaths.home,
+                    iconPath: AssetPaths.home,
                     isActive: currentIndex == 0,
                   ),
                   label: 'Home',
@@ -74,7 +74,7 @@ class MainBottomNavBar extends StatelessWidget {
                 // ────────────────────────────────────────────────────────────
                 BottomNavigationBarItem(
                   icon: BottomNavBarIcon(
-                    iconPath: SvgPaths.pieChart,
+                    iconPath: AssetPaths.pieChart,
                     isActive: currentIndex == 1,
                   ),
                   label: 'Reports',
@@ -84,7 +84,7 @@ class MainBottomNavBar extends StatelessWidget {
                 // ────────────────────────────────────────────────────────────
                 BottomNavigationBarItem(
                   icon: BottomNavBarIcon(
-                    iconPath: SvgPaths.projects,
+                    iconPath: AssetPaths.projects,
                     isActive: currentIndex == 2,
                   ),
                   label: 'Projects',
@@ -94,7 +94,7 @@ class MainBottomNavBar extends StatelessWidget {
                 // ────────────────────────────────────────────────────────────
                 BottomNavigationBarItem(
                   icon: BottomNavBarIcon(
-                    iconPath: SvgPaths.user,
+                    iconPath: AssetPaths.user,
                     isActive: currentIndex == 3,
                   ),
                   label: 'Profile',
@@ -106,7 +106,7 @@ class MainBottomNavBar extends StatelessWidget {
                 if (context.sm)
                   BottomNavigationBarItem(
                     icon: BottomNavBarIcon(
-                      iconPath: SvgPaths.hamburger,
+                      iconPath: AssetPaths.hamburger,
                       isActive: currentIndex == 4,
                     ),
                     label: 'Menu',

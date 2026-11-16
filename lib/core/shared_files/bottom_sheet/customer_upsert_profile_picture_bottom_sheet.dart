@@ -1,7 +1,7 @@
 import 'package:tarkeez/core/shared_files/bottom_sheet/bottom_sheet_title_tile.dart';
 import 'package:tarkeez/core/shared_files/bottom_sheet/bottom_sheet_wrapper.dart';
 import 'package:flutter/material.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 
 class CustomerUpsertProfilePictureBottomSheet extends StatelessWidget {
   const new({super.key});
@@ -12,7 +12,7 @@ class CustomerUpsertProfilePictureBottomSheet extends StatelessWidget {
       contents: [
         BottomSheetTitleTile(
           title: 'Image selected',
-          iconPath: SvgPaths.gitBranch,
+          iconPath: AssetPaths.gitBranch,
         ),
         const SizedBox(height: 24),
 

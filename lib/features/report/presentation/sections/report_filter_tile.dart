@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/custom_icon_button.dart';
 import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/core/shared_files/enums/user_preference_enums.dart';
@@ -59,7 +59,7 @@ class ReportFilterTile extends StatelessWidget {
                   Row(
                     children: [
                       CustomIconButton(
-                        iconPath: SvgPaths.filter,
+                        iconPath: AssetPaths.filter,
                         onTap: () => showModalBottomSheet(
                           context: context,
                           builder: (_) => const ReportFilterBottomSheet(),

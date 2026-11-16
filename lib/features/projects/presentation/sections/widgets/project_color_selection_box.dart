@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 
 class ProjectColorSelectionBox extends StatelessWidget {
   final Color color;
@@ -31,13 +31,10 @@ class ProjectColorSelectionBox extends StatelessWidget {
               color: color.withValues(alpha: .25),
             ),
             child: Ink(
-              decoration: BoxDecoration(
-                shape: .circle,
-                color: color,
-              ),
+              decoration: BoxDecoration(shape: .circle, color: color),
               child: Center(
                 child: SvgPicture.asset(
-                  SvgPaths.doneOutline,
+                  AssetPaths.doneOutline,
                   height: 24,
                   colorFilter: .mode(
                     isSelected ? scheme.onTertiary : Colors.transparent,

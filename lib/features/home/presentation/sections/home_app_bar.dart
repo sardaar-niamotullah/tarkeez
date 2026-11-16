@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/app_drawer_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
 import 'package:tarkeez/core/utils/app_bar_utils.dart';
@@ -27,7 +27,7 @@ class HomeAppBar extends StatelessWidget {
           crossAxisAlignment: context.md ? .end : .center,
           children: [
             AppDrawerButton(onTap: onAppMenuTap),
-            ActionPageIcon(iconPath: SvgPaths.logoOriginal, size: 28),
+            ActionPageIcon(iconPath: AssetPaths.logoOriginal, size: 28),
           ],
         ),
       ),

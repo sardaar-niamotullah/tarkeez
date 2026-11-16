@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/shared_files/widgets/go_premium_dialog.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
@@ -77,7 +77,7 @@ class _CustomDropdownButtonState<T> extends State<CustomDropdownButton<T>> {
               ),
               if (locked)
                 SvgPicture.asset(
-                  SvgPaths.lock,
+                  AssetPaths.lock,
                   height: 16,
                   colorFilter: .mode(
                     scheme.onTertiary.withValues(alpha: .8),
@@ -138,7 +138,7 @@ class _CustomDropdownButtonState<T> extends State<CustomDropdownButton<T>> {
                     style: TextUtils.title3Normal(context),
                   ),
                   SvgPicture.asset(
-                    SvgPaths.arrowDown,
+                    AssetPaths.arrowDown,
                     colorFilter: .mode(
                       scheme.onTertiary.withValues(alpha: .8),
                       .srcIn,

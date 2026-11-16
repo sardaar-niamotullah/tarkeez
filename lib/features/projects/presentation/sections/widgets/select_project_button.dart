@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/constants/project_colors.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
@@ -11,7 +11,7 @@ import 'package:tarkeez/features/projects/presentation/sections/pick_project_bot
 
 class SelectProjectButton extends StatelessWidget {
   const new({super.key, this.selectedProject, required this.onProjectSelected});
-  
+
   final ProjectModel? selectedProject;
   final ValueChanged<ProjectModel?> onProjectSelected;
 
@@ -73,7 +73,7 @@ class SelectProjectButton extends StatelessWidget {
                     ),
                   )
                 : SvgPicture.asset(
-                    SvgPaths.add,
+                    AssetPaths.add,
                     height: 28,
                     width: 28,
                     colorFilter: .mode(scheme.primary, .srcIn),

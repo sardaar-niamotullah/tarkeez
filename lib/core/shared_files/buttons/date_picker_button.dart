@@ -1,7 +1,7 @@
 import 'package:tarkeez/core/shared_files/bottom_sheet/pick_date_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
@@ -86,7 +86,7 @@ class _DatePickerButtonState extends State<DatePickerButton> {
             mainAxisAlignment: .center,
             children: [
               SvgPicture.asset(
-                SvgPaths.calendarAdd,
+                AssetPaths.calendarAdd,
                 height: 18,
                 colorFilter: .mode(
                   scheme.onTertiary.withValues(alpha: .75),

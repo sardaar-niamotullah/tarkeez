@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tarkeez/core/constants/freemium_limits.dart';
+import 'package:tarkeez/core/constants/app_limits.dart';
 import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';

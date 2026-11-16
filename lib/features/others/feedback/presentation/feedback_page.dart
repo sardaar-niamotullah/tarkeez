@@ -1,5 +1,5 @@
 import 'package:flutter_svg/svg.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
 import 'package:tarkeez/core/shared_files/widgets/stand_alone_page_outer_structure.dart';
@@ -17,7 +17,7 @@ class FeedbackPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return StandAlonePageOuterStructure(
       title: 'Error report',
-      actions: [ActionPageIcon(iconPath: SvgPaths.bugMagnifer)],
+      actions: [ActionPageIcon(iconPath: AssetPaths.bugMagnifer)],
       isLoading: false,
       content: SliverScrollMaxWidthBox(
         slivers: [
@@ -70,7 +70,7 @@ class FeedbackPage extends StatelessWidget {
           const SizedBox(height: 24),
           PrimaryButton(
             title: 'Report link',
-            iconPath: SvgPaths.document,
+            iconPath: AssetPaths.document,
             backgroundColorRight: scheme.error,
             backgroundColorLeft: AppTheme.red,
             onPressed: () async {
@@ -122,7 +122,7 @@ class FeedbackPage extends StatelessWidget {
           PrimaryButton(
             title: 'Form link',
             onPressed: () {},
-            iconPath: SvgPaths.document,
+            iconPath: AssetPaths.document,
           ),
           const SizedBox(height: 8),
         ],
@@ -170,7 +170,7 @@ class FeedbackPage extends StatelessWidget {
                   scrollDirection: .horizontal,
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, i) => SvgPicture.asset(
-                    SvgPaths.starBold,
+                    AssetPaths.starBold,
                     colorFilter: .mode(AppTheme.trophyGold, .srcIn),
                   ),
                 ),

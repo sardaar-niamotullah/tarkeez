@@ -1,7 +1,7 @@
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 
 class BkashPaymentButton extends StatelessWidget {
   final String title;
@@ -26,7 +26,7 @@ class BkashPaymentButton extends StatelessWidget {
             backgroundColorRight: backgroundColorRight,
           ),
         ),
-        SvgPicture.asset(SvgPaths.bkash, height: 100, width: 100),
+        SvgPicture.asset(AssetPaths.bkash, height: 100, width: 100),
       ],
     );
   }

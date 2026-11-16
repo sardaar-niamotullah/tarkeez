@@ -1,7 +1,7 @@
 import 'package:tarkeez/core/shared_files/widgets/amount_rich_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
@@ -25,7 +25,7 @@ class SubscriptionBottomSheetTotalAmountTile extends StatelessWidget {
       child: ListTile(
         dense: true,
         leading: SvgPicture.asset(
-          SvgPaths.medal,
+          AssetPaths.medal,
           colorFilter: .mode(iconColor, .srcIn),
         ),
         title: Text(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/shared_files/buttons/action_button.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SocialLinks extends StatelessWidget {
@@ -13,7 +13,7 @@ class SocialLinks extends StatelessWidget {
       mainAxisAlignment: .spaceBetween,
       children: [
         ActionButton(
-          iconPath: SvgPaths.instagram,
+          iconPath: AssetPaths.instagram,
           hoverIconColor: scheme.tertiary,
           hoverBackgroundColor: scheme.onTertiary,
           onTap: () async {
@@ -24,7 +24,7 @@ class SocialLinks extends StatelessWidget {
           },
         ),
         ActionButton(
-          iconPath: SvgPaths.x,
+          iconPath: AssetPaths.x,
           hoverIconColor: scheme.tertiary,
           hoverBackgroundColor: scheme.onTertiary,
           onTap: () async {
@@ -35,7 +35,7 @@ class SocialLinks extends StatelessWidget {
           },
         ),
         ActionButton(
-          iconPath: SvgPaths.linkedin,
+          iconPath: AssetPaths.linkedin,
           hoverIconColor: scheme.tertiary,
           hoverBackgroundColor: scheme.onTertiary,
           onTap: () async {
@@ -46,7 +46,7 @@ class SocialLinks extends StatelessWidget {
           },
         ),
         ActionButton(
-          iconPath: SvgPaths.facebook,
+          iconPath: AssetPaths.facebook,
           hoverIconColor: scheme.tertiary,
           hoverBackgroundColor: scheme.onTertiary,
           onTap: () async {

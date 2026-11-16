@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
@@ -12,7 +12,7 @@ class LogoWidget extends StatelessWidget {
     return Stack(
       clipBehavior: .none,
       children: [
-        Center(child: SvgPicture.asset(SvgPaths.logoOriginal, height: 128)),
+        Center(child: SvgPicture.asset(AssetPaths.logoOriginal, height: 128)),
         Positioned(
           left: 0,
           right: 0,

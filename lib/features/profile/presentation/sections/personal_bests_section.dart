@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
-import 'package:tarkeez/core/constants/img_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/shared_files/widgets/section_image_lock_overlay.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
@@ -25,15 +25,15 @@ class PersonalBestsSection extends StatelessWidget {
           SectionImageLockOverlay(
             imgLocation: isDark
                 ? context.minWidth(950)
-                      ? ImgPaths.pbLgD
+                      ? AssetPaths.pbLgD
                       : context.minWidth(540)
-                      ? ImgPaths.pbMD
-                      : ImgPaths.pbD
+                      ? AssetPaths.pbMD
+                      : AssetPaths.pbD
                 : context.minWidth(950)
-                ? ImgPaths.pbLgL
+                ? AssetPaths.pbLgL
                 : context.minWidth(540)
-                ? ImgPaths.pbML
-                : ImgPaths.pbL,
+                ? AssetPaths.pbML
+                : AssetPaths.pbL,
             height: 116,
             lockedTopicName: 'personal bests',
           ),

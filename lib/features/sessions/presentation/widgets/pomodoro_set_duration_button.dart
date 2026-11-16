@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/shared_files/cubits/session_timer_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
@@ -79,7 +79,7 @@ class PomodoroSetDurationButton extends StatelessWidget {
                     showInfoSnackBar(
                       context,
                       message: 'Today\'s total invested time: $durationText',
-                      iconPath: SvgPaths.stopwatch,
+                      iconPath: AssetPaths.stopwatch,
                     );
                   },
                   mouseCursor: SystemMouseCursors.click,

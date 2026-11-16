@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/shared_files/bottom_sheet/bottom_sheet_title_tile.dart';
 import 'package:tarkeez/core/shared_files/bottom_sheet/bottom_sheet_wrapper.dart';
 import 'package:tarkeez/core/shared_files/buttons/cancel_button.dart';
@@ -62,7 +62,7 @@ class _SetPomodoroDurationBottomSheetState
       contents: [
         BottomSheetTitleTile(
           title: 'Set pomodoro length',
-          iconPath: SvgPaths.stopwatch,
+          iconPath: AssetPaths.stopwatch,
         ),
         const SizedBox(height: 8),
         SizedBox(

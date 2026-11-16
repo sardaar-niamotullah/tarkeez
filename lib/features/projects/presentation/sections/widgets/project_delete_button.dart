@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/action_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/delete_dialog.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
@@ -16,7 +16,7 @@ class ProjectDeleteButton extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return ActionButton(
       iconColor: scheme.error,
-      iconPath: SvgPaths.delete,
+      iconPath: AssetPaths.delete,
       backgroundColor: scheme.error.withValues(alpha: .1),
       onTap: () => showDialog(
         context: context,

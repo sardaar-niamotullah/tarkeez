@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:tarkeez/core/constants/freemium_limits.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/app_limits.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/shared_files/widgets/go_premium_dialog.dart';
 import 'package:tarkeez/core/theme/theme.dart';
@@ -62,7 +62,7 @@ class CreateNewProjectButton extends StatelessWidget {
               ),
               const SizedBox(width: 6),
               SvgPicture.asset(
-                SvgPaths.projects,
+                AssetPaths.projects,
                 colorFilter: .mode(AppTheme.white, .srcIn),
               ),
             ],

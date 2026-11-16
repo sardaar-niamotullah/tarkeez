@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tarkeez/core/constants/img_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 
 class FreemiumProfileCover extends StatelessWidget {
@@ -23,7 +23,7 @@ class FreemiumProfileCover extends StatelessWidget {
             child: Image.asset(
               fit: .cover,
               alignment: .bottomCenter,
-              ImgPaths.heroImage,
+              AssetPaths.heroImage,
             ),
           ),
           Container(

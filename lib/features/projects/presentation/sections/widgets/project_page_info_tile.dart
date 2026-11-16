@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
@@ -29,7 +29,7 @@ class ProjectPageInfoTile extends StatelessWidget {
               borderRadius: ContainerDesignUtils.allRadius,
             ),
             child: SvgPicture.asset(
-              SvgPaths.lightBulb,
+              AssetPaths.lightBulb,
               colorFilter: .mode(AppTheme.lightningGold, .srcIn),
             ),
           ),

@@ -1,5 +1,5 @@
 import 'package:flutter_svg/svg.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:flutter/material.dart';
 
 class ThemeColorSwitchButton extends StatelessWidget {
@@ -33,7 +33,7 @@ class ThemeColorSwitchButton extends StatelessWidget {
                 ? SvgPicture.asset(
                     height: 12,
                     width: 12,
-                    SvgPaths.doneOutline,
+                    AssetPaths.doneOutline,
                     colorFilter: .mode(
                       Theme.of(context).colorScheme.onTertiary
                           .withValues(alpha: isActive ? 1 : 0),
@@ -43,7 +43,7 @@ class ThemeColorSwitchButton extends StatelessWidget {
                 : SvgPicture.asset(
                     height: 10,
                     width: 10,
-                    SvgPaths.lock,
+                    AssetPaths.lock,
                     colorFilter: .mode(
                       Theme.of(context).colorScheme.onTertiary,
                       .srcIn,

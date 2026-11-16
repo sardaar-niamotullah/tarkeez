@@ -1,4 +1,4 @@
-import 'package:tarkeez/core/constants/freemium_limits.dart';
+import 'package:tarkeez/core/constants/app_limits.dart';
 import 'package:tarkeez/core/shared_files/buttons/theme_color_switch_button.dart';
 import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';

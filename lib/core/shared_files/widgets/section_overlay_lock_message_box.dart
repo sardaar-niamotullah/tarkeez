@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/routes/route_names.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
@@ -54,7 +54,7 @@ class SectionOverlayLockMessageBox extends StatelessWidget {
             ),
             child: Center(
               child: SvgPicture.asset(
-                SvgPaths.lock,
+                AssetPaths.lock,
                 height: 24,
                 width: 24,
                 colorFilter: .mode(scheme.onTertiary, .srcIn),

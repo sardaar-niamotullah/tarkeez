@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/action_button.dart';
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
 import 'package:tarkeez/core/shared_files/widgets/avatar_circle.dart';
@@ -67,10 +67,10 @@ class ProfileAppBar extends StatelessWidget {
                 child: ActionButton(
                   boxSize: 28,
                   iconSize: 14,
-                  iconPath: SvgPaths.exclamation,
+                  iconPath: AssetPaths.exclamation,
                   onTap: () => showInfoSnackBar(
                     context,
-                    iconPath: SvgPaths.exclamation,
+                    iconPath: AssetPaths.exclamation,
                     iconColor: Theme.of(context).colorScheme.primaryContainer,
                     message: 'Your streak and heatmap will update once you complete at least 30 minutes of focus time in a day.',
                   ),

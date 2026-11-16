@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
-import 'package:tarkeez/core/constants/sound_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 
 class SoundService {
   final SoLoud _soloud = SoLoud.instance;
@@ -12,9 +12,7 @@ class SoundService {
     if (_bellSound != null) return;
     try {
       if (!_soloud.isInitialized) await _soloud.init();
-      _bellSound = await _soloud.loadAsset(
-        SoundPaths.bell,
-      );
+      _bellSound = await _soloud.loadAsset(AssetPaths.bellAudio);
       debugPrint('🔊 Background SoundService initialized.');
     } catch (e, stackTrace) {
       debugPrint('❌ SoundService initialization failed: $e');

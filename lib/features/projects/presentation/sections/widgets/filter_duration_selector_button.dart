@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/shared_files/widgets/go_premium_dialog.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
@@ -64,7 +64,7 @@ class FilterDurationSelectorButton extends StatelessWidget {
               ),
               if (isLocked)
                 SvgPicture.asset(
-                  SvgPaths.lock,
+                  AssetPaths.lock,
                   height: 14,
                   colorFilter: .mode(
                     scheme.onTertiary.withValues(alpha: .9),
@@ -73,7 +73,7 @@ class FilterDurationSelectorButton extends StatelessWidget {
                 ),
               if (isSelected)
                 SvgPicture.asset(
-                  SvgPaths.doneOutline,
+                  AssetPaths.doneOutline,
                   height: 18,
                   colorFilter: .mode(
                     scheme.onTertiary.withValues(alpha: .9),

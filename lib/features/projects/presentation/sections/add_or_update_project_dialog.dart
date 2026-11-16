@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/cancel_button.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/common_text_input.dart';
@@ -35,7 +35,7 @@ class AddOrUpdateProjectDialog extends StatelessWidget {
         listener: (context, state) => context.pop(),
         child: DialogBoxWrapper(
           title: project == null ? 'Add project' : 'Update project',
-          iconPath: SvgPaths.penLine,
+          iconPath: AssetPaths.penLine,
           content: BlocBuilder<ProjectFormCubit, ProjectFormState>(
             builder: (context, formState) {
               final formCubit = context.read<ProjectFormCubit>();
@@ -49,7 +49,7 @@ class AddOrUpdateProjectDialog extends StatelessWidget {
                         ? 'Give your project a name'
                         : 'Update your project name',
                     labelBehavior: project == null ? .auto : .always,
-                    prefixIconPath: SvgPaths.projects,
+                    prefixIconPath: AssetPaths.projects,
                     controller: formCubit.nameController,
                     errorText: formState.nameError,
                   ),

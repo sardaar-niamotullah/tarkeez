@@ -1,7 +1,7 @@
 import 'package:tarkeez/core/shared_files/bottom_sheet/bottom_sheet_wrapper.dart';
 import 'package:tarkeez/core/shared_files/buttons/bkash_payment_button.dart';
 import 'package:flutter/material.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/subscription/presentation/sections/widgets/bottom_sheet_widgets/subscription_bottom_sheet_pricing_details_tile.dart';
@@ -44,13 +44,13 @@ class SubscriptionBottomSheet extends StatelessWidget {
             label: 'Plan price',
             sub: 'Professional · 2 months',
             amount: '99',
-            iconPath: SvgPaths.medal,
+            iconPath: AssetPaths.medal,
           ),
           SubscriptionBottomSheetPricingDetailsTile(
             label: 'Storage cost',
             sub: 'Current usage · 2 months',
             amount: '99.24',
-            iconPath: SvgPaths.flashDrive,
+            iconPath: AssetPaths.flashDrive,
             onIconTap: () {},
           ),
           const SizedBox(height: 4),

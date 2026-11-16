@@ -5,7 +5,7 @@ import 'package:tarkeez/core/shared_files/widgets/update_app_card.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/routes/route_names.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/auth/bloc/auth_bloc.dart';
@@ -49,7 +49,7 @@ class AppDrawer extends StatelessWidget {
                           ),
                           child: Center(
                             child: SvgPicture.asset(
-                              SvgPaths.logoOriginal,
+                              AssetPaths.logoOriginal,
                               height: 28,
                             ),
                           ),
@@ -78,12 +78,12 @@ class AppDrawer extends StatelessWidget {
                     children: [
                       AppDrawerItem(
                         title: 'Sessions',
-                        iconPath: SvgPaths.sessions,
+                        iconPath: AssetPaths.sessions,
                         onTap: () => context.push(RouteNames.sessions),
                       ),
                       AppDrawerItem(
                         title: 'Settings',
-                        iconPath: SvgPaths.gear,
+                        iconPath: AssetPaths.gear,
                         onTap: () => showModalBottomSheet(
                           context: context,
                           builder: (BuildContext context) =>
@@ -92,7 +92,7 @@ class AppDrawer extends StatelessWidget {
                       ),
                       AppDrawerItem(
                         title: 'User manual',
-                        iconPath: SvgPaths.book,
+                        iconPath: AssetPaths.book,
                         onTap: () => showModalBottomSheet(
                           context: context,
                           isScrollControlled: true,
@@ -102,12 +102,12 @@ class AppDrawer extends StatelessWidget {
                       ),
                       AppDrawerItem(
                         title: 'Error report',
-                        iconPath: SvgPaths.bugMagnifer,
+                        iconPath: AssetPaths.bugMagnifer,
                         onTap: () => context.push(RouteNames.feedbackPage),
                       ),
                       AppDrawerItem(
                         title: 'Make app',
-                        iconPath: SvgPaths.appStore,
+                        iconPath: AssetPaths.appStore,
                         onTap: () => context.push(RouteNames.hireUsPage),
                       ),
                     ],
@@ -116,7 +116,7 @@ class AppDrawer extends StatelessWidget {
               ),
               AppDrawerItem(
                 title: 'Log out',
-                iconPath: SvgPaths.logOut,
+                iconPath: AssetPaths.logOut,
                 onTap: () => context.read<AuthBloc>().add(SignOutRequested()),
               ),
               const SizedBox(height: 16),

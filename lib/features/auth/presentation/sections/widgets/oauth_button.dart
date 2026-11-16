@@ -5,7 +5,7 @@ import 'package:tarkeez/features/auth/bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
@@ -67,7 +67,7 @@ class OauthButton extends StatelessWidget {
                   : Row(
                       mainAxisAlignment: .center,
                       children: [
-                        SvgPicture.asset(SvgPaths.google, height: 18),
+                        SvgPicture.asset(AssetPaths.google, height: 18),
                         const SizedBox(width: 16),
                         Text(
                           'Continue with Google',

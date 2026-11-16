@@ -3,7 +3,7 @@ import 'package:tarkeez/core/shared_files/buttons/cancel_button.dart';
 import 'package:tarkeez/core/shared_files/buttons/go_premium_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/dialog_box_wrapper.dart';
 import 'package:flutter/material.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
@@ -16,7 +16,7 @@ class GoPremiumDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return DialogBoxWrapper(
       title: 'Locked',
-      iconPath: SvgPaths.lock,
+      iconPath: AssetPaths.lock,
       iconColor: AppTheme.fireTone,
       content: Column(
         children: [

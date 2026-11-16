@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
@@ -110,7 +110,7 @@ class CommonTextInput extends StatelessWidget {
                   mouseCursor: SystemMouseCursors.click,
                   customBorder: const CircleBorder(),
                   child: SvgPicture.asset(
-                    SvgPaths.closeLarge,
+                    AssetPaths.closeLarge,
                     colorFilter: .mode(
                       scheme.onTertiary.withValues(alpha: .75),
                       .srcIn,

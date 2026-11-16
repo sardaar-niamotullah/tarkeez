@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
@@ -18,7 +18,7 @@ class EdgeActionButton extends StatelessWidget {
     this.backgroundColor,
     required this.onTap,
     this.isCollapsed = false,
-    this.iconPath = SvgPaths.taka,
+    this.iconPath = AssetPaths.taka,
     this.collapseAnimation,
   });
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/shared_files/cubits/navigation_cubit.dart';
 import 'package:tarkeez/core/shared_files/widgets/navigation_rail_item.dart';
 
@@ -42,32 +42,32 @@ class MainNavigationRail extends StatelessWidget {
                 onTap: onSelect(0),
                 isActive: currentIndex == 0,
                 label: 'Home',
-                iconPath: SvgPaths.home,
+                iconPath: AssetPaths.home,
               ),
               NavigationRailItem(
                 onTap: onSelect(1),
                 isActive: currentIndex == 1,
                 label: 'Reports',
-                iconPath: SvgPaths.pieChart,
+                iconPath: AssetPaths.pieChart,
               ),
               NavigationRailItem(
                 onTap: onSelect(2),
                 isActive: currentIndex == 2,
                 label: 'Projects',
-                iconPath: SvgPaths.projects,
+                iconPath: AssetPaths.projects,
               ),
               NavigationRailItem(
                 onTap: onSelect(3),
                 isActive: currentIndex == 3,
                 label: 'Profile',
-                iconPath: SvgPaths.user,
+                iconPath: AssetPaths.user,
               ),
               const Spacer(),
               NavigationRailItem(
                 onTap: onSelect(4),
                 isActive: currentIndex == 4,
                 label: 'Menu',
-                iconPath: SvgPaths.hamburger,
+                iconPath: AssetPaths.hamburger,
               ),
               const SizedBox(height: 16),
             ],

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
@@ -32,12 +32,12 @@ class HiringTermTile extends StatelessWidget {
                 radius: 16,
                 backgroundColor: scheme.surface,
                 child: SvgPicture.asset(
-                  SvgPaths.dollar,
+                  AssetPaths.dollar,
                   colorFilter: .mode(scheme.primary, .srcIn),
                 ),
               )
             : SvgPicture.asset(
-                SvgPaths.stop,
+                AssetPaths.stop,
                 colorFilter: .mode(scheme.error, .srcIn),
               ),
         title: Container(

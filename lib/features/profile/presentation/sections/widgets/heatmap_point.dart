@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
 import 'package:tarkeez/core/utils/date_time_formatter.dart';
 
@@ -52,7 +52,7 @@ class HeatmapPoint extends StatelessWidget {
                   );
                   showInfoSnackBar(
                     context,
-                    iconPath: SvgPaths.square,
+                    iconPath: AssetPaths.square,
                     iconColor: seconds > 30 * 60
                         ? Theme.of(context).colorScheme.primaryContainer
                               .withValues(alpha: getOpacity(seconds))

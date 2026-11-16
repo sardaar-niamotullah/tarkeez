@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/shared_files/bottom_sheet/bottom_sheet_title_tile.dart';
 import 'package:tarkeez/core/shared_files/bottom_sheet/bottom_sheet_wrapper.dart';
 import 'package:tarkeez/core/shared_files/bottom_sheet/duration_filter_bottom_sheet_section.dart';
@@ -34,7 +34,10 @@ class _ReportFilterBottomSheetState extends State<ReportFilterBottomSheet> {
 
     return BottomSheetWrapper(
       contents: [
-        BottomSheetTitleTile(title: 'Report filter', iconPath: SvgPaths.filter),
+        BottomSheetTitleTile(
+          title: 'Report filter',
+          iconPath: AssetPaths.filter,
+        ),
         const SizedBox(height: 16),
         DurationFilterBottomSheetSection(
           selected: _pending,

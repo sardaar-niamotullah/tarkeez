@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tarkeez/core/constants/img_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 
 class HeroImageBackgroundLayer extends StatelessWidget {
   final Color? fillColor;
@@ -18,7 +18,11 @@ class HeroImageBackgroundLayer extends StatelessWidget {
       child: Stack(
         fit: .expand,
         children: [
-          Image.asset(ImgPaths.heroImage, fit: boxFit, alignment: .topCenter),
+          Image.asset(
+            fit: boxFit,
+            AssetPaths.heroImage,
+            alignment: .topCenter,
+          ),
           // Color overlay
           Container(
             color:

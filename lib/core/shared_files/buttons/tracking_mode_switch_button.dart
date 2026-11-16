@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:tarkeez/core/constants/freemium_limits.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/app_limits.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/session_timer_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
@@ -141,7 +141,7 @@ class _Label extends StatelessWidget {
                 child: SvgPicture.asset(
                   height: 10,
                   width: 10,
-                  SvgPaths.lock,
+                  AssetPaths.lock,
                   colorFilter: .mode(
                     Theme.of(context).colorScheme.onTertiary,
                     .srcIn,

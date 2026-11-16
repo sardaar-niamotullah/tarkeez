@@ -6,7 +6,7 @@ import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 
 class AvatarCircle extends StatelessWidget {
   const new({
@@ -110,7 +110,7 @@ class AvatarCircle extends StatelessWidget {
         width: size,
         height: size,
         errorBuilder: (context, error, stackTrace) => SvgPicture.asset(
-          SvgPaths.exclamation,
+          AssetPaths.exclamation,
           colorFilter: .mode(Theme.of(context).colorScheme.onSurface, .srcIn),
         ),
       );
@@ -143,7 +143,7 @@ class AvatarCircle extends StatelessWidget {
     }
 
     return SvgPicture.asset(
-      SvgPaths.user,
+      AssetPaths.user,
       height: radius,
       colorFilter: .mode(scheme.tertiary.withValues(alpha: .85), .srcIn),
     );

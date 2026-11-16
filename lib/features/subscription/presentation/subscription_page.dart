@@ -4,7 +4,7 @@ import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
 import 'package:tarkeez/core/shared_files/widgets/stand_alone_page_outer_structure.dart';
 import 'package:flutter/material.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/utils/sliver_scroll_max_width_box.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/subscription/presentation/models/pricing_plan.dart';
@@ -32,7 +32,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
 
     return StandAlonePageOuterStructure(
       title: 'Go premium',
-      actions: [ActionPageIcon(iconPath: SvgPaths.medal)],
+      actions: [ActionPageIcon(iconPath: AssetPaths.medal)],
 
       // ──────────────────────────────────────────────────────────
       // Bottom nav content
@@ -107,7 +107,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
           // ──────────────────────────────────────────────────────────
           // Advertisement of diffrent platfroms support
           // ──────────────────────────────────────────────────────────
-          SupportedPlatfromsSection(color: selectedPlan.color,),
+          SupportedPlatfromsSection(color: selectedPlan.color),
         ],
       ),
     );

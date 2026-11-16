@@ -2,7 +2,7 @@ import 'package:tarkeez/core/shared_files/buttons/cancel_button.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/dialog_box_wrapper.dart';
 import 'package:flutter/material.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
@@ -23,7 +23,7 @@ class DeleteDialog extends StatelessWidget {
 
     return DialogBoxWrapper(
       title: 'Warning',
-      iconPath: SvgPaths.exclamation,
+      iconPath: AssetPaths.exclamation,
       iconColor: AppTheme.warning,
       content: Column(
         children: [

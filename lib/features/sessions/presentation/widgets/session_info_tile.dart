@@ -3,11 +3,11 @@ import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
-import 'package:tarkeez/core/constants/freemium_limits.dart';
+import 'package:tarkeez/core/constants/app_limits.dart';
 import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/shared_files/widgets/go_premium_dialog.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
 import 'package:tarkeez/core/utils/date_time_formatter.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
@@ -90,7 +90,7 @@ class SessionInfoTile extends StatelessWidget {
           ),
           ActionButton(
             iconColor: scheme.error,
-            iconPath: SvgPaths.delete,
+            iconPath: AssetPaths.delete,
             backgroundColor: scheme.error.withValues(alpha: .1),
             onTap: () {
               if (!isPremiumUser) {

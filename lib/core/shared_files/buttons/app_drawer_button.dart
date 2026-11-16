@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
@@ -30,7 +30,7 @@ class AppDrawerButton extends StatelessWidget {
               if (!context.sm) ...[
                 SvgPicture.asset(
                   height: 26,
-                  SvgPaths.hamburger,
+                  AssetPaths.hamburger,
                   colorFilter: .mode(AppTheme.white, .srcIn),
                 ),
                 const SizedBox(width: 4),

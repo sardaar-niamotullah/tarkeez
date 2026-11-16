@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
-import 'package:tarkeez/core/constants/img_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/shared_files/widgets/section_image_lock_overlay.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
@@ -23,15 +23,15 @@ class InvestedTimesSection extends StatelessWidget {
           SectionImageLockOverlay(
             imgLocation: isDark
                 ? context.sm
-                      ? ImgPaths.itLgD
-                      : ImgPaths.itD
+                      ? AssetPaths.itLgD
+                      : AssetPaths.itD
                 : context.sm
-                ? ImgPaths.itLgL
-                : ImgPaths.itL,
+                ? AssetPaths.itLgL
+                : AssetPaths.itL,
             height: context.md ? 124 : 116,
             lockedTopicName: 'invested times',
           ),
-          
+
         if (!isLocked)
           BlocBuilder<DailyRollupBloc, DailyRollupState>(
             buildWhen: (previous, current) => current is DailyRollupLoaded,

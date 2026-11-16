@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
-import 'package:tarkeez/core/constants/img_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/shared_files/widgets/section_image_lock_overlay.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
@@ -41,15 +41,15 @@ class Heatmap extends StatelessWidget {
             SectionImageLockOverlay(
               imgLocation: isDark
                   ? context.xs
-                        ? ImgPaths.hLgD
-                        : ImgPaths.hD
+                        ? AssetPaths.hLgD
+                        : AssetPaths.hD
                   : context.xs
-                  ? ImgPaths.hLgL
-                  : ImgPaths.hL,
+                  ? AssetPaths.hLgL
+                  : AssetPaths.hL,
               height: 110,
               lockedTopicName: 'heatmap',
             ),
-            
+
           if (!isLocked)
             BlocBuilder<DailyRollupBloc, DailyRollupState>(
               builder: (context, state) {

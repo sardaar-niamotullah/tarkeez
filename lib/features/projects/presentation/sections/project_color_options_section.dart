@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tarkeez/core/constants/project_colors.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/projects/presentation/sections/widgets/project_color_selection_box.dart';
@@ -12,7 +12,7 @@ class ProjectColorOptionsSection extends StatelessWidget {
     required this.selectedColorId,
     required this.onColorSelected,
   });
-  
+
   final int? selectedColorId;
   final ValueChanged<int> onColorSelected;
 
@@ -26,7 +26,7 @@ class ProjectColorOptionsSection extends StatelessWidget {
         Row(
           children: [
             SvgPicture.asset(
-              SvgPaths.colorPalette,
+              AssetPaths.colorPalette,
               colorFilter: .mode(
                 scheme.onTertiary.withValues(alpha: .9),
                 .srcIn,

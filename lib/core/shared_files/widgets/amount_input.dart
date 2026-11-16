@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
@@ -73,7 +73,7 @@ class _AmountInputState extends State<AmountInput> {
               mainAxisAlignment: .center,
               children: [
                 SvgPicture.asset(
-                  SvgPaths.taka,
+                  AssetPaths.taka,
                   height: 36,
                   colorFilter: .mode(
                     scheme.onTertiary.withValues(alpha: .8),

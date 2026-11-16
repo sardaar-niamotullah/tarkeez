@@ -1,4 +1,4 @@
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/routes/route_names.dart';
 import 'package:tarkeez/core/shared_files/buttons/custom_icon_button.dart';
 import 'package:tarkeez/core/shared_files/buttons/disclaimer_text_button.dart';
@@ -84,7 +84,7 @@ class AuthBottomCTASection extends StatelessWidget {
                   // Customer Care
                   // ──────────────────────────────────────────────────────────
                   CustomIconButton(
-                    iconPath: SvgPaths.penLine,
+                    iconPath: AssetPaths.penLine,
                     onTap: () => context.push(RouteNames.feedbackPage),
                   ),
 
@@ -93,7 +93,7 @@ class AuthBottomCTASection extends StatelessWidget {
                   // ──────────────────────────────────────────────────────────
                   DisclaimerTextButton(),
                   CustomIconButton(
-                    iconPath: SvgPaths.hammer,
+                    iconPath: AssetPaths.hammer,
                     onTap: () =>
                         context.push(RouteNames.termsAndConditionsPage),
                   ),

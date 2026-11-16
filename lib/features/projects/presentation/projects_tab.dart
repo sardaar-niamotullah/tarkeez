@@ -7,7 +7,7 @@ import 'package:tarkeez/core/shared_files/widgets/hero_image_background_layer.da
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/sliver_scroll_max_width_box.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
@@ -45,7 +45,7 @@ class ProjectsTab extends StatelessWidget {
                   CustomAppBar(
                     title: 'Projects',
                     isBackButtonEnabled: false,
-                    actions: [ActionPageIcon(iconPath: SvgPaths.projects)],
+                    actions: [ActionPageIcon(iconPath: AssetPaths.projects)],
                   ),
                   Expanded(
                     child: Container(

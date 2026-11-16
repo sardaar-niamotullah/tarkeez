@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 
 enum PricingPlanType { regularDeal, goodDeal, betterDeal, bestDeal }
@@ -37,7 +37,7 @@ const pricingPlans = [
     saveAmount: 'Save 0%',
     color: AppTheme.blue,
     colorBright: AppTheme.blueBright,
-    iconPath: SvgPaths.bookmark,
+    iconPath: AssetPaths.bookmark,
   ),
   PricingPlan(
     type: PricingPlanType.goodDeal,
@@ -47,7 +47,7 @@ const pricingPlans = [
     saveAmount: 'Save 40%',
     color: AppTheme.purple,
     colorBright: AppTheme.purpleBright,
-    iconPath: SvgPaths.bookmark,
+    iconPath: AssetPaths.bookmark,
   ),
   PricingPlan(
     type: PricingPlanType.betterDeal,
@@ -57,7 +57,7 @@ const pricingPlans = [
     saveAmount: 'Save 50%',
     color: AppTheme.pink,
     colorBright: AppTheme.pinkBright,
-    iconPath: SvgPaths.bookmark,
+    iconPath: AssetPaths.bookmark,
   ),
   PricingPlan(
     type: PricingPlanType.bestDeal,
@@ -67,6 +67,6 @@ const pricingPlans = [
     saveAmount: 'Save 70%',
     color: AppTheme.fireTone,
     colorBright: AppTheme.lightningGold,
-    iconPath: SvgPaths.bookmark,
+    iconPath: AssetPaths.bookmark,
   ),
 ];

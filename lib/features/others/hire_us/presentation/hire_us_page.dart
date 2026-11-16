@@ -3,7 +3,7 @@ import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
 import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
 import 'package:tarkeez/core/shared_files/widgets/stand_alone_page_outer_structure.dart';
 import 'package:flutter/material.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/utils/sliver_scroll_max_width_box.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/others/hire_us/presentation/widgets/hiring_term_tile.dart';
@@ -19,10 +19,10 @@ class HireUsPage extends StatelessWidget {
 
     return StandAlonePageOuterStructure(
       title: 'Make app',
-      actions: [ActionPageIcon(iconPath: SvgPaths.appStore)],
+      actions: [ActionPageIcon(iconPath: AssetPaths.appStore)],
       bottomNavContent: PrimaryButton(
         title: 'Form link',
-        iconPath: SvgPaths.document,
+        iconPath: AssetPaths.document,
         onPressed: () async {
           await launchUrl(
             Uri.parse('https://forms.gle/u26n8KfPU6FwCbpNA'),
@@ -59,13 +59,19 @@ class HireUsPage extends StatelessWidget {
                 mainAxisSpacing: 8,
                 physics: const NeverScrollableScrollPhysics(),
                 children: [
-                  TechPlatfromCard(title: 'iOS', iconPath: SvgPaths.apple),
+                  TechPlatfromCard(title: 'iOS', iconPath: AssetPaths.apple),
                   TechPlatfromCard(
                     title: 'Android',
-                    iconPath: SvgPaths.androidBold,
+                    iconPath: AssetPaths.androidBold,
                   ),
-                  TechPlatfromCard(title: 'Desktop', iconPath: SvgPaths.laptop),
-                  TechPlatfromCard(title: 'Web', iconPath: SvgPaths.globeBold),
+                  TechPlatfromCard(
+                    title: 'Desktop',
+                    iconPath: AssetPaths.laptop,
+                  ),
+                  TechPlatfromCard(
+                    title: 'Web',
+                    iconPath: AssetPaths.globeBold,
+                  ),
                 ],
               ),
               const SizedBox(height: 24),

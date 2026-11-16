@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/top_right_notch_clipper.dart';
@@ -66,7 +66,7 @@ class ThumbnailWidget extends StatelessWidget {
                   ),
                   child: Center(
                     child: SvgPicture.asset(
-                      SvgPaths.close,
+                      AssetPaths.close,
                       colorFilter: .mode(
                         AppTheme.white.withValues(alpha: .8),
                         .srcIn,

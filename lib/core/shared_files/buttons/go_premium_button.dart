@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tarkeez/core/constants/svg_paths.dart';
+import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/routes/route_names.dart';
 import 'package:tarkeez/core/shared_files/widgets/bubble_decorations.dart';
 import 'package:tarkeez/core/theme/theme.dart';
@@ -97,7 +97,7 @@ class GoPremiumButton extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       SvgPicture.asset(
-                        SvgPaths.medal,
+                        AssetPaths.medal,
                         colorFilter: .mode(AppTheme.white, .srcIn),
                       ),
                     ],
