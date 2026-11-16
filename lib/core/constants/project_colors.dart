@@ -15,9 +15,9 @@ class ProjectColors {
     Color(0xFFA855F7),
     Color(0xFF7E22CE),
     // yellow
-    Color(0xFFF1CE41),
-    Color(0xFFFFC30D),
-    Color(0xFFE3AA00),
+    Color(0xFFE6B414),
+    Color(0xFFDCAA0A),
+    Color(0xFFD2A000),
     // orange
     Color(0xFFFB923C),
     Color(0xFFFF7B1C),
