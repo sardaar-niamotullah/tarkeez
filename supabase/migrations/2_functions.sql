@@ -12,22 +12,17 @@ DECLARE
 BEGIN
   oauth_name := NULLIF(TRIM(NEW.raw_user_meta_data->>'full_name'), '');
 
-  INSERT INTO public.users (
-    id,
-    full_name,
-    email,
-    avatar_url
-  )
+  INSERT INTO public.users (id, full_name, email, avatar_url, premium_until)
   VALUES (
     NEW.id,
     CASE
       WHEN oauth_name IS NULL THEN 'xxx'
-      WHEN LENGTH(oauth_name) < 3 THEN
-        oauth_name || REPEAT('x', 3 - LENGTH(oauth_name))
+      WHEN LENGTH(oauth_name) < 3 THEN oauth_name || REPEAT('x', 3 - LENGTH(oauth_name))
       ELSE LEFT(oauth_name, 30)
     END,
     NEW.email,
-    NEW.raw_user_meta_data->>'avatar_url'
+    NEW.raw_user_meta_data->>'avatar_url',
+    NEW.created_at + INTERVAL '7 days'
   );
 
   RETURN NEW;
@@ -207,14 +202,16 @@ CREATE OR REPLACE FUNCTION public.rebuild_premium(p_user UUID)
 RETURNS TIMESTAMPTZ
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = ''
 AS $$
 DECLARE
   v_until TIMESTAMPTZ;
   r       RECORD;
 BEGIN
-  -- one rebuild per user at a time
   PERFORM 1 FROM public.users WHERE id = p_user FOR NO KEY UPDATE;
+
+  -- the 7-day trial is where the calculation starts
+  SELECT created_at + INTERVAL '7 days' INTO v_until FROM auth.users WHERE id = p_user;
 
   FOR r IN
     SELECT paid_at, months FROM public.purchases

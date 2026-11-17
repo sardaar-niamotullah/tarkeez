@@ -406,7 +406,7 @@ erDiagram
 
 ## Server ER diagram (PostgreSQL)
 
-- `users` is keyed by the Supabase Auth user id. `full_name` is filled from the sign-in profile when the account is created and is copied to the device on every sync. `history_reset_at` is null until the first "delete all history". Devices read it at the start of every sync. `premium_until` is null until the first purchase and is written only by backend functions. Devices copy it on every sync.
+- `users` is keyed by the Supabase Auth user id. `full_name` is filled from the sign-in profile when the account is created and is copied to the device on every sync. `history_reset_at` is null until the first "delete all history". Devices read it at the start of every sync. `premium_until` is written only by backend functions. Devices copy it on every sync.
 - `purchases` has one row per payment. Only backend functions write it (see "Premium and purchases").
 - `push_changes` takes at most 200 rows per list. It upserts projects first, then sessions. Each row runs in its own savepoint, so one failure does not fail the batch. A project upsert replaces the whole row (last push wins). Projects created before `history_reset_at` and sessions that ended before it are rejected. Overlaps follow the "Overlap rule".
 - `pull_projects` and `pull_sessions` return one page of at most 200 rows, read by `(updated_at, id)` after the cursor the device sends.
@@ -451,7 +451,7 @@ erDiagram
     email text
     full_name text "from the sign-in profile"
     history_reset_at timestamptz "null until the first reset"
-    premium_until timestamptz "null until the first purchase, written by the backend"
+    premium_until timestamptz "written by the backend"
   }
   PROJECTS {
     id uuid PK "uuidv7, client-generated"
@@ -612,6 +612,7 @@ Months are calendar months: Jan 15 + 1 month = Feb 15. When the day does not exi
 - `amount` and `currency` are what the user paid. The payment history screen reads them from the cloud while online.
 - The app can read its own rows and cannot write. Only backend functions write `purchases` and `premium_until`.
 - "Delete all history" does not touch `purchases` or `premium_until`.
+- Every new account starts with 7 days of premium (premium_until = sign-up time + 7 days). A purchase adds its months after the current end date. Example: sign up Nov 1, 6 pm, trial ends Nov 8, 6 pm. Buying 1 month on Nov 3 ends premium on Dec 8, 7 pm.
 
 ### Backend functions
 
@@ -645,7 +646,7 @@ A store refund notification or the gateway webhook calls `refund_purchase`. A re
 
 `isPremiumUser` is `premium_until > now`, computed from the local `users` row. It works offline and expires on its own. Locked sections use it, for example `Heatmap(isLocked: !isPremiumUser)`. The check uses the device clock, so moving the clock back while offline extends access until the next sync.
 
-### Projects 
+### Projects
 
 A free account can create a project only while it has fewer than 2. Premium has no limit. After premium ends, only the 2 newest projects stay active: they can be edited and picked for a session. Older projects are locked and can only be deleted. When an active project is deleted, the next newest takes its place.
 
