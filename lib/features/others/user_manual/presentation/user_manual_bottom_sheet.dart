@@ -39,7 +39,7 @@ class _UserManualBottomSheetState extends State<UserManualBottomSheet> {
       if (online) {
         _controller = YoutubePlayerController.fromVideoId(
           autoPlay: true,
-          videoId: 'BsblgcBB17A',
+          videoId: '1f5ftgJM1dk',
           params: const YoutubePlayerParams(showFullscreenButton: false),
         );
       } else {
