@@ -10,7 +10,6 @@ import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/subscription/presentation/models/pricing_plan.dart';
 import 'package:tarkeez/features/subscription/presentation/sections/premium_perks_section.dart';
 import 'package:tarkeez/features/subscription/presentation/sections/subscription_bottom_sheet.dart';
-import 'package:tarkeez/features/subscription/presentation/sections/supported_platfroms_section.dart';
 import 'package:tarkeez/features/subscription/presentation/sections/widgets/pricing_card.dart';
 
 class SubscriptionPage extends StatefulWidget {
@@ -107,7 +106,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
           // ──────────────────────────────────────────────────────────
           // Advertisement of diffrent platfroms support
           // ──────────────────────────────────────────────────────────
-          SupportedPlatfromsSection(color: selectedPlan.color),
+          // SupportedPlatfromsSection(color: selectedPlan.color),
         ],
       ),
     );

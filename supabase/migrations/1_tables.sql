@@ -236,6 +236,10 @@ ALTER TABLE public.sessions
 ADD CONSTRAINT sessions_offset_check
 CHECK (utc_offset_minutes BETWEEN -840 AND 840);
 
+ALTER TABLE public.sessions DROP CONSTRAINT IF EXISTS sessions_not_too_old;
+ALTER TABLE public.sessions ADD CONSTRAINT sessions_not_too_old
+CHECK (started_at >= TIMESTAMPTZ '2025-01-01');
+
 -- Backstop only. push_changes resolves overlaps first (the longest session wins).
 CREATE EXTENSION IF NOT EXISTS btree_gist WITH SCHEMA extensions;
 
