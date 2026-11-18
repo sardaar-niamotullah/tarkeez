@@ -103,7 +103,7 @@ CREATE OR REPLACE FUNCTION public.apply_session_to_rollups(
 RETURNS VOID
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = '' 
 AS $$
 BEGIN
   INSERT INTO public.daily_rollups AS r (user_id, date, duration_seconds)
@@ -140,7 +140,7 @@ CREATE OR REPLACE FUNCTION public.sessions_to_rollups()
 RETURNS trigger
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = ''
 AS $$
 BEGIN
   IF TG_OP = 'INSERT' THEN
@@ -163,7 +163,7 @@ CREATE OR REPLACE FUNCTION public.rebuild_rollups(p_user UUID)
 RETURNS VOID
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = ''
 AS $$
 BEGIN
   DELETE FROM public.daily_rollups     WHERE user_id = p_user;
@@ -244,7 +244,7 @@ CREATE OR REPLACE FUNCTION public.grant_purchase(
 RETURNS TIMESTAMPTZ
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = ''
 AS $$
 BEGIN
   INSERT INTO public.purchases (user_id, source, store_ref, amount, currency, months, paid_at)
@@ -269,7 +269,7 @@ CREATE OR REPLACE FUNCTION public.refund_purchase(p_source TEXT, p_store_ref TEX
 RETURNS VOID
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = ''
 AS $$
 DECLARE
   v_user UUID;

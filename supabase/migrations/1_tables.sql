@@ -53,7 +53,7 @@ DROP POLICY IF EXISTS "allow_select_app_versions" ON public.app_versions;
 CREATE POLICY "allow_select_app_versions"
 ON public.app_versions
 FOR SELECT
-TO authenticated
+TO anon, authenticated
 USING (true);
 
 -- The app may only read. Rows are changed from the Supabase dashboard or the SQL editor.
