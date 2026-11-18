@@ -35,6 +35,7 @@ $$;
 CREATE OR REPLACE FUNCTION public.set_updated_at()
 RETURNS trigger
 LANGUAGE plpgsql
+SET search_path = ''
 AS $$
 BEGIN
   NEW.updated_at = NOW();
@@ -73,6 +74,7 @@ CREATE FUNCTION public.split_session(
 )
 RETURNS TABLE (day DATE, seconds INT)
 LANGUAGE sql
+SET search_path = ''
 IMMUTABLE
 AS $$
   WITH shifted AS (

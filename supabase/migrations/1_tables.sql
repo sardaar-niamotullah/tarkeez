@@ -108,6 +108,10 @@ ALTER TABLE public.users
 ADD CONSTRAINT full_name_length
 CHECK (char_length(trim(full_name)) BETWEEN 3 AND 30);
 
+ALTER TABLE public.users DROP CONSTRAINT IF EXISTS avatar_url_check;
+ALTER TABLE public.users ADD CONSTRAINT avatar_url_check
+CHECK (avatar_url IS NULL OR (char_length(avatar_url) <= 2048 AND avatar_url ~ '^https://'));
+
 -- RLS
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 
