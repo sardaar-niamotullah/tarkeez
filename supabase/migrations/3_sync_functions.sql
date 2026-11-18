@@ -8,6 +8,8 @@
 -- push_changes: upsert projects first, then sessions. One savepoint per row.
 -- Bad data (fails a constraint or has a wrong type) is rejected.
 -- Any other error leaves the row pending on the device to retry.
+-- A session that ends more than 10 minutes in the future is not answered either,
+-- so it stays pending until the server clock catches up.
 --
 -- Limit: at most 200 rows in p_projects and 200 in p_sessions.
 --
@@ -122,6 +124,12 @@ BEGIN
       -- the device is stale: this session ended before the last "delete history"
       IF v_reset_at IS NOT NULL AND v_ended < v_reset_at THEN
         v_rejected := v_rejected || v_id;
+        CONTINUE;
+      END IF;
+
+      -- a session cannot end in the future (10 minutes of clock drift allowed).
+      -- It is not answered, so it stays pending on the device until the server clock catches up.
+      IF v_ended > NOW() + INTERVAL '10 minutes' THEN
         CONTINUE;
       END IF;
 

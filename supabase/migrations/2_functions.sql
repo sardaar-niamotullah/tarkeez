@@ -286,6 +286,12 @@ END;
 $$;
 
 -- These must not be callable from the app (Supabase grants new functions to these roles).
+-- handle_new_user only runs as a trigger. split_session is only used inside the definer
+-- functions above, and a caller could pass a huge date range to make it generate many rows.
+REVOKE ALL ON FUNCTION public.handle_new_user() FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.split_session(TIMESTAMPTZ, TIMESTAMPTZ, INT)
+  FROM PUBLIC, anon, authenticated;
+
 REVOKE ALL ON FUNCTION public.apply_session_to_rollups(UUID, UUID, TIMESTAMPTZ, TIMESTAMPTZ, INT, INT)
   FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.sessions_to_rollups() FROM PUBLIC, anon, authenticated;

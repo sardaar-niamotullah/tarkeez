@@ -87,13 +87,20 @@ ON CONFLICT (platform) DO NOTHING;
 
 -- TABLE
 CREATE TABLE IF NOT EXISTS public.users (
-    id UUID PRIMARY KEY REFERENCES auth.users(id),
+    id UUID PRIMARY KEY,
     email TEXT,
     full_name TEXT,
     avatar_url TEXT,
     history_reset_at TIMESTAMPTZ,
     premium_until TIMESTAMPTZ
 );
+
+-- FOREIGN KEYS
+-- Deleting the auth user deletes the account and everything it owns.
+ALTER TABLE public.users DROP CONSTRAINT IF EXISTS users_id_fkey;
+ALTER TABLE public.users
+ADD CONSTRAINT users_id_fkey
+FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE;
 
 -- CONSTRAINTS
 ALTER TABLE public.users DROP CONSTRAINT IF EXISTS full_name_length;
@@ -131,13 +138,19 @@ GRANT UPDATE (full_name, avatar_url) ON public.users TO authenticated;
 -- TABLE
 CREATE TABLE IF NOT EXISTS public.projects (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES public.users(id),
+    user_id UUID NOT NULL,
     name TEXT NOT NULL,
     color_id SMALLINT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     deleted_at TIMESTAMPTZ
 );
+
+-- FOREIGN KEYS
+ALTER TABLE public.projects DROP CONSTRAINT IF EXISTS projects_user_id_fkey;
+ALTER TABLE public.projects
+ADD CONSTRAINT projects_user_id_fkey
+FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 -- INDEX
 CREATE INDEX IF NOT EXISTS idx_projects_pull
@@ -154,35 +167,22 @@ ALTER TABLE public.projects
 ADD CONSTRAINT projects_color_id_check
 CHECK (color_id BETWEEN 0 AND 20);
 
+-- Lets sessions point at (project, owner) so a session can only use its owner's project.
+-- The sessions FK depends on this constraint, so it is dropped first (the sessions section adds it back).
+ALTER TABLE IF EXISTS public.sessions DROP CONSTRAINT IF EXISTS sessions_project_owner_fkey;
+ALTER TABLE public.projects DROP CONSTRAINT IF EXISTS projects_id_user_key;
+ALTER TABLE public.projects
+ADD CONSTRAINT projects_id_user_key
+UNIQUE (id, user_id);
+
 -- RLS
+-- The app only reads projects. Every write goes through push_changes.
 ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "allow_select_own_projects" ON public.projects;
 CREATE POLICY "allow_select_own_projects"
 ON public.projects
 FOR SELECT
-TO authenticated
-USING (user_id = (SELECT auth.uid()));
-
-DROP POLICY IF EXISTS "allow_insert_own_projects" ON public.projects;
-CREATE POLICY "allow_insert_own_projects"
-ON public.projects
-FOR INSERT
-TO authenticated
-WITH CHECK (user_id = (SELECT auth.uid()));
-
-DROP POLICY IF EXISTS "allow_update_own_projects" ON public.projects;
-CREATE POLICY "allow_update_own_projects"
-ON public.projects
-FOR UPDATE
-TO authenticated
-USING (user_id = (SELECT auth.uid()))
-WITH CHECK (user_id = (SELECT auth.uid()));
-
-DROP POLICY IF EXISTS "allow_delete_own_projects" ON public.projects;
-CREATE POLICY "allow_delete_own_projects"
-ON public.projects
-FOR DELETE
 TO authenticated
 USING (user_id = (SELECT auth.uid()));
 
@@ -193,14 +193,29 @@ USING (user_id = (SELECT auth.uid()));
 -- TABLE
 CREATE TABLE IF NOT EXISTS public.sessions (
     id UUID PRIMARY KEY,
-    user_id UUID NOT NULL REFERENCES public.users(id),
-    project_id UUID REFERENCES public.projects(id),
+    user_id UUID NOT NULL,
+    project_id UUID,
     started_at TIMESTAMPTZ NOT NULL,
     ended_at TIMESTAMPTZ NOT NULL,
     utc_offset_minutes SMALLINT NOT NULL,
     deleted_at TIMESTAMPTZ,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- FOREIGN KEYS
+ALTER TABLE public.sessions DROP CONSTRAINT IF EXISTS sessions_user_id_fkey;
+ALTER TABLE public.sessions
+ADD CONSTRAINT sessions_user_id_fkey
+FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+-- A session can only use a project of the same user. project_id is nullable (No Project).
+-- No cascade here: a project is hard-deleted only by a history reset (which deletes sessions first)
+-- or by an account deletion (the user_id cascades above).
+ALTER TABLE public.sessions DROP CONSTRAINT IF EXISTS sessions_project_id_fkey;
+ALTER TABLE public.sessions DROP CONSTRAINT IF EXISTS sessions_project_owner_fkey;
+ALTER TABLE public.sessions
+ADD CONSTRAINT sessions_project_owner_fkey
+FOREIGN KEY (project_id, user_id) REFERENCES public.projects (id, user_id);
 
 -- INDEX
 CREATE INDEX IF NOT EXISTS idx_sessions_pull
@@ -229,6 +244,7 @@ EXCLUDE USING gist (
 ) WHERE (deleted_at IS NULL);
 
 -- RLS
+-- The app only reads sessions. Every write goes through push_changes.
 ALTER TABLE public.sessions ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "allow_select_own_sessions" ON public.sessions;
@@ -238,40 +254,24 @@ FOR SELECT
 TO authenticated
 USING (user_id = (SELECT auth.uid()));
 
-DROP POLICY IF EXISTS "allow_insert_own_sessions" ON public.sessions;
-CREATE POLICY "allow_insert_own_sessions"
-ON public.sessions
-FOR INSERT
-TO authenticated
-WITH CHECK (user_id = (SELECT auth.uid()));
-
-DROP POLICY IF EXISTS "allow_update_own_sessions" ON public.sessions;
-CREATE POLICY "allow_update_own_sessions"
-ON public.sessions
-FOR UPDATE
-TO authenticated
-USING (user_id = (SELECT auth.uid()))
-WITH CHECK (user_id = (SELECT auth.uid()));
-
-DROP POLICY IF EXISTS "allow_delete_own_sessions" ON public.sessions;
-CREATE POLICY "allow_delete_own_sessions"
-ON public.sessions
-FOR DELETE
-TO authenticated
-USING (user_id = (SELECT auth.uid()));
-
 -- =================================================================
 -- ROLLUPS (filled by the trigger on sessions)
 -- =================================================================
 
 -- TABLE
 CREATE TABLE IF NOT EXISTS public.project_rollups (
-    user_id UUID NOT NULL REFERENCES public.users(id),
+    user_id UUID NOT NULL,
     date DATE NOT NULL,
     project_id TEXT NOT NULL,  -- '' = No Project, no FK to projects
     duration_seconds INTEGER NOT NULL,
     PRIMARY KEY (user_id, date, project_id)
 );
+
+-- FOREIGN KEYS
+ALTER TABLE public.project_rollups DROP CONSTRAINT IF EXISTS project_rollups_user_id_fkey;
+ALTER TABLE public.project_rollups
+ADD CONSTRAINT project_rollups_user_id_fkey
+FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 -- RLS
 ALTER TABLE public.project_rollups ENABLE ROW LEVEL SECURITY;
@@ -294,11 +294,17 @@ GROUP BY r.user_id, r.date, COALESCE(p.id::TEXT, '');
 
 -- TABLE
 CREATE TABLE IF NOT EXISTS public.daily_rollups (
-    user_id UUID NOT NULL REFERENCES public.users(id),
+    user_id UUID NOT NULL,
     date DATE NOT NULL,
     duration_seconds INTEGER NOT NULL,
     PRIMARY KEY (user_id, date)
 );
+
+-- FOREIGN KEYS
+ALTER TABLE public.daily_rollups DROP CONSTRAINT IF EXISTS daily_rollups_user_id_fkey;
+ALTER TABLE public.daily_rollups
+ADD CONSTRAINT daily_rollups_user_id_fkey
+FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 -- RLS
 ALTER TABLE public.daily_rollups ENABLE ROW LEVEL SECURITY;
@@ -310,11 +316,17 @@ USING (user_id = (SELECT auth.uid()));
 
 -- TABLE
 CREATE TABLE IF NOT EXISTS public.utc_daily_rollups (
-    user_id UUID NOT NULL REFERENCES public.users(id),
+    user_id UUID NOT NULL,
     utc_date DATE NOT NULL,
     duration_seconds INTEGER NOT NULL,
     PRIMARY KEY (user_id, utc_date)
 );
+
+-- FOREIGN KEYS
+ALTER TABLE public.utc_daily_rollups DROP CONSTRAINT IF EXISTS utc_daily_rollups_user_id_fkey;
+ALTER TABLE public.utc_daily_rollups
+ADD CONSTRAINT utc_daily_rollups_user_id_fkey
+FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 -- RLS
 ALTER TABLE public.utc_daily_rollups ENABLE ROW LEVEL SECURITY;
@@ -331,7 +343,7 @@ USING (user_id = (SELECT auth.uid()));
 -- TABLE
 CREATE TABLE IF NOT EXISTS public.purchases (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES public.users(id),
+    user_id UUID NOT NULL,
     source TEXT NOT NULL,
     store_ref TEXT NOT NULL,
     amount NUMERIC NOT NULL,
@@ -340,6 +352,12 @@ CREATE TABLE IF NOT EXISTS public.purchases (
     paid_at TIMESTAMPTZ NOT NULL,
     refunded_at TIMESTAMPTZ
 );
+
+-- FOREIGN KEYS
+ALTER TABLE public.purchases DROP CONSTRAINT IF EXISTS purchases_user_id_fkey;
+ALTER TABLE public.purchases
+ADD CONSTRAINT purchases_user_id_fkey
+FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 -- INDEX
 CREATE INDEX IF NOT EXISTS idx_purchases_user_paid
@@ -370,3 +388,22 @@ ON public.purchases
 FOR SELECT
 TO authenticated
 USING (user_id = (SELECT auth.uid()));
+
+-- =================================================================
+-- PRIVILEGES
+-- The app only reads. projects and sessions are written by push_changes, the rollups by
+-- triggers, purchases and premium_until by backend functions. Revoking the write privileges
+-- as well as having no policies means a policy added by mistake later still cannot open a write.
+-- =================================================================
+REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON public.projects, public.sessions
+  FROM anon, authenticated;
+
+REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON
+  public.daily_rollups, public.project_rollups, public.utc_daily_rollups, public.purchases
+  FROM anon, authenticated;
+
+-- users: the app may only update full_name and avatar_url (granted above)
+REVOKE INSERT, DELETE, TRUNCATE ON public.users FROM anon, authenticated;
+
+-- Signed-out requests get nothing.
+REVOKE ALL ON ALL TABLES IN SCHEMA public FROM anon;
