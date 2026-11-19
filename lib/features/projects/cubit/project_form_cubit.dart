@@ -1,4 +1,5 @@
 import 'dart:math';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,9 +39,7 @@ class ProjectFormCubit extends Cubit<ProjectFormState> {
   /// Call once when opening the dialog for a brand-new project, so a
   /// color is preselected before the user touches anything.
   void initializeNewProject() => emit(
-    _validateFormState(
-      ProjectFormState(selectedColorId: Random().nextInt(21) + 1),
-    ),
+    _validateFormState(ProjectFormState(selectedColorId: Random().nextInt(21))),
   );
 
   // ─────────────────────────────────────────────────────────
@@ -94,8 +93,9 @@ class ProjectFormCubit extends Cubit<ProjectFormState> {
     final name = nameController.text.trim();
 
     final next = s.copyWith(
-      nameError: () =>
-          s.touched.contains('name') ? FormValidators.validateProjectName(name) : null,
+      nameError: () => s.touched.contains('name')
+          ? FormValidators.validateProjectName(name)
+          : null,
     );
 
     final savedProject = next.savedProject;
