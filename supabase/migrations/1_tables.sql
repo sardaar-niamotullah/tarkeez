@@ -160,6 +160,10 @@ FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 CREATE INDEX IF NOT EXISTS idx_projects_pull
   ON public.projects (user_id, updated_at);
 
+-- Counts one user's projects per UTC day (the daily limit in push_changes).
+CREATE INDEX IF NOT EXISTS idx_projects_day
+  ON public.projects (user_id, created_at);
+
 -- CONSTRAINTS
 ALTER TABLE public.projects DROP CONSTRAINT IF EXISTS projects_name_length_check;
 ALTER TABLE public.projects
@@ -170,6 +174,10 @@ ALTER TABLE public.projects DROP CONSTRAINT IF EXISTS projects_color_id_check;
 ALTER TABLE public.projects
 ADD CONSTRAINT projects_color_id_check
 CHECK (color_id BETWEEN 0 AND 20);
+
+ALTER TABLE public.projects DROP CONSTRAINT IF EXISTS projects_not_too_old;
+ALTER TABLE public.projects ADD CONSTRAINT projects_not_too_old
+CHECK (created_at >= TIMESTAMPTZ '2025-01-01');
 
 -- Lets sessions point at (project, owner) so a session can only use its owner's project.
 -- The sessions FK depends on this constraint, so it is dropped first (the sessions section adds it back).

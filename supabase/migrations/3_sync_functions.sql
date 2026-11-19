@@ -8,18 +8,20 @@
 -- push_changes: upsert projects first, then sessions. One savepoint per row.
 -- Bad data (fails a constraint or has a wrong type) is rejected.
 -- Any other error leaves the row pending on the device to retry.
--- A session that ends more than 10 minutes in the future is not answered either,
+-- A project or session dated more than 10 minutes in the future is not answered either,
 -- so it stays pending until the server clock catches up.
 --
 -- Limit: at most 200 rows in p_projects and 200 in p_sessions.
--- Daily limit: a user stores at most 75 sessions per UTC day of started_at
--- (deleted rows count, they stay in the table). The extra rows are not stored.
+-- Daily limits: per user and per UTC day, a user stores at most 75 new sessions
+-- (by started_at) and 10 new projects (by created_at). Deleted rows count, they stay
+-- in the table. The extra rows are not stored. Updating or deleting a row the cloud
+-- already has is never counted.
 --
 -- Response:
 --   applied  = saved (live or already deleted)
 --   rejected = never acceptable: bad data, older than the last history reset
 --              (a project created before it, a session that ended before it),
---              or a session whose UTC day already holds 75 sessions
+--              or over the daily limit of its UTC day
 --   dropped  = session lost an overlap, stored as deleted
 -- =================================================================
 DROP FUNCTION IF EXISTS public.push_changes(JSONB, JSONB);
@@ -34,7 +36,8 @@ SECURITY DEFINER
 SET search_path = ''
 AS $$
 DECLARE
-  v_max_day  CONSTANT INT := 75;  -- sessions per user per UTC day
+  v_max_sessions_day CONSTANT INT := 75;  -- sessions per user per UTC day
+  v_max_projects_day CONSTANT INT := 10;  -- projects per user per UTC day
   v_uid      UUID := auth.uid();
   v_reset_at TIMESTAMPTZ;
   v_item     JSONB;
@@ -60,6 +63,12 @@ BEGIN
     RAISE EXCEPTION 'push_changes: at most 200 rows per list, send the rest in another request';
   END IF;
 
+  -- one push per user at a time: two devices cannot race on the daily limits or on
+  -- overlaps, and reset_history (same lock) cannot run between the reset check and the writes
+  IF jsonb_array_length(p_projects) > 0 OR jsonb_array_length(p_sessions) > 0 THEN
+    PERFORM pg_advisory_xact_lock(hashtextextended(v_uid::TEXT, 0));
+  END IF;
+
   SELECT u.history_reset_at INTO v_reset_at FROM public.users u WHERE u.id = v_uid;
 
   -- ---------------------------------------------------------------
@@ -75,6 +84,32 @@ BEGIN
       IF v_reset_at IS NOT NULL AND v_created < v_reset_at THEN
         v_rejected := v_rejected || v_id;
         CONTINUE;
+      END IF;
+
+      -- a project cannot be created in the future (10 minutes of clock drift allowed).
+      -- Without this a script could pick any future day and get a fresh daily limit there.
+      -- It is not answered, so it stays pending on the device until the server clock catches up.
+      IF v_created > NOW() + INTERVAL '10 minutes' THEN
+        CONTINUE;
+      END IF;
+
+      -- Daily limit, for a new row only (an edit or a delete of a known id is not counted).
+      -- The UTC day of created_at must hold fewer than v_max_projects_day rows, deleted
+      -- ones included. Over the limit the row is not stored and is reported as rejected,
+      -- so the device removes it instead of retrying.
+      IF NOT EXISTS (SELECT 1 FROM public.projects WHERE id = v_id) THEN
+        v_day := date_trunc('day', v_created AT TIME ZONE 'UTC') AT TIME ZONE 'UTC';
+
+        SELECT COUNT(*) INTO v_day_rows
+        FROM public.projects pr
+        WHERE pr.user_id = v_uid
+          AND pr.created_at >= v_day
+          AND pr.created_at <  v_day + INTERVAL '24 hours';
+
+        IF v_day_rows >= v_max_projects_day THEN
+          v_rejected := v_rejected || v_id;
+          CONTINUE;
+        END IF;
       END IF;
 
       INSERT INTO public.projects AS p (id, user_id, name, color_id, created_at, deleted_at)
@@ -112,11 +147,6 @@ BEGIN
   -- ---------------------------------------------------------------
   -- SESSIONS (immutable: only deleted_at can change)
   -- ---------------------------------------------------------------
-  IF jsonb_array_length(p_sessions) > 0 THEN
-    -- one push per user at a time, so two devices cannot race on overlaps
-    PERFORM pg_advisory_xact_lock(hashtextextended(v_uid::TEXT, 0));
-  END IF;
-
   FOR v_item IN SELECT value FROM jsonb_array_elements(p_sessions) LOOP
     v_id := NULL;
     BEGIN
@@ -154,10 +184,9 @@ BEGIN
       END IF;
 
       -- 2. Daily limit. A new row (live or deleted) is stored only while the UTC day of
-      --    started_at holds fewer than v_max_day rows. Deleted rows count because they stay
-      --    in the table. Over the limit the row is not stored and is reported as rejected,
-      --    so the device removes it instead of retrying. The advisory lock above keeps
-      --    the count safe between devices.
+      --    started_at holds fewer than v_max_sessions_day rows. Deleted rows count because
+      --    they stay in the table. Over the limit the row is not stored and is reported as
+      --    rejected, so the device removes it instead of retrying.
       v_day := date_trunc('day', v_started AT TIME ZONE 'UTC') AT TIME ZONE 'UTC';
 
       SELECT COUNT(*) INTO v_day_rows
@@ -166,7 +195,7 @@ BEGIN
         AND s.started_at >= v_day
         AND s.started_at <  v_day + INTERVAL '24 hours';
 
-      IF v_day_rows >= v_max_day THEN
+      IF v_day_rows >= v_max_sessions_day THEN
         v_rejected := v_rejected || v_id;
         CONTINUE;
       END IF;
