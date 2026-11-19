@@ -53,7 +53,7 @@ class _MainScaffoldState extends State<MainScaffold> {
           listener: (context, _) => showWarningSnackBar(
             context,
             message:
-                'You have reached the daily limit of $maxSessionsPerDay sessions.',
+                'You have reached the UTC daily limit of $maxSessionsPerDay sessions. Your limit will reset tomorrow.',
           ),
         ),
         BlocListener<ProjectBloc, ProjectState>(
@@ -62,7 +62,7 @@ class _MainScaffoldState extends State<MainScaffold> {
           listener: (context, _) => showWarningSnackBar(
             context,
             message:
-                'You have reached the daily limit of $maxProjectsPerDay new projects.',
+                'You have reached the UTC daily limit of $maxProjectsPerDay new projects. Your limit will reset tomorrow.',
           ),
         ),
       ],
