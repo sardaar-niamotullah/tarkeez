@@ -5,7 +5,9 @@ import 'package:tarkeez/features/projects/data/models/project_model.dart';
 import 'package:tarkeez/features/sessions/data/models/session_model.dart';
 
 abstract interface class SessionRepository {
-  Future<Result<SessionModel>> entrySession({
+  /// Success with null: the day already has the maximum number of sessions
+  /// and nothing was saved.
+  Future<Result<SessionModel?>> entrySession({
     ProjectModel? project,
     required DateTime startedAt,
     required DateTime endedAt,
@@ -25,10 +27,6 @@ class SessionRepositoryImpl implements SessionRepository {
 
   static const _maxLength = Duration(hours: 24);
 
-  /// The cloud holds back a session that ends more than 10 minutes in the
-  /// future, so it would never sync. Stop it here with a small margin.
-  static const _maxFuture = Duration(minutes: 1);
-
   /// The cloud and the local triggers both work in whole seconds.
   static DateTime _wholeSeconds(DateTime t) =>
       DateTime.fromMillisecondsSinceEpoch(
@@ -37,7 +35,7 @@ class SessionRepositoryImpl implements SessionRepository {
       );
 
   @override
-  Future<Result<SessionModel>> entrySession({
+  Future<Result<SessionModel?>> entrySession({
     ProjectModel? project,
     required DateTime startedAt,
     required DateTime endedAt,
@@ -53,10 +51,6 @@ class SessionRepositoryImpl implements SessionRepository {
         );
       }
 
-      if (end.isAfter(DateTime.now().toUtc().add(_maxFuture))) {
-        throw StateError('A session cannot end in the future');
-      }
-
       // One row per session. The triggers split it at midnight.
       final id = await _localDatabase.sessionsDao.insertSession(
         startedAt: start,
@@ -64,6 +58,7 @@ class SessionRepositoryImpl implements SessionRepository {
         utcOffsetMinutes: startedAt.toLocal().timeZoneOffset.inMinutes,
         projectId: project?.id,
       );
+      if (id == null) return null;
 
       final row = await _localDatabase.sessionsDao.getSessionById(id);
       if (row == null) {

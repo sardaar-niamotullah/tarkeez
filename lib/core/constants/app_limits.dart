@@ -1,3 +1,5 @@
+const maxSessionsPerDay = 75;
+
 /// A running session stops by itself after this long.
 const maxRunningSession = Duration(hours: 4);
 

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
+import 'package:tarkeez/core/constants/app_limits.dart';
 import 'package:tarkeez/core/shared_files/cubits/navigation_cubit.dart';
+import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
 import 'package:tarkeez/core/shared_files/widgets/main_bottom_nav_bar.dart';
 import 'package:tarkeez/core/shared_files/widgets/main_navigation_rail.dart';
 import 'package:tarkeez/features/home/presentation/home_tab.dart';
@@ -9,6 +11,7 @@ import 'package:tarkeez/features/home/presentation/sections/app_drawer.dart';
 import 'package:tarkeez/features/profile/presentation/profile_tab.dart';
 import 'package:tarkeez/features/projects/presentation/projects_tab.dart';
 import 'package:tarkeez/features/report/presentation/report_tab.dart';
+import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
 
 class MainScaffold extends StatefulWidget {
   const new({super.key});
@@ -41,42 +44,50 @@ class _MainScaffoldState extends State<MainScaffold> {
     final currentIndex = context.watch<NavigationCubit>().currentIndex;
     final scheme = Theme.of(context).colorScheme;
 
-    return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: scheme.onSurface,
+    return BlocListener<SessionBloc, SessionState>(
+      listenWhen: (_, state) => state is SessionLoaded && state.isLimitReached,
+      listener: (context, _) => showWarningSnackBar(
+        context,
+        message:
+            'You have reached the daily limit of $maxSessionsPerDay sessions.',
+      ),
+      child: Scaffold(
+        key: _scaffoldKey,
+        backgroundColor: scheme.onSurface,
 
-      // ────────────────────────────────────────────────────────────
-      // App drawer
-      // ────────────────────────────────────────────────────────────
-      drawer: const AppDrawer(),
-      endDrawer: const AppDrawer(),
-      onEndDrawerChanged: (isOpen) => setState(() => _isDrawerOpen = isOpen),
+        // ────────────────────────────────────────────────────────────
+        // App drawer
+        // ────────────────────────────────────────────────────────────
+        drawer: const AppDrawer(),
+        endDrawer: const AppDrawer(),
+        onEndDrawerChanged: (isOpen) => setState(() => _isDrawerOpen = isOpen),
 
-      // ────────────────────────────────────────────────────────────
-      // Bottom nav bar (small screens only)
-      // ────────────────────────────────────────────────────────────
-      bottomNavigationBar: context.md
-          ? null
-          : MainBottomNavBar(
-              onMenuTap: _openEndDrawer,
-              isMenuOpen: _isDrawerOpen,
+        // ────────────────────────────────────────────────────────────
+        // Bottom nav bar (small screens only)
+        // ────────────────────────────────────────────────────────────
+        bottomNavigationBar: context.md
+            ? null
+            : MainBottomNavBar(
+                onMenuTap: _openEndDrawer,
+                isMenuOpen: _isDrawerOpen,
+              ),
+
+        // ────────────────────────────────────────────────────────────
+        // Body (rail on wide screens + tabs)
+        // ────────────────────────────────────────────────────────────
+        body: Row(
+          children: [
+            if (context.md)
+              MainNavigationRail(
+                onMenuTap: _openEndDrawer,
+                isMenuOpen: _isDrawerOpen,
+                showMenu: true,
+              ),
+            Expanded(
+              child: IndexedStack(index: currentIndex, children: _tabs),
             ),
-
-      // ────────────────────────────────────────────────────────────
-      // Body (rail on wide screens + tabs)
-      // ────────────────────────────────────────────────────────────
-      body: Row(
-        children: [
-          if (context.md)
-            MainNavigationRail(
-              onMenuTap: _openEndDrawer,
-              isMenuOpen: _isDrawerOpen,
-              showMenu: true,
-            ),
-          Expanded(
-            child: IndexedStack(index: currentIndex, children: _tabs),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

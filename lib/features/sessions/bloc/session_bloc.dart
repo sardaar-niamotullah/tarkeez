@@ -99,7 +99,14 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     );
 
     await result.fold(
-      onSuccess: (_) => _refreshSessions(emit, entered: true),
+      onSuccess: (session) async {
+        // null: the day is full and nothing was saved.
+        if (session == null) {
+          emit(SessionLoaded.limitReached(_currentSessions));
+        } else {
+          await _refreshSessions(emit, entered: true);
+        }
+      },
       onFailure: (error) async =>
           emit(SessionFailure(error.message, sessions: _currentSessions)),
     );

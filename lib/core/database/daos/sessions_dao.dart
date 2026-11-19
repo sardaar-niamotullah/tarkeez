@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:tarkeez/core/constants/app_limits.dart';
 import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/database/tables/sessions.dart';
 import 'package:tarkeez/core/shared_files/enums/sync_entity.dart';
@@ -16,13 +17,18 @@ class SessionsDao extends DatabaseAccessor<LocalDatabase>
   //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   // CREATE (the triggers update the rollups, the queue starts the sync)
   //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-  Future<String> insertSession({
+
+  /// Returns null and saves nothing when the UTC day of [startedAt] already has
+  /// [maxSessionsPerDay] sessions. Deleted ones count, the cloud counts them too.
+  Future<String?> insertSession({
     required DateTime startedAt,
     required DateTime endedAt,
     required int utcOffsetMinutes,
     String? projectId,
   }) {
     return transaction(() async {
+      if (await _countOnUtcDay(startedAt) >= maxSessionsPerDay) return null;
+
       final row = await into(sessions).insertReturning(
         SessionsCompanion.insert(
           userId: _uid,
@@ -38,6 +44,23 @@ class SessionsDao extends DatabaseAccessor<LocalDatabase>
       );
       return row.id;
     });
+  }
+
+  /// Rows (live and deleted) that started on the same UTC day as [instant].
+  Future<int> _countOnUtcDay(DateTime instant) {
+    final utc = instant.toUtc();
+    final dayStart = DateTime.utc(utc.year, utc.month, utc.day);
+    final total = sessions.id.count();
+    final query = selectOnly(sessions)
+      ..addColumns([total])
+      ..where(
+        sessions.userId.equals(_uid) &
+            sessions.startedAt.isBiggerOrEqualValue(dayStart) &
+            sessions.startedAt.isSmallerThanValue(
+              dayStart.add(const Duration(days: 1)),
+            ),
+      );
+    return query.map((row) => row.read(total)!).getSingle();
   }
 
   //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
@@ -85,9 +108,7 @@ class SessionsDao extends DatabaseAccessor<LocalDatabase>
                     t.deletedAt.isNull(),
               ))
               .write(
-                SessionsCompanion(
-                  deletedAt: Value(DateTime.now().toUtc()),
-                ),
+                SessionsCompanion(deletedAt: Value(DateTime.now().toUtc())),
               );
       if (rows > 0) {
         await attachedDatabase.pendingChangesDao.enqueue(
@@ -115,9 +136,7 @@ class SessionsDao extends DatabaseAccessor<LocalDatabase>
     return (update(sessions)..where(
           (t) => t.userId.equals(_uid) & t.id.isIn(ids) & t.deletedAt.isNull(),
         ))
-        .write(
-          SessionsCompanion(deletedAt: Value(DateTime.now().toUtc())),
-        );
+        .write(SessionsCompanion(deletedAt: Value(DateTime.now().toUtc())));
   }
 
   /// Saves pulled rows. Returns true if something visible changed.
@@ -163,9 +182,7 @@ class SessionsDao extends DatabaseAccessor<LocalDatabase>
         );
       }
 
-      await batch(
-        (b) => b.insertAllOnConflictUpdate(sessions, companions),
-      );
+      await batch((b) => b.insertAllOnConflictUpdate(sessions, companions));
       return changed;
     });
   }
