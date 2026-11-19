@@ -195,6 +195,13 @@ class SessionsDao extends DatabaseAccessor<LocalDatabase>
     sessions,
   )..where((t) => t.userId.equals(_uid) & t.id.isIn(ids))).go();
 
+  /// Hard delete of every session that uses one of [projectIds]. Used when the
+  /// cloud rejected those projects, so their sessions can never be pushed.
+  /// Returns how many rows went. The caller rebuilds the rollups afterwards.
+  Future<int> hardDeleteByProjectIds(Iterable<String> projectIds) => (delete(
+    sessions,
+  )..where((t) => t.userId.equals(_uid) & t.projectId.isIn(projectIds))).go();
+
   /// History reset. Rollups are wiped separately.
   Future<int> wipeAllSessions() =>
       (delete(sessions)..where((t) => t.userId.equals(_uid))).go();

@@ -6,7 +6,6 @@ import 'package:tarkeez/features/project_rollups/data/models/project_rollup_mode
 
 abstract interface class ProjectRollupRepository {
   Future<Result<List<ProjectRollupModel>>> fetchAllRollups();
-  Future<Result<List<ProjectRollupModel>>> fetchRecentRollups({int days});
   Future<Result<List<ProjectRollupModel>>> fetchRollupsInRange(
     DateTime start,
     DateTime end,
@@ -23,12 +22,6 @@ class ProjectRollupRepositoryImpl implements ProjectRollupRepository {
       final rows = await _localDatabase.projectRollupsDao.getAllRollups();
       return rows.map(ProjectRollupModel.fromRow).toList();
     });
-  }
-
-  @override
-  Future<Result<List<ProjectRollupModel>>> fetchRecentRollups({int days = 5}) {
-    final end = DateTime.now();
-    return fetchRollupsInRange(end.subtract(Duration(days: days)), end);
   }
 
   @override

@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart' show listEquals;
 import 'package:tarkeez/core/shared_files/enums/user_preference_enums.dart';
 import 'package:tarkeez/core/utils/app_clock.dart';
 import 'package:tarkeez/core/utils/live_session_slices.dart';
-import 'package:tarkeez/core/utils/rollup_date_utils.dart';
 import 'package:tarkeez/features/project_rollups/data/models/project_duration_model.dart';
 import 'package:tarkeez/features/project_rollups/data/models/project_rollup_model.dart';
 import 'package:tarkeez/features/project_rollups/data/repositories/project_rollup_repository.dart';
@@ -20,7 +19,6 @@ class ProjectRollupBloc extends Bloc<ProjectRollupEvent, ProjectRollupState> {
   new(this._repository, Stream<void> syncedSessions)
     : super(ProjectRollupInitial()) {
     on<FetchProjectRollupRequested>(_onFetch);
-    on<RefreshProjectRollupRequested>(_onRefresh);
     on<ProjectRollupSynced>(_onSynced, transformer: restartable());
     on<ProjectRollupLiveTicked>(_onLiveTicked);
     on<ProjectRollupLiveStopped>(_onLiveStopped);
@@ -55,32 +53,6 @@ class ProjectRollupBloc extends Bloc<ProjectRollupEvent, ProjectRollupState> {
     );
   }
 
-  Future<void> _onRefresh(
-    RefreshProjectRollupRequested event,
-    Emitter<ProjectRollupState> emit,
-  ) async {
-    if (_currentRollups == null) return;
-
-    final result = await _repository.fetchRecentRollups(days: event.days);
-
-    result.fold(
-      onSuccess: (recent) {
-        final current = _currentRollups;
-        if (current == null) return;
-        final now = DateTime.now();
-        final windowStart = RollupDateUtils.format(
-          DateTime(now.year, now.month, now.day - event.days),
-        );
-        final merged = [
-          ...current.where((r) => r.date.compareTo(windowStart) < 0),
-          ...recent,
-        ];
-        emit(ProjectRollupLoaded(persisted: merged));
-      },
-      onFailure: (error) =>
-          emit(ProjectRollupFailure(error.message, rollups: _currentRollups)),
-    );
-  }
 
   /// Sync or delete changed the sessions. A running session stays visible.
   Future<void> _onSynced(

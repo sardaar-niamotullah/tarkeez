@@ -25,7 +25,6 @@ class DailyRollupBloc extends Bloc<DailyRollupEvent, DailyRollupState> {
   new(this._repository, Stream<void> syncedSessions)
     : super(DailyRollupInitial()) {
     on<FetchDailyRollupRequested>(_onFetchDailyRollupRequested);
-    on<RefreshDailyRollupRequested>(_onRefreshDailyRollupRequested);
     on<DailyRollupLiveTicked>(_onLiveTicked);
     on<DailyRollupLiveStopped>(_onLiveStopped);
     on<DailyRollupSynced>(_onSynced, transformer: restartable());
@@ -52,24 +51,6 @@ class DailyRollupBloc extends Bloc<DailyRollupEvent, DailyRollupState> {
           rollupsByDate: {for (final r in rollups) r.date: r.durationSeconds},
         ),
       ),
-      onFailure: (error) => emit(DailyRollupFailure(error.message)),
-    );
-  }
-
-  Future<void> _onRefreshDailyRollupRequested(
-    RefreshDailyRollupRequested event,
-    Emitter<DailyRollupState> emit,
-  ) async {
-    final current = state;
-    if (current is! DailyRollupLoaded) return;
-
-    final result = await _repository.fetchRecentRollups(days: event.days);
-    result.fold(
-      onSuccess: (recent) {
-        final merged = Map<String, int>.from(current.rollupsByDate)
-          ..addEntries(recent.map((r) => MapEntry(r.date, r.durationSeconds)));
-        emit(current.copyWith(rollupsByDate: merged, clearLive: true));
-      },
       onFailure: (error) => emit(DailyRollupFailure(error.message)),
     );
   }

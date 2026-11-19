@@ -12,7 +12,8 @@ class PushResponse {
   /// Saved in the cloud.
   final List<String> applied;
 
-  /// Never acceptable: bad data, or a session older than the last history reset.
+  /// Never acceptable: bad data, older than the last history reset, too old,
+  /// over the daily limit, or a session whose project was rejected.
   final List<String> rejected;
 
   /// Sessions that lost an overlap. The cloud stored them as deleted.

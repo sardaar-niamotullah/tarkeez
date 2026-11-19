@@ -14,14 +14,18 @@
 -- Limit: at most 200 rows in p_projects and 200 in p_sessions.
 -- Daily limits: per user and per UTC day, a user stores at most 75 new sessions
 -- (by started_at) and 10 new projects (by created_at). Deleted rows count, they stay
--- in the table. The extra rows are not stored. Updating or deleting a row the cloud
--- already has is never counted.
+-- in the table. The extra rows are not stored.
+-- Age limit: a new project (created_at) or session (started_at) must not be older than
+-- one month before today's UTC midnight (v_max_age). It is not stored.
+-- Updating or deleting a row the cloud already has is never counted and never too old.
+-- A session whose project was rejected in the same push is rejected as well.
 --
 -- Response:
 --   applied  = saved (live or already deleted)
 --   rejected = never acceptable: bad data, older than the last history reset
 --              (a project created before it, a session that ended before it),
---              or over the daily limit of its UTC day
+--              too old, over the daily limit of its UTC day, or a session whose
+--              project was rejected in the same push
 --   dropped  = session lost an overlap, stored as deleted
 -- =================================================================
 DROP FUNCTION IF EXISTS public.push_changes(JSONB, JSONB);
@@ -38,6 +42,8 @@ AS $$
 DECLARE
   v_max_sessions_day CONSTANT INT := 75;  -- sessions per user per UTC day
   v_max_projects_day CONSTANT INT := 10;  -- projects per user per UTC day
+  v_max_age  CONSTANT INTERVAL := INTERVAL '1 month';  -- how far back a new row may be dated
+  v_oldest   TIMESTAMPTZ := (date_trunc('day', NOW() AT TIME ZONE 'UTC') - v_max_age) AT TIME ZONE 'UTC';
   v_uid      UUID := auth.uid();
   v_reset_at TIMESTAMPTZ;
   v_item     JSONB;
@@ -93,11 +99,18 @@ BEGIN
         CONTINUE;
       END IF;
 
-      -- Daily limit, for a new row only (an edit or a delete of a known id is not counted).
-      -- The UTC day of created_at must hold fewer than v_max_projects_day rows, deleted
-      -- ones included. Over the limit the row is not stored and is reported as rejected,
-      -- so the device removes it instead of retrying.
+      -- A new row (an edit or a delete of a known id skips this block):
+      -- 1. it must not be older than v_oldest, and
+      -- 2. the UTC day of created_at must hold fewer than v_max_projects_day rows, deleted
+      --    ones included.
+      -- Otherwise the row is not stored and is reported as rejected, so the device
+      -- removes it instead of retrying.
       IF NOT EXISTS (SELECT 1 FROM public.projects WHERE id = v_id) THEN
+        IF v_created < v_oldest THEN
+          v_rejected := v_rejected || v_id;
+          CONTINUE;
+        END IF;
+
         v_day := date_trunc('day', v_created AT TIME ZONE 'UTC') AT TIME ZONE 'UTC';
 
         SELECT COUNT(*) INTO v_day_rows
@@ -183,10 +196,29 @@ BEGIN
         CONTINUE;
       END IF;
 
-      -- 2. Daily limit. A new row (live or deleted) is stored only while the UTC day of
-      --    started_at holds fewer than v_max_sessions_day rows. Deleted rows count because
-      --    they stay in the table. Over the limit the row is not stored and is reported as
-      --    rejected, so the device removes it instead of retrying.
+      -- 2. Its project was rejected in this push and the cloud does not have it, so the
+      --    foreign key can never be met. The session is rejected too, otherwise it would
+      --    stay pending for ever. A project that is only pending (not answered) is not in
+      --    v_rejected, so its sessions still wait for it.
+      IF v_project IS NOT NULL
+         AND v_project = ANY (v_rejected)
+         AND NOT EXISTS (
+           SELECT 1 FROM public.projects pr
+           WHERE pr.id = v_project AND pr.user_id = v_uid
+         ) THEN
+        v_rejected := v_rejected || v_id;
+        CONTINUE;
+      END IF;
+
+      -- 3. A new row (live or deleted). It must not be older than v_oldest, and the UTC day
+      --    of started_at must hold fewer than v_max_sessions_day rows. Deleted rows count
+      --    because they stay in the table. Otherwise the row is not stored and is reported
+      --    as rejected, so the device removes it instead of retrying.
+      IF v_started < v_oldest THEN
+        v_rejected := v_rejected || v_id;
+        CONTINUE;
+      END IF;
+
       v_day := date_trunc('day', v_started AT TIME ZONE 'UTC') AT TIME ZONE 'UTC';
 
       SELECT COUNT(*) INTO v_day_rows
@@ -200,7 +232,7 @@ BEGIN
         CONTINUE;
       END IF;
 
-      -- 3. A tombstone for a session the cloud never saw: store it as deleted
+      -- 4. A tombstone for a session the cloud never saw: store it as deleted
       IF v_deleted IS NOT NULL THEN
         INSERT INTO public.sessions
           (id, user_id, project_id, started_at, ended_at, utc_offset_minutes, deleted_at)
@@ -209,7 +241,7 @@ BEGIN
         CONTINUE;
       END IF;
 
-      -- 4. Overlap rule. The new session loses if any overlapping live session
+      -- 5. Overlap rule. The new session loses if any overlapping live session
       --    is longer, or equally long and earlier (then lower id).
       IF EXISTS (
         SELECT 1 FROM public.sessions o
@@ -229,7 +261,7 @@ BEGIN
         CONTINUE;
       END IF;
 
-      -- 5. The new session wins: drop everything it overlaps, then insert it
+      -- 6. The new session wins: drop everything it overlaps, then insert it
       UPDATE public.sessions s
       SET deleted_at = NOW()
       WHERE s.user_id = v_uid

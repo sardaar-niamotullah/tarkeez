@@ -13,10 +13,11 @@ import 'package:tarkeez/features/sessions/data/models/session_model.dart';
 class SyncOutcome {
   const new({required this.projectsChanged, required this.sessionsChanged});
 
-  /// True if the project list on this device changed (pulled rows or a reset).
+  /// True if the project list on this device changed (pulled rows, a reset, or
+  /// rows removed after the cloud rejected them).
   final bool projectsChanged;
 
-  /// True if the sessions on this device changed (pulled rows or a reset).
+  /// True if the sessions on this device changed (same reasons).
   final bool sessionsChanged;
 }
 
@@ -43,8 +44,8 @@ class SyncEngine {
 
     // 2. Push. Projects first, because sessions point at them.
     syncLog('[2/3] push');
-    await _pushProjects();
-    await _pushSessions();
+    final projectPush = await _pushProjects();
+    final sessionsRemoved = await _pushSessions();
 
     // 3. Pull. Projects first, for the same reason.
     syncLog('[3/3] pull');
@@ -52,8 +53,12 @@ class SyncEngine {
     final sessionsChanged = await _pullSessions();
 
     return SyncOutcome(
-      projectsChanged: projectsChanged || resetApplied,
-      sessionsChanged: sessionsChanged || resetApplied,
+      projectsChanged: projectsChanged || resetApplied || projectPush.projects,
+      sessionsChanged:
+          sessionsChanged ||
+          resetApplied ||
+          projectPush.sessions ||
+          sessionsRemoved,
     );
   });
 
@@ -72,9 +77,13 @@ class SyncEngine {
   // again in this run. It stays queued for the next sync. Entries added while
   // the loop runs have bigger ids, so the loop picks them up too.
 
-  Future<void> _pushProjects() async {
+  /// Returns what was removed on this device because the cloud rejected rows:
+  /// projects, and the sessions that used them.
+  Future<({bool projects, bool sessions})> _pushProjects() async {
     String? cursor;
     var sent = 0;
+    var removedProjects = false;
+    var removedSessions = false;
 
     while (true) {
       final entries = await _db.pendingChangesDao.getPendingPage(
@@ -113,9 +122,22 @@ class SyncEngine {
         'rejected ${response.rejected.length}',
       );
 
-      // Rejected rows were created before a history reset, or have bad data.
-      // They are dropped, not requeued.
-      await _db.projectsDao.hardDeleteByIds(response.rejected);
+      // Rejected rows were created before a history reset, are too old, are over
+      // the daily limit, or have bad data. They are dropped, not requeued.
+      // Their sessions can never be pushed either (the cloud has no such
+      // project), and a session points at its project, so the sessions go first.
+      if (response.rejected.isNotEmpty) {
+        final sessionsGone = await _db.transaction(() async {
+          final count = await _db.sessionsDao.hardDeleteByProjectIds(
+            response.rejected,
+          );
+          await _db.projectsDao.hardDeleteByIds(response.rejected);
+          return count;
+        });
+        removedProjects = true;
+        removedSessions |= sessionsGone > 0;
+      }
+
       await _db.pendingChangesDao.deleteByIds([
         for (final id in [...response.applied, ...response.rejected])
           ...?entryIdsByProject[id],
@@ -127,9 +149,20 @@ class SyncEngine {
           ? 'push projects: nothing to send'
           : 'push projects: $sent sent in total',
     );
+
+    // A hard delete fires no trigger, so recompute the rollups once.
+    // The queue entries of the removed sessions are cleared by _pushSessions.
+    if (removedSessions) {
+      syncLog(
+        'push projects: sessions of rejected projects removed, rebuilding rollups',
+      );
+      await _db.rebuildRollups();
+    }
+    return (projects: removedProjects, sessions: removedSessions);
   }
 
-  Future<void> _pushSessions() async {
+  /// Returns true if rejected sessions were removed from this device.
+  Future<bool> _pushSessions() async {
     String? cursor;
     var sent = 0;
     var removedRejected = false;
@@ -174,7 +207,8 @@ class SyncEngine {
       // The trigger subtracts its time. Not queued again.
       await _db.sessionsDao.markDropped(response.dropped);
 
-      // Rejected (older than the last reset, or bad data): drop locally.
+      // Rejected (too old, over the daily limit, older than the last reset, or
+      // bad data): drop locally.
       if (response.rejected.isNotEmpty) {
         await _db.sessionsDao.hardDeleteByIds(response.rejected);
         removedRejected = true;
@@ -201,6 +235,7 @@ class SyncEngine {
       syncLog('push sessions: rejected rows removed, rebuilding rollups');
       await _db.rebuildRollups();
     }
+    return removedRejected;
   }
 
   // PULL
