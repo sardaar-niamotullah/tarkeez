@@ -12,11 +12,14 @@
 -- so it stays pending until the server clock catches up.
 --
 -- Limit: at most 200 rows in p_projects and 200 in p_sessions.
+-- Daily limit: a user stores at most 75 sessions per UTC day of started_at
+-- (deleted rows count, they stay in the table). The extra rows are not stored.
 --
 -- Response:
 --   applied  = saved (live or already deleted)
---   rejected = never acceptable: bad data, or older than the last history reset
---              (a project created before it, a session that ended before it)
+--   rejected = never acceptable: bad data, older than the last history reset
+--              (a project created before it, a session that ended before it),
+--              or a session whose UTC day already holds 75 sessions
 --   dropped  = session lost an overlap, stored as deleted
 -- =================================================================
 DROP FUNCTION IF EXISTS public.push_changes(JSONB, JSONB);
@@ -31,6 +34,7 @@ SECURITY DEFINER
 SET search_path = ''
 AS $$
 DECLARE
+  v_max_day  CONSTANT INT := 75;  -- sessions per user per UTC day
   v_uid      UUID := auth.uid();
   v_reset_at TIMESTAMPTZ;
   v_item     JSONB;
@@ -41,6 +45,8 @@ DECLARE
   v_ended    TIMESTAMPTZ;
   v_offset   INT;
   v_deleted  TIMESTAMPTZ;
+  v_day      TIMESTAMPTZ;
+  v_day_rows INT;
   v_existing public.sessions%ROWTYPE;
   v_applied  UUID[] := '{}';
   v_rejected UUID[] := '{}';
@@ -147,7 +153,25 @@ BEGIN
         CONTINUE;
       END IF;
 
-      -- 2. A tombstone for a session the cloud never saw: store it as deleted
+      -- 2. Daily limit. A new row (live or deleted) is stored only while the UTC day of
+      --    started_at holds fewer than v_max_day rows. Deleted rows count because they stay
+      --    in the table. Over the limit the row is not stored and is reported as rejected,
+      --    so the device removes it instead of retrying. The advisory lock above keeps
+      --    the count safe between devices.
+      v_day := date_trunc('day', v_started AT TIME ZONE 'UTC') AT TIME ZONE 'UTC';
+
+      SELECT COUNT(*) INTO v_day_rows
+      FROM public.sessions s
+      WHERE s.user_id = v_uid
+        AND s.started_at >= v_day
+        AND s.started_at <  v_day + INTERVAL '24 hours';
+
+      IF v_day_rows >= v_max_day THEN
+        v_rejected := v_rejected || v_id;
+        CONTINUE;
+      END IF;
+
+      -- 3. A tombstone for a session the cloud never saw: store it as deleted
       IF v_deleted IS NOT NULL THEN
         INSERT INTO public.sessions
           (id, user_id, project_id, started_at, ended_at, utc_offset_minutes, deleted_at)
@@ -156,7 +180,7 @@ BEGIN
         CONTINUE;
       END IF;
 
-      -- 3. Overlap rule. The new session loses if any overlapping live session
+      -- 4. Overlap rule. The new session loses if any overlapping live session
       --    is longer, or equally long and earlier (then lower id).
       IF EXISTS (
         SELECT 1 FROM public.sessions o
@@ -176,7 +200,7 @@ BEGIN
         CONTINUE;
       END IF;
 
-      -- 4. The new session wins: drop everything it overlaps, then insert it
+      -- 5. The new session wins: drop everything it overlaps, then insert it
       UPDATE public.sessions s
       SET deleted_at = NOW()
       WHERE s.user_id = v_uid

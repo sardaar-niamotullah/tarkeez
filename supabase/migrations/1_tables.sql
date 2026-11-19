@@ -225,6 +225,10 @@ FOREIGN KEY (project_id, user_id) REFERENCES public.projects (id, user_id);
 CREATE INDEX IF NOT EXISTS idx_sessions_pull
   ON public.sessions (user_id, updated_at);
 
+-- Counts one user's sessions per UTC day (the daily limit in push_changes).
+CREATE INDEX IF NOT EXISTS idx_sessions_day
+  ON public.sessions (user_id, started_at);
+
 -- CONSTRAINTS
 ALTER TABLE public.sessions DROP CONSTRAINT IF EXISTS sessions_length_check;
 ALTER TABLE public.sessions
