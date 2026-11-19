@@ -1,4 +1,5 @@
 const maxSessionsPerDay = 75;
+const maxProjectsPerDay = 1;
 
 /// A running session stops by itself after this long.
 const maxRunningSession = Duration(hours: 4);

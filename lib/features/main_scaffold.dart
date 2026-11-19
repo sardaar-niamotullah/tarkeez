@@ -9,6 +9,7 @@ import 'package:tarkeez/core/shared_files/widgets/main_navigation_rail.dart';
 import 'package:tarkeez/features/home/presentation/home_tab.dart';
 import 'package:tarkeez/features/home/presentation/sections/app_drawer.dart';
 import 'package:tarkeez/features/profile/presentation/profile_tab.dart';
+import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/features/projects/presentation/projects_tab.dart';
 import 'package:tarkeez/features/report/presentation/report_tab.dart';
 import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
@@ -44,13 +45,27 @@ class _MainScaffoldState extends State<MainScaffold> {
     final currentIndex = context.watch<NavigationCubit>().currentIndex;
     final scheme = Theme.of(context).colorScheme;
 
-    return BlocListener<SessionBloc, SessionState>(
-      listenWhen: (_, state) => state is SessionLoaded && state.isLimitReached,
-      listener: (context, _) => showWarningSnackBar(
-        context,
-        message:
-            'You have reached the daily limit of $maxSessionsPerDay sessions.',
-      ),
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<SessionBloc, SessionState>(
+          listenWhen: (_, state) =>
+              state is SessionLoaded && state.isLimitReached,
+          listener: (context, _) => showWarningSnackBar(
+            context,
+            message:
+                'You have reached the daily limit of $maxSessionsPerDay sessions.',
+          ),
+        ),
+        BlocListener<ProjectBloc, ProjectState>(
+          listenWhen: (_, state) =>
+              state is ProjectLoaded && state.isLimitReached,
+          listener: (context, _) => showWarningSnackBar(
+            context,
+            message:
+                'You have reached the daily limit of $maxProjectsPerDay new projects.',
+          ),
+        ),
+      ],
       child: Scaffold(
         key: _scaffoldKey,
         backgroundColor: scheme.onSurface,

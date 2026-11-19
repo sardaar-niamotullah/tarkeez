@@ -4,7 +4,9 @@ import 'package:tarkeez/core/error/result_guard.dart';
 import 'package:tarkeez/features/projects/data/models/project_model.dart';
 
 abstract interface class ProjectRepository {
-  Future<Result<ProjectModel>> createProject({
+  /// Success with null: today already has the maximum number of projects
+  /// and nothing was saved.
+  Future<Result<ProjectModel?>> createProject({
     required String name,
     required int colorId,
   });
@@ -18,7 +20,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
   final LocalDatabase _localDatabase;
 
   @override
-  Future<Result<ProjectModel>> createProject({
+  Future<Result<ProjectModel?>> createProject({
     required String name,
     required int colorId,
   }) async {
@@ -27,6 +29,8 @@ class ProjectRepositoryImpl implements ProjectRepository {
         name: name,
         colorId: colorId,
       );
+      if (id == null) return null;
+
       final row = await _localDatabase.projectsDao.getProjectById(id);
       if (row == null) {
         throw StateError('Failed to load created project');

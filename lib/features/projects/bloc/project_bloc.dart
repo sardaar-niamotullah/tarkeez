@@ -28,6 +28,7 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
     bool created = false,
     bool updated = false,
     bool deleted = false,
+    bool limitReached = false,
     bool isInitialLoad = false,
   }) async {
     final previousProjects = state is ProjectLoaded
@@ -47,6 +48,7 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
           isCreated: created,
           isUpdated: updated,
           isDeleted: deleted,
+          isLimitReached: limitReached,
         ),
       ),
       onFailure: (error) => emit(ProjectFailure(error.message)),
@@ -65,7 +67,12 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
     );
 
     await result.fold(
-      onSuccess: (_) => _refreshProjects(emit, created: true),
+      // null: today is full and nothing was saved.
+      onSuccess: (project) => _refreshProjects(
+        emit,
+        created: project != null,
+        limitReached: project == null,
+      ),
       onFailure: (error) async => emit(ProjectFailure(error.message)),
     );
   }

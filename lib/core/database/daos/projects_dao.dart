@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:tarkeez/core/constants/app_limits.dart';
 import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/database/tables/projects.dart';
 import 'package:tarkeez/core/shared_files/enums/sync_entity.dart';
@@ -16,13 +17,20 @@ class ProjectsDao extends DatabaseAccessor<LocalDatabase>
   //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   // CREATE
   //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-  Future<String> insertProject({required String name, required int colorId}) {
+
+  /// Returns null and saves nothing when today (UTC) already has
+  /// [maxProjectsPerDay] projects. Deleted ones count, the cloud counts them too.
+  Future<String?> insertProject({required String name, required int colorId}) {
     return transaction(() async {
+      final now = DateTime.now().toUtc();
+      if (await _countOnUtcDay(now) >= maxProjectsPerDay) return null;
+
       final row = await into(projects).insertReturning(
         ProjectsCompanion.insert(
           userId: _uid,
           name: name,
           colorId: colorId,
+          createdAt: Value(now),
         ),
       );
       await attachedDatabase.pendingChangesDao.enqueue(
@@ -31,6 +39,23 @@ class ProjectsDao extends DatabaseAccessor<LocalDatabase>
       );
       return row.id;
     });
+  }
+
+  /// Rows (live and deleted) created on the same UTC day as [instant].
+  Future<int> _countOnUtcDay(DateTime instant) {
+    final utc = instant.toUtc();
+    final dayStart = DateTime.utc(utc.year, utc.month, utc.day);
+    final total = projects.id.count();
+    final query = selectOnly(projects)
+      ..addColumns([total])
+      ..where(
+        projects.userId.equals(_uid) &
+            projects.createdAt.isBiggerOrEqualValue(dayStart) &
+            projects.createdAt.isSmallerThanValue(
+              dayStart.add(const Duration(days: 1)),
+            ),
+      );
+    return query.map((row) => row.read(total)!).getSingle();
   }
 
   //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
@@ -73,10 +98,7 @@ class ProjectsDao extends DatabaseAccessor<LocalDatabase>
                     t.deletedAt.isNull(),
               ))
               .write(
-                ProjectsCompanion(
-                  name: Value(name),
-                  colorId: Value(colorId),
-                ),
+                ProjectsCompanion(name: Value(name), colorId: Value(colorId)),
               );
       if (rows == 0) return false;
       await attachedDatabase.pendingChangesDao.enqueue(SyncEntity.project, id);
@@ -97,9 +119,7 @@ class ProjectsDao extends DatabaseAccessor<LocalDatabase>
                     t.deletedAt.isNull(),
               ))
               .write(
-                ProjectsCompanion(
-                  deletedAt: Value(DateTime.now().toUtc()),
-                ),
+                ProjectsCompanion(deletedAt: Value(DateTime.now().toUtc())),
               );
       if (rows > 0) {
         await attachedDatabase.pendingChangesDao.enqueue(
@@ -163,9 +183,7 @@ class ProjectsDao extends DatabaseAccessor<LocalDatabase>
         );
       }
 
-      await batch(
-        (b) => b.insertAllOnConflictUpdate(projects, companions),
-      );
+      await batch((b) => b.insertAllOnConflictUpdate(projects, companions));
       return changed;
     });
   }
