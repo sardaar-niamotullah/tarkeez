@@ -3,6 +3,10 @@ screenshots
 screenshots/
 sequrity_loopwhole.md
 
+/android/key.properties
+*.jks
+*.keystore
+
 # Miscellaneous
 *.class
 *.log
