@@ -2,10 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/disclaimer_text_button.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
+import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
 import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
 import 'package:tarkeez/core/shared_files/widgets/stand_alone_page_outer_structure.dart';
 import 'package:tarkeez/core/utils/sliver_scroll_max_width_box.dart';
@@ -53,20 +56,47 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
 
   Future<void> _onPurchases(List<PurchaseDetails> purchases) async {
     for (final purchase in purchases) {
-      if (purchase.status == PurchaseStatus.error && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Purchase failed. Please try again.')),
+      if (purchase.status == PurchaseStatus.error) {
+        if (mounted) {
+          showErrorSnackBar(
+            context,
+            message: 'Purchase failed. Please try again.',
+          );
+        }
+        continue;
+      }
+
+      if (purchase.status != PurchaseStatus.purchased &&
+          purchase.status != PurchaseStatus.restored) {
+        continue;
+      }
+
+      try {
+        // Backend checks the token with Google and adds the time.
+        await Supabase.instance.client.functions.invoke(
+          'verify-purchase',
+          body: {
+            'product_id': purchase.productID,
+            'purchase_token': purchase.verificationData.serverVerificationData,
+          },
         );
-      }
 
-      if (purchase.status == PurchaseStatus.purchased ||
-          purchase.status == PurchaseStatus.restored) {
-        // TODO: send purchase.verificationData.serverVerificationData
-        // and purchase.productID to the backend, and wait for it to confirm.
-      }
+        // Consume only after the backend confirmed, so it can be bought again.
+        await _iap
+            .getPlatformAddition<InAppPurchaseAndroidPlatformAddition>()
+            .consumePurchase(purchase as GooglePlayPurchaseDetails);
 
-      if (purchase.pendingCompletePurchase) {
-        await _iap.completePurchase(purchase);
+        if (mounted) {
+          showSuccessSnackBar(context, message: 'Premium added. Thank you!');
+        }
+        // Reload premium_until here, the same way your app already does it.
+      } catch (_) {
+        if (mounted) {
+          showWarningSnackBar(
+            context,
+            message: 'Could not confirm your purchase. It will be retried when you reopen the app.',
+          );
+        }
       }
     }
   }
@@ -82,8 +112,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
   void _buy(PricingPlan plan) {
     final product = _products?[plan.productId];
     if (product == null) return;
-    _iap.buyNonConsumable(
+    _iap.buyConsumable(
       purchaseParam: PurchaseParam(productDetails: product),
+      autoConsume: false,
     );
   }
 
@@ -105,7 +136,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
         mainAxisSize: .min,
         children: [
           Text(
-            'Renews automatically. Cancel anytime in Google Play.',
+            'One-time payment. The time is added to your current premium.',
             style: TextUtils.paragraph(context, color: scheme.onTertiary),
             textAlign: .center,
           ),
@@ -137,7 +168,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
           ),
 
           // ──────────────────────────────────────────────────────────
-          // Subscription plan buttons
+          // Plan cards
           // ──────────────────────────────────────────────────────────
           if (_products == null)
             const SliverToBoxAdapter(
