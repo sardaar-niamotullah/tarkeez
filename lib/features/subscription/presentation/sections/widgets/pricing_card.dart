@@ -15,7 +15,6 @@ class PricingCard extends StatelessWidget {
     required this.colorBright,
     required this.iconPath,
     this.isActive = false,
-    this.isFreeCard = false,
     this.onTap,
   });
 
@@ -27,7 +26,6 @@ class PricingCard extends StatelessWidget {
   final Color colorBright;
   final String iconPath;
   final bool isActive;
-  final bool isFreeCard;
   final VoidCallback? onTap;
 
   @override
@@ -83,39 +81,39 @@ class PricingCard extends StatelessWidget {
                         // ──────────────────────────────────────────────
                         // Price
                         // ──────────────────────────────────────────────
-                        if (!isFreeCard) ...[
-                          RichText(
-                            text: TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: '\$ ',
-                                  style: TextUtils.title3(
-                                    context,
-                                    color: Colors.white70,
-                                  ),
+                        Row(
+                          mainAxisAlignment: .center,
+                          children: [
+                            Transform.translate(
+                              offset: Offset(0, 2),
+                              child: Text(
+                                '\$ ',
+                                style: TextUtils.title3(
+                                  context,
+                                  color: Colors.white70,
                                 ),
-                                TextSpan(
-                                  text: price,
-                                  style: TextUtils.title1(
-                                    context,
-                                    color: AppTheme.white,
-                                  ).copyWith(fontSize: 28),
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
+                            Text(
+                              price,
+                              style: TextUtils.title1(
+                                context,
+                                color: AppTheme.white,
+                              ).copyWith(fontSize: 28),
+                            ),
+                          ],
+                        ),
 
-                          // ──────────────────────────────────────────────
-                          // Duration
-                          // ──────────────────────────────────────────────
-                          Text(
-                            duration,
-                            style: TextUtils.paragraphBold(
-                              context,
-                              color: AppTheme.white,
-                            ),
+                        // ──────────────────────────────────────────────
+                        // Duration
+                        // ──────────────────────────────────────────────
+                        Text(
+                          duration,
+                          style: TextUtils.paragraphBold(
+                            context,
+                            color: AppTheme.white,
                           ),
-                        ],
+                        ),
                         const SizedBox(height: 8),
 
                         Container(
@@ -183,16 +181,15 @@ class PricingCard extends StatelessWidget {
                   ),
 
                   /// BUBBLE — ring, center-right
-                  if (!isFreeCard)
-                    Positioned(
-                      top: 28,
-                      right: 8,
-                      child: BubbleRing(
-                        size: 30,
-                        color: Colors.white,
-                        opacity: 0.15,
-                      ),
+                  Positioned(
+                    top: 28,
+                    right: 8,
+                    child: BubbleRing(
+                      size: 30,
+                      color: Colors.white,
+                      opacity: 0.15,
                     ),
+                  ),
                 ],
               ),
             ),
