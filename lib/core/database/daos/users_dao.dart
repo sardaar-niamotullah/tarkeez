@@ -16,12 +16,6 @@ class UsersDao extends DatabaseAccessor<LocalDatabase> with _$UsersDaoMixin {
   Future<LocalUser?> getUserById(String id) =>
       (select(users)..where((t) => t.id.equals(id))).getSingleOrNull();
 
-  Stream<LocalUser?> watchUserById(String id) =>
-      (select(users)..where((t) => t.id.equals(id))).watchSingleOrNull();
-
-  Future<int> deleteUser(String id) =>
-      (delete(users)..where((t) => t.id.equals(id))).go();
-
   Future<void> setHistoryResetAt(String id, String? value) =>
       (update(users)..where((t) => t.id.equals(id))).write(
         UsersCompanion(historyResetAt: Value(value)),
@@ -30,10 +24,5 @@ class UsersDao extends DatabaseAccessor<LocalDatabase> with _$UsersDaoMixin {
   Stream<DateTime?> watchPremiumUntil() =>
       (select(users)..where((t) => t.id.equals(_uid))).watchSingleOrNull().map(
         (u) => DateTime.tryParse(u?.premiumUntil ?? ''),
-      );
-
-  Future<void> setPremiumUntil(String? value) =>
-      (update(users)..where((t) => t.id.equals(_uid))).write(
-        UsersCompanion(premiumUntil: Value(value)),
       );
 }

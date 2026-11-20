@@ -74,13 +74,6 @@ class ProjectsDao extends DatabaseAccessor<LocalDatabase>
           ))
           .getSingleOrNull();
 
-  Stream<List<LocalProject>> watchAllProjects() {
-    return (select(projects)
-          ..where((t) => t.userId.equals(_uid) & t.deletedAt.isNull())
-          ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
-        .watch();
-  }
-
   //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
   // UPDATE
   //–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––

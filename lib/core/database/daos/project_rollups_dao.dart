@@ -16,9 +16,6 @@ class ProjectRollupsDao extends DatabaseAccessor<LocalDatabase>
 
   String get _uid => attachedDatabase.currentUserId;
 
-  static String _toKey(String? projectId) => projectId ?? noProjectKey;
-  static String? _fromKey(String key) => key == noProjectKey ? null : key;
-
   ProjectRollup _toRow(QueryRow r) => ProjectRollup(
     userId: r.read<String>('user_id'),
     date: r.read<String>('date'),
@@ -26,11 +23,7 @@ class ProjectRollupsDao extends DatabaseAccessor<LocalDatabase>
     durationSeconds: r.read<int>('duration_seconds'),
   );
 
-  Selectable<ProjectRollup> _rollups({
-    String? start,
-    String? end,
-    String? projectKey,
-  }) {
+  Selectable<ProjectRollup> _rollups({String? start, String? end}) {
     final where = <String>['user_id = ?'];
     final vars = <Variable>[Variable.withString(_uid)];
     if (start != null) {
@@ -40,10 +33,6 @@ class ProjectRollupsDao extends DatabaseAccessor<LocalDatabase>
     if (end != null) {
       where.add('date <= ?');
       vars.add(Variable.withString(end));
-    }
-    if (projectKey != null) {
-      where.add('project_id = ?');
-      vars.add(Variable.withString(projectKey));
     }
     return customSelect(
       'SELECT user_id, date, project_id, duration_seconds FROM $_view '
@@ -56,54 +45,8 @@ class ProjectRollupsDao extends DatabaseAccessor<LocalDatabase>
   // READ
   Future<List<ProjectRollup>> getAllRollups() => _rollups().get();
 
-  Future<List<ProjectRollup>> getRollupsForDate(String date) =>
-      _rollups(start: date, end: date).get();
-
   Future<List<ProjectRollup>> getRollupsInRange(String start, String end) =>
       _rollups(start: start, end: end).get();
-
-  /// Pass `null` for the "No Project" bucket.
-  Future<List<ProjectRollup>> getRollupsForProject(
-    String? projectId, {
-    String? start,
-    String? end,
-  }) => _rollups(
-    start: start,
-    end: end,
-    projectKey: _toKey(projectId),
-  ).get();
-
-  Stream<List<ProjectRollup>> watchRollupsInRange(String start, String end) =>
-      _rollups(start: start, end: end).watch();
-
-  // READ: aggregates
-  Selectable<QueryRow> _totals(String start, String end) => customSelect(
-    'SELECT project_id, SUM(duration_seconds) AS total FROM $_view '
-    'WHERE user_id = ? AND date >= ? AND date <= ? GROUP BY project_id',
-    variables: [
-      Variable.withString(_uid),
-      Variable.withString(start),
-      Variable.withString(end),
-    ],
-    readsFrom: {projectRollups, projects},
-  );
-
-  Map<String?, int> _mapTotals(List<QueryRow> rows) => {
-    for (final r in rows)
-      _fromKey(r.read<String>('project_id')): r.read<int>('total'),
-  };
-
-  /// Total seconds per project over start..end (inclusive, 'YYYY-MM-DD').
-  /// The `null` key is the "No Project" bucket.
-  Future<Map<String?, int>> getTotalsByProjectInRange(
-    String start,
-    String end,
-  ) async => _mapTotals(await _totals(start, end).get());
-
-  Stream<Map<String?, int>> watchTotalsByProjectInRange(
-    String start,
-    String end,
-  ) => _totals(start, end).watch().map(_mapTotals);
 
   /// History reset.
   Future<int> wipeAll() =>
