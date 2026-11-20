@@ -11,7 +11,7 @@ class InformationsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final infos = [
-      'Your streak and heatmap update once you complete at least 30 minutes of focus time in a day.',
+      'A day counts toward your streak and heatmap once you complete at least 30 minutes of focus time.',
       'Please connect to the internet at least once a month. Data that stays offline for more than a month cannot be backed up to the cloud, for security reasons, and may be removed from this device.',
       'Your data is backed up automatically whenever you\'re online, so you rarely need the Back Up button on the Profile tab. The button also works as a sync: use it to back up your latest sessions and to bring sessions recorded on another device to this one right away.',
     ];
