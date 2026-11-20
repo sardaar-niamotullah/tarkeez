@@ -21,6 +21,8 @@ class TermsAndConditionsPage extends StatelessWidget {
 
       'Before purchasing any Premium package, you are responsible for ensuring that Tarkeez works properly on your intended devices and operating systems. Compatibility may vary depending on device specifications, operating system versions, software configurations, and other technical factors. We do not guarantee compatibility with every device.',
 
+      'Your data is backed up automatically whenever you\'re online, so you rarely need the Back Up button on the Profile tab. The button also works as a sync: use it to back up your latest sessions and to bring sessions recorded on another device to this one right away.',
+
       'Future application updates, operating system upgrades, security changes, device manufacturer modifications, or third-party dependency updates may affect the application\'s performance or compatibility. Such changes may cause certain features to malfunction or the application to become partially or entirely unusable on previously supported devices. We do not guarantee continued compatibility with older devices or software versions.',
 
       'We make reasonable efforts to protect and maintain user data; however, data loss, corruption, synchronization failures, or temporary or permanent loss of access may occur due to technical failures, device issues, software updates, server problems, or other unforeseen circumstances. You are responsible for maintaining any backups necessary to protect your important data.',
@@ -41,10 +43,7 @@ class TermsAndConditionsPage extends StatelessWidget {
           SliverList.builder(
             itemCount: terms.length,
             itemBuilder: (context, index) {
-              return InfoTile(
-                indexNumber: index,
-                text: terms[index],
-              );
+              return InfoTile(indexNumber: index, text: terms[index]);
             },
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 24)),

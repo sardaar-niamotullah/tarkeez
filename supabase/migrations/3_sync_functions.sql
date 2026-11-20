@@ -16,7 +16,7 @@
 -- (by started_at) and 10 new projects (by created_at). Deleted rows count, they stay
 -- in the table. The extra rows are not stored.
 -- Age limit: a new project (created_at) or session (started_at) must not be older than
--- one month before today's UTC midnight (v_max_age). It is not stored.
+-- 33 day before today's UTC midnight (v_max_age). It is not stored.
 -- Updating or deleting a row the cloud already has is never counted and never too old.
 -- A session whose project was rejected in the same push is rejected as well.
 --
@@ -42,7 +42,7 @@ AS $$
 DECLARE
   v_max_sessions_day CONSTANT INT := 75;  -- sessions per user per UTC day
   v_max_projects_day CONSTANT INT := 10;  -- projects per user per UTC day
-  v_max_age  CONSTANT INTERVAL := INTERVAL '1 month';  -- how far back a new row may be dated
+  v_max_age  CONSTANT INTERVAL := INTERVAL '33 days';  -- how far back a new row may be dated
   v_oldest   TIMESTAMPTZ := (date_trunc('day', NOW() AT TIME ZONE 'UTC') - v_max_age) AT TIME ZONE 'UTC';
   v_uid      UUID := auth.uid();
   v_reset_at TIMESTAMPTZ;

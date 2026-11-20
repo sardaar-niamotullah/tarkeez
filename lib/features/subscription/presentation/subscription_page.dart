@@ -43,14 +43,12 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
             title: 'Next',
             backgroundColorLeft: selectedPlan.color,
             backgroundColorRight: selectedPlan.colorBright,
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                backgroundColor: Colors.transparent,
-                builder: (BuildContext context) =>
-                    SubscriptionBottomSheet(isStorageCostIncluded: true),
-              );
-            },
+            onPressed: () => showModalBottomSheet(
+              context: context,
+              backgroundColor: Colors.transparent,
+              builder: (BuildContext context) =>
+                  SubscriptionBottomSheet(isStorageCostIncluded: true),
+            ),
           ),
           const SizedBox(height: 8),
           const DisclaimerTextButton(),

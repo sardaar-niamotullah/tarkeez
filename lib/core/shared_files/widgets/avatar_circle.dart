@@ -22,6 +22,7 @@ class AvatarCircle extends StatelessWidget {
     this.innerCircleColor,
     this.name,
   });
+
   final bool isEditable;
   final double radius;
   final double? innerRadius;
