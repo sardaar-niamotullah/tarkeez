@@ -52,6 +52,9 @@ Tarkeez is offline-first. The app reads and writes a local SQLite database, and 
   - `utc_daily_rollups`: UTC-day totals for the time leaderboard. Cloud only.
 - **Session length cap:** at most 24 hours, so a session touches at most two local days and two UTC days, and each trigger writes at most two slices per table.
 - **No future sessions:** a session cannot end in the future. The app refuses one that ends more than 1 minute after the device clock. `push_changes` does not answer one that ends more than 10 minutes after the cloud clock, so it stays in `pending_changes` and is retried at the next sync (see "Special situations").
+- **No future projects:** the same rule applies to a project's `created_at`. `push_changes` does not answer a project created more than 10 minutes after the cloud clock, so it stays in `pending_changes`.
+- **Daily limits:** per user and per UTC day, the cloud stores at most 75 new sessions (by `started_at`) and 10 new projects (by `created_at`). Deleted rows count, because they stay in the table. The app checks the same limit before saving, refuses the row and shows a warning. A row over the limit that still reaches the cloud is rejected and not stored.
+- **Age limit:** `push_changes` rejects a new project or session dated more than 33 days before today's UTC midnight. Edits and deletes of rows the cloud already has are never rejected for age. The device removes a rejected row locally, together with the sessions of a rejected project, and rebuilds its rollups.
 - **Immutable sessions:** a saved session only changes by getting `deleted_at`, and that is one-way. Triggers react only to an insert and to `deleted_at` being set. Projects can be edited.
 - **No overlapping sessions:** a user never has two live sessions that overlap in time, even across devices. The cloud keeps the longest and drops the other (see "Overlap rule").
 - **Tombstones:** a normal delete never removes a row. Projects and sessions get `deleted_at`, which syncs like any other change. Only "Delete all history" and "Delete account" hard-delete rows (see "Editing and deleting").
@@ -197,12 +200,12 @@ Example: a phone was offline for 5 years and holds 30,000 queued sessions. When 
 
 ### Pieces
 
-| Piece              | Where                           | Purpose                                                                                                      |
-| ------------------ | ------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `pending_changes`  | device                          | Rows changed locally and not yet pushed. Stores the table and id only. The row is read at push time.         |
-| `updated_at`       | cloud `projects` and `sessions` | Time the database last changed the row. A trigger sets it, so device clocks never matter.                    |
-| `pull_checkpoints` | device                          | Biggest `updated_at` received: `last_project_updated_at` and `last_session_updated_at`. One row per account. |
-| `history_reset_at` | `users`, cloud and device       | Time of the last "Delete all history". A device that sees a newer cloud value wipes its data.                |
+| Piece              | Where                           | Purpose                                                                                                                   |
+| ------------------ | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `pending_changes`  | device                          | Rows changed locally and not yet pushed. Stores the table and id only. The row is read at push time.                      |
+| `updated_at`       | cloud `projects` and `sessions` | Time the database last changed the row. A trigger sets it, so device clocks never matter.                                 |
+| `pull_checkpoints` | device                          | Biggest `updated_at` received: `last_project_updated_at` and `last_session_updated_at`. One row per account.              |
+| `history_reset_at` | `users`, cloud and device       | Time of the last "Delete all history". A device that sees a newer cloud value wipes its data.                             |
 | `premium_until`    | `users`, cloud and device       | Date premium ends. The backend derives it from the trial and `purchases`, and the device replaces its copy on every sync. |
 
 Pull query (200 rows per page, the same for sessions):
@@ -268,18 +271,19 @@ A device can receive rows it already has: its own rows right after a push, and r
 
 ### Special situations
 
-| Situation                                      | Behaviour                                                                                                                                                                                                                                                                                           |
-| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Changes made while offline                     | Rows wait in `pending_changes`, and no attempt is made. A sync starts when the connection returns.                                                                                                                                                                                                  |
-| Offline for years                              | The queue holds thousands of entries. It is pushed 200 rows per request, oldest first, and each page leaves the queue when the cloud answers, so an interrupted sync continues where it stopped.                                                                                                    |
-| New phone, reinstall, or cleared app storage   | No checkpoint, so the first pull returns everything, 200 rows per request. This restores the history once (about 3 MB per year of history). Settings start with default values, because they do not sync. `premium_until` comes back with the first sync.                                           |
-| Second account on the same device              | Rows, checkpoints and settings are per `user_id`, so accounts never mix. Each account keeps its own theme, tracking mode and period ranges.                                                                                                                                                         |
-| Offline for a week                             | The checkpoint is a week old, so the next pull returns the week's changes, in pages.                                                                                                                                                                                                                |
-| Two devices edit the same project offline      | Last push wins for the whole row. The other device pulls the winning version on its next sync.                                                                                                                                                                                                      |
-| "Delete all history" on another device         | The device's next sync reads a newer `history_reset_at` on its `users` row, before it pushes. It wipes its projects, sessions and rollups, clears its pending changes and checkpoints, and pulls from scratch.                                                                                      |
-| Device offline during a reset                  | Same as above. Everything the device recorded since the reset is wiped too, including rows still in `pending_changes`. If a stale push still reaches the cloud (a reset lands in the middle of a sync), `push_changes` rejects projects created before the reset and sessions that ended before it. |
+| Situation                                       | Behaviour                                                                                                                                                                                                                                                                                                                     |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Changes made while offline                      | Rows wait in `pending_changes`, and no attempt is made. A sync starts when the connection returns.                                                                                                                                                                                                                            |
+| Offline for years                               | The queue holds thousands of entries. It is pushed 200 rows per request, oldest first, and each page leaves the queue when the cloud answers, so an interrupted sync continues where it stopped.                                                                                                                              |
+| New phone, reinstall, or cleared app storage    | No checkpoint, so the first pull returns everything, 200 rows per request. This restores the history once (about 3 MB per year of history). Settings start with default values, because they do not sync. `premium_until` comes back with the first sync.                                                                     |
+| Second account on the same device               | Rows, checkpoints and settings are per `user_id`, so accounts never mix. Each account keeps its own theme, tracking mode and period ranges.                                                                                                                                                                                   |
+| Offline for a week                              | The checkpoint is a week old, so the next pull returns the week's changes, in pages.                                                                                                                                                                                                                                          |
+| Two devices edit the same project offline       | Last push wins for the whole row. The other device pulls the winning version on its next sync.                                                                                                                                                                                                                                |
+| "Delete all history" on another device          | The device's next sync reads a newer `history_reset_at` on its `users` row, before it pushes. It wipes its projects, sessions and rollups, clears its pending changes and checkpoints, and pulls from scratch.                                                                                                                |
+| Device offline during a reset                   | Same as above. Everything the device recorded since the reset is wiped too, including rows still in `pending_changes`. If a stale push still reaches the cloud (a reset lands in the middle of a sync), `push_changes` rejects projects created before the reset and sessions that ended before it.                           |
 | Session ends in the future (device clock ahead) | `push_changes` does not answer it. The row stays in `pending_changes`, and every sync retries it until it is no more than 10 minutes ahead of the cloud clock. Example: a phone whose clock is 1 hour ahead saves a session that ends at 14:00 when the real time is 13:00. The cloud saves it at the first sync after 13:50. |
-| Premium bought on another device or on the web | The device reads the new `premium_until` at its next sync: app start, the Sync button, or the sync that follows its own next change.                                                                                                                                                                |
+| Offline for more than 33 days                   | At the first push, rows still in `pending_changes` that are dated more than 33 days back are rejected. The device deletes them, together with the sessions of a rejected project, and rebuilds its rollups. Rows already in the cloud are not affected.                                                                       |
+| Daily limit reached                             | The app refuses a new session or project and shows a warning. Other devices count against the same limit, so a row over it is rejected by the cloud and removed from the device.                                                                                                                                              |
 
 ### Cost
 
@@ -292,7 +296,7 @@ A device downloads its own rows once after pushing them, and re-reads the rows s
 1. **Write:** when a session is finished, UI → BLoC → Repository → Drift DAO writes it to `sessions` with its `utc_offset_minutes`. The repository first checks that the session lasts between 1 second and 24 hours and does not end in the future. Local triggers split it at local midnight and update `daily_rollups` and `project_rollups`. The DAO adds a row to `pending_changes`.
 2. **Read:** session lists read `sessions`. Reports, heatmaps and streaks read the rollups. Theme, tracking mode and period ranges read `user_preferences`. Premium checks read `users.premium_until`. All reads are local.
 3. **Sync starts** when `pending_changes` has rows and the device is online, at app start, or on the Sync button. If the device is offline, nothing is attempted. A sync begins with the reset check: the app reads its `users` row and copies `premium_until` to the local row. If `history_reset_at` is newer than the local value, it wipes local projects, sessions, rollups and pending changes, and clears its checkpoints.
-4. **Push:** the Sync Service reads `pending_changes` 200 entries at a time and sends each page to `push_changes`, projects first, then sessions, until the queue is empty. The cloud upserts the rows by UUID (safe to retry). It rejects projects created before the last reset and sessions that ended before it, and it resolves overlaps (see "Overlap rule"). A session that ends more than 10 minutes in the future is not answered and stays pending. Cloud triggers update `daily_rollups`, `project_rollups` and `utc_daily_rollups`. The response lists which rows were applied, rejected and dropped, and the device applies that locally and removes the answered entries from the queue.
+4. **Push:** the Sync Service reads `pending_changes` 200 entries at a time and sends each page to `push_changes`, projects first, then sessions, until the queue is empty. The cloud upserts the rows by UUID (safe to retry). It rejects projects created before the last reset and sessions that ended before it, new rows that are too old or over the daily limit, and sessions whose project was rejected. It resolves overlaps (see "Overlap rule"). A session that ends more than 10 minutes in the future is not answered and stays pending. Cloud triggers update `daily_rollups`, `project_rollups` and `utc_daily_rollups`. The response lists which rows were applied, rejected and dropped, and the device applies that locally and removes the answered entries from the queue.
 5. **Pull (right after every push):** the app calls `pull_projects`, then `pull_sessions`, 200 rows per page, starting 2 minutes before `last_project_updated_at` and `last_session_updated_at`, until a page has fewer than 200 rows. The app upserts each page and moves the checkpoint. Local triggers rebuild the rollups. No rollup is downloaded.
 6. **Premium purchase:** the user pays in Google Play or the App Store, and the app sends the purchase token to `verify_purchase`. The function verifies it with the store, saves a row in `purchases`, updates `users.premium_until` and returns it. The app saves the value in the local `users` row. A web payment reaches the cloud through the gateway webhook, and the device receives the value at its next sync.
 
@@ -411,7 +415,7 @@ erDiagram
 
 - `users` is keyed by the Supabase Auth user id. `full_name` and `avatar_url` are filled from the sign-in profile when the account is created, and `full_name` is copied to the device on every sync. `history_reset_at` is null until the first "delete all history". Devices read it at the start of every sync. `premium_until` is set to the sign-up time + 7 days when the account is created, and after that only backend functions change it. Devices copy it on every sync.
 - `purchases` has one row per payment. Only backend functions write it (see "Premium and purchases").
-- `push_changes` takes at most 200 rows per list. It upserts projects first, then sessions. Each row runs in its own savepoint, so one failure does not fail the batch. A project upsert replaces the whole row (last push wins). Projects created before `history_reset_at` and sessions that ended before it are rejected. A session that ends more than 10 minutes in the future is not answered and stays pending on the device. A session can only use a project of the same user. Overlaps follow the "Overlap rule".
+- `push_changes` takes at most 200 rows per list. It upserts projects first, then sessions. Each row runs in its own savepoint, so one failure does not fail the batch. A project upsert replaces the whole row (last push wins). Projects created before `history_reset_at` and sessions that ended before it are rejected. So are new rows older than 33 days or over the daily limit, and sessions whose project was rejected. A session that ends more than 10 minutes in the future is not answered and stays pending on the device. A session can only use a project of the same user. Overlaps follow the "Overlap rule".
 - `pull_projects` and `pull_sessions` return one page of at most 200 rows, read by `(updated_at, id)` after the cursor the device sends.
 - `reset_history` hard-deletes the user's `utc_daily_rollups`, `project_rollups`, `daily_rollups`, `sessions` and `projects` (in that order) and sets `history_reset_at = now()`, all in one transaction. Triggers do not run for these deletes. The `users` row, `purchases` and `premium_until` stay.
 - Signed-in users can call `push_changes`, `pull_projects`, `pull_sessions` and `reset_history`. The sign-up, rollup, premium and purchase functions are callable only by the backend. Signed-out requests cannot read tables or call functions.
@@ -423,7 +427,7 @@ erDiagram
   - `utc_daily_rollups`: split at UTC midnight. Powers the time leaderboard.
 - Triggers add when a live session is inserted and subtract when `deleted_at` is first set. A retried push cannot count twice.
 - `project_rollups` has no FK to projects. A project that is missing or has `deleted_at` set is counted as "No Project" (`''`) through the `project_rollups_effective` view.
-- Indexes: `sessions (user_id, updated_at)`, `projects (user_id, updated_at)` and `purchases (user_id, paid_at)`.
+- Indexes: `sessions (user_id, updated_at)`, `sessions (user_id, started_at)`, `projects (user_id, updated_at)`, `projects (user_id, created_at)` and `purchases (user_id, paid_at)`. The `started_at` and `created_at` indexes serve the daily limit count.
 - The cloud keeps no per-device state. Each device keeps its own position in `pull_checkpoints`.
 
 ```sql
@@ -586,7 +590,14 @@ Rollups can always be recomputed from sessions. `rebuild_rollups(user_id)` delet
 
 ## Premium and purchases
 
-Premium is one plan sold in four lengths: 1, 3, 6 or 12 months. Each month comes with 1 bonus hour, so 3 months add 3 hours. Each purchase is a one-time payment made in Google Play, the App Store or on the web. It is recorded in the cloud, so a plan bought on one platform works on every device of the account. For example, a purchase made in Google Play also unlocks the macOS app.
+Premium is one plan sold in four lengths: 1, 3, 6 or 12 months. Each month comes with 1 bonus hour, so 3 months add 3 hours. Every length is a one-time consumable purchase, not an auto-renewing subscription. The same length can be bought again at any time, even on the same day, and every purchase adds its time after the current end date. A purchase is made in Google Play, the App Store or on the web and is recorded in the cloud, so a plan bought on one platform works on every device of the account. For example, a purchase made in Google Play also unlocks the macOS app.
+
+Buying the same length twice on the same day stacks the same way. Premium has ended, and the user buys 1 month at 6:00 pm and again at 6:30 pm on Jan 1:
+
+| Event                   | premium_until |
+| ----------------------- | ------------- |
+| Jan 1, 6:00 pm: 1 month | Feb 1, 7 pm   |
+| Jan 1, 6:30 pm: 1 month | Mar 1, 8 pm   |
 
 ### Free trial
 
@@ -633,19 +644,27 @@ Months are calendar months: Jan 15 + 1 month = Feb 15. When the day does not exi
 - `amount` and `currency` are what the user paid. The payment history screen reads them from the cloud while online.
 - The app can read its own rows and cannot write. Only backend functions write `purchases` and `premium_until`.
 - "Delete all history" does not touch `purchases` or `premium_until`. "Delete account" removes them with the account.
+- Two purchases of the same length, even a minute apart, are two payments with different `store_ref` values, and both count.
 
 ### Backend functions
 
-| Function                          | What it does                                                                                                                                                                                                       |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `handle_new_user` (sign-up trigger) | Creates the `users` row when an Auth user is created: name and avatar from the sign-in profile, and `premium_until` = sign-up time + 7 days.                                                                      |
-| `verify_purchase` (Edge Function) | Called by the app after a store payment. Verifies the purchase token with Google Play or the App Store, rejects a `store_ref` already used by another account, calls `grant_purchase` and returns `premium_until`. |
-| Payment webhook (Edge Function)   | Receives web gateway events. Verifies the signature, then calls `grant_purchase` for a payment or `refund_purchase` for a refund. The user id comes from the checkout metadata.                                    |
-| `grant_purchase`                  | Inserts the purchase, ignoring a duplicate, then calls `rebuild_premium`.                                                                                                                                          |
-| `refund_purchase`                 | Sets `refunded_at`, then calls `rebuild_premium`. Store refund notifications call it too.                                                                                                                          |
-| `rebuild_premium(user_id)`        | Starts at the account's sign-up time + 7 days, takes each purchase with `refunded_at is null` in `paid_at` order, applies the formula above, and writes the result to `users.premium_until`.                       |
+| Function                            | What it does                                                                                                                                                                                                       |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `handle_new_user` (sign-up trigger) | Creates the `users` row when an Auth user is created: name and avatar from the sign-in profile, and `premium_until` = sign-up time + 7 days.                                                                       |
+| `verify_purchase` (Edge Function)   | Called by the app after a store payment. Verifies the purchase token with Google Play or the App Store, rejects a `store_ref` already used by another account, calls `grant_purchase` and returns `premium_until`. |
+| Payment webhook (Edge Function)     | Receives web gateway events. Verifies the signature, then calls `grant_purchase` for a payment or `refund_purchase` for a refund. The user id comes from the checkout metadata.                                    |
+| `grant_purchase`                    | Inserts the purchase, ignoring a duplicate, then calls `rebuild_premium`.                                                                                                                                          |
+| `refund_purchase`                   | Sets `refunded_at`, then calls `rebuild_premium`. Store refund notifications call it too.                                                                                                                          |
+| `rebuild_premium(user_id)`          | Starts at the account's sign-up time + 7 days, takes each purchase with `refunded_at is null` in `paid_at` order, applies the formula above, and writes the result to `users.premium_until`.                       |
 
-Each store product id maps to a `months` value inside `verify_purchase`. For example, the 6-month product maps to 6.
+`verify_purchase` maps each Google Play product id to `months`:
+
+| Product id           | months |
+| -------------------- | ------ |
+| `tarkeez_premium_1m` | 1      |
+| `tarkeez_premium_3m` | 3      |
+| `tarkeez_premium_6m` | 6      |
+| `tarkeez_premium_1y` | 12     |
 
 ### Buying in the app
 
@@ -653,7 +672,9 @@ Each store product id maps to a `months` value inside `verify_purchase`. For exa
 2. The app sends the purchase token to `verify_purchase`.
 3. The function verifies the token with the store, saves the purchase, updates `premium_until` and returns it.
 4. The app saves the returned `premium_until` in the local `users` row, so features unlock without waiting for a sync.
-5. The app completes the purchase in the store (Google acknowledge, Apple finish transaction). If step 3 failed, the purchase stays open in the store and the app tries again.
+5. The app consumes the purchase in the store (Google consume, Apple finish transaction). Until a purchase is consumed, Google does not let the user buy the same product again, so this step is what allows a second 1-month purchase on the same day. If step 3 failed, the purchase stays unconsumed and the app tries again at the next app start. Google refunds a purchase that is not consumed or acknowledged within 3 days.
+
+A consumed purchase is no longer listed by the store, so there is no "restore purchases" step. A new device gets `premium_until` from the cloud with its first sync.
 
 ### Buying on the web
 
