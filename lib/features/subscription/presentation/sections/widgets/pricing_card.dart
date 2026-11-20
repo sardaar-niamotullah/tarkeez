@@ -66,9 +66,6 @@ class PricingCard extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: .center,
                       children: [
-                        // ──────────────────────────────────────────────
-                        // Deal value
-                        // ──────────────────────────────────────────────
                         Text(
                           dealValue,
                           style: TextUtils.paragraphBold(
@@ -78,35 +75,15 @@ class PricingCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
 
-                        // ──────────────────────────────────────────────
-                        // Price
-                        // ──────────────────────────────────────────────
-                        Row(
-                          mainAxisAlignment: .center,
-                          children: [
-                            Transform.translate(
-                              offset: Offset(0, 2),
-                              child: Text(
-                                '\$ ',
-                                style: TextUtils.title3(
-                                  context,
-                                  color: Colors.white70,
-                                ),
-                              ),
-                            ),
-                            Text(
-                              price,
-                              style: TextUtils.title1(
-                                context,
-                                color: AppTheme.white,
-                              ).copyWith(fontSize: 28),
-                            ),
-                          ],
+                        // Price (comes from Google Play, includes the currency symbol)
+                        Text(
+                          price,
+                          style: TextUtils.title1(
+                            context,
+                            color: AppTheme.white,
+                          ).copyWith(fontSize: 28),
                         ),
 
-                        // ──────────────────────────────────────────────
-                        // Duration
-                        // ──────────────────────────────────────────────
                         Text(
                           duration,
                           style: TextUtils.paragraphBold(

@@ -7,64 +7,62 @@ enum PricingPlanType { regularDeal, goodDeal, betterDeal, bestDeal }
 class PricingPlan {
   const new({
     required this.type,
+    required this.productId,
     required this.dealValue,
     required this.duration,
-    required this.price,
-    required this.saveAmount,
+    required this.months,
     required this.color,
     required this.colorBright,
     required this.iconPath,
-    this.isActive = false,
   });
 
   final PricingPlanType type;
+  final String productId;
   final String dealValue;
   final String duration;
-  final String price;
-  final String saveAmount;
+  final int months;
   final Color color;
   final Color colorBright;
   final String iconPath;
-  final bool isActive;
 }
 
 const pricingPlans = [
   PricingPlan(
     type: PricingPlanType.regularDeal,
+    productId: 'tarkeez_premium_1m',
     dealValue: 'Regular deal',
     duration: '1 month',
-    price: '1.9', // '2.9',
-    saveAmount: 'Save 0%',
+    months: 1,
     color: AppTheme.blue,
     colorBright: AppTheme.blueBright,
     iconPath: AssetPaths.bookmark,
   ),
   PricingPlan(
     type: PricingPlanType.goodDeal,
+    productId: 'tarkeez_premium_3m',
     dealValue: 'Good deal',
     duration: '3 months',
-    price: '2.9', // '4.9',
-    saveAmount: 'Save 40%',
+    months: 3,
     color: AppTheme.purple,
     colorBright: AppTheme.purpleBright,
     iconPath: AssetPaths.bookmark,
   ),
   PricingPlan(
     type: PricingPlanType.betterDeal,
+    productId: 'tarkeez_premium_6m',
     dealValue: 'Better deal',
     duration: '6 months',
-    price: '3.9', //'7.9',
-    saveAmount: 'Save 50%',
+    months: 6,
     color: AppTheme.pink,
     colorBright: AppTheme.pinkBright,
     iconPath: AssetPaths.bookmark,
   ),
   PricingPlan(
     type: PricingPlanType.bestDeal,
+    productId: 'tarkeez_premium_1y',
     dealValue: 'Best deal',
     duration: '1 year',
-    price: '4.9', //'9.9',
-    saveAmount: 'Save 70%',
+    months: 12,
     color: AppTheme.fireTone,
     colorBright: AppTheme.lightningGold,
     iconPath: AssetPaths.bookmark,
