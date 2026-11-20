@@ -7,8 +7,8 @@ import 'package:tarkeez/features/auth/presentation/auth_page.dart';
 import 'package:tarkeez/features/main_scaffold.dart';
 import 'package:tarkeez/features/others/feedback/presentation/feedback_page.dart';
 import 'package:tarkeez/features/others/hire_us/presentation/hire_us_page.dart';
+import 'package:tarkeez/features/others/information/presentation/informations_page.dart';
 import 'package:tarkeez/features/others/terms_and_conditions/presentation/terms_and_conditions_page.dart';
-import 'package:tarkeez/features/others/user_manual/presentation/user_manual_page.dart';
 import 'package:tarkeez/features/sessions/presentation/sessions_page.dart';
 import 'package:tarkeez/features/subscription/presentation/subscription_page.dart';
 
@@ -66,8 +66,8 @@ GoRouter _buildRouter() {
         builder: (context, state) => const TermsAndConditionsPage(),
       ),
       GoRoute(
-        path: RouteNames.userManualPage,
-        builder: (context, state) => const UserManualPage(),
+        path: RouteNames.informationsPage,
+        builder: (context, state) => const InformationsPage(),
       ),
       GoRoute(
         path: RouteNames.hireUsPage,

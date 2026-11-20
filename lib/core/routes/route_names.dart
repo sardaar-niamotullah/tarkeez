@@ -12,7 +12,7 @@ class RouteNames {
   // Others
   static const String feedbackPage = '/feedback';
   static const String termsAndConditionsPage = '/terms_and_conditions';
-  static const String userManualPage = '/user_manual';
+  static const String informationsPage = '/informations';
   static const String hireUsPage = '/hire_us';
   static const String reportPage = '/report';
 }

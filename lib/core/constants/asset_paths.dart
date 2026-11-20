@@ -105,6 +105,7 @@ class AssetPaths {
   static const String home = 'assets/svgs/home.svg';
   static const String homeBold = 'assets/svgs/home_bold.svg';
   static const String instagram = 'assets/svgs/instagram.svg';
+  static const String info = 'assets/svgs/info.svg';
   static const String key = 'assets/svgs/key.svg';
   static const String laptop = 'assets/svgs/laptop.svg';
   static const String linkedin = 'assets/svgs/linkedin.svg';

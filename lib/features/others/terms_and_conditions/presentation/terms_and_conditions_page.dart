@@ -1,9 +1,9 @@
 import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
+import 'package:tarkeez/core/shared_files/widgets/info_tile.dart';
 import 'package:tarkeez/core/shared_files/widgets/stand_alone_page_outer_structure.dart';
 import 'package:flutter/material.dart';
 import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/utils/sliver_scroll_max_width_box.dart';
-import 'package:tarkeez/features/others/terms_and_conditions/presentation/widgets/terms_and_conditions_tile.dart';
 
 class TermsAndConditionsPage extends StatelessWidget {
   const new({super.key});
@@ -41,7 +41,7 @@ class TermsAndConditionsPage extends StatelessWidget {
           SliverList.builder(
             itemCount: terms.length,
             itemBuilder: (context, index) {
-              return TermsAndConditionsTile(
+              return InfoTile(
                 indexNumber: index,
                 text: terms[index],
               );

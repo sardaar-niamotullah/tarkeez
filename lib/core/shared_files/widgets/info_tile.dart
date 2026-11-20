@@ -2,14 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
-class TermsAndConditionsTile extends StatelessWidget {
+class InfoTile extends StatelessWidget {
+  const new({super.key, required this.indexNumber, required this.text});
+
   final int indexNumber;
   final String text;
-  const TermsAndConditionsTile({
-    super.key,
-    required this.indexNumber,
-    required this.text,
-  });
 
   @override
   Widget build(BuildContext context) {
