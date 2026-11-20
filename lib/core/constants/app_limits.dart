@@ -1,5 +1,11 @@
+/// Maximum number of sessions a user can create per day.
 const maxSessionsPerDay = 75;
+
+/// Maximum number of projects a user can create per day.
 const maxProjectsPerDay = 10;
+
+/// Minimum tracked time required for a day to count toward a streak.
+const minStreakSeconds = 30 * 60; // 30 minutes
 
 /// A running session stops by itself after this long.
 const maxRunningSession = Duration(hours: 4);

@@ -1,9 +1,8 @@
+import 'package:tarkeez/core/constants/app_limits.dart';
 import 'package:tarkeez/core/utils/rollup_date_utils.dart';
 
 class StreakStats {
   StreakStats._();
-
-  static const int minStreakSeconds = 30 * 60; // 30 minutes
 
   static bool _hasActivity(Map<String, int> rollups, String date) =>
       (rollups[date] ?? 0) >= minStreakSeconds;
