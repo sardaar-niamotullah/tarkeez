@@ -84,28 +84,45 @@ class PricingCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
 
-                        Text.rich(
-                          TextSpan(
-                            children: match == null
-                                ? [TextSpan(text: price, style: bigStyle)]
-                                : [
-                                    TextSpan(
-                                      text: price.substring(0, match.start),
-                                      style: smallStyle,
-                                    ),
-                                    TextSpan(
-                                      text: match
-                                          .group(0)!
-                                          .replaceAll(RegExp(r'[.,]00?$'), ''),
-                                      style: bigStyle,
-                                    ),
-                                    TextSpan(
-                                      text: price.substring(match.end),
-                                      style: smallStyle,
-                                    ),
-                                  ],
+                        if (price == '')
+                          SizedBox(
+                            height: 34,
+                            width: 40,
+                            child: Center(
+                              child: LinearProgressIndicator(
+                                minHeight: 3,
+                                color: AppTheme.white,
+                                backgroundColor: Colors.transparent,
+                                borderRadius: ContainerDesignUtils.allRadius,
+                              ),
+                            ),
+                          )
+                        else
+                          Text.rich(
+                            TextSpan(
+                              children: match == null
+                                  ? [TextSpan(text: price, style: bigStyle)]
+                                  : [
+                                      TextSpan(
+                                        text: price.substring(0, match.start),
+                                        style: smallStyle,
+                                      ),
+                                      TextSpan(
+                                        text: match
+                                            .group(0)!
+                                            .replaceAll(
+                                              RegExp(r'[.,]00?$'),
+                                              '',
+                                            ),
+                                        style: bigStyle,
+                                      ),
+                                      TextSpan(
+                                        text: price.substring(match.end),
+                                        style: smallStyle,
+                                      ),
+                                    ],
+                            ),
                           ),
-                        ),
 
                         Text(
                           duration,
@@ -125,7 +142,7 @@ class PricingCard extends StatelessWidget {
                           ),
                           child: Center(
                             child: Text(
-                              saveAmount,
+                              saveAmount == '' ? '--' : saveAmount,
                               style: TextUtils.paragraphBold(
                                 context,
                                 color: AppTheme.white,

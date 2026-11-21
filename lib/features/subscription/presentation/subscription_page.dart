@@ -170,40 +170,30 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
           // ──────────────────────────────────────────────────────────
           // Plan cards
           // ──────────────────────────────────────────────────────────
-          if (_products == null)
-            const SliverToBoxAdapter(
-              child: Center(child: CircularProgressIndicator()),
-            )
-          else if (_products!.isEmpty)
-            SliverToBoxAdapter(
-              child: Text(
-                'Plans are not available right now. Please try again later.',
-                style: TextUtils.paragraph(context, color: scheme.onTertiary),
-              ),
-            )
-          else
-            SliverGrid.count(
-              crossAxisCount: context.sm ? 4 : 2,
-              mainAxisSpacing: context.sm ? 12 : 8,
-              crossAxisSpacing: context.sm ? 12 : 8,
-              childAspectRatio: context.between(Breakpoints.sm, Breakpoints.md)
-                  ? 1
-                  : 1.4,
-              children: pricingPlans.map((plan) {
-                return PricingCard(
-                  dealValue: plan.dealValue,
-                  duration: plan.duration,
-                  price: _products![plan.productId]?.price ?? '',
-                  saveAmount: _saveText(plan),
-                  color: plan.color,
-                  colorBright: plan.colorBright,
-                  iconPath: plan.iconPath,
-                  isActive: plan.type == _selectedPricingPlanType,
-                  onTap: () =>
-                      setState(() => _selectedPricingPlanType = plan.type),
-                );
-              }).toList(),
-            ),
+          SliverGrid.count(
+            crossAxisCount: context.sm ? 4 : 2,
+            mainAxisSpacing: context.sm ? 12 : 8,
+            crossAxisSpacing: context.sm ? 12 : 8,
+            childAspectRatio: context.between(Breakpoints.sm, Breakpoints.md)
+                ? 1
+                : 1.4,
+            children: pricingPlans.map((plan) {
+              return PricingCard(
+                dealValue: plan.dealValue,
+                duration: plan.duration,
+                price: (_products != null)
+                    ? _products![plan.productId]?.price ?? ''
+                    : '',
+                saveAmount: _saveText(plan),
+                color: plan.color,
+                colorBright: plan.colorBright,
+                iconPath: plan.iconPath,
+                isActive: plan.type == _selectedPricingPlanType,
+                onTap: () =>
+                    setState(() => _selectedPricingPlanType = plan.type),
+              );
+            }).toList(),
+          ),
 
           // ──────────────────────────────────────────────────────────
           // Perks
