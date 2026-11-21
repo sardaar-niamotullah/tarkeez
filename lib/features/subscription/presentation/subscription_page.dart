@@ -72,12 +72,16 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
       }
 
       try {
+        final product = _products?[purchase.productID];
+
         // Backend checks the token with Google and adds the time.
         await Supabase.instance.client.functions.invoke(
           'verify-purchase',
           body: {
             'product_id': purchase.productID,
             'purchase_token': purchase.verificationData.serverVerificationData,
+            'amount': product?.rawPrice,
+            'currency': product?.currencyCode,
           },
         );
 
