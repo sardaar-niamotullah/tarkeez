@@ -13,7 +13,7 @@ AppException mapException(Object error) {
   if (error is supabase.AuthRetryableFetchException) {
     mapped = NetworkException();
   } else if (error is supabase.AuthException) {
-    mapped = AppAuthException('Supabase: ${error.message}');
+    mapped = AppAuthException(error.message);
   } else if (error is supabase.PostgrestException) {
     mapped = error.code == '23505'
         ? const DuplicateEntryException()
@@ -25,7 +25,7 @@ AppException mapException(Object error) {
   } else if (error is AppException) {
     mapped = error;
   } else if (error is GoogleSignInException) {
-    mapped = AppAuthException('Google: ${error.code} ${error.description}');
+    mapped = AppAuthException('${error.code} ${error.description}');
   } else {
     mapped = UnknownException('$error');
   }

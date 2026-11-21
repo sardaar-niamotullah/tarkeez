@@ -1,5 +1,5 @@
-import 'package:tarkeez/core/shared_files/widgets/bubble_decorations.dart';
 import 'package:flutter/material.dart';
+import 'package:tarkeez/core/shared_files/widgets/bubble_decorations.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
@@ -31,6 +31,15 @@ class PricingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+
+    final bigStyle = TextUtils.title1(
+      context,
+      color: AppTheme.white,
+    ).copyWith(fontSize: 28, fontWeight: .w800);
+    final smallStyle = bigStyle.copyWith(fontSize: 16, fontWeight: .w600);
+
+    final match = RegExp(r'\d[\d.,]*').firstMatch(price);
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -75,13 +84,27 @@ class PricingCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
 
-                        // Price (comes from Google Play, includes the currency symbol)
-                        Text(
-                          price,
-                          style: TextUtils.title1(
-                            context,
-                            color: AppTheme.white,
-                          ).copyWith(fontSize: 28),
+                        Text.rich(
+                          TextSpan(
+                            children: match == null
+                                ? [TextSpan(text: price, style: bigStyle)]
+                                : [
+                                    TextSpan(
+                                      text: price.substring(0, match.start),
+                                      style: smallStyle,
+                                    ),
+                                    TextSpan(
+                                      text: match
+                                          .group(0)!
+                                          .replaceAll(RegExp(r'[.,]00?$'), ''),
+                                      style: bigStyle,
+                                    ),
+                                    TextSpan(
+                                      text: price.substring(match.end),
+                                      style: smallStyle,
+                                    ),
+                                  ],
+                          ),
                         ),
 
                         Text(
@@ -91,22 +114,24 @@ class PricingCard extends StatelessWidget {
                             color: AppTheme.white,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 12),
 
                         Container(
-                          color: AppTheme.black.withValues(alpha: .25),
-                          child: Row(
-                            mainAxisAlignment: .center,
-                            children: [
-                              Text(
-                                saveAmount,
-                                style: TextUtils.paragraphBold(
-                                  context,
-                                  color: AppTheme.white,
-                                ),
-                                textAlign: .center,
+                          height: 20,
+                          width: 108,
+                          decoration: BoxDecoration(
+                            color: AppTheme.black.withValues(alpha: .25),
+                            borderRadius: ContainerDesignUtils.allRadius,
+                          ),
+                          child: Center(
+                            child: Text(
+                              saveAmount,
+                              style: TextUtils.paragraphBold(
+                                context,
+                                color: AppTheme.white,
                               ),
-                            ],
+                              textAlign: .center,
+                            ),
                           ),
                         ),
                       ],
