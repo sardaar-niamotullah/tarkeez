@@ -99,8 +99,8 @@ flutter:
 flutter_native_splash:
   color: "#0A0A0A"
   color_dark: "#0A0A0A"
-  image: assets/icon/combination_mark.png
+  image: assets/logos/splash_logo.png
   android_12:
     color: "#0A0A0A"
     color_dark: "#0A0A0A"
-    image: assets/icon/combination_mark.png
+    image: assets/logos/splash_logo.png
