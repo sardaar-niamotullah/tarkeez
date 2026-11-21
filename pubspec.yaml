@@ -66,11 +66,11 @@ flutter:
   assets:
     - .env
     - assets/
-    - assets/images/
-    - assets/images/locked_backdrops/
     - assets/svgs/
     - assets/logos/
     - assets/sounds/
+    - assets/images/
+    - assets/images/locked_backdrops/
 
   fonts:
     - family: SourceSans3
@@ -96,6 +96,8 @@ flutter:
         - asset: assets/fonts/arial_rounded/ArialRoundedMT-Bold.ttf
           weight: 700
 
+# Native splash screen shown while the app loads
+# To regenerate run `dart run flutter_native_splash:create`
 flutter_native_splash:
   color: "#0A0A0A"
   color_dark: "#0A0A0A"
@@ -104,3 +106,26 @@ flutter_native_splash:
     color: "#0A0A0A"
     color_dark: "#0A0A0A"
     image: assets/logos/splash_logo.png
+
+# App launcher icons for all platforms
+# To regenerate run `dart run flutter_launcher_icons`
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/logos/logo.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "#27D366"
+  adaptive_icon_foreground: "assets/logos/logo_transparent.png"
+  web:
+    generate: true
+    image_path: "assets/logos/logo.png"
+    background_color: "#27D366"
+    theme_color: "#111111"
+  windows:
+    generate: true
+    image_path: "assets/logos/logo.png"
+    icon_size: 48
+  macos:
+    generate: true
+    image_path: "assets/logos/logo.png"
