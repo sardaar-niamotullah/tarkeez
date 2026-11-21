@@ -62,9 +62,11 @@ class SyncButton extends StatelessWidget {
             crossAxisAlignment: .center,
             mainAxisAlignment: .spaceBetween,
             children: [
-              Text(
-                'Back up your data online.',
-                style: TextUtils.paragraphBold(context),
+              Expanded(
+                child: Text(
+                  'Back up your data online.',
+                  style: TextUtils.paragraphBold(context),
+                ),
               ),
               Column(
                 mainAxisAlignment: .center,

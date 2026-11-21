@@ -64,9 +64,11 @@ class EraseAllDataButton extends StatelessWidget {
             crossAxisAlignment: .center,
             mainAxisAlignment: .spaceBetween,
             children: [
-              Text(
-                'Erase all data, and start fresh.',
-                style: TextUtils.paragraphBold(context),
+              Expanded(
+                child: Text(
+                  'Erase all data, and start fresh.',
+                  style: TextUtils.paragraphBold(context),
+                ),
               ),
               Column(
                 mainAxisAlignment: .center,
