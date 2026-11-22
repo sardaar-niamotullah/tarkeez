@@ -46,7 +46,10 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
       listener: (context, state) {
         switch (state.result) {
           case PurchaseResult.success:
-            showSuccessSnackBar(context, message: 'Premium added. Thank you!');
+            showSuccessSnackBar(
+              context,
+              message: "Congratulations! Welcome to Tarkeez Premium.",
+            );
           case PurchaseResult.failed:
             showErrorSnackBar(
               context,
