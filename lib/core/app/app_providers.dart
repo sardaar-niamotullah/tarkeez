@@ -14,6 +14,7 @@ import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
 import 'package:tarkeez/features/project_rollups/bloc/project_rollup_bloc.dart';
 import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
+import 'package:tarkeez/features/subscription/cubit/subscription_cubit.dart';
 
 class AppProviders extends StatelessWidget {
   const new({super.key, required this.child});
@@ -34,6 +35,7 @@ class AppProviders extends StatelessWidget {
         BlocProvider(create: (_) => getIt<DailyRollupBloc>()),
         BlocProvider(create: (_) => getIt<ProjectRollupBloc>()),
         BlocProvider(create: (_) => getIt<AppUpdateCubit>()),
+        BlocProvider(lazy: false, create: (_) => getIt<SubscriptionCubit>()),
         BlocProvider(
           create: (_) {
             final timer = SessionTimerCubit(

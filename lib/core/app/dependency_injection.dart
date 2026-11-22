@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:get_it/get_it.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tarkeez/core/database/local_database.dart';
 import 'package:tarkeez/core/services/auth_session_service.dart';
@@ -24,6 +25,8 @@ import 'package:tarkeez/features/projects/bloc/project_bloc.dart';
 import 'package:tarkeez/features/projects/data/repositories/project_repository.dart';
 import 'package:tarkeez/features/sessions/bloc/session_bloc.dart';
 import 'package:tarkeez/features/sessions/data/repositories/session_repository.dart';
+import 'package:tarkeez/features/subscription/cubit/subscription_cubit.dart';
+import 'package:tarkeez/features/subscription/data/repositories/subscription_repository.dart';
 
 final getIt = GetIt.instance;
 
@@ -142,5 +145,18 @@ Future<void> injectDependencies() async {
       getIt<ProjectRollupRepository>(),
       getIt<SyncService>().sessionsChanged,
     ),
+  );
+
+  // ── Subscription ─────────────────────────────────────────────────────
+  getIt.registerLazySingleton<SubscriptionRepository>(
+    () => SubscriptionRepository(
+      InAppPurchase.instance,
+      getIt<SupabaseClient>(),
+      getIt<LocalDatabase>().usersDao,
+    ),
+  );
+
+  getIt.registerLazySingleton<SubscriptionCubit>(
+    () => SubscriptionCubit(getIt<SubscriptionRepository>()),
   );
 }

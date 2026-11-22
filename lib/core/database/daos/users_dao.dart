@@ -21,6 +21,11 @@ class UsersDao extends DatabaseAccessor<LocalDatabase> with _$UsersDaoMixin {
         UsersCompanion(historyResetAt: Value(value)),
       );
 
+  Future<void> setPremiumUntil(String value) =>
+      (update(users)..where((t) => t.id.equals(_uid))).write(
+        UsersCompanion(premiumUntil: Value(value)),
+      );
+
   Stream<DateTime?> watchPremiumUntil() =>
       (select(users)..where((t) => t.id.equals(_uid))).watchSingleOrNull().map(
         (u) => DateTime.tryParse(u?.premiumUntil ?? ''),
