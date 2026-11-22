@@ -5,9 +5,11 @@ import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/constants/asset_paths.dart';
 import 'package:tarkeez/core/shared_files/buttons/disclaimer_text_button.dart';
 import 'package:tarkeez/core/shared_files/buttons/primary_button.dart';
+import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/shared_files/snackbar/snack_bar_public_api.dart';
 import 'package:tarkeez/core/shared_files/widgets/action_page_icon.dart';
 import 'package:tarkeez/core/shared_files/widgets/stand_alone_page_outer_structure.dart';
+import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/sliver_scroll_max_width_box.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/subscription/cubit/subscription_cubit.dart';
@@ -40,6 +42,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     final selectedPlan = pricingPlans.firstWhere(
       (plan) => plan.type == _selectedPricingPlanType,
     );
+    final isPremiumUser = context.select((PremiumCubit c) => c.isPremium);
 
     return BlocConsumer<SubscriptionCubit, SubscriptionState>(
       listenWhen: (_, state) => state.result != PurchaseResult.none,
@@ -75,12 +78,6 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
           bottomNavContent: Column(
             mainAxisSize: .min,
             children: [
-              Text(
-                'One-time payment. The time is added to your current premium.',
-                style: TextUtils.paragraph(context, color: scheme.onTertiary),
-                textAlign: .center,
-              ),
-              const SizedBox(height: 8),
               PrimaryButton(
                 title: 'Next',
                 backgroundColorLeft: selectedPlan.color,
@@ -101,12 +98,38 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: .only(top: context.md ? 24 : 16, bottom: 8),
-                  child: Text(
-                    'Choose your premium membership duration',
-                    style: TextUtils.paragraph(
-                      context,
-                      color: scheme.onTertiary,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: .start,
+                    children: [
+                      if (isPremiumUser) ...[
+                        RichText(
+                          text: TextSpan(
+                            style: TextUtils.paragraphBold(
+                              context,
+                              color: scheme.onTertiary,
+                            ),
+                            children: [
+                              const TextSpan(text: 'You’re already a '),
+                              TextSpan(
+                                text: 'Premium member',
+                                style: TextStyle(color: AppTheme.fireTone),
+                              ),
+                              const TextSpan(
+                                text: '. Any additional Premium purchase will extend your current subscription.',
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                      Text(
+                        'Choose your premium membership duration',
+                        style: TextUtils.paragraph(
+                          context,
+                          color: scheme.onTertiary,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

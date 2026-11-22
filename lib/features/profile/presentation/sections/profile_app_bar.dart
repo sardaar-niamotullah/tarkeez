@@ -67,7 +67,7 @@ class ProfileAppBar extends StatelessWidget {
                 offset: Offset(0, context.md ? 5 : 2.5),
                 child: ActionButton(
                   boxSize: 28,
-                  iconSize: 14,
+                  iconSize: 16,
                   iconPath: AssetPaths.info,
                   onTap: () => context.push(RouteNames.informationsPage),
                 ),
