@@ -21,8 +21,10 @@ class UsersDao extends DatabaseAccessor<LocalDatabase> with _$UsersDaoMixin {
         UsersCompanion(historyResetAt: Value(value)),
       );
 
-  Future<void> setPremiumUntil(String value) =>
-      (update(users)..where((t) => t.id.equals(_uid))).write(
+  /// Saves the premium end date for [userId], or for the active account when
+  /// [userId] is not given.
+  Future<void> setPremiumUntil(String value, {String? userId}) =>
+      (update(users)..where((t) => t.id.equals(userId ?? _uid))).write(
         UsersCompanion(premiumUntil: Value(value)),
       );
 

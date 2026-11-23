@@ -91,6 +91,13 @@ Deno.serve(async (req) => {
   );
   if (!paid || !item) return json({ error: "not a paid purchase" }, 400);
 
+  // 3b. The app tags every purchase with the account that tapped Buy.
+  //     Only that account may claim it. Purchases made before the tag existed have none.
+  const boundTo = purchase.obfuscatedExternalAccountId;
+  if (boundTo && boundTo !== user.id) {
+    return json({ error: "purchase_belongs_to_another_account" }, 403);
+  }
+
   // 4. Save it and extend premium. A repeated call is ignored by grant_purchase.
   const { data, error } = await admin.rpc("grant_purchase", {
     p_user: user.id,
