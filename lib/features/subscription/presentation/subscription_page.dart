@@ -95,15 +95,16 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
             children: [
               PrimaryButton(
                 title: 'Next',
+                enable: !isSelectedBlocked,
                 backgroundColorLeft: selectedPlan.color,
                 backgroundColorRight: selectedPlan.colorBright,
-                onPressed: () => isSelectedBlocked
-                    ? showInfoSnackBar(
-                        context,
-                        iconPath: AssetPaths.info,
-                        message: 'This plan would exceed the maximum premium time you can hold at once.',
-                      )
-                    : context.read<SubscriptionCubit>().buy(selectedPlan),
+                onPressed: () =>
+                    context.read<SubscriptionCubit>().buy(selectedPlan),
+                onDisabled: () => showInfoSnackBar(
+                  context,
+                  iconPath: AssetPaths.info,
+                  message: 'This plan would exceed the maximum premium time you can hold at once.',
+                ),
               ),
               const SizedBox(height: 8),
               const DisclaimerTextButton(),

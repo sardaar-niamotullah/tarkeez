@@ -224,12 +224,12 @@ class PricingCard extends StatelessWidget {
 
                     /// BUBBLE — ring, center-right
                     Positioned(
-                      top: 28,
+                      top: 38,
                       right: 8,
                       child: BubbleRing(
                         size: 30,
                         color: Colors.white,
-                        opacity: 0.15,
+                        opacity: 0.1,
                       ),
                     ),
                   ],

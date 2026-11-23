@@ -55,9 +55,9 @@ void showInfoSnackBar(
     context,
     message: message,
     iconPath: iconPath,
-    backgroundColor: Theme.of(context).colorScheme.surface,
-    backgroundColorBright: Theme.of(context).colorScheme.onSurface,
-    textColor: Theme.of(context).colorScheme.onTertiary,
-    iconColor: iconColor ?? Theme.of(context).colorScheme.onTertiary,
+    backgroundColor: Theme.of(context).colorScheme.onTertiary,
+    backgroundColorBright: Theme.of(context).colorScheme.onTertiary,
+    textColor: Theme.of(context).colorScheme.tertiary,
+    iconColor: iconColor ?? Theme.of(context).colorScheme.tertiary,
   );
 }
