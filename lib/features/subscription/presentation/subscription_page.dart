@@ -166,29 +166,27 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                 children: pricingPlans.map((plan) {
                   final isBlocked = state.blocked.contains(plan.productId);
 
-                  return Opacity(
-                    opacity: isBlocked ? .4 : 1,
-                    child: PricingCard(
-                      dealValue: plan.dealValue,
-                      duration: plan.duration,
-                      price: state.products?[plan.productId]?.price ?? '',
-                      saveAmount: _saveText(state.products, plan),
-                      color: plan.color,
-                      colorBright: plan.colorBright,
-                      iconPath: plan.iconPath,
-                      isActive: plan.type == selectedPlan.type && !isBlocked,
-                      onTap: () {
-                        if (isBlocked) {
-                          showInfoSnackBar(
-                            context,
-                            iconPath: AssetPaths.info,
-                            message: 'This plan would exceed the maximum premium time you can hold at once.',
-                          );
-                          return;
-                        }
-                        setState(() => _selectedPricingPlanType = plan.type);
-                      },
-                    ),
+                  return PricingCard(
+                    dealValue: plan.dealValue,
+                    duration: plan.duration,
+                    price: state.products?[plan.productId]?.price ?? '',
+                    saveAmount: _saveText(state.products, plan),
+                    color: plan.color,
+                    colorBright: plan.colorBright,
+                    iconPath: plan.iconPath,
+                    isActive: plan.type == selectedPlan.type && !isBlocked,
+                    isBlocked: isBlocked,
+                    onTap: () {
+                      if (isBlocked) {
+                        showInfoSnackBar(
+                          context,
+                          iconPath: AssetPaths.info,
+                          message: 'This plan would exceed the maximum premium time you can hold at once.',
+                        );
+                        return;
+                      }
+                      setState(() => _selectedPricingPlanType = plan.type);
+                    },
                   );
                 }).toList(),
               ),
