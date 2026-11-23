@@ -4,7 +4,7 @@ Tarkeez is offline-first. The app reads and writes a local SQLite database, and 
 
 **Sessions are the source of truth.** Every session is kept, locally and in the cloud, until the user deletes all history. All totals (daily, per project, leaderboard, streak) are derived from sessions. Only three things sync: `users` (full name, history reset value and premium end date), `projects` and `sessions`.
 
-**Premium is bought in Google Play, the App Store or on the web, and recorded in the cloud.** Each payment is a row in `purchases`, and `users.premium_until` is the date premium ends. Every device receives that date with its sync, so a plan bought on one platform works on all of them. Every new account starts with 7 days of premium.
+**Premium is bought in Google Play, the App Store or on the web, and recorded in the cloud.** Each payment is a row in `purchases`, and `users.premium_until` is the date premium ends. Every device receives that date with its sync, so a plan bought on one platform works on all of them. Every new account starts with 7 days of premium. A refund removes the purchase's time again.
 
 **Delete all history removes everything the user has**: projects, sessions and all rollups, in the cloud and on every device. The account (the `users` row), its premium and purchases, and each device's settings stay.
 
@@ -59,7 +59,7 @@ Tarkeez is offline-first. The app reads and writes a local SQLite database, and 
 - **No overlapping sessions:** a user never has two live sessions that overlap in time, even across devices. The cloud keeps the longest and drops the other (see "Overlap rule").
 - **Tombstones:** a normal delete never removes a row. Projects and sessions get `deleted_at`, which syncs like any other change. Only "Delete all history" and "Delete account" hard-delete rows (see "Editing and deleting").
 - **History reset:** `users.history_reset_at` is null until the first "Delete all history". A reset hard-deletes the user's projects, sessions and rollups in the cloud and stamps this value. Every device wipes its own copy when it sees a newer value than its own.
-- **Premium:** `users.premium_until` is the date premium ends. A new account starts with 7 days of premium. The value is derived from that trial and from `purchases`, and it is written only by the backend. Each device copies it on every sync, and premium is active while `premium_until > now` (see "Premium and purchases").
+- **Premium:** `users.premium_until` is the date premium ends. A new account starts with 7 days of premium. The value is derived from that trial and from `purchases`, and it is written only by the backend. It never passes 740 days from now. Each device copies it on every sync, and premium is active while `premium_until > now` (see "Premium and purchases").
 - **Foreign keys:** every `user_id` foreign key cascades on delete, locally and in the cloud, so deleting an account deletes everything it owns (see "Delete account"). A project row is never removed except by a history reset or an account deletion, so `project_id` on a session always resolves. There is no cascade or `SET NULL` from projects to sessions. A reset deletes sessions before projects, locally and in the cloud. In the cloud a session can only use a project of its own user, because the foreign key is `(project_id, user_id)`. A session whose project is deleted counts as "No Project" when read.
 - **Page size:** a push or a pull moves at most 200 rows per request, and the app reads, writes and binds at most 200 rows at a time. A device that was offline for years syncs in many small pages (see "Pages of 200 rows").
 - **Pull checkpoint:** the database stamps every project and session with `updated_at` whenever it is added or changed. Each device stores the biggest stamp it has received, one for projects and one for sessions, in `pull_checkpoints`. A pull asks for rows stamped after the checkpoint, starting 2 minutes before it (safety rule 5).
@@ -298,7 +298,8 @@ A device downloads its own rows once after pushing them, and re-reads the rows s
 3. **Sync starts** when `pending_changes` has rows and the device is online, at app start, or on the Sync button. If the device is offline, nothing is attempted. A sync begins with the reset check: the app reads its `users` row and copies `premium_until` to the local row. If `history_reset_at` is newer than the local value, it wipes local projects, sessions, rollups and pending changes, and clears its checkpoints.
 4. **Push:** the Sync Service reads `pending_changes` 200 entries at a time and sends each page to `push_changes`, projects first, then sessions, until the queue is empty. The cloud upserts the rows by UUID (safe to retry). It rejects projects created before the last reset and sessions that ended before it, new rows that are too old or over the daily limit, and sessions whose project was rejected. It resolves overlaps (see "Overlap rule"). A session that ends more than 10 minutes in the future is not answered and stays pending. Cloud triggers update `daily_rollups`, `project_rollups` and `utc_daily_rollups`. The response lists which rows were applied, rejected and dropped, and the device applies that locally and removes the answered entries from the queue.
 5. **Pull (right after every push):** the app calls `pull_projects`, then `pull_sessions`, 200 rows per page, starting 2 minutes before `last_project_updated_at` and `last_session_updated_at`, until a page has fewer than 200 rows. The app upserts each page and moves the checkpoint. Local triggers rebuild the rollups. No rollup is downloaded.
-6. **Premium purchase:** the user pays in Google Play or the App Store, and the app sends the purchase token to `verify_purchase`. The function verifies it with the store, saves a row in `purchases`, updates `users.premium_until` and returns it. The app saves the value in the local `users` row. A web payment reaches the cloud through the gateway webhook, and the device receives the value at its next sync.
+6. **Premium purchase:** the user taps Buy. The app tags the purchase with the signed-in user id and opens the Google Play sheet. After payment, the app sends the purchase token to `verify-purchase`. The function verifies it with Google Play, rejects it if it is tagged with another account, saves a row in `purchases`, updates `users.premium_until` and returns it. The app saves the value in the local `users` row of the account that sent the request. A purchase that was paid but not verified is retried by `restorePurchases` at app start and after every sign-in. A web payment reaches the cloud through the gateway webhook, and the device receives the value at its next sync.
+7. **Refund:** Google Play sends a real-time developer notification (a voided purchase) to a Pub/Sub topic, and a push subscription delivers it to the `play-rtdn` Edge Function. The function checks the Pub/Sub signature and calls `refund_purchase`, which removes the purchase's time from `premium_until`. Each device receives the new date at its next sync.
 
 **In plain words**
 
@@ -306,7 +307,7 @@ A finished session is written to SQLite. Triggers add its seconds to `daily_roll
 
 When `pending_changes` has rows and the device is online, the Sync Service first reads the user's `users` row from Supabase over HTTPS with the user's JWT. If a history reset is newer than the one the device has applied, the device wipes its data. Then it sends the pending projects and sessions, 200 per request. If the device is offline, the rows wait and nothing is attempted until the connection returns. A sync also runs at app start and when the user taps the Sync button. There is no timer. The cloud keeps the longest session when two overlap, and its triggers add each kept session to `daily_rollups`, `project_rollups` and `utc_daily_rollups`. The app then downloads the rows stamped after its checkpoints, 200 per page. Pulled sessions go through the same local triggers as recorded ones.
 
-Premium works separately from tracking. A new account starts with 7 days of premium. A payment made in Google Play, the App Store or on the web is verified by the backend, saved in `purchases` and added to `users.premium_until`. Every device copies that date with its sync, so a plan bought on one device unlocks all of them.
+Premium works separately from tracking. A new account starts with 7 days of premium. A payment made in Google Play, the App Store or on the web is verified by the backend, saved in `purchases` and added to `users.premium_until`. Every device copies that date with its sync, so a plan bought on one device unlocks all of them. A refund in Google Play reaches the cloud through a real-time developer notification and removes that purchase's time again.
 
 ```mermaid
 flowchart TB
@@ -319,15 +320,18 @@ flowchart TB
 
   subgraph CLOUD["Backend: Supabase"]
     direction LR
-    AUTH["Supabase Auth<br/>OAuth sign-in issues the JWT<br/>RLS by user_id, read only"] --> RPC["RPC functions<br/>push_changes · pull_projects · pull_sessions · reset_history"] --> CDB[("PostgreSQL<br/>users · projects · sessions (all history)<br/>daily_rollups · project_rollups · utc_daily_rollups (derived)<br/>purchases (premium payments)<br/>──────<br/>overlap constraint on sessions<br/>triggers: session to daily_rollups and project_rollups (local midnight) and utc_daily_rollups (UTC midnight)")]
-    EDGE["Edge Functions<br/>verify_purchase · payment webhook"] --> CDB
+    AUTH["Supabase Auth<br/>OAuth sign-in issues the JWT<br/>RLS by user_id, read only"] --> RPC["RPC functions<br/>push_changes · pull_projects · pull_sessions · reset_history · can_buy_premium"] --> CDB[("PostgreSQL<br/>users · projects · sessions (all history)<br/>daily_rollups · project_rollups · utc_daily_rollups (derived)<br/>purchases (premium payments)<br/>──────<br/>overlap constraint on sessions<br/>triggers: session to daily_rollups and project_rollups (local midnight) and utc_daily_rollups (UTC midnight)")]
+    EDGE["Edge Functions<br/>verify-purchase · play-rtdn · payment webhook"] --> CDB
   end
 
   STORES["Google Play · App Store · web gateway"]
+  PUBSUB["Google Cloud Pub/Sub<br/>topic · push subscription"]
 
-  APP -->|"Sync Service → Auth<br/>HTTPS + JWT (access token from OAuth login)<br/>① read users.history_reset_at and premium_until<br/>② push pending_changes, 200 rows per request<br/>③ pull rows stamped after the checkpoints, 200 per page<br/>④ after a store payment: verify_purchase returns premium_until"| CLOUD
+  APP -->|"Sync Service → Auth<br/>HTTPS + JWT (access token from OAuth login)<br/>① read users.history_reset_at and premium_until<br/>② push pending_changes, 200 rows per request<br/>③ pull rows stamped after the checkpoints, 200 per page<br/>④ after a Google Play payment: verify-purchase returns premium_until"| CLOUD
   APP -->|"in-app purchase"| STORES
-  CLOUD <-->|"purchase check · refund and payment webhooks"| STORES
+  CLOUD <-->|"purchase check · refund of a purchase over the premium cap · web payment webhooks"| STORES
+  STORES -->|"voided purchase notification"| PUBSUB
+  PUBSUB -->|"signed push to play-rtdn"| CLOUD
 ```
 
 ## Local ER diagram (SQLite)
@@ -418,7 +422,7 @@ erDiagram
 - `push_changes` takes at most 200 rows per list. It upserts projects first, then sessions. Each row runs in its own savepoint, so one failure does not fail the batch. A project upsert replaces the whole row (last push wins). Projects created before `history_reset_at` and sessions that ended before it are rejected. So are new rows older than 33 days or over the daily limit, and sessions whose project was rejected. A session that ends more than 10 minutes in the future is not answered and stays pending on the device. A session can only use a project of the same user. Overlaps follow the "Overlap rule".
 - `pull_projects` and `pull_sessions` return one page of at most 200 rows, read by `(updated_at, id)` after the cursor the device sends.
 - `reset_history` hard-deletes the user's `utc_daily_rollups`, `project_rollups`, `daily_rollups`, `sessions` and `projects` (in that order) and sets `history_reset_at = now()`, all in one transaction. Triggers do not run for these deletes. The `users` row, `purchases` and `premium_until` stay.
-- Signed-in users can call `push_changes`, `pull_projects`, `pull_sessions` and `reset_history`. The sign-up, rollup, premium and purchase functions are callable only by the backend. Signed-out requests cannot read tables or call functions.
+- Signed-in users can call `push_changes`, `pull_projects`, `pull_sessions`, `reset_history` and `can_buy_premium`. The sign-up, rollup, premium and purchase functions are callable only by the backend. Signed-out requests cannot read tables or call functions.
 - Deleting the Auth user deletes the `users` row and everything it owns (see "Delete account").
 - A trigger sets `updated_at = now()` on every insert or update of a project or session. Device checkpoints track it (see "How sync works").
 - Each live session feeds three rollup tables, one slice per day touched (see "How a session is split at midnight"):
@@ -636,6 +640,17 @@ Stacking, with every purchase made at 6 pm:
 
 Months are calendar months: Jan 15 + 1 month = Feb 15. When the day does not exist, the last day of the month is used, and the bonus hours are added after that: Jan 31, 6 pm + 1 month = Feb 28, 7 pm. The calculation runs in UTC. In a time zone with daylight saving, the local clock time can differ by an hour after the clocks change.
 
+### Premium cap
+
+`premium_until` never passes 740 days from now. `premium_max_until()` defines this limit in one place.
+
+- Before it opens the purchase sheet, the app calls `can_buy_premium(months)` for each plan. A plan that would pass the cap is disabled and shows a message. If the app is offline, it skips this check.
+- If a purchase still passes the cap (for example the check was skipped offline), `grant_purchase` raises `premium_cap_exceeded` and saves nothing. `verify-purchase` then refunds the order in Google Play, and the app shows a warning.
+
+Example: premium ends in 700 days. Buying 1 month ends it in about 731 days, so the 1 month plan stays available. Buying 3 months would end it in about 791 days, so the 3 months plan is disabled.
+
+The refund of an order over the cap also sends a notification to `play-rtdn`. It finds no row in `purchases` and changes nothing.
+
 ### Rules for `purchases`
 
 - `(source, store_ref)` is unique. A retried request or webhook cannot add the same payment twice, and one store receipt cannot be used by two accounts.
@@ -648,16 +663,30 @@ Months are calendar months: Jan 15 + 1 month = Feb 15. When the day does not exi
 
 ### Backend functions
 
-| Function                            | What it does                                                                                                                                                                                                       |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `handle_new_user` (sign-up trigger) | Creates the `users` row when an Auth user is created: name and avatar from the sign-in profile, and `premium_until` = sign-up time + 7 days.                                                                       |
-| `verify_purchase` (Edge Function)   | Called by the app after a store payment. Verifies the purchase token with Google Play or the App Store, rejects a `store_ref` already used by another account, calls `grant_purchase` and returns `premium_until`. |
-| Payment webhook (Edge Function)     | Receives web gateway events. Verifies the signature, then calls `grant_purchase` for a payment or `refund_purchase` for a refund. The user id comes from the checkout metadata.                                    |
-| `grant_purchase`                    | Inserts the purchase, ignoring a duplicate, then calls `rebuild_premium`.                                                                                                                                          |
-| `refund_purchase`                   | Sets `refunded_at`, then calls `rebuild_premium`. Store refund notifications call it too.                                                                                                                          |
-| `rebuild_premium(user_id)`          | Starts at the account's sign-up time + 7 days, takes each purchase with `refunded_at is null` in `paid_at` order, applies the formula above, and writes the result to `users.premium_until`.                       |
+| Function                            | What it does                                                                                                                                                                                                                                                                                                |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `handle_new_user` (sign-up trigger) | Creates the `users` row when an Auth user is created: name and avatar from the sign-in profile, and `premium_until` = sign-up time + 7 days.                                                                                                                                                                |
+| `verify-purchase` (Edge Function)   | Called by the app after a Google Play payment. Verifies the purchase token with Google Play, rejects a purchase tagged with another account, calls `grant_purchase` and returns `premium_until`. If `grant_purchase` refuses the purchase for passing the premium cap, it refunds the order in Google Play. |
+| `play-rtdn` (Edge Function)         | Receives Google Play real-time developer notifications from Pub/Sub. Checks the Pub/Sub signature, then calls `refund_purchase` for a voided one-time purchase. Runs with JWT verification off, because the caller is Pub/Sub and not a signed-in user.                                                     |
+| Payment webhook (Edge Function)     | Receives web gateway events. Verifies the signature, then calls `grant_purchase` for a payment or `refund_purchase` for a refund. The user id comes from the checkout metadata.                                                                                                                             |
+| `grant_purchase`                    | Inserts the purchase, ignoring a duplicate, then calls `rebuild_premium`. Rejects a `store_ref` that belongs to another account, and a purchase that would pass the premium cap.                                                                                                                            |
+| `refund_purchase`                   | Sets `refunded_at` once, then calls `rebuild_premium`. `play-rtdn` and the web gateway webhook call it.                                                                                                                                                                                                     |
+| `rebuild_premium(user_id)`          | Starts at the account's sign-up time + 7 days, takes each purchase with `refunded_at is null` in `paid_at` order, applies the formula above, and writes the result to `users.premium_until`.                                                                                                                |
+| `can_buy_premium(months)`           | Called by the signed-in app before the purchase sheet. Returns whether a plan still fits under the premium cap.                                                                                                                                                                                             |
+| `premium_max_until()`               | Returns now + 740 days. Used by `can_buy_premium` and `grant_purchase`.                                                                                                                                                                                                                                     |
 
-`verify_purchase` maps each Google Play product id to `months`:
+Edge Function secrets:
+
+| Secret                        | Used by                        | Value                                                                  |
+| ----------------------------- | ------------------------------ | ---------------------------------------------------------------------- |
+| `GOOGLE_SERVICE_ACCOUNT_JSON` | `verify-purchase`              | Key of the Google Cloud service account that is linked to Play Console |
+| `PLAY_PACKAGE_NAME`           | `verify-purchase`, `play-rtdn` | Package name of the app                                                |
+| `PUBSUB_AUDIENCE`             | `play-rtdn`                    | URL of the `play-rtdn` function                                        |
+| `PUBSUB_SERVICE_ACCOUNT`      | `play-rtdn`                    | Email of the `pubsub-push` service account                             |
+
+Supabase provides `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` to every function.
+
+`verify-purchase` maps each Google Play product id to `months`:
 
 | Product id           | months |
 | -------------------- | ------ |
@@ -668,13 +697,32 @@ Months are calendar months: Jan 15 + 1 month = Feb 15. When the day does not exi
 
 ### Buying in the app
 
-1. The user pays in Google Play or the App Store.
-2. The app sends the purchase token to `verify_purchase`.
-3. The function verifies the token with the store, saves the purchase, updates `premium_until` and returns it.
-4. The app saves the returned `premium_until` in the local `users` row, so features unlock without waiting for a sync.
-5. The app consumes the purchase in the store (Google consume, Apple finish transaction). Until a purchase is consumed, Google does not let the user buy the same product again, so this step is what allows a second 1-month purchase on the same day. If step 3 failed, the purchase stays unconsumed and the app tries again at the next app start. Google refunds a purchase that is not consumed or acknowledged within 3 days.
+1. The user taps Buy. The app tags the purchase with the signed-in user id (Google Play `obfuscatedAccountId`) and opens the Google Play sheet.
+2. The user pays in Google Play.
+3. The app sends the purchase token to `verify-purchase`.
+4. The function verifies the token with Google Play, rejects it if it is tagged with another account, saves the purchase, updates `premium_until` and returns it.
+5. The app saves the returned `premium_until` in the local `users` row of the account that sent the request, so features unlock without waiting for a sync. The account is read before the request is sent, so a change of the signed-in account while the app waits does not move the date to another row.
+6. The app consumes the purchase in Google Play. Until a purchase is consumed, Google does not let the user buy the same product again, so this step is what allows a second 1-month purchase on the same day.
 
-A consumed purchase is no longer listed by the store, so there is no "restore purchases" step. A new device gets `premium_until` from the cloud with its first sync.
+A purchase that was paid but not verified (offline, signed out, function error, app closed) stays unconsumed. The app calls `restorePurchases` at app start, after every sign-in, and when the Google Play sheet reports an error such as "already owned". Each purchase that comes back is verified the same way.
+
+- A purchase tagged with another account is skipped. It waits for that account to sign in.
+- A purchase with no tag (made by an older app build) is accepted for the signed-in account.
+- One purchase token is never verified twice at the same time.
+- Google refunds a purchase that is not consumed or acknowledged within 3 days.
+
+A consumed purchase is no longer listed by the store, so there is nothing to restore for it. A new device gets `premium_until` from the cloud with its first sync.
+
+### Purchase situations
+
+| Situation                                                      | Behaviour                                                                                                                |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Paid, but the app is offline or closed before verification     | The purchase stays unconsumed. The next app start or sign-in verifies it and grants premium.                             |
+| Account A buys 3 months, then signs out and account B signs in | B does not get premium. The purchase waits and is granted to A the next time A signs in.                                 |
+| The account changes while the app waits for `verify-purchase`  | The server grants A. The date is saved in A's local row, not in B's.                                                     |
+| Premium is granted, but consuming the purchase fails           | The next restore verifies the purchase again. `grant_purchase` ignores the duplicate, and the app consumes the purchase. |
+| Refunded in Google Play                                        | `play-rtdn` marks the purchase refunded, and `premium_until` drops by that purchase's time.                              |
+| The purchase would pass the 740 day cap                        | The plan is disabled in the app. If it is still paid, the server saves nothing and refunds the order.                    |
 
 ### Buying on the web
 
@@ -682,7 +730,29 @@ The gateway sends a webhook to the cloud, which saves the purchase and updates `
 
 ### Refunds
 
-A store refund notification or the gateway webhook calls `refund_purchase`. A refund removes the purchase's months and its bonus hours, and leaves the 7-day trial as it was. Example: the Jan 22 purchase above is refunded on Jan 25, and `premium_until` goes back to Feb 1, 7 pm. Each device replaces its copy at its next sync.
+Google Play sends a real-time developer notification for every voided purchase: a refund requested by the user, a refund made by the developer, a chargeback, or the automatic refund of a purchase that was not acknowledged within 3 days.
+
+```
+Google Play → Pub/Sub topic → push subscription → play-rtdn → refund_purchase → rebuild_premium
+```
+
+`play-rtdn` does the following:
+
+1. Checks the Pub/Sub signature. The token must be signed by Google, carry the audience in `PUBSUB_AUDIENCE` and come from the service account in `PUBSUB_SERVICE_ACCOUNT`. Anything else gets 401.
+2. Ignores test notifications, other apps and every notification that is not a voided one-time purchase. They are acknowledged with 200.
+3. Calls `refund_purchase` with the order id and with the purchase token, because `verify-purchase` saves the order id (or the token when there is no order id) as `store_ref`.
+4. Answers 500 if the database fails, so Pub/Sub sends the notification again.
+
+`refund_purchase` only updates rows where `refunded_at` is null, so a repeated notification changes nothing. A refund removes the purchase's months and its bonus hours, and leaves the 7-day trial as it was. Example: the Jan 22 purchase above is refunded on Jan 25, and `premium_until` goes back to Feb 1, 7 pm. Each device replaces its copy at its next sync.
+
+Setup:
+
+1. In Google Cloud, create a Pub/Sub topic named `play-rtdn`. Give `google-play-developer-notifications@system.gserviceaccount.com` the Pub/Sub Publisher role on it.
+2. Create a service account named `pubsub-push` with no roles and no keys.
+3. Create a push subscription on the topic. Set the endpoint to the `play-rtdn` function URL, turn on authentication with `pubsub-push`, and use the same URL as the audience.
+4. Set the secrets `PUBSUB_AUDIENCE` (the same URL) and `PUBSUB_SERVICE_ACCOUNT` (the email of `pubsub-push`).
+5. Deploy `play-rtdn` with JWT verification turned off.
+6. In Play Console, open Monetize with Play, Monetization setup, Real-time developer notifications. Enter the topic name `projects/<project-id>/topics/play-rtdn` and choose "Subscriptions and voided purchases only", which includes voided one-time products. Send a test notification. The function logs a 200.
 
 ### On the device
 
@@ -704,3 +774,8 @@ A free account can create a project only while it has fewer than 2. Premium has 
 - **Trial from the sign-up time:** `rebuild_premium` reads the account's sign-up time from the Auth user, so the trial needs no extra column and survives every rebuild.
 - **`months` on `purchases`:** a month is not a fixed number of days. Adding calendar months keeps a plan on the same day of each month, for example Jan 15 to Feb 15. The bonus hours use the same number: 3 months add 3 hours.
 - **`rebuild_premium` after every grant and refund:** it recomputes `premium_until` from the trial and all purchases, so a late, repeated or refunded payment always gives the same result.
+- **Purchase tagged with the account:** a payment is made in Google Play, outside the app, so the user can switch account before it is verified. The tag lets the server give the purchase only to the account that tapped Buy.
+- **Account read before the request:** `verify-purchase` can take a few seconds. Reading the signed-in account before the request is sent keeps the returned date with the account that sent it.
+- **Restore at app start and after sign-in:** a payment that was never verified would otherwise stay unconsumed until Google refunds it after 3 days. Restoring verifies it as soon as the right account is signed in.
+- **Refunds by notification:** Google Play pushes every voided purchase to `play-rtdn`, so the cloud learns about a refund even if the user never opens the app again.
+- **Premium cap checked twice:** the app disables a plan that would pass the cap, and `grant_purchase` enforces the cap again, because a payment cannot be stopped once it is made in the store. The server refunds it instead.
