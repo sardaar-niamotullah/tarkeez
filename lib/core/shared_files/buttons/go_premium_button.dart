@@ -9,14 +9,24 @@ import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class GoPremiumButton extends StatelessWidget {
-  const GoPremiumButton({super.key});
+  const new({
+    super.key,
+    this.closeBottomSheet = false,
+    this.isDialogBoxButton = false,
+  });
+
+  final bool isDialogBoxButton, closeBottomSheet;
 
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => context.push(RouteNames.subscriptionPage),
+        onTap: () {
+          if (closeBottomSheet) context.pop();
+          if (isDialogBoxButton) context.pop();
+          context.push(RouteNames.subscriptionPage);
+        },
         borderRadius: ContainerDesignUtils.allRadius,
         mouseCursor: SystemMouseCursors.click,
         child: Ink(
@@ -42,7 +52,7 @@ class GoPremiumButton extends StatelessWidget {
                   child: BubbleSolid(
                     size: 60,
                     color: Colors.white,
-                    opacity: 0.12,
+                    opacity: 0.2,
                   ),
                 ),
 
@@ -53,7 +63,7 @@ class GoPremiumButton extends StatelessWidget {
                   child: BubbleSolid(
                     size: 48,
                     color: Colors.white,
-                    opacity: 0.10,
+                    opacity: 0.15,
                   ),
                 ),
 

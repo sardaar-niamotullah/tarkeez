@@ -30,8 +30,10 @@ class FilterDurationSelectorButton extends StatelessWidget {
           if (isLocked) {
             showDialog(
               context: context,
-              builder: (_) =>
-                  GoPremiumDialog(message: filterOptionLockedMessage),
+              builder: (_) => GoPremiumDialog(
+                closeBottomSheet: true,
+                message: filterOptionLockedMessage,
+              ),
             );
             return;
           }

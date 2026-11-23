@@ -8,9 +8,10 @@ import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
 class GoPremiumDialog extends StatelessWidget {
-  const new({super.key, this.message});
+  const new({super.key, this.message, this.closeBottomSheet = false});
 
   final String? message;
+  final bool closeBottomSheet;
 
   @override
   Widget build(BuildContext context) {
@@ -34,11 +35,16 @@ class GoPremiumDialog extends StatelessWidget {
           // ──────────────────────────────────────────────
           // Action button
           // ──────────────────────────────────────────────
-          const Row(
+          Row(
             children: [
-              CancelButton(isCupertinoVersion: true),
-              SizedBox(width: 16),
-              Expanded(child: GoPremiumButton()),
+              const CancelButton(isCupertinoVersion: true),
+              const SizedBox(width: 16),
+              Expanded(
+                child: GoPremiumButton(
+                  isDialogBoxButton: true,
+                  closeBottomSheet: closeBottomSheet,
+                ),
+              ),
             ],
           ),
         ],
