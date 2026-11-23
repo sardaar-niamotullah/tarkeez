@@ -39,9 +39,6 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final selectedPlan = pricingPlans.firstWhere(
-      (plan) => plan.type == _selectedPricingPlanType,
-    );
     final isPremiumUser = context.select((PremiumCubit c) => c.isPremium);
 
     return BlocConsumer<SubscriptionCubit, SubscriptionState>(
@@ -63,11 +60,29 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
               context,
               message: 'Could not confirm your purchase. It will be retried when you reopen the app.',
             );
+          case PurchaseResult.capExceeded:
+            showWarningSnackBar(
+              context,
+              message: 'This purchase would exceed the maximum premium time, so it was not added. Your payment will be refunded.',
+            );
           case PurchaseResult.none:
             break;
         }
       },
       builder: (context, state) {
+        // If the chosen plan became blocked, fall back to the first plan that is open.
+        final available = pricingPlans.where(
+          (plan) => !state.blocked.contains(plan.productId),
+        );
+        final selectedPlan = available.firstWhere(
+          (plan) => plan.type == _selectedPricingPlanType,
+          orElse: () =>
+              available.isEmpty ? pricingPlans.first : available.first,
+        );
+        final isSelectedBlocked = state.blocked.contains(
+          selectedPlan.productId,
+        );
+
         return StandAlonePageOuterStructure(
           title: 'Go premium',
           actions: [ActionPageIcon(iconPath: AssetPaths.medal)],
@@ -82,8 +97,13 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                 title: 'Next',
                 backgroundColorLeft: selectedPlan.color,
                 backgroundColorRight: selectedPlan.colorBright,
-                onPressed: () =>
-                    context.read<SubscriptionCubit>().buy(selectedPlan),
+                onPressed: () => isSelectedBlocked
+                    ? showInfoSnackBar(
+                        context,
+                        iconPath: AssetPaths.info,
+                        message: 'This plan would exceed the maximum premium time you can hold at once.',
+                      )
+                    : context.read<SubscriptionCubit>().buy(selectedPlan),
               ),
               const SizedBox(height: 8),
               const DisclaimerTextButton(),
@@ -144,17 +164,31 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                 childAspectRatio:
                     context.between(Breakpoints.sm, Breakpoints.md) ? 1 : 1.4,
                 children: pricingPlans.map((plan) {
-                  return PricingCard(
-                    dealValue: plan.dealValue,
-                    duration: plan.duration,
-                    price: state.products?[plan.productId]?.price ?? '',
-                    saveAmount: _saveText(state.products, plan),
-                    color: plan.color,
-                    colorBright: plan.colorBright,
-                    iconPath: plan.iconPath,
-                    isActive: plan.type == _selectedPricingPlanType,
-                    onTap: () =>
-                        setState(() => _selectedPricingPlanType = plan.type),
+                  final isBlocked = state.blocked.contains(plan.productId);
+
+                  return Opacity(
+                    opacity: isBlocked ? .4 : 1,
+                    child: PricingCard(
+                      dealValue: plan.dealValue,
+                      duration: plan.duration,
+                      price: state.products?[plan.productId]?.price ?? '',
+                      saveAmount: _saveText(state.products, plan),
+                      color: plan.color,
+                      colorBright: plan.colorBright,
+                      iconPath: plan.iconPath,
+                      isActive: plan.type == selectedPlan.type && !isBlocked,
+                      onTap: () {
+                        if (isBlocked) {
+                          showInfoSnackBar(
+                            context,
+                            iconPath: AssetPaths.info,
+                            message: 'This plan would exceed the maximum premium time you can hold at once.',
+                          );
+                          return;
+                        }
+                        setState(() => _selectedPricingPlanType = plan.type);
+                      },
+                    ),
                   );
                 }).toList(),
               ),

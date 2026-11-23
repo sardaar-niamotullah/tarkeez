@@ -230,9 +230,47 @@ END;
 $$;
 
 -- =================================================================
+-- premium_max_until: the furthest premium_until a user may reach (now + 740 days).
+-- The one place the cap is defined. Used by can_buy_premium and grant_purchase.
+-- =================================================================
+CREATE OR REPLACE FUNCTION public.premium_max_until()
+RETURNS TIMESTAMPTZ
+LANGUAGE sql
+STABLE
+SET search_path = ''
+AS $$
+  SELECT NOW() + INTERVAL '740 days';
+$$;
+
+-- =================================================================
+-- can_buy_premium: the app calls this before opening the Play purchase sheet.
+-- true  = a plan of p_months still fits under the cap
+-- false = it would pass the cap, so do not offer it
+-- Same maths as rebuild_premium for a purchase made now.
+-- =================================================================
+CREATE OR REPLACE FUNCTION public.can_buy_premium(p_months INT)
+RETURNS BOOLEAN
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+  SELECT COALESCE(
+    (SELECT (GREATEST(u.premium_until, NOW()) AT TIME ZONE 'UTC'
+             + make_interval(months => p_months, hours => p_months)) AT TIME ZONE 'UTC'
+            <= public.premium_max_until()
+     FROM public.users u
+     WHERE u.id = auth.uid()),
+    FALSE);
+$$;
+
+-- =================================================================
 -- grant_purchase: save one payment, then rebuild premium_until
 -- A duplicate (same source + store_ref) is ignored. A store_ref that belongs
 -- to another account is rejected.
+-- A new purchase that would push premium_until past premium_max_until() is
+-- rejected with 'premium_cap_exceeded'. The exception rolls everything back,
+-- so nothing is saved. The edge function then refunds the order.
 -- =================================================================
 CREATE OR REPLACE FUNCTION public.grant_purchase(
   p_user      UUID,
@@ -248,10 +286,23 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = ''
 AS $$
+DECLARE
+  v_until TIMESTAMPTZ;
 BEGIN
   INSERT INTO public.purchases (user_id, source, store_ref, amount, currency, months, paid_at)
   VALUES (p_user, p_source, p_store_ref, p_amount, p_currency, p_months, p_paid_at)
   ON CONFLICT (source, store_ref) DO NOTHING;
+
+  -- FOUND is true only when the row was really inserted (not a duplicate)
+  IF FOUND THEN
+    v_until := public.rebuild_premium(p_user);
+
+    IF v_until > public.premium_max_until() THEN
+      RAISE EXCEPTION 'premium_cap_exceeded';
+    END IF;
+
+    RETURN v_until;
+  END IF;
 
   IF NOT EXISTS (
     SELECT 1 FROM public.purchases
@@ -300,6 +351,11 @@ REVOKE ALL ON FUNCTION public.sessions_to_rollups() FROM PUBLIC, anon, authentic
 REVOKE ALL ON FUNCTION public.rebuild_rollups(UUID) FROM PUBLIC, anon, authenticated;
 
 REVOKE ALL ON FUNCTION public.rebuild_premium(UUID) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.premium_max_until() FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.grant_purchase(UUID, TEXT, TEXT, NUMERIC, TEXT, INT, TIMESTAMPTZ)
   FROM PUBLIC, anon, authenticated;
 REVOKE ALL ON FUNCTION public.refund_purchase(TEXT, TEXT) FROM PUBLIC, anon, authenticated;
+
+-- The app may only ask whether a plan still fits.
+REVOKE ALL ON FUNCTION public.can_buy_premium(INT) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.can_buy_premium(INT) TO authenticated;a

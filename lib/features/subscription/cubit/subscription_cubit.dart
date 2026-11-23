@@ -11,6 +11,7 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
   new(this._repository) : super(const SubscriptionState()) {
     _purchaseSub = _repository.purchases.listen(_onPurchases);
     _loadProducts();
+    _loadBlocked();
   }
 
   final SubscriptionRepository _repository;
@@ -27,7 +28,19 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
       pricingPlans.map((plan) => plan.productId).toSet(),
     );
     if (isClosed) return;
-    emit(SubscriptionState(products: products));
+    emit(SubscriptionState(products: products, blocked: state.blocked));
+  }
+
+  /// Asks the database which plans would pass the premium cap.
+  Future<void> _loadBlocked() async {
+    final blocked = <String>{};
+    await Future.wait(
+      pricingPlans.map((plan) async {
+        if (!await _repository.canBuy(plan.months)) blocked.add(plan.productId);
+      }),
+    );
+    if (isClosed) return;
+    emit(SubscriptionState(products: state.products, blocked: blocked));
   }
 
   void buy(PricingPlan plan) {
@@ -49,19 +62,29 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
       }
 
       try {
-        await _repository.verifyAndConsume(
+        final granted = await _repository.verifyAndConsume(
           purchase,
           state.products?[purchase.productID],
         );
-        _emitResult(PurchaseResult.success);
+        _emitResult(
+          granted ? PurchaseResult.success : PurchaseResult.capExceeded,
+        );
       } catch (_) {
         _emitResult(PurchaseResult.unconfirmed);
       }
+
+      await _loadBlocked(); // premium_until changed, so the cap check changed too
     }
   }
 
   void _emitResult(PurchaseResult result) {
     if (isClosed) return;
-    emit(SubscriptionState(products: state.products, result: result));
+    emit(
+      SubscriptionState(
+        products: state.products,
+        blocked: state.blocked,
+        result: result,
+      ),
+    );
   }
 }

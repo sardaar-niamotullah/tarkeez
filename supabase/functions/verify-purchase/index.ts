@@ -1,3 +1,4 @@
+// supabase functions deploy verify-purchase
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { SignJWT, importPKCS8 } from "npm:jose@5";
 
@@ -39,6 +40,20 @@ async function googleAccessToken(): Promise<string> {
   });
   if (!res.ok) throw new Error(`google token: ${await res.text()}`);
   return (await res.json()).access_token;
+}
+
+// Refunds one order on Google Play. Used when a purchase would pass the premium cap.
+async function refundGoogleOrder(pkg: string, orderId?: string) {
+  if (!orderId) return;
+  const res = await fetch(
+    `https://androidpublisher.googleapis.com/androidpublisher/v3/applications/${pkg}/orders/${encodeURIComponent(orderId)}:refund?revoke=true`,
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${await googleAccessToken()}` },
+    },
+  );
+  if (!res.ok)
+    console.error("google refund failed", res.status, await res.text());
 }
 
 Deno.serve(async (req) => {
@@ -90,6 +105,11 @@ Deno.serve(async (req) => {
     p_paid_at: purchase.purchaseCompletionTime ?? new Date().toISOString(),
   });
   if (error) {
+    // The purchase would pass the 740 day cap: nothing was saved, so give the money back.
+    if (error.message.includes("premium_cap_exceeded")) {
+      await refundGoogleOrder(pkg, purchase.orderId);
+      return json({ error: "premium_cap_exceeded" }, 409);
+    }
     console.error("grant_purchase", error.message);
     return json({ error: error.message }, 409);
   }
