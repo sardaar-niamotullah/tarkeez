@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/shared_files/cubits/session_timer_cubit.dart';
+import 'package:tarkeez/core/utils/container_design_utils.dart';
+import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/home/presentation/sections/widgets/project_rollups_day_wise_section.dart';
 import 'package:tarkeez/features/project_rollups/bloc/project_rollup_bloc.dart';
 import 'package:tarkeez/features/project_rollups/data/models/project_rollup_model.dart';
@@ -15,6 +18,7 @@ class RecentProjectRollupsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final isRunning = context.select(
       (SessionTimerCubit c) => c.state.isRunning,
     );
@@ -40,10 +44,27 @@ class RecentProjectRollupsSection extends StatelessWidget {
               _ => null,
             };
 
+            if (state is ProjectRollupLoading) {
+              return Padding(
+                padding: .symmetric(horizontal: context.md ? 0 : 16),
+                child: LinearProgressIndicator(
+                  minHeight: 3,
+                  backgroundColor: scheme.surface,
+                  borderRadius: ContainerDesignUtils.allRadius,
+                ),
+              );
+            }
+
             if (rollups == null) {
-              return state is ProjectRollupLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : const SizedBox.shrink();
+              return Padding(
+                padding: .symmetric(vertical: 24),
+                child: Center(
+                  child: Text(
+                    'No sessions in the last 5 days',
+                    style: TextUtils.paragraph(context),
+                  ),
+                ),
+              );
             }
 
             final recentDays = DayWiseProjectsRollupStats.recentDays(
@@ -53,9 +74,14 @@ class RecentProjectRollupsSection extends StatelessWidget {
             );
 
             if (recentDays.isEmpty) {
-              return const Padding(
-                padding: .symmetric(vertical: 64),
-                child: Center(child: Text('No sessions in the last 5 days')),
+              return Padding(
+                padding: .symmetric(vertical: 24),
+                child: Center(
+                  child: Text(
+                    'No sessions in the last 5 days',
+                    style: TextUtils.paragraph(context),
+                  ),
+                ),
               );
             }
 
