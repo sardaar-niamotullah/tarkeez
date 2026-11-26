@@ -11,14 +11,6 @@ class ProjectDurationPercentageLine extends StatelessWidget {
   final ProjectModel? project;
   final double fraction;
 
-  double _barWidth(BuildContext context) => context.lg
-      ? 280
-      : context.sm
-      ? 180
-      : context.xs
-      ? 100
-      : 80;
-
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
@@ -29,36 +21,37 @@ class ProjectDurationPercentageLine extends StatelessWidget {
         : scheme.onTertiary;
 
     final clamped = fraction.clamp(0.0, 1.0);
-    final barWidth = _barWidth(context);
 
     return Row(
       children: [
-        Stack(
-          children: [
-            Container(
-              height: 8,
-              width: barWidth,
-              decoration: BoxDecoration(
-                color: scheme.surface,
-                borderRadius: ContainerDesignUtils.allRadius,
+        Expanded(
+          child: Container(
+            height: 8,
+            alignment: .centerLeft,
+            decoration: BoxDecoration(
+              color: scheme.surface,
+              borderRadius: ContainerDesignUtils.allRadius,
+            ),
+            child: FractionallySizedBox(
+              widthFactor: clamped,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: resolvedColor,
+                  borderRadius: ContainerDesignUtils.allRadius,
+                ),
               ),
             ),
-            Container(
-              height: 8,
-              width: barWidth * clamped,
-              decoration: BoxDecoration(
-                color: resolvedColor,
-                borderRadius: ContainerDesignUtils.allRadius,
-              ),
-            ),
-          ],
+          ),
         ),
-        SizedBox(width: context.xs ? 16 : 8),
-        Text(
-          '${(clamped * 100).round()}%',
-          style: TextUtils.paragraphXs(
-            context,
-            color: scheme.onTertiary.withValues(alpha: .7),
+        Container(
+          width: 26,
+          margin: .only(left: context.xs ? 16 : 8),
+          child: Text(
+            '${(clamped * 100).round()}%',
+            style: TextUtils.paragraphXs(
+              context,
+              color: scheme.onTertiary.withValues(alpha: .7),
+            ),
           ),
         ),
       ],

@@ -36,6 +36,7 @@ class ProjectDurationTile extends StatelessWidget {
           ),
         ),
       ),
+
       child: Row(
         children: [
           SessionProjectPill(
@@ -43,18 +44,21 @@ class ProjectDurationTile extends StatelessWidget {
             width: context.sm ? 120 : 92,
             alignment: context.sm ? .center : .centerLeft,
           ),
-          SizedBox(
-            width: context.sm
-                ? context.md
-                      ? context.lg
-                            ? 128
-                            : 48
-                      : 44
-                : 20,
+          const SizedBox(width: 24),
+          Expanded(
+            child: ProjectDurationPercentageLine(
+              project: project,
+              fraction: fraction,
+            ),
           ),
-          ProjectDurationPercentageLine(project: project, fraction: fraction),
-          const Spacer(),
-          DurationTextUtils(durationInSeconds: durationInSeconds),
+          const SizedBox(width: 16),
+          SizedBox(
+            width: 60,
+            child: Align(
+              alignment: .centerEnd,
+              child: DurationTextUtils(durationInSeconds: durationInSeconds),
+            ),
+          ),
         ],
       ),
     );
