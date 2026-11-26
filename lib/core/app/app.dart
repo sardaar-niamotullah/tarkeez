@@ -26,7 +26,11 @@ class App extends StatelessWidget {
             builder: (context, child) {
               final size = context.screenSize;
               debugPrint('🟦 Screen size (width, height): $size');
-              return child!;
+              return MediaQuery.withClampedTextScaling(
+                minScaleFactor: 0.8,
+                maxScaleFactor: 1,
+                child: child!,
+              );
             },
           );
         },
