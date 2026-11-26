@@ -15,8 +15,8 @@ import 'package:tarkeez/features/report/presentation/sections/widgets/time_visua
 class HomeBarChart extends StatelessWidget {
   const new({super.key});
 
-  static const double labelAreaHeight = 12;
   static const double labelGap = 4;
+  static const double labelAreaHeight = 12;
 
   @override
   Widget build(BuildContext context) {

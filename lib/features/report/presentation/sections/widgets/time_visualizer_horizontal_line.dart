@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class TimeVisualizerHorizontalLine extends CustomPainter {
+  new({required this.lineCount, required this.lineColor});
+
   final int lineCount;
   final Color lineColor;
-
-  TimeVisualizerHorizontalLine({required this.lineCount, required this.lineColor});
 
   @override
   void paint(Canvas canvas, Size size) {

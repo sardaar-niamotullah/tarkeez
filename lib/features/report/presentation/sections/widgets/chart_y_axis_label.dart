@@ -3,16 +3,17 @@ import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tarkeez/features/report/presentation/sections/report_timeline_chart_config.dart';
 
 class ChartYAxisLabel extends StatelessWidget {
-  final double labelHeight;
-  final int chartTopHours, hoursPerStep;
-  final CrossAxisAlignment? crossAxisAlignment;
-  const ChartYAxisLabel({
+  const new({
     super.key,
     required this.labelHeight,
     required this.chartTopHours,
     required this.hoursPerStep,
     this.crossAxisAlignment,
   });
+  
+  final double labelHeight;
+  final int chartTopHours, hoursPerStep;
+  final CrossAxisAlignment? crossAxisAlignment;
 
   @override
   Widget build(BuildContext context) {
