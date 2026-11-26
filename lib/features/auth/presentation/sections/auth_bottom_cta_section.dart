@@ -20,87 +20,93 @@ class AuthBottomCTASection extends StatelessWidget {
       TargetPlatform.iOS,
       TargetPlatform.android,
     }.contains(Theme.of(context).platform);
-    return Container(
-      height: 350,
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        borderRadius: ContainerDesignUtils.topRadius,
-      ),
-      child: PrimaryPageMargin(
-        child: SafeArea(
-          child: Column(
-            children: [
-              const SizedBox(height: 36),
-              // ──────────────────────────────────────────────────────────
-              // Intro and switch language button
-              // ──────────────────────────────────────────────────────────
-              Row(
-                mainAxisAlignment: .spaceBetween,
-                crossAxisAlignment: .start,
+    return Align(
+      heightFactor: 1,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 640),
+        child: Container(
+          height: 350,
+          decoration: BoxDecoration(
+            color: scheme.surface,
+            borderRadius: ContainerDesignUtils.topRadius,
+          ),
+          child: PrimaryPageMargin(
+            child: SafeArea(
+              child: Column(
                 children: [
-                  RichText(
-                    text: TextSpan(
-                      children: RichTextUtils.buildStyledText(
-                        text: 'Get started with {Tarkeez}',
-                        normalStyle: TextUtils.title2Normal(context),
-                        highlightedStyle: TextUtils.title2Normal(
-                          context,
-                          color: scheme.primary,
+                  const SizedBox(height: 36),
+                  // ──────────────────────────────────────────────────────────
+                  // Intro and switch language button
+                  // ──────────────────────────────────────────────────────────
+                  Row(
+                    mainAxisAlignment: .spaceBetween,
+                    crossAxisAlignment: .start,
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          children: RichTextUtils.buildStyledText(
+                            text: 'Get started with {Tarkeez}',
+                            normalStyle: TextUtils.title2Normal(context),
+                            highlightedStyle: TextUtils.title2Normal(
+                              context,
+                              color: scheme.primary,
+                            ),
+                          ),
                         ),
                       ),
+                      // LanguageSwitchButton(),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // ──────────────────────────────────────────────────────────
+                  // Google oauth button
+                  // ──────────────────────────────────────────────────────────
+                  const OauthButton(),
+                  const SizedBox(height: 8),
+
+                  // ──────────────────────────────────────────────────────────
+                  // Tagline
+                  // ──────────────────────────────────────────────────────────
+                  Text(
+                    'Keep track of the most valuable and limited\nresource you have access to, which is time.',
+                    style: TextUtils.paragraphSmall(
+                      context,
+                      color: scheme.onTertiary,
                     ),
+                    textAlign: .center,
                   ),
-                  // LanguageSwitchButton(),
+                  const Spacer(flex: 2),
+
+                  // ──────────────────────────────────────────────────────────
+                  // Footer content
+                  // ──────────────────────────────────────────────────────────
+                  Row(
+                    mainAxisAlignment: .spaceBetween,
+                    children: [
+                      // ──────────────────────────────────────────────────────────
+                      // Customer Care
+                      // ──────────────────────────────────────────────────────────
+                      CustomIconButton(
+                        iconPath: AssetPaths.penLine,
+                        onTap: () => context.push(RouteNames.feedbackPage),
+                      ),
+
+                      // ──────────────────────────────────────────────────────────
+                      // Terms and conditions
+                      // ──────────────────────────────────────────────────────────
+                      DisclaimerTextButton(),
+                      CustomIconButton(
+                        iconPath: AssetPaths.hammer,
+                        onTap: () =>
+                            context.push(RouteNames.termsAndConditionsPage),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: !isSafeAreaDevice ? 16 : 0),
                 ],
               ),
-              const SizedBox(height: 16),
-
-              // ──────────────────────────────────────────────────────────
-              // Google oauth button
-              // ──────────────────────────────────────────────────────────
-              const OauthButton(),
-              const SizedBox(height: 8),
-
-              // ──────────────────────────────────────────────────────────
-              // Tagline
-              // ──────────────────────────────────────────────────────────
-              Text(
-                'Keep track of the most valuable and limited\nresource you have access to, which is time.',
-                style: TextUtils.paragraphSmall(
-                  context,
-                  color: scheme.onTertiary,
-                ),
-                textAlign: .center,
-              ),
-              const Spacer(flex: 2),
-
-              // ──────────────────────────────────────────────────────────
-              // Footer content
-              // ──────────────────────────────────────────────────────────
-              Row(
-                mainAxisAlignment: .spaceBetween,
-                children: [
-                  // ──────────────────────────────────────────────────────────
-                  // Customer Care
-                  // ──────────────────────────────────────────────────────────
-                  CustomIconButton(
-                    iconPath: AssetPaths.penLine,
-                    onTap: () => context.push(RouteNames.feedbackPage),
-                  ),
-
-                  // ──────────────────────────────────────────────────────────
-                  // Terms and conditions
-                  // ──────────────────────────────────────────────────────────
-                  DisclaimerTextButton(),
-                  CustomIconButton(
-                    iconPath: AssetPaths.hammer,
-                    onTap: () =>
-                        context.push(RouteNames.termsAndConditionsPage),
-                  ),
-                ],
-              ),
-              SizedBox(height: !isSafeAreaDevice ? 16 : 0),
-            ],
+            ),
           ),
         ),
       ),
