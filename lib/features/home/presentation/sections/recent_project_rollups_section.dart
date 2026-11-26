@@ -89,10 +89,10 @@ class RecentProjectRollupsSection extends StatelessWidget {
               children: [
                 for (final day in recentDays)
                   ProjectRollupsDayWiseSection(
-                    key: ValueKey(day.date),
                     day: day,
-                    isRunning: isRunning && day.date == today,
+                    key: ValueKey(day.date),
                     activeProjectId: runningProjectId,
+                    isRunning: isRunning && day.date == today,
                   ),
               ],
             );
