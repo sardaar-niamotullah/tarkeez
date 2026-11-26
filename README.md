@@ -667,7 +667,7 @@ The refund of an order over the cap also sends a notification to `play-rtdn`. It
 | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `handle_new_user` (sign-up trigger) | Creates the `users` row when an Auth user is created: name and avatar from the sign-in profile, and `premium_until` = sign-up time + 7 days.                                                                                                                                                                |
 | `verify-purchase` (Edge Function)   | Called by the app after a Google Play payment. Verifies the purchase token with Google Play, rejects a purchase tagged with another account, calls `grant_purchase` and returns `premium_until`. If `grant_purchase` refuses the purchase for passing the premium cap, it refunds the order in Google Play. |
-| `play-rtdn` (Edge Function)         | Receives Google Play real-time developer notifications from Pub/Sub. Checks the Pub/Sub signature, then calls `refund_purchase` for a voided one-time purchase. Runs with JWT verification off, because the caller is Pub/Sub and not a signed-in user.                                                     |
+| `play-rtdn` (Edge Function)         | Receives Google Play real-time developer notifications from Pub/Sub. Checks the Pub/Sub signature, then calls `refund_purchase` for a voided purchase. Runs with JWT verification off, because the caller is Pub/Sub and not a signed-in user.                                                              |
 | Payment webhook (Edge Function)     | Receives web gateway events. Verifies the signature, then calls `grant_purchase` for a payment or `refund_purchase` for a refund. The user id comes from the checkout metadata.                                                                                                                             |
 | `grant_purchase`                    | Inserts the purchase, ignoring a duplicate, then calls `rebuild_premium`. Rejects a `store_ref` that belongs to another account, and a purchase that would pass the premium cap.                                                                                                                            |
 | `refund_purchase`                   | Sets `refunded_at` once, then calls `rebuild_premium`. `play-rtdn` and the web gateway webhook call it.                                                                                                                                                                                                     |
@@ -715,14 +715,14 @@ A consumed purchase is no longer listed by the store, so there is nothing to res
 
 ### Purchase situations
 
-| Situation                                                      | Behaviour                                                                                                                |
-| -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Paid, but the app is offline or closed before verification     | The purchase stays unconsumed. The next app start or sign-in verifies it and grants premium.                             |
-| Account A buys 3 months, then signs out and account B signs in | B does not get premium. The purchase waits and is granted to A the next time A signs in.                                 |
-| The account changes while the app waits for `verify-purchase`  | The server grants A. The date is saved in A's local row, not in B's.                                                     |
-| Premium is granted, but consuming the purchase fails           | The next restore verifies the purchase again. `grant_purchase` ignores the duplicate, and the app consumes the purchase. |
-| Refunded in Google Play                                        | `play-rtdn` marks the purchase refunded, and `premium_until` drops by that purchase's time.                              |
-| The purchase would pass the 740 day cap                        | The plan is disabled in the app. If it is still paid, the server saves nothing and refunds the order.                    |
+| Situation                                                                          | Behaviour                                                                                                                |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Paid, but the app is offline or closed before verification                         | The purchase stays unconsumed. The next app start or sign-in verifies it and grants premium.                             |
+| Account A buys 3 months, then signs out and account B signs in                     | B does not get premium. The purchase waits and is granted to A the next time A signs in.                                 |
+| The account changes while the app waits for `verify-purchase`                      | The server grants A. The date is saved in A's local row, not in B's.                                                     |
+| Premium is granted, but consuming the purchase fails                               | The next restore verifies the purchase again. `grant_purchase` ignores the duplicate, and the app consumes the purchase. |
+| Refunded in Google Play (user refund, chargeback, or developer refund with revoke) | `play-rtdn` marks the purchase refunded, and `premium_until` drops by that purchase's time.                              |
+| The purchase would pass the 740 day cap                                            | The plan is disabled in the app. If it is still paid, the server saves nothing and refunds the order.                    |
 
 ### Buying on the web
 
@@ -730,7 +730,9 @@ The gateway sends a webhook to the cloud, which saves the purchase and updates `
 
 ### Refunds
 
-Google Play sends a real-time developer notification for every voided purchase: a refund requested by the user, a refund made by the developer, a chargeback, or the automatic refund of a purchase that was not acknowledged within 3 days.
+Google Play sends a real-time developer notification for every voided purchase: a refund requested by the user, a refund made by the developer with the revoke option, a chargeback, or the automatic refund of a purchase that was not acknowledged within 3 days.
+
+A refund made by the developer in Play Console without the revoke option does not void the order. The buyer gets the money back, Google sends no notification, and `premium_until` does not change.
 
 ```
 Google Play → Pub/Sub topic → push subscription → play-rtdn → refund_purchase → rebuild_premium
@@ -739,7 +741,7 @@ Google Play → Pub/Sub topic → push subscription → play-rtdn → refund_pur
 `play-rtdn` does the following:
 
 1. Checks the Pub/Sub signature. The token must be signed by Google, carry the audience in `PUBSUB_AUDIENCE` and come from the service account in `PUBSUB_SERVICE_ACCOUNT`. Anything else gets 401.
-2. Ignores test notifications, other apps and every notification that is not a voided one-time purchase. They are acknowledged with 200.
+2. Ignores test notifications, other apps and every notification that is not a voided purchase, and ignores a quantity-based partial refund. They are acknowledged with 200.
 3. Calls `refund_purchase` with the order id and with the purchase token, because `verify-purchase` saves the order id (or the token when there is no order id) as `store_ref`.
 4. Answers 500 if the database fails, so Pub/Sub sends the notification again.
 

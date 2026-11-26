@@ -45,12 +45,35 @@ Deno.serve(async (req) => {
     return json({ ok: true }); // unreadable, retrying will not help
   }
 
-  // Test notifications, other apps and other event types are acknowledged and ignored.
-  const voided = note.voidedPurchaseNotification;
-  if (note.packageName !== Deno.env.get("PLAY_PACKAGE_NAME") || !voided) {
+  // Other apps are acknowledged and ignored.
+  if (note.packageName !== Deno.env.get("PLAY_PACKAGE_NAME")) {
+    console.log("ignored: other package");
     return json({ ok: true });
   }
-  if (voided.productType !== 1) return json({ ok: true }); // 1 = one-time product
+
+  // Test notifications and every other event type are acknowledged and ignored.
+  const voided = note.voidedPurchaseNotification;
+  if (!voided) {
+    console.log(
+      note.testNotification
+        ? "ignored: test notification"
+        : "ignored: not a voided purchase",
+    );
+    return json({ ok: true });
+  }
+
+  console.log(
+    "voided purchase",
+    voided.orderId,
+    "productType",
+    voided.productType,
+    "refundType",
+    voided.refundType,
+  );
+
+  // 2 = quantity-based partial refund, which only applies to multi-quantity purchases.
+  // Premium plans are bought one at a time, so it is ignored.
+  if (voided.refundType === 2) return json({ ok: true });
 
   const admin = createClient(
     Deno.env.get("SUPABASE_URL")!,
@@ -70,5 +93,6 @@ Deno.serve(async (req) => {
     }
   }
 
+  console.log("refund applied", voided.orderId);
   return json({ ok: true });
 });
