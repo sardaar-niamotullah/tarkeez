@@ -44,14 +44,14 @@ class ProjectDurationTile extends StatelessWidget {
             width: context.sm ? 120 : 92,
             alignment: context.sm ? .center : .centerLeft,
           ),
-          const SizedBox(width: 24),
+          SizedBox(width: context.sm ? 64 : 24),
           Expanded(
             child: ProjectDurationPercentageLine(
               project: project,
               fraction: fraction,
             ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: context.sm ? 48 : 16),
           SizedBox(
             width: 60,
             child: Align(
