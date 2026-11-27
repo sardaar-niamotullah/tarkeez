@@ -10,9 +10,9 @@ class ChartYAxisLabel extends StatelessWidget {
     required this.hoursPerStep,
     this.crossAxisAlignment,
   });
-  
+
   final double labelHeight;
-  final int chartTopHours, hoursPerStep;
+  final double chartTopHours, hoursPerStep;
   final CrossAxisAlignment? crossAxisAlignment;
 
   @override
@@ -22,6 +22,9 @@ class ChartYAxisLabel extends StatelessWidget {
       context,
       color: scheme.onTertiary.withValues(alpha: .7),
     );
+
+    // 1.5 -> "1.5h", 2.0 -> "2h"
+    String label(double hours) => '${hours % 1 == 0 ? hours.toInt() : hours}h';
 
     return Container(
       height: labelHeight,
@@ -38,9 +41,9 @@ class ChartYAxisLabel extends StatelessWidget {
         mainAxisAlignment: .spaceBetween,
         crossAxisAlignment: crossAxisAlignment ?? .end,
         children: [
-          Text('${chartTopHours}h', style: textStyle),
-          Text('${hoursPerStep * 2}h', style: textStyle),
-          Text('${hoursPerStep}h', style: textStyle),
+          Text(label(chartTopHours), style: textStyle),
+          Text(label(hoursPerStep * 2), style: textStyle),
+          Text(label(hoursPerStep), style: textStyle),
           Text('0h', style: textStyle),
         ],
       ),

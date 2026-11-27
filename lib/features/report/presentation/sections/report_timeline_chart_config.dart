@@ -16,12 +16,9 @@ class ReportTimelineChartConfig {
       context.sm ? 8 : 0;
   static double getHorizontalGapAfterYAxis(BuildContext context) =>
       context.sm ? 8 : 4;
-  static double getYAxisIndexColumnWidth(BuildContext context) {
-    final granularity = context.select(
-      (UserPreferencesCubit c) => c.state.reportPeriod.granularity,
-    );
-    return granularity == .daily ? 18 : 23;
-  }
+
+  // Wide enough for labels like "1.5h" and "100h".
+  static double getYAxisIndexColumnWidth(BuildContext context) => 23;
 
   static const double barWidthInset = 12;
   static const double labelAreaHeight = 28;
@@ -30,6 +27,9 @@ class ReportTimelineChartConfig {
 
   static const double maxChartBoxHeight = 300;
   static const double maxChartBoxWidth = Breakpoints.lg;
+
+  /// Smallest chart top: 1.5 h, so the labels are 0h, 0.5h, 1h, 1.5h.
+  static const int minChartTopMinutes = 90;
 
   static double getChartHeight(BuildContext context) => math.min(
     (getAvailableWidth(context) / 2.1) -
@@ -40,7 +40,7 @@ class ReportTimelineChartConfig {
   );
 
   static int getMaxMinutes(List<TimelineModel> entries) {
-    if (entries.isEmpty) return 180;
+    if (entries.isEmpty) return minChartTopMinutes;
     final maxSeconds = entries.map((entry) => entry.seconds).reduce(math.max);
     return maxSeconds ~/ 60;
   }
@@ -48,13 +48,17 @@ class ReportTimelineChartConfig {
   static int getMaxHours(List<TimelineModel> entries) =>
       (getMaxMinutes(entries) / 60).ceil();
 
-  static int getChartTopHours(List<TimelineModel> entries) {
+  /// 1.5 h while the data fits, then 3 h, 6 h, 9 h ...
+  static double getChartTopHours(List<TimelineModel> entries) {
+    if (getMaxMinutes(entries) <= minChartTopMinutes) {
+      return minChartTopMinutes / 60;
+    }
     final maxHours = getMaxHours(entries);
-    return math.max(3, ((maxHours + 2) ~/ 3) * 3);
+    return math.max(3, ((maxHours + 2) ~/ 3) * 3).toDouble();
   }
 
-  static int getHoursPerStep(List<TimelineModel> entries) =>
-      getChartTopHours(entries) ~/ 3;
+  static double getHoursPerStep(List<TimelineModel> entries) =>
+      getChartTopHours(entries) / 3;
 
   static double getBarAreaHeight(BuildContext context) {
     final chartHeight = getChartHeight(context);
