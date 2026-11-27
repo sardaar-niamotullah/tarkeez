@@ -51,14 +51,15 @@ class ProjectDurationTile extends StatelessWidget {
               fraction: fraction,
             ),
           ),
-          SizedBox(width: context.sm ? 48 : 16),
+          SizedBox(width: context.sm ? 48 : 12),
           SizedBox(
-            width: 60,
+            width: 48,
             child: Align(
               alignment: .centerEnd,
               child: DurationTextUtils(durationInSeconds: durationInSeconds),
             ),
           ),
+          const SizedBox(width: 4),
         ],
       ),
     );

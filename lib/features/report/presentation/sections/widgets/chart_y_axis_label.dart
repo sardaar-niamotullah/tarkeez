@@ -23,8 +23,7 @@ class ChartYAxisLabel extends StatelessWidget {
       color: scheme.onTertiary.withValues(alpha: .7),
     );
 
-    // 1.5 -> "1.5h", 2.0 -> "2h"
-    String label(double hours) => '${hours % 1 == 0 ? hours.toInt() : hours}h';
+    String label(double hours) => '${hours.toStringAsFixed(1)}h';
 
     return Container(
       height: labelHeight,
@@ -44,7 +43,7 @@ class ChartYAxisLabel extends StatelessWidget {
           Text(label(chartTopHours), style: textStyle),
           Text(label(hoursPerStep * 2), style: textStyle),
           Text(label(hoursPerStep), style: textStyle),
-          Text('0h', style: textStyle),
+          Text(label(0), style: textStyle),
         ],
       ),
     );

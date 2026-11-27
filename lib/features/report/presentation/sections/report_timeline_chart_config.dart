@@ -17,8 +17,13 @@ class ReportTimelineChartConfig {
   static double getHorizontalGapAfterYAxis(BuildContext context) =>
       context.sm ? 8 : 4;
 
-  // Wide enough for labels like "1.5h" and "100h".
-  static double getYAxisIndexColumnWidth(BuildContext context) => 23;
+  static double getYAxisIndexColumnWidth(BuildContext context) {
+    final granularity = context.select(
+      (UserPreferencesCubit c) => c.state.reportPeriod.granularity,
+    );
+    // Room for labels like "24.0h" (daily) and "744.0h" (monthly).
+    return granularity == .daily ? 28 : 34;
+  }
 
   static const double barWidthInset = 12;
   static const double labelAreaHeight = 28;
