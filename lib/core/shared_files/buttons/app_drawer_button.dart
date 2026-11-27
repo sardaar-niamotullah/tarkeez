@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/constants/asset_paths.dart';
+import 'package:tarkeez/core/shared_files/cubits/app_update_cubit.dart';
 import 'package:tarkeez/core/theme/theme.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 
@@ -12,6 +14,7 @@ class AppDrawerButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final storeUrl = context.watch<AppUpdateCubit>().state;
     return Listener(
       behavior: .opaque,
       onPointerUp: (_) {
@@ -30,7 +33,9 @@ class AppDrawerButton extends StatelessWidget {
               if (!context.sm) ...[
                 SvgPicture.asset(
                   height: 26,
-                  AssetPaths.hamburger,
+                  (storeUrl == null)
+                      ? AssetPaths.hamburger
+                      : AssetPaths.hamburgerNotificaiton,
                   colorFilter: .mode(AppTheme.white, .srcIn),
                 ),
                 const SizedBox(width: 4),

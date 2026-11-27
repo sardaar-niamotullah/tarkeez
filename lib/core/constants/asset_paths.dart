@@ -100,7 +100,8 @@ class AssetPaths {
   static const String globeBold = 'assets/svgs/globe_bold.svg';
   static const String hammer = 'assets/svgs/hammer.svg';
   static const String hamburger = 'assets/svgs/hamburger.svg';
-  static const String hamburgerBold = 'assets/svgs/hamburger_bold.svg';
+  static const String hamburgerNotificaiton =
+      'assets/svgs/hamburger_notification.svg';
   static const String headset = 'assets/svgs/headset.svg';
   static const String home = 'assets/svgs/home.svg';
   static const String homeBold = 'assets/svgs/home_bold.svg';
