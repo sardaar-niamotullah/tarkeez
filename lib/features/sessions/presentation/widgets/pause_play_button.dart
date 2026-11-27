@@ -8,6 +8,7 @@ class PausePlayButton extends StatelessWidget {
     required this.onTap,
     this.pauses = false,
   });
+  
   final bool isRunning;
   final VoidCallback onTap;
     final bool pauses;
