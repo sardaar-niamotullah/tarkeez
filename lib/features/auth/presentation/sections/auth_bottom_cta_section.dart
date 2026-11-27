@@ -88,7 +88,7 @@ class AuthBottomCTASection extends StatelessWidget {
                       // Customer Care
                       // ──────────────────────────────────────────────────────────
                       CustomIconButton(
-                        iconPath: AssetPaths.penLine,
+                        iconPath: AssetPaths.bugMagnifer,
                         onTap: () => context.push(RouteNames.feedbackPage),
                       ),
 
