@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:tarkeez/core/app/dependency_injection.dart';
 import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
 import 'package:tarkeez/features/project_rollups/bloc/project_rollup_bloc.dart';
@@ -8,18 +7,9 @@ class AppStartupTasks {
   const new();
 
   Future<void> run() async {
-    final stopwatch = Stopwatch()..start();
-
-    // Sequential by design: SQLite serializes all queries on one connection,
-    // so Future.wait here wouldn't run them concurrently — just queue them.
     await _preloadProjects();
     await _preloadDailyRollups();
     await _preloadProjectRollups();
-
-    stopwatch.stop();
-    debugPrint(
-      '🟨 ⏱️ AppStartupTasks.run() took ${stopwatch.elapsedMilliseconds}ms',
-    );
   }
 
   Future<void> _preloadProjects() async {

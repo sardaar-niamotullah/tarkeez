@@ -14,8 +14,6 @@ import 'package:tarkeez/core/shared_files/cubits/premium_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 
 Future<void> main() async {
-  final stopwatch = Stopwatch()..start();
-
   WidgetsFlutterBinding.ensureInitialized();
   SessionNotificationService.init(); 
   await dotenv.load();
@@ -39,9 +37,6 @@ Future<void> main() async {
 
   // App start trigger. Runs in the background, it does not delay the first frame.
   getIt<SyncService>().start();
-
-  stopwatch.stop();
-  debugPrint('🟨 ⏱️ Total Startup time: ${stopwatch.elapsedMilliseconds}ms');
 
   runApp(const App());
 }

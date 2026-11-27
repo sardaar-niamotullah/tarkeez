@@ -1,4 +1,3 @@
-import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/app/app_providers.dart';
 import 'package:tarkeez/core/routes/app_router.dart';
 import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
@@ -23,15 +22,11 @@ class App extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme(preferences.themeColor),
             darkTheme: AppTheme.darkTheme(preferences.themeColor),
-            builder: (context, child) {
-              final size = context.screenSize;
-              debugPrint('🟦 Screen size (width, height): $size');
-              return MediaQuery.withClampedTextScaling(
-                minScaleFactor: 0.8,
-                maxScaleFactor: 1,
-                child: child!,
-              );
-            },
+            builder: (context, child) => MediaQuery.withClampedTextScaling(
+              minScaleFactor: 0.8,
+              maxScaleFactor: 1,
+              child: child!,
+            ),
           );
         },
       ),
