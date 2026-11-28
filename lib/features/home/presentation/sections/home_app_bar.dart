@@ -12,6 +12,7 @@ class HomeAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
     return SafeArea(
       bottom: false,
       child: Container(
@@ -27,7 +28,13 @@ class HomeAppBar extends StatelessWidget {
           crossAxisAlignment: context.md ? .end : .center,
           children: [
             AppDrawerButton(onTap: onAppMenuTap),
-            ActionPageIcon(iconPath: AssetPaths.logoOriginal, size: 28),
+            Transform.translate(
+              offset: Offset(0, !context.md && isIOS ? -2 : 0),
+              child: ActionPageIcon(
+                size: 28,
+                iconPath: AssetPaths.logoOriginal,
+              ),
+            ),
           ],
         ),
       ),

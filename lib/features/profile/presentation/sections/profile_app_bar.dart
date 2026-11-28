@@ -39,17 +39,31 @@ class ProfileAppBar extends StatelessWidget {
                     crossAxisAlignment: .center,
                     children: [
                       Transform.translate(
-                        offset: Offset(0, context.md ? 5 : 0),
+                        offset: Offset(
+                          0,
+                          context.md
+                              ? 5
+                              : isIOS
+                              ? -6
+                              : 0,
+                        ),
                         child: AvatarCircle(
-                          radius: context.md ? 18 : 16,
                           isEditable: false,
                           name: user?.fullName,
                           imageUrl: user?.avatarUrl,
+                          radius: context.md ? 18 : 16,
                         ),
                       ),
                       const SizedBox(width: 8),
                       Transform.translate(
-                        offset: Offset(0, context.md ? 5 : 0),
+                        offset: Offset(
+                          0,
+                          context.md
+                              ? 5
+                              : isIOS
+                              ? -6
+                              : 0,
+                        ),
                         child: Text(
                           user?.fullName ?? 'Profile',
                           style: TextUtils.title1Normal(
@@ -64,7 +78,14 @@ class ProfileAppBar extends StatelessWidget {
                 ),
               ),
               Transform.translate(
-                offset: Offset(0, context.md ? 5 : 2.5),
+                offset: Offset(
+                  0,
+                  context.md
+                      ? 5
+                      : isIOS
+                      ? -1
+                      : 2.5,
+                ),
                 child: ActionButton(
                   boxSize: 28,
                   iconSize: 16,
