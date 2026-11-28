@@ -1,6 +1,8 @@
+// lib/core/app/app_providers.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tarkeez/core/app/dependency_injection.dart';
+import 'package:tarkeez/core/services/session_live_activity_service.dart';
 import 'package:tarkeez/core/services/session_notification_service.dart';
 import 'package:tarkeez/core/services/sound_service.dart';
 import 'package:tarkeez/core/shared_files/cubits/app_update_cubit.dart';
@@ -42,9 +44,16 @@ class AppProviders extends StatelessWidget {
               getIt<SessionBloc>(),
               getIt<SoundService>(),
             );
-            // Keeps itself alive through its stream subscriptions and cleans up
-            // when the cubit closes.
+            // Both keep themselves alive through their stream subscriptions
+            // and clean up when the cubit closes. Each one does nothing on
+            // the other platform: Android gets the notification, iOS the
+            // Live Activity.
             SessionNotificationService(
+              timer,
+              getIt<UserPreferencesCubit>(),
+              getIt<DailyRollupBloc>(),
+            );
+            SessionLiveActivityService(
               timer,
               getIt<UserPreferencesCubit>(),
               getIt<DailyRollupBloc>(),

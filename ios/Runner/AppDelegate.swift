@@ -12,5 +12,11 @@ import UIKit
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+
+    // Live Activities exist from iOS 16.2. On older iOS nothing is registered,
+    // and the Dart side ignores the missing channel.
+    if #available(iOS 16.2, *) {
+      LiveActivityChannel.register(with: engineBridge.applicationRegistrar.messenger())
+    }
   }
 }
