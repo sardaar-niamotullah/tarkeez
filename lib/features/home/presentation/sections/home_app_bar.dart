@@ -27,12 +27,25 @@ class HomeAppBar extends StatelessWidget {
           mainAxisAlignment: .spaceBetween,
           crossAxisAlignment: context.md ? .end : .center,
           children: [
-            AppDrawerButton(onTap: onAppMenuTap),
-            Transform.translate(
-              offset: Offset(0, !context.md && isIOS ? -2 : 0),
-              child: ActionPageIcon(
-                size: 28,
-                iconPath: AssetPaths.logoOriginal,
+            Listener(
+              behavior: .opaque,
+              onPointerUp: (_) {
+                if (!context.md) onAppMenuTap();
+              },
+              child: AppDrawerButton(),
+            ),
+
+            Listener(
+              behavior: .opaque,
+              onPointerUp: (_) {
+                if (!context.md) onAppMenuTap();
+              },
+              child: Transform.translate(
+                offset: Offset(0, !context.md && isIOS ? -2 : 0),
+                child: ActionPageIcon(
+                  size: 28,
+                  iconPath: AssetPaths.logoOriginal,
+                ),
               ),
             ),
           ],
