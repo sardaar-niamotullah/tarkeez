@@ -1,8 +1,8 @@
-import 'dart:async';
 import 'dart:io';
+import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:tarkeez/core/shared_files/cubits/session_timer_cubit.dart';
 import 'package:tarkeez/core/shared_files/cubits/user_preferences_cubit.dart';
 import 'package:tarkeez/core/utils/app_clock.dart';
@@ -12,12 +12,17 @@ import 'package:tarkeez/features/daily_rollups/bloc/daily_rollup_bloc.dart';
 /// Activity: on the Lock Screen, and in the Dynamic Island on iPhones that
 /// have one. It does nothing on Android and on iOS older than 16.2.
 ///
+/// Like the Android notification, the card stays after a stop or pause that
+/// was done from the card, until the user closes it. A stop or pause done
+/// inside the app removes it, so nothing shows when the user leaves the app.
+///
 /// iOS draws the ticking numbers itself, so a new state is sent only when
 /// something changes (start, pause, project, length), never every second.
 class SessionLiveActivityService {
   new(this._timer, this._prefs, this._daily) {
     if (!Platform.isIOS) return;
     _channel.setMethodCallHandler(_onCall);
+    _lifecycle = AppLifecycleListener(onResume: _sync);
     _subs.addAll([
       _timer.stream.listen((_) => _sync(), onDone: dispose),
       _prefs.stream.listen((_) => _sync()),
@@ -33,15 +38,21 @@ class SessionLiveActivityService {
   final DailyRollupBloc _daily;
 
   final _subs = <StreamSubscription<dynamic>>[];
+  AppLifecycleListener? _lifecycle;
   Future<void> _queue = Future.value();
   String? _lastKey;
 
-  /// True from the first running session until the user taps close.
+  /// True from the first running session until the user taps close, or stops
+  /// or pauses inside the app.
   bool _pinned = false;
 
   /// Linear mode: the card counts up from this moment, which is "now minus
   /// today's saved total". Set once per run, so a project switch keeps it.
   DateTime? _anchor;
+
+  /// The app is on screen. Card buttons are tapped while it is not.
+  bool get _inApp =>
+      WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed;
 
   int get _today => switch (_daily.state) {
     DailyRollupLoaded d => d.today,
@@ -57,7 +68,7 @@ class SessionLiveActivityService {
         pomodoro && !s.isRunning && left != null && left > Duration.zero;
 
     if (!s.isRunning) _anchor = null;
-    if (!s.isRunning && !paused && !_pinned) return null;
+    if (!s.isRunning && !_pinned) return null;
 
     final int seconds;
     if (s.isRunning) {
@@ -84,7 +95,13 @@ class SessionLiveActivityService {
 
   // Runs on every timer tick, but only talks to iOS when the content changes.
   void _sync() {
-    if (_timer.state.isRunning) _pinned = true;
+    if (_timer.state.isRunning) {
+      _pinned = true;
+    } else if (_inApp) {
+      // Stopped or paused inside the app (also when the user comes back to
+      // it): no card, so nothing shows when they leave the app again.
+      _pinned = false;
+    }
 
     final c = _content();
     if (c == null) {
@@ -138,6 +155,7 @@ class SessionLiveActivityService {
   Future<void> dispose() async {
     if (!Platform.isIOS) return;
     _pinned = false;
+    _lifecycle?.dispose();
     for (final s in _subs) {
       await s.cancel();
     }

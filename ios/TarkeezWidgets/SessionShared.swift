@@ -1,4 +1,4 @@
-// Member of BOTH targets: Runner and TarkeezWidgets
+// Member of BOTH targets: Runner and TarkeezWidgetsExtension
 // (File Inspector > Target Membership).
 import ActivityKit
 import AppIntents

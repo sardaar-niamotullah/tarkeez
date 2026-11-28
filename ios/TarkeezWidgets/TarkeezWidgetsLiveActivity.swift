@@ -113,3 +113,76 @@ struct Controls: View {
     .buttonStyle(.plain)
   }
 }
+
+// MARK: - Previews
+// Xcode only: Editor > Canvas. Delete this block if it ever gives an error;
+// nothing else depends on it.
+
+@available(iOS 17.0, *)
+extension SessionAttributes {
+  fileprivate static var preview: SessionAttributes { SessionAttributes() }
+}
+
+@available(iOS 17.0, *)
+extension SessionState {
+  fileprivate static var linearRunning: SessionState {
+    SessionState(
+      project: "Tarkeez", isRunning: true, isPomodoro: false,
+      from: Date().addingTimeInterval(-3725), seconds: 0, canReset: false)
+  }
+  fileprivate static var linearStopped: SessionState {
+    SessionState(
+      project: "Tarkeez", isRunning: false, isPomodoro: false,
+      seconds: 7325, canReset: false)
+  }
+  fileprivate static var pomodoroRunning: SessionState {
+    SessionState(
+      project: "Deep work", isRunning: true, isPomodoro: true,
+      from: Date(), to: Date().addingTimeInterval(25 * 60), seconds: 0, canReset: true)
+  }
+  fileprivate static var pomodoroPaused: SessionState {
+    SessionState(
+      project: "Deep work", isRunning: false, isPomodoro: true,
+      seconds: 1500, canReset: true)
+  }
+}
+
+@available(iOS 17.0, *)
+#Preview("Lock Screen", as: .content, using: SessionAttributes.preview) {
+  TarkeezWidgetsLiveActivity()
+} contentStates: {
+  SessionState.linearRunning
+  SessionState.linearStopped
+  SessionState.pomodoroRunning
+  SessionState.pomodoroPaused
+}
+
+@available(iOS 17.0, *)
+#Preview("Island expanded", as: .dynamicIsland(.expanded), using: SessionAttributes.preview) {
+  TarkeezWidgetsLiveActivity()
+} contentStates: {
+  SessionState.linearRunning
+  SessionState.linearStopped
+  SessionState.pomodoroRunning
+  SessionState.pomodoroPaused
+}
+
+@available(iOS 17.0, *)
+#Preview("Island compact", as: .dynamicIsland(.compact), using: SessionAttributes.preview) {
+  TarkeezWidgetsLiveActivity()
+} contentStates: {
+  SessionState.linearRunning
+  SessionState.linearStopped
+  SessionState.pomodoroRunning
+  SessionState.pomodoroPaused
+}
+
+@available(iOS 17.0, *)
+#Preview("Island minimal", as: .dynamicIsland(.minimal), using: SessionAttributes.preview) {
+  TarkeezWidgetsLiveActivity()
+} contentStates: {
+  SessionState.linearRunning
+  SessionState.linearStopped
+  SessionState.pomodoroRunning
+  SessionState.pomodoroPaused
+}
