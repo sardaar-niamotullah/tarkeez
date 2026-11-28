@@ -9,6 +9,7 @@ config_name:
 
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
+# Before every release, don't forget to update the splash logo based on the target device.
 version: 1.0.0+7
 
 environment:
@@ -101,11 +102,11 @@ flutter:
 flutter_native_splash:
   color: "#0A0A0A"
   color_dark: "#0A0A0A"
-  image: assets/logos/splash_logo.png
+  image: assets/logos/splash_ios.png
   android_12:
     color: "#0A0A0A"
     color_dark: "#0A0A0A"
-    image: assets/logos/splash_logo.png
+    image: assets/logos/splash_ios.png
 
 # App launcher icons for all platforms
 # To regenerate run `dart run flutter_launcher_icons`
