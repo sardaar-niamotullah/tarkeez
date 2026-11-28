@@ -40,11 +40,19 @@ class HomeAppBar extends StatelessWidget {
               onPointerUp: (_) {
                 if (!context.md) onAppMenuTap();
               },
-              child: Transform.translate(
-                offset: Offset(0, !context.md && isIOS ? -2 : 0),
-                child: ActionPageIcon(
-                  size: 28,
-                  iconPath: AssetPaths.logoOriginal,
+              child: Material(
+                color: Colors.transparent,
+                shape: const CircleBorder(),
+                child: InkWell(
+                  onTap: () {},
+                  customBorder: const CircleBorder(),
+                  child: Transform.translate(
+                    offset: Offset(0, !context.md && isIOS ? -2 : 0),
+                    child: ActionPageIcon(
+                      size: 28,
+                      iconPath: AssetPaths.logoOriginal,
+                    ),
+                  ),
                 ),
               ),
             ),

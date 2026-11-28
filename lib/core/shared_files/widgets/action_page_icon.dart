@@ -4,6 +4,7 @@ import 'package:tarkeez/core/theme/theme.dart';
 
 class ActionPageIcon extends StatelessWidget {
   const new({super.key, required this.iconPath, this.size = 24});
+  
   final String iconPath;
   final double size;
 

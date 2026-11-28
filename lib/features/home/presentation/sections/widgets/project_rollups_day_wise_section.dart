@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/duration_text_utils.dart';
@@ -28,7 +29,7 @@ class ProjectRollupsDayWiseSection extends StatelessWidget {
     final yesterday = DateTime(now.year, now.month, now.day - 1);
     if (day.date == today) return 'Today';
     if (day.date == yesterday) return 'Yesterday';
-    return MaterialLocalizations.of(context).formatMediumDate(day.date);
+    return DateFormat('EEEE').format(day.date);
   }
 
   @override
