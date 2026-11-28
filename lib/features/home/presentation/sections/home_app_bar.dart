@@ -30,7 +30,7 @@ class HomeAppBar extends StatelessWidget {
             Listener(
               behavior: .opaque,
               onPointerUp: (_) {
-                if (!context.md) onAppMenuTap();
+                if (!context.sm) onAppMenuTap();
               },
               child: AppDrawerButton(),
             ),
@@ -38,7 +38,7 @@ class HomeAppBar extends StatelessWidget {
             Listener(
               behavior: .opaque,
               onPointerUp: (_) {
-                if (!context.md) onAppMenuTap();
+                if (!context.sm) onAppMenuTap();
               },
               child: Material(
                 color: Colors.transparent,
