@@ -16,6 +16,7 @@ import 'package:tarkeez/features/subscription/cubit/subscription_cubit.dart';
 import 'package:tarkeez/features/subscription/cubit/subscription_state.dart';
 import 'package:tarkeez/features/subscription/data/models/pricing_plan.dart';
 import 'package:tarkeez/features/subscription/presentation/sections/premium_perks_section.dart';
+import 'package:tarkeez/features/subscription/presentation/sections/supported_platfroms_section.dart';
 import 'package:tarkeez/features/subscription/presentation/sections/widgets/pricing_card.dart';
 
 class SubscriptionPage extends StatefulWidget {
@@ -196,6 +197,11 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
               // Perks
               // ──────────────────────────────────────────────────────────
               PremiumPerksSection(iconColor: selectedPlan.color),
+
+              // ──────────────────────────────────────────────────────────
+              // Supported platforms
+              // ──────────────────────────────────────────────────────────
+              SupportedPlatfromsSection(color: selectedPlan.color),
             ],
           ),
         );

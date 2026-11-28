@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tarkeez/core/utils/container_design_utils.dart';
 import 'package:tarkeez/core/utils/text_utils.dart';
 import 'package:tailwind_breakpoints/tailwind_breakpoints.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SupportedPlatfromsSection extends StatelessWidget {
   const new({super.key, required this.color});
@@ -30,18 +31,33 @@ class SupportedPlatfromsSection extends StatelessWidget {
           GridView.count(
             padding: .zero,
             shrinkWrap: true,
-            crossAxisCount: 4,
+            crossAxisCount: 3,
             mainAxisSpacing: 12,
             crossAxisSpacing: 12,
             mainAxisExtent: 30,
             physics: const NeverScrollableScrollPhysics(),
             children: [
-              _platformChip(context, title: 'Android', link: '', color: color),
-              _platformChip(context, title: 'iOS', link: '', color: color),
-              _platformChip(context, title: 'iPadOS', link: '', color: color),
-              _platformChip(context, title: 'macOS', link: '', color: color),
-              // _platformChip(context, title: 'Linux', link: '', color: color),
-              // _platformChip(context, title: 'Windows', link: '', color: color),
+              _platformChip(
+                context,
+                title: 'Android',
+                link: 'https://play.google.com/store/apps/details?id=dev.sardaar.tarkeez',
+                color: color,
+                icon: Icons.android,
+              ),
+              _platformChip(
+                context,
+                title: 'iOS',
+                link: '',
+                color: color,
+                icon: Icons.apple,
+              ),
+              _platformChip(
+                context,
+                title: 'macOS',
+                link: '',
+                color: color,
+                icon: Icons.laptop_mac,
+              ),
             ],
           ),
           const SizedBox(height: 48),
@@ -55,11 +71,14 @@ class SupportedPlatfromsSection extends StatelessWidget {
     required String title,
     required String link,
     required Color color,
+    required IconData icon,
   }) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () {},
+        onTap: () async {
+          await launchUrl(Uri.parse(link), mode: .externalApplication);
+        },
         mouseCursor: SystemMouseCursors.click,
         borderRadius: ContainerDesignUtils.allRadius,
         child: Ink(
@@ -68,7 +87,18 @@ class SupportedPlatfromsSection extends StatelessWidget {
             borderRadius: ContainerDesignUtils.allRadius,
           ),
           child: Center(
-            child: Text(title, style: TextUtils.paragraphBold(context)),
+            child: Row(
+              mainAxisAlignment: .center,
+              children: [
+                Icon(
+                  icon,
+                  size: 18,
+                  color: Theme.of(context).colorScheme.onTertiary,
+                ),
+                const SizedBox(width: 4),
+                Text(title, style: TextUtils.paragraphBold(context)),
+              ],
+            ),
           ),
         ),
       ),
